@@ -1,0 +1,16 @@
+{
+  "_comment": "Representative tickers per sector used for sector_breadth_ma.py — stocks-above-50MA structural health check. Keep 8-12 liquid large caps per sector.",
+  "technology": ["AAPL", "MSFT", "NVDA", "GOOGL", "META", "AVGO", "ORCL", "ADBE", "AMD", "CRM"],
+  "semiconductors": ["NVDA", "AMD", "AVGO", "QCOM", "AMAT", "LRCX", "KLAC", "MRVL", "TXN", "ADI"],
+  "healthcare": ["JNJ", "UNH", "LLY", "PFE", "ABBV", "MRK", "TMO", "ABT", "AMGN", "GILD"],
+  "financials": ["JPM", "BAC", "WFC", "GS", "MS", "AXP", "BLK", "SCHW", "CB", "PGR"],
+  "consumer_discretionary": ["TSLA", "HD", "MCD", "NKE", "SBUX", "LOW", "TJX", "BKNG", "MAR", "AMZN"],
+  "consumer_staples": ["WMT", "PG", "KO", "PEP", "COST", "MDLZ", "CL", "KMB", "PM", "MO"],
+  "industrials": ["CAT", "HON", "UPS", "DE", "MMM", "EMR", "ETN", "ROK", "FDX", "CSX"],
+  "defense": ["LMT", "RTX", "NOC", "GD", "BA", "HII", "TDG", "AXON", "KTOS", "LDOS"],
+  "energy": ["XOM", "CVX", "COP", "SLB", "EOG", "MPC", "PSX", "VLO", "OXY", "HAL"],
+  "materials": ["LIN", "APD", "SHW", "ECL", "NEM", "FCX", "NUE", "STLD", "CF", "MOS"],
+  "utilities": ["NEE", "DUK", "SO", "D", "AEP", "EXC", "SRE", "PEG", "XEL", "WEC"],
+  "real_estate": ["PLD", "AMT", "EQIX", "CCI", "SBAC", "WELL", "DLR", "PSA", "EQR", "AVB"],
+  "communication_services": ["GOOGL", "META", "NFLX", "TMUS", "VZ", "T", "CHTR", "CMCSA", "DIS", "WBD"]
+}

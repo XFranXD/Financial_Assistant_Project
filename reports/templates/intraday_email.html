@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ subject }}</title>
+<style>
+  body{background:#0d1117;color:#e6edf3;font-family:'Courier New',Courier,monospace;
+       font-size:14px;line-height:1.6;margin:0;padding:0}
+  .wrap{max-width:600px;margin:0 auto;padding:16px}
+  .header{background:#161b22;border:1px solid #30363d;border-radius:6px;padding:12px 16px;margin-bottom:12px}
+  .header h1{margin:0;font-size:16px;color:#58a6ff;font-weight:bold}
+  .header .sub{color:#8b949e;font-size:12px;margin-top:4px}
+  .pulse{background:#1c2128;border:1px solid #30363d;border-radius:6px;padding:12px 16px;margin-bottom:12px}
+  .pulse h2{margin:0 0 8px;font-size:12px;color:#8b949e;text-transform:uppercase;letter-spacing:.05em}
+  .pulse-line{font-family:'Courier New',Courier,monospace;white-space:pre;padding:2px 0;color:#e6edf3}
+  .story{background:#161b22;border:1px solid #30363d;border-radius:6px;
+         padding:12px 16px;margin-bottom:12px;font-size:13px;color:#8b949e}
+  .story p{margin:4px 0}
+  .section-label{font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:.08em;
+                  padding:6px 0 4px;border-bottom:1px solid #30363d;margin-bottom:8px}
+  .section-low .section-label{color:#3fb950}
+  .section-mod .section-label{color:#d29922}
+  .card{border:1px solid #30363d;border-radius:6px;padding:12px;margin-bottom:8px;background:#161b22}
+  .card-name{font-weight:bold;color:#58a6ff;margin-bottom:4px;font-size:14px}
+  .card-name .tk{color:#8b949e;font-size:12px}
+  .line{margin:3px 0;font-size:13px}
+  .lbl{color:#8b949e}
+  .warn{background:#272210;border-left:3px solid #d29922;padding:6px 8px;
+        margin-top:6px;font-size:12px;color:#d29922;border-radius:3px}
+  .note{background:#1c2128;border-left:3px solid #58a6ff;padding:6px 8px;
+        margin-top:6px;font-size:12px;color:#8b949e;border-radius:3px}
+  .conf-strong{color:#3fb950;font-weight:bold}
+  .conf-mod{color:#d29922;font-weight:bold}
+  .conf-weak{color:#8b949e;font-weight:bold}
+  .overflow{background:#161b22;border:1px solid #30363d;border-radius:6px;
+            padding:10px 16px;margin-top:8px;font-size:13px;color:#8b949e}
+  .overflow a{color:#58a6ff}
+  .disclaimer{margin-top:16px;font-size:11px;color:#484f58;border-top:1px solid #30363d;padding-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Header -->
+  <div class="header">
+    <h1>■ Stock Research — {{ slot }} Update</h1>
+    <div class="sub">{{ date_str }} · {{ time_str }} · Market: {{ regime_label }} · Breadth: {{ breadth_label }}</div>
+  </div>
+
+  <!-- Market Pulse -->
+  <div class="pulse">
+    <h2>Market Pulse</h2>
+    {% for line in pulse_lines %}
+    <div class="pulse-line">{{ line }}</div>
+    {% endfor %}
+  </div>
+
+  <!-- Today's Story -->
+  <div class="story">
+    <p><em>Today's story</em></p>
+    {% for s in story_sentences %}
+    <p>{{ s }}</p>
+    {% endfor %}
+  </div>
+
+  <!-- Low Risk -->
+  {% if low_risk %}
+  <div class="section-low">
+    <div class="section-label">■ LOW RISK OPPORTUNITIES</div>
+    {% for c in low_risk %}
+    <div class="card">
+      <div class="card-name">■■■ {{ c.display_name }} <span class="tk">({{ c.ticker }})</span> — {{ c.sector_plain }} ■■■</div>
+      <div class="line">{{ c.intro_sentence }}</div>
+      <div class="line"><span class="lbl">■ Trend:</span> {{ c.trend_label }}</div>
+      <div class="line"><span class="lbl">■</span> {{ c.price_line }}</div>
+      <div class="line"><span class="lbl">■</span> {{ c.financial_health }}</div>
+      <div class="line"><span class="lbl">■</span> {{ c.volume_line }}</div>
+      <div class="line"><span class="lbl">■ Confidence:</span>
+        <span class="{% if c.confidence_label == 'STRONG' %}conf-strong{% elif c.confidence_label == 'MODERATE' %}conf-mod{% else %}conf-weak{% endif %}">
+          {{ c.confidence_label }} ({{ c.conf_score_int }}/100)
+        </span>
+      </div>
+      {% for notice in c.notices %}
+      <div class="{% if '■■' in notice %}warn{% else %}note{% endif %}">{{ notice }}</div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- Moderate Risk -->
+  {% if moderate_risk %}
+  <div class="section-mod">
+    <div class="section-label">■ MODERATE RISK OPPORTUNITIES</div>
+    {% for c in moderate_risk %}
+    <div class="card">
+      <div class="card-name">■■ {{ c.display_name }} <span class="tk">({{ c.ticker }})</span> — {{ c.sector_plain }} ■■</div>
+      <div class="line">{{ c.intro_sentence }}</div>
+      <div class="line"><span class="lbl">■ Trend:</span> {{ c.trend_label }}</div>
+      <div class="line"><span class="lbl">■</span> {{ c.price_line }}</div>
+      <div class="line"><span class="lbl">■</span> {{ c.financial_health }}</div>
+      <div class="line"><span class="lbl">■</span> {{ c.volume_line }}</div>
+      <div class="line"><span class="lbl">■ Confidence:</span>
+        <span class="{% if c.confidence_label == 'STRONG' %}conf-strong{% elif c.confidence_label == 'MODERATE' %}conf-mod{% else %}conf-weak{% endif %}">
+          {{ c.confidence_label }} ({{ c.conf_score_int }}/100)
+        </span>
+      </div>
+      {% if c.moderate_risk_text %}
+      <div class="warn">■■ {{ c.moderate_risk_text }}</div>
+      {% endif %}
+      {% for notice in c.notices %}
+      <div class="{% if '■■' in notice %}warn{% else %}note{% endif %}">{{ notice }}</div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <!-- No opportunities -->
+  {% if not low_risk and not moderate_risk %}
+  <div class="story">
+    <p>No qualifying opportunities found for this run.</p>
+  </div>
+  {% endif %}
+
+  <!-- Overflow notice -->
+  {% if overflow_notice %}
+  <div class="overflow">{{ overflow_notice }}</div>
+  {% endif %}
+
+  <!-- Disclaimer -->
+  <div class="disclaimer">{{ disclaimer }}</div>
+
+</div>
+</body>
+</html>

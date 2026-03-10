@@ -1,0 +1,66 @@
+{
+  "_comment": "Candidate tickers per sector. Run validate_tickers.py to produce sector_tickers_validated.json before first deploy.",
+  "technology": [
+    "AAPL", "MSFT", "NVDA", "GOOGL", "META", "AMZN", "AVGO", "ORCL", "ADBE", "CRM",
+    "AMD", "INTC", "QCOM", "TXN", "NOW", "SNOW", "PLTR", "PANW", "CRWD", "ZS",
+    "FTNT", "DDOG", "MDB", "NET", "TWLO", "HPE", "STX", "WDC", "AMAT", "KLAC"
+  ],
+  "semiconductors": [
+    "NVDA", "AMD", "INTC", "QCOM", "AVGO", "AMAT", "LRCX", "KLAC", "MRVL", "TXN",
+    "MPWR", "SWKS", "QRVO", "WOLF", "ON", "NXPI", "ADI", "MCHP", "SLAB", "AMBA"
+  ],
+  "healthcare": [
+    "JNJ", "UNH", "LLY", "PFE", "ABBV", "MRK", "TMO", "ABT", "DHR", "BMY",
+    "AMGN", "GILD", "MDT", "EW", "IDXX", "IQV", "HCA", "CI", "CVS", "HUM",
+    "ISRG", "DXCM", "GEHC", "VTRS", "BIIB", "REGN", "VRTX", "MRNA", "BDX", "BAX"
+  ],
+  "financials": [
+    "JPM", "BAC", "WFC", "GS", "MS", "AXP", "BLK", "SCHW", "CB", "PGR",
+    "TFC", "USB", "PNC", "COF", "SYF", "ALLY", "FITB", "HBAN", "RF", "CFG",
+    "MTB", "ZION", "WBS", "FHN", "AIG", "MET", "PRU", "AFL", "MFC", "RJF"
+  ],
+  "consumer_discretionary": [
+    "TSLA", "HD", "MCD", "NKE", "SBUX", "LOW", "TJX", "BKNG", "MAR", "HLT",
+    "RCL", "CCL", "LVS", "MGM", "WYNN", "F", "GM", "APTV", "LKQ", "AZO",
+    "ORLY", "BBY", "TGT", "ROST", "ULTA", "ETSY", "EBAY", "ABNB", "LYFT", "UBER"
+  ],
+  "consumer_staples": [
+    "WMT", "PG", "KO", "PEP", "COST", "MDLZ", "CL", "KMB", "GIS", "K",
+    "HSY", "MKC", "CAG", "SJM", "HRL", "CPB", "TAP", "BF.B", "STZ", "DEO",
+    "PM", "MO", "BTI", "WBA", "CVS", "KR", "SYY", "USFD", "PFGC", "CHEF"
+  ],
+  "industrials": [
+    "CAT", "HON", "UPS", "DE", "GE", "BA", "LMT", "RTX", "NOC", "GD",
+    "MMM", "EMR", "ETN", "ROK", "PH", "IR", "AME", "VRSK", "CTAS", "RSG",
+    "WM", "ADP", "PAYX", "FDX", "DAL", "UAL", "AAL", "LUV", "CSX", "UNP"
+  ],
+  "defense": [
+    "LMT", "RTX", "NOC", "GD", "BA", "HII", "L3H", "TDG", "HEI", "AXON",
+    "KTOS", "LDOS", "SAIC", "DRS", "MRCY", "CACI", "MAN", "FLIR", "OSK", "AM"
+  ],
+  "energy": [
+    "XOM", "CVX", "COP", "SLB", "EOG", "PXD", "MPC", "PSX", "VLO", "HES",
+    "DVN", "FANG", "APA", "BKR", "HAL", "NOV", "OXY", "MRO", "RRC", "EQT",
+    "CNX", "AR", "CTRA", "SM", "OVV", "TRGP", "WMB", "OKE", "KMI", "ET"
+  ],
+  "materials": [
+    "LIN", "APD", "SHW", "ECL", "NEM", "FCX", "NUE", "STLD", "RS", "CF",
+    "MOS", "IFF", "PPG", "VMC", "MLM", "CRH", "GWW", "AME", "AWI", "OLN",
+    "ALB", "BALL", "ATI", "CMC", "KALU", "AA", "HCC", "ARCH", "MP", "CALF"
+  ],
+  "utilities": [
+    "NEE", "DUK", "SO", "D", "AEP", "EXC", "SRE", "PEG", "XEL", "WEC",
+    "ES", "EIX", "ETR", "PPL", "AES", "FE", "EVRG", "NI", "CNP", "OGE",
+    "LNT", "MGEE", "NWE", "PNW", "AVA", "IDA", "OTTR", "HE", "POR", "SR"
+  ],
+  "real_estate": [
+    "PLD", "AMT", "EQIX", "CCI", "SBAC", "WELL", "DLR", "PSA", "EQR", "AVB",
+    "VTR", "O", "NNN", "SPG", "SLG", "KIM", "REG", "FRT", "UDR", "CPT",
+    "ESSential", "IRM", "WY", "PEAK", "LAMR", "GLPI", "VICI", "MAA", "TWO", "NLY"
+  ],
+  "communication_services": [
+    "GOOGL", "META", "NFLX", "TMUS", "VZ", "T", "CHTR", "CMCSA", "DIS", "WBD",
+    "PARA", "FOX", "NYT", "IAC", "MTCH", "PINS", "SNAP", "RDDT", "ZM", "RNG",
+    "TWILIO", "BAND", "VONAGE", "SHEN", "USM", "LUMN", "WIN", "ATUS", "CABO", "WOW"
+  ]
+}

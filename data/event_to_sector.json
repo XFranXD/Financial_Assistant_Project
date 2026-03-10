@@ -1,0 +1,170 @@
+{
+  "interest_rate_increase": {
+    "sectors": {
+      "financials":             {"direction": "positive", "confidence": 0.85},
+      "real_estate":            {"direction": "negative", "confidence": 0.90},
+      "utilities":              {"direction": "negative", "confidence": 0.80},
+      "consumer_discretionary": {"direction": "negative", "confidence": 0.70},
+      "technology":             {"direction": "negative", "confidence": 0.65}
+    }
+  },
+  "interest_rate_decrease": {
+    "sectors": {
+      "real_estate":            {"direction": "positive", "confidence": 0.90},
+      "utilities":              {"direction": "positive", "confidence": 0.80},
+      "consumer_discretionary": {"direction": "positive", "confidence": 0.75},
+      "technology":             {"direction": "positive", "confidence": 0.70},
+      "financials":             {"direction": "negative", "confidence": 0.70}
+    }
+  },
+  "inflation_increase": {
+    "sectors": {
+      "energy":                 {"direction": "positive", "confidence": 0.80},
+      "materials":              {"direction": "positive", "confidence": 0.75},
+      "consumer_staples":       {"direction": "positive", "confidence": 0.65},
+      "consumer_discretionary": {"direction": "negative", "confidence": 0.75},
+      "technology":             {"direction": "negative", "confidence": 0.60}
+    }
+  },
+  "geopolitical_conflict": {
+    "sectors": {
+      "defense":                {"direction": "positive", "confidence": 0.90},
+      "energy":                 {"direction": "positive", "confidence": 0.75},
+      "materials":              {"direction": "positive", "confidence": 0.65},
+      "technology":             {"direction": "negative", "confidence": 0.60},
+      "consumer_discretionary": {"direction": "negative", "confidence": 0.70}
+    }
+  },
+  "geopolitical_resolution": {
+    "sectors": {
+      "consumer_discretionary": {"direction": "positive", "confidence": 0.70},
+      "technology":             {"direction": "positive", "confidence": 0.65},
+      "energy":                 {"direction": "negative", "confidence": 0.60},
+      "defense":                {"direction": "negative", "confidence": 0.75}
+    }
+  },
+  "oil_supply_disruption": {
+    "sectors": {
+      "energy":                 {"direction": "positive", "confidence": 0.90},
+      "materials":              {"direction": "positive", "confidence": 0.65},
+      "consumer_discretionary": {"direction": "negative", "confidence": 0.75},
+      "industrials":            {"direction": "negative", "confidence": 0.65},
+      "utilities":              {"direction": "negative", "confidence": 0.60}
+    }
+  },
+  "oil_supply_increase": {
+    "sectors": {
+      "energy":                 {"direction": "negative", "confidence": 0.85},
+      "consumer_discretionary": {"direction": "positive", "confidence": 0.70},
+      "industrials":            {"direction": "positive", "confidence": 0.65},
+      "utilities":              {"direction": "positive", "confidence": 0.55}
+    }
+  },
+  "recession_signal": {
+    "sectors": {
+      "consumer_staples":       {"direction": "positive", "confidence": 0.75},
+      "utilities":              {"direction": "positive", "confidence": 0.70},
+      "financials":             {"direction": "negative", "confidence": 0.80},
+      "consumer_discretionary": {"direction": "negative", "confidence": 0.85},
+      "industrials":            {"direction": "negative", "confidence": 0.75}
+    }
+  },
+  "strong_jobs_report": {
+    "sectors": {
+      "consumer_discretionary": {"direction": "positive", "confidence": 0.80},
+      "financials":             {"direction": "positive", "confidence": 0.70},
+      "industrials":            {"direction": "positive", "confidence": 0.65},
+      "real_estate":            {"direction": "negative", "confidence": 0.55}
+    }
+  },
+  "weak_jobs_report": {
+    "sectors": {
+      "consumer_discretionary": {"direction": "negative", "confidence": 0.80},
+      "financials":             {"direction": "negative", "confidence": 0.70},
+      "consumer_staples":       {"direction": "positive", "confidence": 0.65},
+      "utilities":              {"direction": "positive", "confidence": 0.60}
+    }
+  },
+  "ai_investment_surge": {
+    "sectors": {
+      "technology":             {"direction": "positive", "confidence": 0.90},
+      "semiconductors":         {"direction": "positive", "confidence": 0.90},
+      "communication_services": {"direction": "positive", "confidence": 0.75},
+      "industrials":            {"direction": "positive", "confidence": 0.55},
+      "utilities":              {"direction": "positive", "confidence": 0.50}
+    }
+  },
+  "semiconductor_shortage": {
+    "sectors": {
+      "semiconductors":         {"direction": "positive", "confidence": 0.85},
+      "technology":             {"direction": "negative", "confidence": 0.70},
+      "consumer_discretionary": {"direction": "negative", "confidence": 0.65},
+      "industrials":            {"direction": "negative", "confidence": 0.60}
+    }
+  },
+  "supply_chain_disruption": {
+    "sectors": {
+      "industrials":            {"direction": "negative", "confidence": 0.80},
+      "consumer_discretionary": {"direction": "negative", "confidence": 0.75},
+      "technology":             {"direction": "negative", "confidence": 0.65},
+      "materials":              {"direction": "positive", "confidence": 0.60}
+    }
+  },
+  "bank_failure_credit_crisis": {
+    "sectors": {
+      "financials":             {"direction": "negative", "confidence": 0.95},
+      "real_estate":            {"direction": "negative", "confidence": 0.80},
+      "consumer_discretionary": {"direction": "negative", "confidence": 0.70},
+      "utilities":              {"direction": "positive", "confidence": 0.60},
+      "consumer_staples":       {"direction": "positive", "confidence": 0.65}
+    }
+  },
+  "strong_earnings_season": {
+    "sectors": {
+      "technology":             {"direction": "positive", "confidence": 0.80},
+      "financials":             {"direction": "positive", "confidence": 0.75},
+      "consumer_discretionary": {"direction": "positive", "confidence": 0.70},
+      "industrials":            {"direction": "positive", "confidence": 0.65}
+    }
+  },
+  "weak_earnings_season": {
+    "sectors": {
+      "technology":             {"direction": "negative", "confidence": 0.80},
+      "consumer_discretionary": {"direction": "negative", "confidence": 0.75},
+      "financials":             {"direction": "negative", "confidence": 0.70}
+    }
+  },
+  "tariff_increase": {
+    "sectors": {
+      "industrials":            {"direction": "negative", "confidence": 0.85},
+      "consumer_discretionary": {"direction": "negative", "confidence": 0.80},
+      "materials":              {"direction": "negative", "confidence": 0.70},
+      "technology":             {"direction": "negative", "confidence": 0.65},
+      "defense":                {"direction": "positive", "confidence": 0.55}
+    }
+  },
+  "tariff_reduction": {
+    "sectors": {
+      "industrials":            {"direction": "positive", "confidence": 0.85},
+      "consumer_discretionary": {"direction": "positive", "confidence": 0.80},
+      "materials":              {"direction": "positive", "confidence": 0.70},
+      "technology":             {"direction": "positive", "confidence": 0.65}
+    }
+  },
+  "currency_usd_strengthening": {
+    "sectors": {
+      "technology":             {"direction": "negative", "confidence": 0.70},
+      "industrials":            {"direction": "negative", "confidence": 0.65},
+      "materials":              {"direction": "negative", "confidence": 0.60},
+      "financials":             {"direction": "positive", "confidence": 0.55}
+    }
+  },
+  "currency_usd_weakening": {
+    "sectors": {
+      "technology":             {"direction": "positive", "confidence": 0.70},
+      "industrials":            {"direction": "positive", "confidence": 0.65},
+      "materials":              {"direction": "positive", "confidence": 0.65},
+      "energy":                 {"direction": "positive", "confidence": 0.60}
+    }
+  }
+}

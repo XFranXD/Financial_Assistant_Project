@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ subject }}</title>
+<style>
+  body{background:#0d1117;color:#e6edf3;font-family:'Courier New',Courier,monospace;
+       font-size:14px;line-height:1.6;margin:0;padding:0}
+  .wrap{max-width:900px;margin:0 auto;padding:24px 16px}
+  h1{color:#58a6ff;font-size:20px;margin:0 0 4px}
+  .meta{color:#8b949e;font-size:12px;margin-bottom:20px}
+  .market-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+  .idx-card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:14px;text-align:center}
+  .idx-name{color:#8b949e;font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+  .idx-val{font-size:22px;font-weight:bold;color:#e6edf3}
+  .idx-chg{font-size:13px;margin-top:4px}
+  .idx-chg.up{color:#3fb950}
+  .idx-chg.dn{color:#f85149}
+  .idx-chg.fl{color:#8b949e}
+  .story-block{background:#161b22;border:1px solid #30363d;border-radius:8px;
+               padding:16px;margin-bottom:20px;color:#8b949e;font-size:13px}
+  .story-block p{margin:4px 0}
+  .section-hdr{font-size:13px;font-weight:bold;text-transform:uppercase;letter-spacing:.08em;
+               padding:8px 0 6px;border-bottom:2px solid;margin-bottom:12px}
+  .sec-low .section-hdr{color:#3fb950;border-color:#3fb950}
+  .sec-mod .section-hdr{color:#d29922;border-color:#d29922}
+  .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:12px;margin-bottom:20px}
+  .card{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px}
+  .card-title{font-size:15px;font-weight:bold;color:#58a6ff;margin-bottom:8px}
+  .card-title .tk{color:#8b949e;font-size:12px}
+  .card-title .sec{color:#8b949e;font-size:12px;margin-left:6px}
+  .row{display:flex;margin:4px 0;font-size:13px;line-height:1.5}
+  .row .lbl{color:#8b949e;min-width:120px;flex-shrink:0}
+  .row .val{color:#e6edf3;flex:1}
+  .warn{background:#272210;border-left:3px solid #d29922;padding:8px 10px;
+        margin-top:10px;font-size:12px;color:#d29922;border-radius:3px;line-height:1.5}
+  .note-box{background:#1c2128;border-left:3px solid #58a6ff;padding:8px 10px;
+             margin-top:10px;font-size:12px;color:#8b949e;border-radius:3px}
+  .conf-strong{color:#3fb950;font-weight:bold}
+  .conf-mod{color:#d29922;font-weight:bold}
+  .conf-weak{color:#8b949e;font-weight:bold}
+  .rotation-block{background:#1c2128;border:1px solid #30363d;border-radius:8px;
+                  padding:14px;margin-bottom:20px}
+  .rotation-block h2{color:#8b949e;font-size:12px;text-transform:uppercase;letter-spacing:.06em;margin:0 0 10px}
+  .rot-row{display:flex;justify-content:space-between;font-size:13px;padding:3px 0;
+           border-bottom:1px solid #21262d}
+  .rot-sector{color:#e6edf3}
+  .rot-label{color:#8b949e;font-size:12px}
+  .rot-accel{color:#3fb950}
+  .rot-decel{color:#f85149}
+  .disclaimer{margin-top:24px;font-size:11px;color:#484f58;border-top:1px solid #21262d;padding-top:12px}
+  @media(max-width:600px){
+    .market-grid{grid-template-columns:1fr}
+    .card-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>■ Stock Research — {{ slot }} Full Report</h1>
+  <div class="meta">{{ date_str }} · {{ time_str }} · Market regime: {{ regime_label }} · Breadth: {{ breadth_label }} · {{ total_companies }} opportunities found</div>
+
+  <!-- Market Pulse -->
+  <div class="market-grid">
+    {% for idx in ['dow', 'sp500', 'nasdaq'] %}
+    {% set dummy = {'dow': 'Dow Jones', 'sp500': 'S&amp;P 500', 'nasdaq': 'Nasdaq'} %}
+    {% endfor %}
+    {% for line in pulse_lines %}
+    <div class="idx-card">
+      <div class="idx-name">{{ loop.index == 1 and 'Dow Jones' or loop.index == 2 and 'S&amp;P 500' or 'Nasdaq' }}</div>
+      <div class="idx-val" style="font-size:13px;font-family:'Courier New'">{{ line }}</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Today's Story -->
+  <div class="story-block">
+    <p><strong>Today's story</strong></p>
+    {% for s in story_sentences %}
+    <p>{{ s }}</p>
+    {% endfor %}
+  </div>
+
+  <!-- Low Risk -->
+  {% if low_risk %}
+  <div class="sec-low">
+    <div class="section-hdr">■ LOW RISK OPPORTUNITIES ({{ low_risk|length }})</div>
+    <div class="card-grid">
+      {% for c in low_risk %}
+      <div class="card">
+        <div class="card-title">{{ c.display_name }} <span class="tk">({{ c.ticker }})</span><span class="sec">— {{ c.sector_plain }}</span></div>
+        <div class="row"><span class="lbl">■ Why today:</span><span class="val">{{ c.intro_sentence }}</span></div>
+        <div class="row"><span class="lbl">■ Trend:</span><span class="val">{{ c.trend_label }}</span></div>
+        <div class="row"><span class="lbl">■ Price:</span><span class="val">{{ c.price_line }}</span></div>
+        <div class="row"><span class="lbl">■ Financials:</span><span class="val">{{ c.financial_health }}</span></div>
+        <div class="row"><span class="lbl">■ Volume:</span><span class="val">{{ c.volume_line }}</span></div>
+        <div class="row"><span class="lbl">■ Confidence:</span>
+          <span class="val {% if c.confidence_label == 'STRONG' %}conf-strong{% elif c.confidence_label == 'MODERATE' %}conf-mod{% else %}conf-weak{% endif %}">
+            {{ c.confidence_label }} ({{ c.conf_score_int }}/100)
+          </span>
+        </div>
+        {% for notice in c.notices %}
+        <div class="{% if '■■' in notice %}warn{% else %}note-box{% endif %}">{{ notice }}</div>
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Moderate Risk -->
+  {% if moderate_risk %}
+  <div class="sec-mod">
+    <div class="section-hdr">■ MODERATE RISK OPPORTUNITIES ({{ moderate_risk|length }})</div>
+    <div class="card-grid">
+      {% for c in moderate_risk %}
+      <div class="card">
+        <div class="card-title">{{ c.display_name }} <span class="tk">({{ c.ticker }})</span><span class="sec">— {{ c.sector_plain }}</span></div>
+        <div class="row"><span class="lbl">■ Why today:</span><span class="val">{{ c.intro_sentence }}</span></div>
+        <div class="row"><span class="lbl">■ Trend:</span><span class="val">{{ c.trend_label }}</span></div>
+        <div class="row"><span class="lbl">■ Price:</span><span class="val">{{ c.price_line }}</span></div>
+        <div class="row"><span class="lbl">■ Financials:</span><span class="val">{{ c.financial_health }}</span></div>
+        <div class="row"><span class="lbl">■ Volume:</span><span class="val">{{ c.volume_line }}</span></div>
+        <div class="row"><span class="lbl">■ Confidence:</span>
+          <span class="val {% if c.confidence_label == 'STRONG' %}conf-strong{% elif c.confidence_label == 'MODERATE' %}conf-mod{% else %}conf-weak{% endif %}">
+            {{ c.confidence_label }} ({{ c.conf_score_int }}/100)
+          </span>
+        </div>
+        {% if c.moderate_risk_text %}
+        <div class="warn">■■ {{ c.moderate_risk_text }}</div>
+        {% endif %}
+        {% for notice in c.notices %}
+        <div class="{% if '■■' in notice %}warn{% else %}note-box{% endif %}">{{ notice }}</div>
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- No opportunities -->
+  {% if not low_risk and not moderate_risk %}
+  <div class="story-block"><p>No qualifying opportunities found for this run.</p></div>
+  {% endif %}
+
+  <!-- Sector Rotation -->
+  {% if rotation %}
+  <div class="rotation-block">
+    <h2>Sector Rotation Signals</h2>
+    {% for sector, rot in rotation.items() %}
+    <div class="rot-row">
+      <span class="rot-sector">{{ sector.replace('_', ' ').title() }}</span>
+      <span class="{% if rot.accelerating %}rot-accel{% elif rot.rotation_speed < -2 %}rot-decel{% else %}rot-label{% endif %}">
+        {{ rot.label }}{% if rot.accelerating %} ▲{% endif %}
+      </span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="disclaimer">{{ disclaimer }}</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ subject }}</title>
+<style>
+  body{background:#0d1117;color:#e6edf3;font-family:'Courier New',Courier,monospace;
+       font-size:14px;line-height:1.6;margin:0;padding:0}
+  .wrap{max-width:900px;margin:0 auto;padding:24px 16px}
+  h1{color:#58a6ff;font-size:22px;margin:0 0 4px}
+  .meta{color:#8b949e;font-size:12px;margin-bottom:20px}
+  .block{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;margin-bottom:20px}
+  .block h2{margin:0 0 12px;font-size:13px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;
+            border-bottom:1px solid #30363d;padding-bottom:6px}
+  .market-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:6px}
+  .idx-card{background:#1c2128;border:1px solid #30363d;border-radius:6px;padding:12px;text-align:center}
+  .idx-name{color:#8b949e;font-size:11px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+  .idx-pulse{font-family:'Courier New',Courier,monospace;font-size:13px;color:#e6edf3}
+  .idx-sentence{color:#8b949e;font-size:12px;margin-top:4px;line-height:1.4}
+  .story-line{padding:4px 0;font-size:13px;color:#8b949e;border-bottom:1px solid #21262d}
+  .story-line:last-child{border-bottom:none}
+  .ranked-table{width:100%;border-collapse:collapse;font-size:13px}
+  .ranked-table th{text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;
+                    letter-spacing:.05em;padding:6px 8px;border-bottom:1px solid #30363d}
+  .ranked-table td{padding:6px 8px;border-bottom:1px solid #21262d;color:#e6edf3;vertical-align:top}
+  .ranked-table tr:last-child td{border-bottom:none}
+  .conf-strong{color:#3fb950;font-weight:bold}
+  .conf-mod{color:#d29922;font-weight:bold}
+  .conf-weak{color:#8b949e;font-weight:bold}
+  .watch-item{padding:5px 0;font-size:13px;color:#8b949e;border-bottom:1px solid #21262d}
+  .watch-item:last-child{border-bottom:none}
+  .watch-item.accel{color:#3fb950}
+  .rotation-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-top:12px}
+  .rot-cell{background:#1c2128;border:1px solid #30363d;border-radius:6px;padding:10px 12px}
+  .rot-sector{color:#e6edf3;font-size:13px;font-weight:bold}
+  .rot-score{color:#8b949e;font-size:12px}
+  .rot-label{font-size:12px;margin-top:2px}
+  .rot-up{color:#3fb950}
+  .rot-dn{color:#f85149}
+  .rot-flat{color:#8b949e}
+  .disclaimer{margin-top:24px;font-size:11px;color:#484f58;border-top:1px solid #21262d;padding-top:12px}
+  @media(max-width:600px){
+    .market-grid{grid-template-columns:1fr}
+    .rotation-grid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>■ Daily Summary — {{ date_str }}</h1>
+  <div class="meta">{{ n_total }} total opportunit{{ 'y' if n_total == 1 else 'ies' }} reported today</div>
+
+  <!-- Block 1: Market Close Summary -->
+  <div class="block">
+    <h2>Market Close Summary</h2>
+    <div class="market-grid">
+      {% for m in market_summary %}
+      <div class="idx-card">
+        <div class="idx-name">{{ m.name }}</div>
+        <div class="idx-pulse">{{ m.pulse_str }}</div>
+        <div class="idx-sentence">{{ m.sentence }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Block 2: What Moved The Market Today -->
+  <div class="block">
+    <h2>What Moved The Market Today</h2>
+    {% for s in what_moved %}
+    <div class="story-line">{{ s }}</div>
+    {% endfor %}
+  </div>
+
+  <!-- Block 3: Today's Full Ranked List -->
+  <div class="block">
+    <h2>Today's Full Ranked List</h2>
+    {% if ranked_list and ranked_list[0] != 'No companies were reported today.' %}
+    <table class="ranked-table">
+      <thead>
+        <tr>
+          <th>#</th><th>Company</th><th>Sector</th><th>Price</th><th>Confidence</th><th>Risk</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in ranked_list %}
+        <tr>
+          <td colspan="6" style="font-family:'Courier New';font-size:12px;color:#8b949e">{{ row }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div style="color:#8b949e;font-size:13px">No companies were reported today.</div>
+    {% endif %}
+  </div>
+
+  <!-- Block 4: Things To Watch Tomorrow -->
+  <div class="block">
+    <h2>Things To Watch Tomorrow</h2>
+    {% for item in watch_tomorrow %}
+    <div class="watch-item {% if 'gaining' in item or 'accelerat' in item.lower() %}accel{% endif %}">{{ item }}</div>
+    {% endfor %}
+  </div>
+
+  <!-- Sector Rotation Summary (full report only) -->
+  {% if rotation %}
+  <div class="block">
+    <h2>Sector Rotation Today</h2>
+    <div class="rotation-grid">
+      {% for sector, rot in rotation.items() %}
+      <div class="rot-cell">
+        <div class="rot-sector">{{ sector.replace('_', ' ').title() }}</div>
+        <div class="rot-label {% if rot.accelerating %}rot-up{% elif rot.rotation_speed < -2 %}rot-dn{% else %}rot-flat{% endif %}">
+          {{ rot.label }}{% if rot.accelerating %} ▲{% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="disclaimer">{{ disclaimer }}</div>
+
+</div>
+</body>
+</html>
