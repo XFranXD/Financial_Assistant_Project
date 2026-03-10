@@ -52,7 +52,7 @@ jobs:
           ALPHA_VANTAGE_API_KEY: ${{ secrets.ALPHA_VANTAGE_API_KEY }}
           GMAIL_EMAIL:           ${{ secrets.GMAIL_EMAIL }}
           GMAIL_APP_PASSWORD:    ${{ secrets.GMAIL_APP_PASSWORD }}
-          GITHUB_PAGES_URL:      ${{ secrets.GITHUB_PAGES_URL }}
+          GITHUB_PAGES_URL:      ${{ secrets.PAGES_URL }}
         run: python main.py
 
       - name: Commit outputs
