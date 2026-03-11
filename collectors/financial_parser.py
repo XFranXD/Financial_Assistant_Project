@@ -151,7 +151,7 @@ def _fetch_from_yfinance(ticker: str) -> dict:
         out['profit_margin'] = info.get('profitMargins')
         if out['profit_margin']:
             out['profit_margin'] = float(out['profit_margin']) * 100  # convert to %
-        out['debt_to_equity']      = info.get('debtToEquity')
+        out['debt_to_equity']      = info.get('debtToEquity') / 100 if info.get('debtToEquity') is not None else None
         out['operating_cash_flow'] = info.get('operatingCashflow')
         out['industry']            = info.get('industry')
         out['sector']              = info.get('sector')
