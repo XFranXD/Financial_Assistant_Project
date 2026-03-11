@@ -398,6 +398,8 @@ def run():
 
     # ── Step 27: Z-score ranking ──────────────────────────────────────────
     from analyzers.zscore_ranker import rank_candidates
+    for _c in all_candidates:
+        log.info(f"DEBUG candidate: {_c.get('ticker')} risk={_c.get('risk_score')} opp={_c.get('opportunity_score')} cap={regime['risk_cap']}")
     final_companies = rank_candidates(all_candidates, regime['risk_cap'])
     log.info(f'Final company count: {len(final_companies)}')
 
