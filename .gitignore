@@ -3,7 +3,8 @@ __pycache__/
 *.pyo
 .env
 data/sector_tickers_validated.json
-data/fundamentals_cache/
+data/fundamentals_cache/*
+!data/fundamentals_cache/.gitkeep
 logs/
 reports/output/
 *.zip
