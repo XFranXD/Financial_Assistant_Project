@@ -194,8 +194,8 @@ class SectorSignalAccumulator:
 
         # Map to sectors via event_to_sector
         for event_type, sector_data in self._event_to_sector.items():
-            event_terms = event_type.replace('_', ' ')
-            if event_terms in text:
+            event_key_words = event_type.replace('_', ' ').split()
+            if any(word in text for word in event_key_words if len(word) > 3):
                 matched_events.append(event_type)
                 for sector, cfg in sector_data.get('sectors', {}).items():
                     confidence = cfg.get('confidence', 0.5)
