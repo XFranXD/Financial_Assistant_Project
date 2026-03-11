@@ -297,6 +297,7 @@ def run():
             ok, reason = passes_candidate_filter(
                 ticker, fin, sector, state.get('reported_companies', [])
             )
+            log.info(f'DEBUG filter {ticker}: ok={ok} reason={reason}')
             if not ok:
                 continue
 
@@ -358,6 +359,7 @@ def run():
             )
 
             # ── Step 26: Exclude below confidence minimum ─────────────────
+            log.info(f'DEBUG confidence {ticker}: conf={conf_result["composite_confidence"]} min={COMPOSITE_CONFIDENCE_MIN} risk={risk_result["risk_score"]} opp={opp_result["opportunity_score"]}')
             if conf_result['composite_confidence'] < COMPOSITE_CONFIDENCE_MIN:
                 log.info(
                     f'{ticker}: confidence {conf_result["composite_confidence"]} '
