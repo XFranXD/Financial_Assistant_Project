@@ -44,7 +44,7 @@ AV_CACHE_TTL_DAYS       = 7
 # ── Scoring Thresholds & Caps ─────────────────────────────────────────────
 NEWS_IMPACT_THRESHOLD        = 0.6   # gate: sectors below this are dropped
 SECTOR_ACCUMULATOR_MIN_HEADLINES = 2
-SECTOR_ACCUMULATOR_MIN_SCORE     = 6
+SECTOR_ACCUMULATOR_MIN_SCORE     = 4
 TOP_SECTORS_LIMIT            = 5     # only top 5 momentum sectors proceed
 MAX_COMPANIES_PER_SECTOR     = 3
 MAX_TOTAL_COMPANIES          = 25
@@ -125,8 +125,8 @@ RSS_FEEDS = {
     'reuters': 'https://feeds.reuters.com/reuters/businessNews',
     'ft':      'https://www.ft.com/rss/home/uk',
 }
-NEWS_FRESHNESS_HOURS = 6
-NEWS_DEDUP_THRESHOLD = 0.85   # difflib SequenceMatcher ratio
+NEWS_FRESHNESS_HOURS = 16
+NEWS_DEDUP_THRESHOLD = 0.92   # difflib SequenceMatcher ratio
 
 # ── Event Decay ───────────────────────────────────────────────────────────
 EVENT_DECAY_FACTOR = 10       # half-life controls — do not change
