@@ -1,12 +1,15 @@
 {
   "date": "2026-03-12",
   "reported_companies": [
-    "COP",
-    "EQT",
-    "CTRA",
-    "KMI",
+    "EOG",
     "DVN",
-    "RRC"
+    "KMI",
+    "EQT",
+    "RRC",
+    "CNX",
+    "COP",
+    "CTRA",
+    "XOM"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -31,28 +34,32 @@
       "status": "pending"
     },
     "16:10": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "XOM",
+        "EOG",
+        "CNX"
+      ],
+      "status": "complete"
     }
   },
   "failed_tickers": [],
   "api_failures": {},
   "sector_scores_today": {
-    "technology": -0.866,
-    "healthcare": -2.403,
-    "financials": -4.803,
-    "consumer_discretionary": -3.325,
-    "consumer_staples": -1.809,
-    "industrials": -3.493,
-    "materials": -2.53,
-    "energy": 3.824,
-    "utilities": 0.002,
-    "real_estate": -2.405,
-    "communication_services": -1.679,
-    "semiconductors": -2.672,
-    "defense": -2.689
+    "technology": -1.452,
+    "healthcare": -2.634,
+    "financials": -4.909,
+    "consumer_discretionary": -3.99,
+    "consumer_staples": -2.059,
+    "industrials": -4.289,
+    "materials": -3.015,
+    "energy": 3.065,
+    "utilities": -0.528,
+    "real_estate": -2.514,
+    "communication_services": -1.789,
+    "semiconductors": -3.364,
+    "defense": -3.491
   },
-  "breadth_score_today": 0.341,
+  "breadth_score_today": 0.292,
   "sector_breadth_ma_today": {
     "technology": {
       "breadth_ma_score": 0.1,
@@ -85,9 +92,9 @@
       "label": "mixed signals"
     },
     "industrials": {
-      "breadth_ma_score": 0.6,
-      "pct": 60.0,
-      "label": "healthy participation"
+      "breadth_ma_score": 0.5,
+      "pct": 50.0,
+      "label": "mixed signals"
     },
     "defense": {
       "breadth_ma_score": 0.5,
@@ -110,8 +117,8 @@
       "label": "sector is genuinely strong"
     },
     "real_estate": {
-      "breadth_ma_score": 0.5,
-      "pct": 50.0,
+      "breadth_ma_score": 0.4,
+      "pct": 40.0,
       "label": "mixed signals"
     },
     "communication_services": {
@@ -120,22 +127,24 @@
       "label": "mixed signals"
     }
   },
-  "unusual_volume_flags": [],
+  "unusual_volume_flags": [
+    "OXY"
+  ],
   "event_scores_today": {},
   "indices_today": {
     "dow": {
-      "value": 46895.78,
-      "change_pct": -1.1,
+      "value": 46672.34,
+      "change_pct": -1.57,
       "label": "Falling"
     },
     "sp500": {
-      "value": 6702.2,
-      "change_pct": -1.09,
+      "value": 6672.08,
+      "change_pct": -1.53,
       "label": "Falling"
     },
     "nasdaq": {
-      "value": 22407.19,
-      "change_pct": -1.36,
+      "value": 22311.98,
+      "change_pct": -1.78,
       "label": "Falling"
     }
   }
