@@ -20,6 +20,20 @@ TREND_SENTENCE = (
     "and is currently {MOMENTUM_LABEL}."
 )
 
+TREND_LINE_FULL = (
+    "{RAM_LABEL} — "
+    "1M: {R1M} · 3M: {R3M} · 6M: {R6M}"
+)
+
+TREND_LINE_PARTIAL = (
+    "{RAM_LABEL} — "
+    "3M: {R3M}"
+)
+
+TREND_VS_MA = (
+    "vs 20D: {VS_20D} · vs 50D: {VS_50D} · vs 200D: {VS_200D}"
+)
+
 FINANCIAL_HEALTH = (
     "Financial health: keeps {MARGIN_PCT} cents from every dollar it earns "
     "(profit margin), and carries {DEBT_LABEL} debt compared to what it owns."
@@ -28,6 +42,18 @@ FINANCIAL_HEALTH = (
 FINANCIAL_HEALTH_NO_MARGIN = (
     "Financial health: profit margin data not available. "
     "Carries {DEBT_LABEL} debt compared to what it owns."
+)
+
+FINANCIAL_HEALTH_EXTENDED = (
+    "keeps {MARGIN_PCT} cents per $1 earned · "
+    "{DEBT_LABEL} debt · "
+    "ROIC: {ROIC} · "
+    "Operating cash flow: {FCF_LABEL}"
+)
+
+CONFIDENCE_BREAKDOWN = (
+    "{CONFIDENCE_LABEL} ({CONFIDENCE_SCORE}/100) — "
+    "Risk {RISK_INT} · Opp {OPP_INT} · Agree {AGR_INT}"
 )
 
 MODERATE_RISK_REASON = (
@@ -221,6 +247,21 @@ def debt_label(de_ratio: float | None) -> str:
     return 'a high level of'
 
 
+def roic_label(v: float | None) -> str:
+    """Plain English ROIC label."""
+    if v is None: return 'n/a'
+    if v > 15:  return f'{v:.0f}% (high)'
+    if v > 8:   return f'{v:.0f}% (solid)'
+    if v > 0:   return f'{v:.0f}% (low)'
+    return f'{v:.0f}% (weak)'
+
+
+def fcf_direction_label(v: float | None) -> str:
+    """Plain English FCF direction."""
+    if v is None: return 'n/a'
+    return 'positive' if v > 0 else 'negative'
+
+
 # ── Risk section assignment ───────────────────────────────────────────────────
 
 def risk_section(risk_score: float) -> str:
@@ -330,3 +371,32 @@ def render_moderate_risk_block(risk_components: dict, risk_score: float, drawdow
     elif reasons:
         return MODERATE_RISK_REASON_SINGLE.format(RISK_REASON_1=reasons[0].capitalize())
     return ''
+
+
+# ── Summary block helpers (§FIX-4) ──────────────────────────────────────────
+
+SUMMARY_SCORE_LINE = "Score {SCORE}/100 — {SCORE_MEANING}"
+
+_SCORE_MEANINGS = [
+    (85, "strong alignment across signals — prioritise for deeper research"),
+    (70, "most signals favorable — verify key factors before acting"),
+    (60, "passes screening — needs additional research"),
+    (0,  "weak signal — approach with significant caution"),
+]
+
+
+def score_meaning(score: int) -> str:
+    """Returns plain English meaning of a confidence score."""
+    for threshold, meaning in _SCORE_MEANINGS:
+        if score >= threshold:
+            return meaning
+    return "insufficient data"
+
+
+def summary_verdict(conf_score: float, risk_score: float, section: str) -> str:
+    """Returns RESEARCH NOW, WATCH, or SKIP based on scores."""
+    if conf_score >= 70 and risk_score <= 35:
+        return 'RESEARCH NOW'
+    if conf_score >= 55 or (section == 'LOW RISK' and conf_score >= 45):
+        return 'WATCH'
+    return 'SKIP'

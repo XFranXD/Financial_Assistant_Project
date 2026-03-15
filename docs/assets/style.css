@@ -1,0 +1,31 @@
+/* docs/assets/style.css */
+:root {
+  --bg-base:        #0a0a0f;
+  --bg-primary:     #0f0f1a;
+  --bg-secondary:   #141428;
+  --bg-accent:      #1a1a35;
+  --bg-hover:       #1f1f40;
+  --border-default: #1e1e3a;
+  --border-active:  #2a2a50;
+  --border-glow:    #3a3a70;
+  --text-primary:   #e8e8f0;
+  --text-secondary: #8888aa;
+  --text-muted:     #444466;
+  --signal-green:   #00ff88;
+  --signal-red:     #ff3355;
+  --signal-yellow:  #ffcc00;
+  --signal-blue:    #00aaff;
+  --signal-purple:  #aa55ff;
+  --font-mono:      'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  margin: 0; padding: 0;
+}
+a { color: var(--signal-blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { color: #ffffff; }
+h2, h3 { color: var(--text-secondary); }

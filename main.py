@@ -418,6 +418,21 @@ def run():
         rotation      = rotation,
     )
 
+    # ── Step 28b — Dashboard update (non-fatal) ──────────────────────────────
+    try:
+        from reports.dashboard_builder import build_dashboard
+        build_dashboard(
+            companies = final_companies,
+            slot      = slot,
+            indices   = state.get('indices_today', {}),
+            breadth   = breadth,
+            regime    = regime,
+            rotation  = rotation,
+        )
+    except Exception as _dash_err:
+        log.warning(f'Dashboard build skipped: {_dash_err}')
+    # ── End step 28b ──────────────────────────────────────────────────────────
+
     # ── Step 29: Send email ───────────────────────────────────────────────
     from reports.email_sender import send_email
     email_sent = send_email(

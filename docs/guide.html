@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Research Guide — Stock Research</title>
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  body{background:#0a0a0f;color:#e8e8f0;margin:0;padding:0;font-family:'JetBrains Mono','Fira Code','Courier New',monospace;}
+  .wrap{max-width:900px;margin:0 auto;padding:24px 16px;}
+  h1{color:#ffffff;font-size:22px;margin:20px 0 4px;}
+  h2{color:#8888aa;font-size:14px;text-transform:uppercase;letter-spacing:.1em;
+     border-bottom:1px solid #1e1e3a;padding-bottom:6px;margin:28px 0 14px;}
+  p{color:#8888aa;font-size:13px;line-height:1.7;margin:6px 0;}
+  .def-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;margin-bottom:16px;}
+  .def-item{background:#0f0f1a;border:1px solid #1e1e3a;border-radius:6px;padding:12px 14px;}
+  .def-term{color:#00aaff;font-size:13px;font-weight:bold;margin-bottom:4px;}
+  .def-body{color:#8888aa;font-size:12px;line-height:1.6;}
+  .signal-row{display:flex;gap:12px;align-items:flex-start;padding:6px 0;border-bottom:1px solid #1e1e3a;}
+  .signal-row:last-child{border-bottom:none;}
+  .signal-key{color:#00ff88;font-weight:bold;min-width:120px;font-size:13px;}
+  .signal-desc{color:#8888aa;font-size:13px;}
+  .verdict-row{display:flex;gap:10px;margin:6px 0;}
+  .verdict-badge{font-weight:bold;min-width:130px;font-size:13px;}
+  .vr-now{color:#00ff88;}
+  .vr-watch{color:#ffcc00;}
+  .vr-skip{color:#8888aa;}
+  .warn-box{background:#1a1104;border-left:3px solid #ffcc00;padding:10px 14px;
+            border-radius:3px;margin:12px 0;color:#ffcc00;font-size:13px;}
+  .warn-box strong{display:block;margin-bottom:4px;}
+  .disclaimer{margin-top:28px;font-size:12px;color:#444466;border-top:1px solid #1e1e3a;padding-top:14px;}
+</style>
+</head>
+<body>
+
+<nav id="nav-placeholder"></nav>
+<script src="assets/app.js"></script>
+<script>
+  // Inline nav since guide.html is static
+  document.getElementById('nav-placeholder').outerHTML =
+    '<div style="background:#0f0f1a;border-bottom:1px solid #1e1e3a;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;">' +
+    '<span style="color:#ffffff;font-family:monospace;font-weight:bold;font-size:14px;">STOCK RESEARCH</span>' +
+    '<div>' +
+    '<a href="index.html" style="color:#8888aa;margin:0 12px;font-family:monospace;font-size:13px;">HOME</a>' +
+    '<a href="rank.html" style="color:#8888aa;margin:0 12px;font-family:monospace;font-size:13px;">RANK</a>' +
+    '<a href="guide.html" style="color:#ffffff;text-decoration:underline;text-decoration-color:#00aaff;margin:0 12px;font-family:monospace;font-size:13px;">GUIDE</a>' +
+    '</div></div>';
+</script>
+
+<div class="wrap">
+  <h1>RESEARCH GUIDE</h1>
+  <p style="color:#8888aa;font-size:12px;">How to read reports, what each signal means, and what this system cannot tell you.</p>
+
+  <!-- 1. How This System Works -->
+  <h2>1. How This System Works</h2>
+  <p>This system runs three times per trading day (10:30, 12:30, 14:30 ET) and once at close (16:10 ET). Each run collects news from free RSS feeds, fetches market data from Yahoo Finance and similar free-tier sources, runs a 20-module analytical pipeline, and ranks companies against each other using a composite confidence score.</p>
+  <p>No paid data sources are used. No predictions are made. No trades are taken. The output is a ranked list of screening opportunities for further human research.</p>
+
+  <!-- 2. Reading the Report -->
+  <h2>2. Reading the Report</h2>
+  <div class="def-grid">
+    <div class="def-item">
+      <div class="def-term">LOW RISK OPPORTUNITIES</div>
+      <div class="def-body">Risk score ≤ 40. Lower composite risk across debt, volatility, liquidity, and drawdown metrics.</div>
+    </div>
+    <div class="def-item">
+      <div class="def-term">MODERATE RISK OPPORTUNITIES</div>
+      <div class="def-body">Risk score > 40. One or more risk factors elevated. Check the "Why moderate risk" line for specifics.</div>
+    </div>
+    <div class="def-item">
+      <div class="def-term">■■ Warning notices</div>
+      <div class="def-body">Yellow-bordered boxes. Earnings approaching, price-fundamental divergence, or unusual volume. Read these carefully.</div>
+    </div>
+    <div class="def-item">
+      <div class="def-term">▲ / ▼ Arrows</div>
+      <div class="def-body">▲ = positive (price up, signal bullish). ▼ = negative (price down, signal bearish). – = flat/neutral.</div>
+    </div>
+  </div>
+
+  <h2>Verdict Labels</h2>
+  <div class="verdict-row"><span class="verdict-badge vr-now">RESEARCH NOW</span><span class="signal-desc">Confidence ≥ 70 and risk ≤ 35. Strong multi-signal alignment. Start research here.</span></div>
+  <div class="verdict-row"><span class="verdict-badge vr-watch">WATCH</span><span class="signal-desc">Confidence ≥ 55, or LOW RISK with confidence ≥ 45. Partial signals. Worth monitoring.</span></div>
+  <div class="verdict-row"><span class="verdict-badge vr-skip">SKIP</span><span class="signal-desc">Signals too weak or mixed. Not worth research time at this stage.</span></div>
+
+  <!-- 3. Confidence Score -->
+  <h2>3. Confidence Score</h2>
+  <p>The confidence score is a composite 0–100 metric. It is NOT a probability of profit. It measures how many independent signals align and how strongly.</p>
+  <div class="def-grid">
+    <div class="def-item"><div class="def-term">85–100</div><div class="def-body">Strong alignment across all signals. Prioritise for deeper research.</div></div>
+    <div class="def-item"><div class="def-term">70–84</div><div class="def-body">Most signals favorable. Verify key factors before acting.</div></div>
+    <div class="def-item"><div class="def-term">60–69</div><div class="def-body">Passes screening. Needs additional research.</div></div>
+    <div class="def-item"><div class="def-term">Below 60</div><div class="def-body">Weak signal. Approach with significant caution.</div></div>
+  </div>
+  <p>The score has three sub-components shown in the breakdown: <strong style="color:#e8e8f0;">Risk</strong> (0–100, lower is safer), <strong style="color:#e8e8f0;">Opp</strong> (opportunity score, 0–100), <strong style="color:#e8e8f0;">Agree</strong> (0–100, how many signals agree).</p>
+
+  <!-- 4. Trend Signals -->
+  <h2>4. Trend Signals (1M / 3M / 6M)</h2>
+  <p>Trend shows price return over 1 month, 3 months, and 6 months. All three positive = confirmed momentum across timeframes. Only one timeframe positive = early-stage or single-period event, not confirmed.</p>
+  <div class="signal-row"><span class="signal-key">▲ all three</span><span class="signal-desc">Sustained uptrend. Strongest trend signal.</span></div>
+  <div class="signal-row"><span class="signal-key">▲ 1M only</span><span class="signal-desc">Recent pop. Could be mean reversion or news reaction — verify.</span></div>
+  <div class="signal-row"><span class="signal-key">▼ all three</span><span class="signal-desc">Sustained downtrend. Risk of continued decline even with good fundamentals.</span></div>
+
+  <!-- 5. Valuation Signals -->
+  <h2>5. Valuation Signals</h2>
+  <div class="def-grid">
+    <div class="def-item">
+      <div class="def-term">Profit Margin</div>
+      <div class="def-body">Cents kept per $1 of revenue. Higher = more efficient. Compare within the same sector.</div>
+    </div>
+    <div class="def-item">
+      <div class="def-term">ROIC</div>
+      <div class="def-body">Return on Invested Capital. Above 15% = excellent. 8–15% = solid. Below 8% = weak business economics.</div>
+    </div>
+    <div class="def-item">
+      <div class="def-term">Debt-to-Equity (D/E)</div>
+      <div class="def-body">Ratio of debt to shareholder equity. Below 0.3 = very little debt. Above 1.5 = elevated. Above 2.5 = high.</div>
+    </div>
+    <div class="def-item">
+      <div class="def-term">FCF (Operating Cash Flow)</div>
+      <div class="def-body">Free Cash Flow proxy. Positive = business generates real cash. Negative = burning cash.</div>
+    </div>
+  </div>
+
+  <!-- 6. Signal Agreement -->
+  <h2>6. Signal Agreement</h2>
+  <p>Signal Agreement measures how many independent analysis modules reach the same directional conclusion. The model is multiplicative: one contradictory signal significantly reduces the overall score. An agreement score of 70+ means most of the 20 analysis modules agree.</p>
+
+  <!-- 7. Volume Signals -->
+  <h2>7. Volume Signals</h2>
+  <div class="signal-row"><span class="signal-key">Elevated bullish</span><span class="signal-desc">High volume on up days — institutional buying signal.</span></div>
+  <div class="signal-row"><span class="signal-key">Elevated bearish</span><span class="signal-desc">High volume on down days — distribution or panic signal.</span></div>
+  <div class="signal-row"><span class="signal-key">Unusually high</span><span class="signal-desc">Volume ≥ 2x average. Something is drawing attention. Investigate why.</span></div>
+  <div class="signal-row"><span class="signal-key">Low activity</span><span class="signal-desc">Volume &lt; 0.8x average. Less conviction behind any price move.</span></div>
+
+  <!-- 8. Risk Score -->
+  <h2>8. Risk Score</h2>
+  <p>Composite 0–100 risk measure. Lower is safer.</p>
+  <div class="def-grid">
+    <div class="def-item"><div class="def-term">Debt (D/E)</div><div class="def-body">High leverage amplifies losses in downturns.</div></div>
+    <div class="def-item"><div class="def-term">Volatility (Beta)</div><div class="def-body">High beta = larger price swings in both directions.</div></div>
+    <div class="def-item"><div class="def-term">Liquidity</div><div class="def-body">Low average daily volume = harder to exit large positions quickly.</div></div>
+    <div class="def-item"><div class="def-term">EPS stability</div><div class="def-body">Inconsistent earnings make valuation unreliable.</div></div>
+    <div class="def-item"><div class="def-term">Drawdown</div><div class="def-body">Large distance from 90-day high signals price weakness.</div></div>
+    <div class="def-item"><div class="def-term">Margin</div><div class="def-body">Thin margins provide less buffer against cost shocks.</div></div>
+  </div>
+
+  <!-- 9. Drawdown -->
+  <h2>9. Drawdown</h2>
+  <p>Drawdown measures how far the current price is below the 90-day high. A 20%+ drawdown is flagged as a warning even if other metrics look strong — it means the stock has already fallen significantly and the catalyst may have already passed, or downward pressure is ongoing.</p>
+
+  <!-- 10. What This System Cannot Do -->
+  <h2>10. What This System Cannot Do</h2>
+  <div class="warn-box">
+    <strong>Honest free-tier ceiling:</strong>
+    <p>Free-tier APIs provide delayed, sampled, or limited-depth data. This system cannot access real-time tick data, institutional order flow, insider filings, earnings call transcripts, or premium fundamental databases. All values are best-effort approximations that may be stale by hours.</p>
+    <p>This system cannot predict whether a stock will go up or down. It identifies screening opportunities for further human research only.</p>
+  </div>
+
+  <div class="disclaimer">
+    Not investment advice. Free-tier data only. Always verify findings through independent sources before making any financial decision. Past system signals are not indicative of future performance.
+  </div>
+</div>
+</body>
+</html>

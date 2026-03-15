@@ -28,6 +28,11 @@ from reports.sentence_templates import (
     render_sector_plain,
     confidence_label,
     risk_section,
+    debt_label,
+    roic_label,
+    fcf_direction_label,
+    score_meaning,
+    summary_verdict,
     TODAY_STORY_SENTENCE,
     EARNINGS_WARNING,
     EARNINGS_WARNING_IMMINENT,
@@ -37,6 +42,11 @@ from reports.sentence_templates import (
     VOLUME_LINE,
     CONFIDENCE_LINE,
     DIRECTION_PLAIN,
+    TREND_LINE_FULL,
+    TREND_LINE_PARTIAL,
+    FINANCIAL_HEALTH_EXTENDED,
+    CONFIDENCE_BREAKDOWN,
+    SUMMARY_SCORE_LINE,
 )
 
 log = get_logger('report_builder')
@@ -140,14 +150,63 @@ def _enrich_company_for_template(c: dict) -> dict:
     company_name = c.get('company_name', c.get('ticker', ''))
     intro = render_company_intro(company_name, sector, direction, event_type)
 
-    # Trend sentence — use RAM and MTF labels
-    trend_label = ram.get('label', 'trending')
-    momentum_label = c.get('mtf', {}).get('label', 'no clear direction')
+    # ── §FIX-2: Trend line with actual timeframe data ───────────────────────
+    ram_label = ram.get('label', 'no trend data')
+    mtf       = c.get('mtf', {})
+    r1m       = mtf.get('r1m')
+    r3m       = mtf.get('r3m')
+    r6m       = mtf.get('r6m')
 
-    # Financial health
+    def _fmt_ret(v):
+        if v is None: return 'n/a'
+        if v > 0:   return f'\u25b2{v:.1f}%'
+        if v < 0:   return f'\u25bc{abs(v):.1f}%'
+        return '\u20130.0%'   # flat — neither up nor down arrow
+
+    if r1m is not None and r3m is not None and r6m is not None:
+        trend_label = TREND_LINE_FULL.format(
+            RAM_LABEL = ram_label,
+            R1M       = _fmt_ret(r1m),
+            R3M       = _fmt_ret(r3m),
+            R6M       = _fmt_ret(r6m),
+        )
+    elif r3m is not None:
+        trend_label = TREND_LINE_PARTIAL.format(
+            RAM_LABEL = ram_label,
+            R3M       = _fmt_ret(r3m),
+        )
+    else:
+        trend_label = ram_label
+
+    momentum_label = mtf.get('label', 'no clear direction')
+
+    # ── §FIX-3: Extended financial health ───────────────────────────────────
     margin_pct  = fin.get('profit_margin')
     de_ratio    = fin.get('debt_to_equity')
     fin_health  = render_financial_health(margin_pct, de_ratio)
+
+    # Extended financial health — use verified key names from financial_parser.py
+    # financial_parser.py confirmed output keys: operating_cash_flow, profit_margin,
+    # debt_to_equity, revenue_ttm, net_income_ttm, eps_ttm, beta, pe_ratio
+    # NOTE: ROIC is NOT returned by financial_parser.py — it is not in the dict.
+    # Compute a proxy from available data if possible, otherwise skip.
+    ocf_val  = fin.get('operating_cash_flow')   # operating cash flow (confirmed key)
+
+    # ROIC proxy: not directly available. Use opportunity_model output if present.
+    roic_val = c.get('roic_proxy')   # set by opportunity_model if computed, else None
+
+    # FCF proxy: operating_cash_flow is the closest available free-tier equivalent
+    fcf_val  = ocf_val
+
+    if margin_pct is not None and fcf_val is not None:
+        fin_health = FINANCIAL_HEALTH_EXTENDED.format(
+            MARGIN_PCT = f'{margin_pct:.0f}',
+            DEBT_LABEL = debt_label(de_ratio),
+            ROIC       = roic_label(roic_val),
+            FCF_LABEL  = fcf_direction_label(fcf_val),
+        )
+    # If operating_cash_flow also unavailable, fin_health stays as set by
+    # render_financial_health() above — do not override it.
 
     # Risk section
     section     = risk_section(risk_score)
@@ -164,10 +223,16 @@ def _enrich_company_for_template(c: dict) -> dict:
     vol_label  = ev.get('label', 'normal trading activity')
     volume_line = VOLUME_LINE.format(VOLUME_LABEL=vol_label.capitalize())
 
-    # Confidence line
-    conf_line = CONFIDENCE_LINE.format(
-        CONFIDENCE_LABEL=conf_lbl,
-        CONFIDENCE_SCORE=int(conf_score),
+    # ── §FIX-3: Confidence breakdown line ───────────────────────────────────
+    agr_raw  = c.get('signal_agreement', {}).get('agreement_score', 0)
+    agr_int  = int(agr_raw * 100)   # scaled to 0-100 for display only
+    # agr_raw stays in 0-1 range for threshold checks below in §FIX-4
+    conf_line = CONFIDENCE_BREAKDOWN.format(
+        CONFIDENCE_LABEL = conf_lbl,
+        CONFIDENCE_SCORE = int(conf_score),
+        RISK_INT         = int(risk_score),
+        OPP_INT          = int(c.get('opportunity_score', 0)),
+        AGR_INT          = agr_int,
     )
 
     # Optional notice lines (earnings, divergence, unusual volume, drawdown)
@@ -191,6 +256,42 @@ def _enrich_company_for_template(c: dict) -> dict:
     if dd_pct is not None and dd_pct > 20:
         notices.append(DRAWDOWN_NOTE.format(DRAWDOWN_PCT=f'{dd_pct:.0f}'))
 
+    # ── §FIX-4: Summary block ────────────────────────────────────────────
+    summary_score_line = SUMMARY_SCORE_LINE.format(
+        SCORE         = int(conf_score),
+        SCORE_MEANING = score_meaning(int(conf_score)),
+    )
+
+    summary_positives = []
+    # ram dict confirmed keys from risk_adjusted_momentum.py:
+    # ram_score, raw_value, return_3m, volatility, label
+    ram_raw = ram.get('raw_value')   # float or None — always use .get(), never bracket
+    if ram_raw is not None and ram_raw > 1:
+        summary_positives.append(f'[+] {ram_label}')
+    if c.get('opportunity_score', 0) > 60:
+        summary_positives.append('[+] Strong fundamental and momentum signals')
+    elif fin.get('profit_margin', 0) > 20:
+        # use .get() with default — profit_margin may be None
+        pm = fin.get('profit_margin', 0)
+        if pm:
+            summary_positives.append(f'[+] Solid profit margin ({pm:.0f}%)')
+    if agr_raw > 0.25:   # agr_raw is 0-1 scale — 0.25 means 25% agreement strength
+        summary_positives.append('[+] Multiple independent signals aligned')
+
+    summary_risks = []
+    dd_pct_val = dd.get('drawdown_pct')
+    if dd_pct_val and dd_pct_val > 20:
+        summary_risks.append(f'[-] {dd_pct_val:.0f}% below 90-day high')
+    if de_ratio and de_ratio > 1.5:
+        summary_risks.append('[-] Elevated debt for this sector')
+    if c.get('risk_score', 0) > 50:
+        summary_risks.append('[-] Risk score above moderate threshold')
+    vol_ratio = ev.get('volume_ratio')
+    if vol_ratio is not None and vol_ratio < 0.8:
+        summary_risks.append('[-] Lower trading activity than usual')
+
+    summary_verdict_val = summary_verdict(conf_score, risk_score, section)
+
     return {
         **c,
         'display_name':      company_name,
@@ -208,6 +309,10 @@ def _enrich_company_for_template(c: dict) -> dict:
         'moderate_risk_text': mod_risk_text,
         'notices':           notices,
         'risk_score_int':    int(risk_score),
+        'summary_score_line': summary_score_line,
+        'summary_positives':  summary_positives[:2],
+        'summary_risks':      summary_risks[:2],
+        'summary_verdict':    summary_verdict_val,
     }
 
 

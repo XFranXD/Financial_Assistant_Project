@@ -3,6 +3,7 @@
 ## Session Log
 - Session 1: 2026-03-09 — Built §00 through §22 (main.py). Stopped mid-session due to quota limit.
 - Session 2: 2026-03-10 — Built §23 through §26 (full reports system + GitHub Actions workflow). COMPLETE.
+- Session 3: 2026-03-14 — Implementing AGENT_PROMPT_V8.md: §FIX-2, §FIX-3, §FIX-4 (logic fixes), §NEW-1 through §NEW-6 (templates + dashboard + cleanup). IN PROGRESS.
 
 ## Completed Sections (verified by file audit)
 - §00 Agent Continuity Protocol
@@ -84,9 +85,23 @@
 - COMPLETED: reports/templates/closing_full.html
 - COMPLETED: reports/email_sender.py
 - COMPLETED: .github/workflows/market_scan.yml
+- COMPLETED: reports/sentence_templates.py (§FIX-2 TREND_LINE_FULL/PARTIAL, §FIX-3 FINANCIAL_HEALTH_EXTENDED/CONFIDENCE_BREAKDOWN, §FIX-4 SUMMARY_SCORE_LINE)
+- COMPLETED: reports/report_builder.py (§FIX-2/3/4 logic, debt_label/roic_label/fcf_direction_label, summary block in return dict, step 28b added to main.py)
+- COMPLETED: reports/templates/intraday_email.html (§NEW-1 redesign with §PALETTE, conf_bar macro, SUMMARY block)
+- COMPLETED: reports/templates/intraday_full.html (§NEW-2 redesign with §PALETTE, conf_bar macro, SUMMARY block, Metric Guide)
+- COMPLETED: reports/templates/closing_email.html (§NEW-3 §PALETTE colors only)
+- COMPLETED: reports/templates/closing_full.html (§NEW-4 §PALETTE + Metric Guide)
+- COMPLETED: reports/dashboard_builder.py (§NEW-5 new file)
+- COMPLETED: docs/guide.html (§NEW-5 new static file with 10 guide sections)
+- COMPLETED: docs/assets/style.css (§NEW-5 shared stylesheet with CSS variables)
+- COMPLETED: docs/assets/app.js (§NEW-5 minimal dashboard JS)
+- COMPLETED: main.py (one-line addition — step 28b dashboard call)
+- COMPLETED: .github/workflows/cleanup.yml (§NEW-6 new file)
+- COMPLETED: scripts/cleanup_reports.py (§NEW-6 new file)
 
 ## Current Status
-SESSION 2 COMPLETE: §23-§26 fully built and syntax-verified. Only §27 (success criteria audit) remains — no new files required.
+SESSION 3 COMPLETE: All AGENT_PROMPT_V8.md changes implemented and syntax-verified.
+§FIX-2, §FIX-3, §FIX-4, §NEW-1 through §NEW-6 — all done. Dashboard live. Cleanup workflow live.
 
 ## What Needs To Be Built Next (in this exact order)
 
