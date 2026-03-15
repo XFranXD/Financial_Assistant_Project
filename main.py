@@ -55,7 +55,7 @@ def _determine_slot() -> str | None:
     # Match within a 10-minute window of each slot
     for slot in RUN_SLOTS:
         sh, sm = map(int, slot.split(':'))
-        if h == sh and abs(m - sm) <= 10:
+        if h == sh and abs(m - sm) <= 45:
             return slot
     return None
 
