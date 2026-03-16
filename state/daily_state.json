@@ -1,9 +1,12 @@
 {
   "date": "2026-03-16",
   "reported_companies": [
-    "CTRA",
     "EQT",
-    "RRC"
+    "RRC",
+    "DVN",
+    "KMI",
+    "XOM",
+    "CTRA"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -16,8 +19,12 @@
       "status": "complete"
     },
     "12:30": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "KMI",
+        "DVN",
+        "XOM"
+      ],
+      "status": "complete"
     },
     "14:30": {
       "companies": [],
@@ -31,21 +38,21 @@
   "failed_tickers": [],
   "api_failures": {},
   "sector_scores_today": {
-    "technology": 0.04,
-    "healthcare": -2.725,
-    "financials": -2.063,
-    "consumer_discretionary": -1.845,
-    "consumer_staples": -1.749,
-    "industrials": -3.747,
-    "materials": -2.85,
-    "energy": 2.792,
-    "utilities": 0.733,
-    "real_estate": -1.289,
-    "communication_services": -1.833,
-    "semiconductors": 0.148,
-    "defense": -4.495
+    "technology": -0.22,
+    "healthcare": -2.865,
+    "financials": -2.487,
+    "consumer_discretionary": -2.272,
+    "consumer_staples": -1.905,
+    "industrials": -4.238,
+    "materials": -3.154,
+    "energy": 2.587,
+    "utilities": 0.313,
+    "real_estate": -1.32,
+    "communication_services": -2.083,
+    "semiconductors": -0.159,
+    "defense": -5.137
   },
-  "breadth_score_today": 0.8,
+  "breadth_score_today": 0.662,
   "sector_breadth_ma_today": {
     "technology": {
       "breadth_ma_score": 0.0,
@@ -58,8 +65,8 @@
       "label": "sector is structurally weak"
     },
     "healthcare": {
-      "breadth_ma_score": 0.5,
-      "pct": 50.0,
+      "breadth_ma_score": 0.4,
+      "pct": 40.0,
       "label": "mixed signals"
     },
     "financials": {
@@ -73,8 +80,8 @@
       "label": "mixed signals"
     },
     "consumer_staples": {
-      "breadth_ma_score": 0.7,
-      "pct": 70.0,
+      "breadth_ma_score": 0.6,
+      "pct": 60.0,
       "label": "healthy participation"
     },
     "industrials": {
@@ -117,18 +124,18 @@
   "event_scores_today": {},
   "indices_today": {
     "dow": {
-      "value": 47067.48,
-      "change_pct": 1.09,
+      "value": 46860.73,
+      "change_pct": 0.65,
       "label": "Rising"
     },
     "sp500": {
-      "value": 6712.92,
-      "change_pct": 1.22,
+      "value": 6688.48,
+      "change_pct": 0.85,
       "label": "Rising"
     },
     "nasdaq": {
-      "value": 22425.81,
-      "change_pct": 1.45,
+      "value": 22349.59,
+      "change_pct": 1.1,
       "label": "Rising"
     }
   }
