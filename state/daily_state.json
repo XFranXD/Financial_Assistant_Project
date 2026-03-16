@@ -1,15 +1,18 @@
 {
   "date": "2026-03-16",
   "reported_companies": [
+    "APA",
+    "AR",
+    "CNX",
+    "EOG",
+    "RRC",
+    "SM",
+    "DVN",
+    "CTRA",
     "EQT",
     "XOM",
-    "COP",
-    "AR",
-    "CTRA",
-    "DVN",
-    "CNX",
     "KMI",
-    "RRC"
+    "COP"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -38,28 +41,32 @@
       "status": "complete"
     },
     "16:10": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "SM",
+        "EOG",
+        "APA"
+      ],
+      "status": "complete"
     }
   },
   "failed_tickers": [],
   "api_failures": {},
   "sector_scores_today": {
-    "technology": -0.009,
-    "healthcare": -2.669,
-    "financials": -2.364,
-    "consumer_discretionary": -1.927,
-    "consumer_staples": -1.764,
-    "industrials": -3.852,
-    "materials": -2.737,
-    "energy": 2.786,
-    "utilities": 0.653,
-    "real_estate": -1.018,
-    "communication_services": -1.773,
-    "semiconductors": -0.022,
-    "defense": -4.588
+    "technology": -0.379,
+    "healthcare": -2.636,
+    "financials": -2.327,
+    "consumer_discretionary": -2.005,
+    "consumer_staples": -1.816,
+    "industrials": -3.865,
+    "materials": -2.73,
+    "energy": 2.691,
+    "utilities": 0.796,
+    "real_estate": -1.28,
+    "communication_services": -1.699,
+    "semiconductors": -0.633,
+    "defense": -4.453
   },
-  "breadth_score_today": 0.792,
+  "breadth_score_today": 0.785,
   "sector_breadth_ma_today": {
     "technology": {
       "breadth_ma_score": 0.0,
@@ -117,9 +124,9 @@
       "label": "sector is genuinely strong"
     },
     "real_estate": {
-      "breadth_ma_score": 0.7,
-      "pct": 70.0,
-      "label": "healthy participation"
+      "breadth_ma_score": 0.5,
+      "pct": 50.0,
+      "label": "mixed signals"
     },
     "communication_services": {
       "breadth_ma_score": 0.6,
@@ -131,18 +138,18 @@
   "event_scores_today": {},
   "indices_today": {
     "dow": {
-      "value": 46983.24,
-      "change_pct": 0.91,
+      "value": 46946.41,
+      "change_pct": 0.83,
       "label": "Rising"
     },
     "sp500": {
-      "value": 6706.78,
-      "change_pct": 1.12,
+      "value": 6699.38,
+      "change_pct": 1.01,
       "label": "Rising"
     },
     "nasdaq": {
-      "value": 22413.89,
-      "change_pct": 1.4,
+      "value": 22374.18,
+      "change_pct": 1.22,
       "label": "Rising"
     }
   }
