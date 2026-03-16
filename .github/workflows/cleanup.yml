@@ -16,6 +16,9 @@ jobs:
       - uses: actions/setup-python@v5
         with: { python-version: '3.11' }
 
+      - name: Install dependencies
+        run: pip install pytz
+
       - name: Run cleanup
         run: python scripts/cleanup_reports.py
 
