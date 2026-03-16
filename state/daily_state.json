@@ -2,11 +2,14 @@
   "date": "2026-03-16",
   "reported_companies": [
     "EQT",
-    "RRC",
-    "DVN",
-    "KMI",
     "XOM",
-    "CTRA"
+    "COP",
+    "AR",
+    "CTRA",
+    "DVN",
+    "CNX",
+    "KMI",
+    "RRC"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -27,8 +30,12 @@
       "status": "complete"
     },
     "14:30": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "COP",
+        "AR",
+        "CNX"
+      ],
+      "status": "complete"
     },
     "16:10": {
       "companies": [],
@@ -38,21 +45,21 @@
   "failed_tickers": [],
   "api_failures": {},
   "sector_scores_today": {
-    "technology": -0.22,
-    "healthcare": -2.865,
-    "financials": -2.487,
-    "consumer_discretionary": -2.272,
-    "consumer_staples": -1.905,
-    "industrials": -4.238,
-    "materials": -3.154,
-    "energy": 2.587,
-    "utilities": 0.313,
-    "real_estate": -1.32,
-    "communication_services": -2.083,
-    "semiconductors": -0.159,
-    "defense": -5.137
+    "technology": -0.009,
+    "healthcare": -2.669,
+    "financials": -2.364,
+    "consumer_discretionary": -1.927,
+    "consumer_staples": -1.764,
+    "industrials": -3.852,
+    "materials": -2.737,
+    "energy": 2.786,
+    "utilities": 0.653,
+    "real_estate": -1.018,
+    "communication_services": -1.773,
+    "semiconductors": -0.022,
+    "defense": -4.588
   },
-  "breadth_score_today": 0.662,
+  "breadth_score_today": 0.792,
   "sector_breadth_ma_today": {
     "technology": {
       "breadth_ma_score": 0.0,
@@ -65,8 +72,8 @@
       "label": "sector is structurally weak"
     },
     "healthcare": {
-      "breadth_ma_score": 0.4,
-      "pct": 40.0,
+      "breadth_ma_score": 0.5,
+      "pct": 50.0,
       "label": "mixed signals"
     },
     "financials": {
@@ -90,8 +97,8 @@
       "label": "healthy participation"
     },
     "defense": {
-      "breadth_ma_score": 0.3,
-      "pct": 30.0,
+      "breadth_ma_score": 0.4,
+      "pct": 40.0,
       "label": "mixed signals"
     },
     "energy": {
@@ -110,9 +117,9 @@
       "label": "sector is genuinely strong"
     },
     "real_estate": {
-      "breadth_ma_score": 0.5,
-      "pct": 50.0,
-      "label": "mixed signals"
+      "breadth_ma_score": 0.7,
+      "pct": 70.0,
+      "label": "healthy participation"
     },
     "communication_services": {
       "breadth_ma_score": 0.6,
@@ -124,18 +131,18 @@
   "event_scores_today": {},
   "indices_today": {
     "dow": {
-      "value": 46860.73,
-      "change_pct": 0.65,
+      "value": 46983.24,
+      "change_pct": 0.91,
       "label": "Rising"
     },
     "sp500": {
-      "value": 6688.48,
-      "change_pct": 0.85,
+      "value": 6706.78,
+      "change_pct": 1.12,
       "label": "Rising"
     },
     "nasdaq": {
-      "value": 22349.59,
-      "change_pct": 1.1,
+      "value": 22413.89,
+      "change_pct": 1.4,
       "label": "Rising"
     }
   }
