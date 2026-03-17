@@ -1,18 +1,9 @@
 {
-  "date": "2026-03-16",
+  "date": "2026-03-17",
   "reported_companies": [
-    "APA",
-    "AR",
-    "CNX",
-    "EOG",
-    "RRC",
-    "SM",
-    "DVN",
     "CTRA",
-    "EQT",
-    "XOM",
     "KMI",
-    "COP"
+    "EQT"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -20,51 +11,39 @@
       "companies": [
         "CTRA",
         "EQT",
-        "RRC"
+        "KMI"
       ],
       "status": "complete"
     },
     "12:30": {
-      "companies": [
-        "KMI",
-        "DVN",
-        "XOM"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     },
     "14:30": {
-      "companies": [
-        "COP",
-        "AR",
-        "CNX"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     },
     "16:10": {
-      "companies": [
-        "SM",
-        "EOG",
-        "APA"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     }
   },
   "failed_tickers": [],
   "api_failures": {},
   "sector_scores_today": {
-    "technology": -0.379,
-    "healthcare": -2.636,
-    "financials": -2.327,
-    "consumer_discretionary": -2.005,
-    "consumer_staples": -1.816,
-    "industrials": -3.865,
-    "materials": -2.73,
-    "energy": 2.691,
-    "utilities": 0.796,
-    "real_estate": -1.28,
-    "communication_services": -1.699,
-    "semiconductors": -0.633,
-    "defense": -4.453
+    "technology": -0.382,
+    "healthcare": -2.625,
+    "financials": -2.33,
+    "consumer_discretionary": -2.024,
+    "consumer_staples": -1.795,
+    "industrials": -3.879,
+    "materials": -2.723,
+    "energy": 2.689,
+    "utilities": 0.815,
+    "real_estate": -1.294,
+    "communication_services": -1.702,
+    "semiconductors": -0.635,
+    "defense": -4.51
   },
   "breadth_score_today": 0.785,
   "sector_breadth_ma_today": {
@@ -152,5 +131,10 @@
       "change_pct": 1.22,
       "label": "Rising"
     }
+  },
+  "today_scores": {
+    "CTRA": 73.6,
+    "EQT": 69.6,
+    "KMI": 66.6
   }
 }
