@@ -10,9 +10,25 @@ tool only.
 
 # ── Sentence templates (uppercase placeholders replaced at render time) ─────
 
-COMPANY_INTRO = (
+# Multiple intro variants — selected by report_builder based on per-company signals
+COMPANY_INTRO_SECTOR_LEADER = (
+    "{COMPANY} appeared today as a top-ranked {SECTOR} stock — "
+    "strong sector momentum and its own price trend triggered the opportunity model."
+)
+
+COMPANY_INTRO_MOMENTUM = (
+    "{COMPANY} appeared today because its upward price trend aligned with "
+    "{SECTOR} sector strength detected in today's news signals."
+)
+
+COMPANY_INTRO_FUNDAMENTALS = (
+    "{COMPANY} appeared today because solid fundamental signals combined with "
+    "{SECTOR} sector momentum pushed it above the opportunity threshold."
+)
+
+COMPANY_INTRO_STANDARD = (
     "{COMPANY} appeared today because the {SECTOR} sector is seeing "
-    "{DIRECTION} movement following news about {EVENT_PLAIN}."
+    "{DIRECTION} movement and this stock passed all screening gates."
 )
 
 TREND_SENTENCE = (
@@ -123,6 +139,11 @@ MARKET_PULSE_LINE = (
 
 TODAY_STORY_SENTENCE = (
     "{SECTOR_PLAIN} stocks are {DIRECTION_PLAIN} today following news about {EVENT_PLAIN}."
+)
+
+TODAY_STORY_SENTENCE_SIGNALS = (
+    "{SECTOR_PLAIN} stocks are {DIRECTION_PLAIN} today — "
+    "the sector scanner detected {SIGNAL_COUNT} news signals with a momentum score of {SECTOR_SCORE:.1f}."
 )
 
 CLOSING_WATCH_EARNINGS = (
@@ -314,11 +335,10 @@ def render_sector_plain(sector: str) -> str:
 
 
 def render_company_intro(company: str, sector: str, direction: str, event_type: str) -> str:
-    return COMPANY_INTRO.format(
-        COMPANY     = company,
-        SECTOR      = render_sector_plain(sector),
-        DIRECTION   = DIRECTION_PLAIN.get(direction, direction),
-        EVENT_PLAIN = render_event_plain(event_type),
+    return COMPANY_INTRO_STANDARD.format(
+        COMPANY   = company,
+        SECTOR    = render_sector_plain(sector),
+        DIRECTION = DIRECTION_PLAIN.get(direction, direction),
     )
 
 

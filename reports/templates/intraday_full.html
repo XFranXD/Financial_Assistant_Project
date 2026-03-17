@@ -109,7 +109,7 @@
     <div class="card-grid">
       {% for c in low_risk %}
       <div class="card">
-        <div class="card-title">{{ c.display_name }} <span class="tk">({{ c.ticker }})</span><span class="sec">— {{ c.sector_plain }}</span></div>
+        <div class="card-title">{{ c.display_name }} <span class="tk">({{ c.ticker }})</span><span class="sec">— {{ c.sector_plain }}{% if c.industry_label %} ({{ c.industry_label }}){% endif %}</span></div>
         <div class="row"><span class="lbl">■ Why today:</span><span class="val">{{ c.intro_sentence }}</span></div>
         <div class="row"><span class="lbl">■ Trend:</span><span class="val">{{ c.trend_label }}</span></div>
         <div class="row"><span class="lbl">■ Price:</span><span class="val">{{ c.price_line }}</span></div>
@@ -153,7 +153,7 @@
     <div class="card-grid">
       {% for c in moderate_risk %}
       <div class="card">
-        <div class="card-title">{{ c.display_name }} <span class="tk">({{ c.ticker }})</span><span class="sec">— {{ c.sector_plain }}</span></div>
+        <div class="card-title">{{ c.display_name }} <span class="tk">({{ c.ticker }})</span><span class="sec">— {{ c.sector_plain }}{% if c.industry_label %} ({{ c.industry_label }}){% endif %}</span></div>
         <div class="row"><span class="lbl">■ Why today:</span><span class="val">{{ c.intro_sentence }}</span></div>
         <div class="row"><span class="lbl">■ Trend:</span><span class="val">{{ c.trend_label }}</span></div>
         <div class="row"><span class="lbl">■ Price:</span><span class="val">{{ c.price_line }}</span></div>

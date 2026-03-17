@@ -20,7 +20,6 @@ from jinja2 import Environment, FileSystemLoader, select_autoescape
 from utils.logger import get_logger
 from reports.commodity_signal import get_commodity_signal
 from reports.sentence_templates import (
-    render_company_intro,
     render_financial_health,
     render_moderate_risk_block,
     render_market_pulse_line,
@@ -35,6 +34,7 @@ from reports.sentence_templates import (
     score_meaning,
     summary_verdict,
     TODAY_STORY_SENTENCE,
+    TODAY_STORY_SENTENCE_SIGNALS,
     EARNINGS_WARNING,
     EARNINGS_WARNING_IMMINENT,
     DIVERGENCE_WARNING,
@@ -48,6 +48,10 @@ from reports.sentence_templates import (
     FINANCIAL_HEALTH_EXTENDED,
     CONFIDENCE_BREAKDOWN,
     SUMMARY_SCORE_LINE,
+    COMPANY_INTRO_SECTOR_LEADER,
+    COMPANY_INTRO_MOMENTUM,
+    COMPANY_INTRO_FUNDAMENTALS,
+    COMPANY_INTRO_STANDARD,
 )
 
 log = get_logger('report_builder')
@@ -88,8 +92,8 @@ def _build_market_pulse(indices: dict) -> list[str]:
 
 def _build_story_sentences(all_articles: list, sector_scores: dict, confirmed_sectors: list) -> list[str]:
     """
-    Generates 2-3 plain English sentences describing today's market story.
-    Uses TODAY_STORY_SENTENCE template. No free text.
+    Generates plain English sentences describing today's market story.
+    Uses signal count and sector score when no specific event type is matched.
     """
     sentences = []
     seen_sectors = set()
@@ -98,23 +102,34 @@ def _build_story_sentences(all_articles: list, sector_scores: dict, confirmed_se
         if sector in seen_sectors:
             continue
         seen_sectors.add(sector)
-        score_data  = sector_scores.get(sector, {})
-        direction   = 'positive' if score_data.get('score', 0) >= 0 else 'negative'
-        # Derive event plain from sector name as best effort
-        event_plain = render_event_plain('_unknown')
-        # Try to find matching event from articles keywords
-        for article in all_articles[:20]:
-            text = (article.get('title', '') + ' ' + article.get('summary', '')).lower()
-            if sector.replace('_', ' ') in text or sector in text:
-                # Use a generic but accurate sentence
-                event_plain = 'recent market developments'
-                break
+        score_data      = sector_scores.get(sector, {})
+        score_val       = score_data.get('score', 0)
+        direction       = 'positive' if score_val >= 0 else 'negative'
+        direction_plain = DIRECTION_PLAIN.get(direction, 'moving')
+        sector_plain    = render_sector_plain(sector)
 
-        sentences.append(TODAY_STORY_SENTENCE.format(
-            SECTOR_PLAIN  = render_sector_plain(sector),
-            DIRECTION_PLAIN = DIRECTION_PLAIN.get(direction, 'moving'),
-            EVENT_PLAIN   = event_plain,
-        ))
+        # Count articles that mention this sector
+        sector_keyword = sector.replace('_', ' ')
+        signal_count = sum(
+            1 for a in all_articles
+            if sector_keyword in (a.get('title', '') + ' ' + a.get('summary', '')).lower()
+            or sector in (a.get('title', '') + ' ' + a.get('summary', '')).lower()
+        )
+
+        # Use signal-count variant when we have meaningful data, fallback otherwise
+        if signal_count >= 2 and score_val > 0:
+            sentences.append(TODAY_STORY_SENTENCE_SIGNALS.format(
+                SECTOR_PLAIN    = sector_plain,
+                DIRECTION_PLAIN = direction_plain,
+                SIGNAL_COUNT    = signal_count,
+                SECTOR_SCORE    = score_val,
+            ))
+        else:
+            sentences.append(TODAY_STORY_SENTENCE.format(
+                SECTOR_PLAIN    = sector_plain,
+                DIRECTION_PLAIN = direction_plain,
+                EVENT_PLAIN     = 'positive sector news signals',
+            ))
 
     if not sentences:
         sentences.append(
@@ -147,9 +162,34 @@ def _enrich_company_for_template(c: dict) -> dict:
     change_pct = fin.get('price_change_pct')
     price_line = render_price_line(price, change_pct)
 
-    # Company intro
-    company_name = c.get('company_name', c.get('ticker', ''))
-    intro = render_company_intro(company_name, sector, direction, event_type)
+    # Company intro — variant selected by per-company signals
+    company_name     = c.get('company_name', c.get('ticker', ''))
+    sector_plain_str = render_sector_plain(sector)
+    final_rank       = c.get('final_rank', 99)
+    conf_score_v     = c.get('composite_confidence', 0)
+    opp_score_v      = c.get('opportunity_score', 0)
+
+    if final_rank == 1:
+        intro = COMPANY_INTRO_SECTOR_LEADER.format(
+            COMPANY = company_name,
+            SECTOR  = sector_plain_str,
+        )
+    elif opp_score_v >= 70 and conf_score_v >= 65:
+        intro = COMPANY_INTRO_FUNDAMENTALS.format(
+            COMPANY = company_name,
+            SECTOR  = sector_plain_str,
+        )
+    elif c.get('ram', {}).get('raw_value', 0) and c.get('ram', {}).get('raw_value', 0) > 1:
+        intro = COMPANY_INTRO_MOMENTUM.format(
+            COMPANY = company_name,
+            SECTOR  = sector_plain_str,
+        )
+    else:
+        intro = COMPANY_INTRO_STANDARD.format(
+            COMPANY   = company_name,
+            SECTOR    = sector_plain_str,
+            DIRECTION = DIRECTION_PLAIN.get(direction, 'moving'),
+        )
 
     # ── §FIX-2: Trend line with actual timeframe data ───────────────────────
     ram_label = ram.get('label', 'no trend data')
@@ -297,6 +337,7 @@ def _enrich_company_for_template(c: dict) -> dict:
         **c,
         'display_name':      company_name,
         'sector_plain':      render_sector_plain(sector),
+        'industry_label':    c.get('financials', {}).get('industry', ''),
         'intro_sentence':    intro,
         'trend_label':       trend_label,
         'momentum_label':    momentum_label,
@@ -349,7 +390,37 @@ def build_intraday_report(
     # ── Commodity signal (Energy context, narrative only) ─────────────────
     commodity_summary = ''
     if any(c.get('sector') == 'energy' for c in companies):
-        commodity_summary = get_commodity_signal().get('summary', '')
+        commodity_data    = get_commodity_signal()
+        commodity_summary = commodity_data.get('summary', '')
+
+        # Interpretation: flag mismatch between commodity trend and candidate industries
+        if commodity_summary:
+            industries_present = [
+                c.get('financials', {}).get('industry', '').lower()
+                for c in companies if c.get('sector') == 'energy'
+            ]
+            gas_producers_present = any(
+                'gas' in ind for ind in industries_present
+            )
+            oil_producers_present = any(
+                'oil' in ind or 'exploration' in ind or 'crude' in ind
+                for ind in industries_present
+            )
+
+            interpretation = ''
+            if gas_producers_present and commodity_data.get('gas_trend') == 'negative':
+                interpretation = (
+                    'Note: natural gas prices are declining — '
+                    'gas producer strength may reflect sector rotation rather than commodity support.'
+                )
+            elif oil_producers_present and commodity_data.get('crude_trend') == 'negative':
+                interpretation = (
+                    'Note: WTI crude is declining — '
+                    'oil producer strength may reflect sector rotation rather than commodity support.'
+                )
+
+            if interpretation:
+                commodity_summary += ' ' + interpretation
 
     # ── Enrich all companies with display fields ──────────────────────────
     enriched = [_enrich_company_for_template(c) for c in companies]

@@ -108,8 +108,8 @@
 - COMPLETED: main.py (§FIX 7/8/9 V9 — Step 27b industry dedup, Step 27c score stability, Step 32 today_scores save)
 
 ## Current Status
-SESSION 4 COMPLETE: All AGENT_PROMPT_V9.md changes implemented and syntax-verified.
-§FIX 1 through §FIX 9 — all done. Commodity signal live. Industry dedup live. Score stability filter live.
+SESSION 5 IN PROGRESS: Implementing AGENT_PROMPT_V10.md.
+NOW WORKING ON: reports/sentence_templates.py (§FIX 1)
 
 ## What Needs To Be Built Next (in this exact order)
 

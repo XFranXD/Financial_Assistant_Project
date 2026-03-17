@@ -85,7 +85,7 @@
     <div class="section-label">■ LOW RISK OPPORTUNITIES</div>
     {% for c in low_risk %}
     <div class="card">
-      <div class="card-name">■■■ {{ c.display_name }} <span class="tk">({{ c.ticker }})</span> — {{ c.sector_plain }} ■■■</div>
+      <div class="card-name">■■■ {{ c.display_name }} <span class="tk">({{ c.ticker }})</span> — {{ c.sector_plain }}{% if c.industry_label %} ({{ c.industry_label }}){% endif %} ■■■</div>
       <div class="line">{{ c.intro_sentence }}</div>
       <div class="line"><span class="lbl">■ Trend:</span> {{ c.trend_label }}</div>
       <div class="line"><span class="lbl">■</span> {{ c.price_line }}</div>
@@ -128,7 +128,7 @@
     <div class="section-label">■ MODERATE RISK OPPORTUNITIES</div>
     {% for c in moderate_risk %}
     <div class="card">
-      <div class="card-name">■■ {{ c.display_name }} <span class="tk">({{ c.ticker }})</span> — {{ c.sector_plain }} ■■</div>
+      <div class="card-name">■■ {{ c.display_name }} <span class="tk">({{ c.ticker }})</span> — {{ c.sector_plain }}{% if c.industry_label %} ({{ c.industry_label }}){% endif %} ■■</div>
       <div class="line">{{ c.intro_sentence }}</div>
       <div class="line"><span class="lbl">■ Trend:</span> {{ c.trend_label }}</div>
       <div class="line"><span class="lbl">■</span> {{ c.price_line }}</div>
