@@ -2281,3 +2281,71 @@ hint: Disable this message with "git config set advice.addIgnoredFile false"'
 2026-03-17T15:40:30 UTC | INFO     | state_manager | Added to reported: ['EQT', 'NEE', 'AEP']
 2026-03-17T15:40:30 UTC | INFO     | state_manager | Slot 10:30 marked complete
 2026-03-17T15:40:30 UTC | INFO     | main | Run complete. Reported: ['EQT', 'NEE', 'AEP']
+2026-03-17T16:37:52 UTC | INFO     | main | ============================================================
+2026-03-17T16:37:52 UTC | INFO     | main | AUTOMATED STOCK RESEARCH SYSTEM — starting run
+2026-03-17T16:37:52 UTC | INFO     | main | DISCLAIMER: This system does NOT perform trading, does NOT give investment advice, and does NOT make price predictions. It is a research data aggregation and scoring tool only.
+2026-03-17T16:37:52 UTC | INFO     | main | ============================================================
+2026-03-17T16:37:52 UTC | INFO     | main | Run slot: 12:30
+2026-03-17T16:37:53 UTC | INFO     | market_collector | Index dow: 47039.59 Rising (+0.20%)
+2026-03-17T16:37:53 UTC | INFO     | market_collector | Index sp500: 6717.76 Rising (+0.27%)
+2026-03-17T16:37:53 UTC | INFO     | market_collector | Index nasdaq: 22449.21 Rising (+0.34%)
+2026-03-17T16:37:53 UTC | INFO     | market_regime | VIX fetched: 22.75
+2026-03-17T16:37:53 UTC | INFO     | market_regime | Regime: normal vix=22.75 risk_mult=1.0 opp_mult=1.0
+2026-03-17T16:37:53 UTC | INFO     | main | Regime: normal vix=22.75
+2026-03-17T16:38:17 UTC | INFO     | market_breadth | Market breadth: 86/130 advancing (0.66) — strong breadth — most stocks rising
+2026-03-17T16:38:18 UTC | INFO     | sector_breadth_ma | Sector breadth MA technology: 0/10 = 0.00 (sector is structurally weak)
+2026-03-17T16:38:18 UTC | INFO     | sector_breadth_ma | Sector breadth MA semiconductors: 2/10 = 0.20 (sector is structurally weak)
+2026-03-17T16:38:19 UTC | INFO     | sector_breadth_ma | Sector breadth MA healthcare: 5/10 = 0.50 (mixed signals)
+2026-03-17T16:38:21 UTC | INFO     | sector_breadth_ma | Sector breadth MA financials: 1/10 = 0.10 (sector is structurally weak)
+2026-03-17T16:38:21 UTC | INFO     | sector_breadth_ma | Sector breadth MA consumer_discretionary: 2/10 = 0.20 (sector is structurally weak)
+2026-03-17T16:38:23 UTC | INFO     | sector_breadth_ma | Sector breadth MA consumer_staples: 7/10 = 0.70 (healthy participation)
+2026-03-17T16:38:24 UTC | INFO     | sector_breadth_ma | Sector breadth MA industrials: 6/10 = 0.60 (healthy participation)
+2026-03-17T16:38:25 UTC | INFO     | sector_breadth_ma | Sector breadth MA defense: 4/10 = 0.40 (mixed signals)
+2026-03-17T16:38:26 UTC | INFO     | sector_breadth_ma | Sector breadth MA energy: 9/10 = 0.90 (sector is genuinely strong)
+2026-03-17T16:38:27 UTC | INFO     | sector_breadth_ma | Sector breadth MA materials: 4/10 = 0.40 (mixed signals)
+2026-03-17T16:38:28 UTC | INFO     | sector_breadth_ma | Sector breadth MA utilities: 10/10 = 1.00 (sector is genuinely strong)
+2026-03-17T16:38:29 UTC | INFO     | sector_breadth_ma | Sector breadth MA real_estate: 7/10 = 0.70 (healthy participation)
+2026-03-17T16:38:30 UTC | INFO     | sector_breadth_ma | Sector breadth MA communication_services: 6/10 = 0.60 (healthy participation)
+2026-03-17T16:38:32 UTC | INFO     | sector_momentum | Top 5 sectors: ['technology', 'healthcare', 'energy', 'utilities', 'semiconductors']
+2026-03-17T16:38:32 UTC | INFO     | sector_momentum | Sector momentum history updated (1 entries)
+2026-03-17T16:38:32 UTC | INFO     | sector_rotation_speed | Rotation speed: not enough history yet — skipping
+2026-03-17T16:38:32 UTC | INFO     | news_collector | reuters RSS: fetched 0 articles
+2026-03-17T16:38:33 UTC | INFO     | news_collector | ft RSS: fetched 13 articles
+2026-03-17T16:38:43 UTC | WARNING  | news_collector | Finnhub fetch failed: HTTPSConnectionPool(host='finnhub.io', port=443): Read timed out. (read timeout=10)
+2026-03-17T16:38:43 UTC | INFO     | news_collector | Filter: 13 raw → 12 passed
+2026-03-17T16:38:43 UTC | INFO     | news_collector | Dedup: 12 → 12 articles
+2026-03-17T16:38:43 UTC | INFO     | news_collector | Sector confirmed: defense score=5.4 headlines=2
+2026-03-17T16:38:43 UTC | INFO     | news_collector | Sector confirmed: energy score=7.2 headlines=3
+2026-03-17T16:38:43 UTC | INFO     | news_collector | Sector confirmed: materials score=7.7 headlines=4
+2026-03-17T16:38:43 UTC | INFO     | news_collector | Sector confirmed: technology score=5.5 headlines=3
+2026-03-17T16:38:43 UTC | INFO     | news_collector | Sector confirmed: consumer_discretionary score=8.7 headlines=4
+2026-03-17T16:38:43 UTC | INFO     | news_collector | Sector confirmed: industrials score=4.4 headlines=2
+2026-03-17T16:38:43 UTC | INFO     | news_collector | Sector gated: utilities score=1.8 headlines=1 (need score>=4, headlines>=2)
+2026-03-17T16:38:43 UTC | INFO     | news_collector | Confirmed sectors: ['defense', 'energy', 'materials', 'technology', 'consumer_discretionary', 'industrials']
+2026-03-17T16:38:43 UTC | INFO     | main | News: 12 articles, 6 candidate sectors
+2026-03-17T16:38:43 UTC | INFO     | news_impact_scorer | SPY day move: 0.29%
+2026-03-17T16:38:43 UTC | INFO     | news_impact_scorer | Impact [defense]: sources=2 kw=5.4 spy=0.29% → impact=0.392 ✗ below threshold
+2026-03-17T16:38:43 UTC | INFO     | news_impact_scorer | Sector dropped by impact gate: defense (sources=2 kw=5.4 spy=0.29% → impact=0.392 ✗ below threshold)
+2026-03-17T16:38:43 UTC | INFO     | news_impact_scorer | Impact [energy]: sources=3 kw=7.2 spy=0.29% → impact=0.552 ✗ below threshold
+2026-03-17T16:38:43 UTC | INFO     | news_impact_scorer | Sector dropped by impact gate: energy (sources=3 kw=7.2 spy=0.29% → impact=0.552 ✗ below threshold)
+2026-03-17T16:38:43 UTC | INFO     | news_impact_scorer | Impact [materials]: sources=4 kw=7.7 spy=0.29% → impact=0.559 ✗ below threshold
+2026-03-17T16:38:43 UTC | INFO     | news_impact_scorer | Sector dropped by impact gate: materials (sources=4 kw=7.7 spy=0.29% → impact=0.559 ✗ below threshold)
+2026-03-17T16:38:43 UTC | INFO     | news_impact_scorer | Impact [technology]: sources=3 kw=5.5 spy=0.29% → impact=0.527 ✗ below threshold
+2026-03-17T16:38:43 UTC | INFO     | news_impact_scorer | Sector dropped by impact gate: technology (sources=3 kw=5.5 spy=0.29% → impact=0.527 ✗ below threshold)
+2026-03-17T16:38:43 UTC | INFO     | news_impact_scorer | Impact [consumer_discretionary]: sources=4 kw=8.7 spy=0.29% → impact=0.574 ✗ below threshold
+2026-03-17T16:38:43 UTC | INFO     | news_impact_scorer | Sector dropped by impact gate: consumer_discretionary (sources=4 kw=8.7 spy=0.29% → impact=0.574 ✗ below threshold)
+2026-03-17T16:38:43 UTC | INFO     | news_impact_scorer | Impact [industrials]: sources=2 kw=4.3 spy=0.29% → impact=0.376 ✗ below threshold
+2026-03-17T16:38:43 UTC | INFO     | news_impact_scorer | Sector dropped by impact gate: industrials (sources=2 kw=4.3 spy=0.29% → impact=0.376 ✗ below threshold)
+2026-03-17T16:38:43 UTC | INFO     | news_impact_scorer | Impact gate: 6 → 0 sectors passed
+2026-03-17T16:38:43 UTC | INFO     | main | Momentum gate: 0 → 0 sectors
+2026-03-17T16:38:43 UTC | INFO     | sector_mapper | Mapped 0 events → 0 sectors
+2026-03-17T16:38:43 UTC | INFO     | main | No sectors confirmed — writing empty report
+2026-03-17T16:38:43 UTC | INFO     | main | Empty report written: reports/output/empty_1230_2026-03-17T163843Z.html
+2026-03-17T16:38:43 UTC | WARNING  | main | Git commit failed (non-fatal): Cmd('git') failed due to: exit code(1)
+  cmdline: git add reports/output/ state/ data/fundamentals_cache/ logs/ --
+  stderr: 'The following paths are ignored by one of your .gitignore files:
+logs
+reports/output
+hint: Use -f if you really want to add them.
+hint: Disable this message with "git config set advice.addIgnoredFile false"'
+2026-03-17T16:38:43 UTC | INFO     | state_manager | Slot 12:30 marked complete
