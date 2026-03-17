@@ -2,18 +2,10 @@ name: Market Scan
 
 on:
   schedule:
-    # 10:30 ET — EST (UTC-5): 15:30 UTC | EDT (UTC-4): 14:30 UTC
-    - cron: '30 15 * * 1-5'
-    - cron: '30 14 * * 1-5'
-    # 12:30 ET — EST: 17:30 UTC | EDT: 16:30 UTC
-    - cron: '30 17 * * 1-5'
-    - cron: '30 16 * * 1-5'
-    # 14:30 ET — EST: 19:30 UTC | EDT: 18:30 UTC
-    - cron: '30 19 * * 1-5'
-    - cron: '30 18 * * 1-5'
-    # 16:10 ET — EST: 21:10 UTC | EDT: 20:10 UTC
-    - cron: '10 21 * * 1-5'
-    - cron: '10 20 * * 1-5'
+    - cron: '30 14 * * 1-5'  # 10:30 ET
+    - cron: '30 16 * * 1-5'  # 12:30 ET
+    - cron: '30 18 * * 1-5'  # 14:30 ET
+    - cron: '10 20 * * 1-5'  # 16:10 ET
   workflow_dispatch:
 
 jobs:
