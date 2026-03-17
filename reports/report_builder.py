@@ -348,7 +348,7 @@ def build_intraday_report(
 
     # ── Commodity signal (Energy context, narrative only) ─────────────────
     commodity_summary = ''
-    if any(c.get('sector') == 'Energy' for c in companies):
+    if any(c.get('sector') == 'energy' for c in companies):
         commodity_summary = get_commodity_signal().get('summary', '')
 
     # ── Enrich all companies with display fields ──────────────────────────
