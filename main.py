@@ -49,13 +49,17 @@ def _load_json(path: str, default=None):
 
 
 def _determine_slot() -> str | None:
-    """Identifies which scheduled run slot we are in. Returns None if outside all windows."""
+    """
+    Identifies which scheduled run slot we are in.
+    Uses ±10 min tolerance to absorb GitHub Actions queue drift.
+    pytz handles EST/EDT automatically — no manual DST handling needed.
+    Returns None if outside all windows.
+    """
     now_et = datetime.now(pytz.timezone(TIMEZONE))
     h, m   = now_et.hour, now_et.minute
-    # Match within a 10-minute window of each slot
     for slot in RUN_SLOTS:
         sh, sm = map(int, slot.split(':'))
-        if h == sh and abs(m - sm) <= 45:
+        if h == sh and abs(m - sm) <= 10:
             return slot
     return None
 
@@ -134,6 +138,20 @@ def run():
     log.info('AUTOMATED STOCK RESEARCH SYSTEM — starting run')
     log.info(DISCLAIMER)
     log.info('=' * 60)
+
+    # ── Time gate — skip ghost triggers from dual DST crons ───────────────
+    # workflow_dispatch runs bypass this check intentionally.
+    if os.environ.get('GITHUB_EVENT_NAME') == 'schedule':
+        now_et = datetime.now(pytz.timezone(TIMEZONE))
+        slot_match = _determine_slot()
+        if slot_match is None:
+            log.info(
+                f'[SCHEDULER] Current ET time {now_et.strftime("%H:%M")} '
+                f'is outside all scheduled windows — exiting.'
+            )
+            sys.exit(0)
+        log.info(f'[SCHEDULER] Time gate passed — matched slot {slot_match}')
+    # ── End time gate ─────────────────────────────────────────────────────
 
     # ── Step 1: Startup check ──────────────────────────────────────────────
     _check_validated_file()
