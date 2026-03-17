@@ -400,10 +400,64 @@ def run():
 
     # ── Step 27: Z-score ranking ──────────────────────────────────────────
     from analyzers.zscore_ranker import rank_candidates
+    from collections import defaultdict
     for _c in all_candidates:
         log.info(f"DEBUG candidate: {_c.get('ticker')} risk={_c.get('risk_score')} opp={_c.get('opportunity_score')} cap={regime['risk_cap']}")
-    final_companies = rank_candidates(all_candidates, regime['risk_cap'])
-    log.info(f'Final company count: {len(final_companies)}')
+    ranked_companies = rank_candidates(all_candidates, regime['risk_cap'])
+    log.info(f'Post-ranking count: {len(ranked_companies)}')
+
+    # ── Step 27b: Within-industry deduplication ─────────────────────────────
+    # Keep top 2 per industry subgroup.
+    # Sort by composite_confidence (primary) then r3m from mtf dict (secondary).
+    # Industry key is in candidate['financials']['industry'] - access via .get().
+    industry_groups: dict = defaultdict(list)
+    for _c in ranked_companies:
+        _industry = _c.get('financials', {}).get('industry', 'Unknown')
+        industry_groups[_industry].append(_c)
+
+    deduplicated: list = []
+    for _industry, _group in industry_groups.items():
+        _sorted = sorted(
+            _group,
+            key=lambda c: (
+                c.get('composite_confidence', 0),
+                c.get('mtf', {}).get('r3m', 0) or 0,
+            ),
+            reverse=True,
+        )
+        deduplicated.extend(_sorted[:2])
+        _kept = [c.get('ticker') for c in _sorted[:2]]
+        _dropped = [c.get('ticker') for c in _sorted[2:]]
+        if _dropped:
+            log.info(f'Industry dedup [{_industry}]: kept={_kept} dropped={_dropped}')
+
+    # Re-sort by composite_confidence to restore overall ranking order
+    deduplicated.sort(key=lambda c: c.get('composite_confidence', 0), reverse=True)
+
+    final_companies = deduplicated
+    log.info(f'Final company count after industry dedup: {len(final_companies)}')
+
+    # ── Step 27c: Score stability filter ─────────────────────────────────
+    # First appearance today: always allowed.
+    # Subsequent appearance: current confidence must be >= prior slot confidence.
+    today_prior_scores = state.get('today_scores', {})
+    stable_companies: list = []
+    for _c in final_companies:
+        _ticker       = _c.get('ticker', '')
+        _current_conf = _c.get('composite_confidence', 0)
+        _prior_conf   = today_prior_scores.get(_ticker)
+
+        if _prior_conf is None:
+            stable_companies.append(_c)
+            log.debug(f'score_stability: {_ticker} first appearance - allowed (score {_current_conf})')
+        elif _current_conf >= _prior_conf:
+            stable_companies.append(_c)
+            log.debug(f'score_stability: {_ticker} stable/improving ({_prior_conf} -> {_current_conf}) - allowed')
+        else:
+            log.info(f'score_stability: {_ticker} suppressed - score declined ({_prior_conf} -> {_current_conf})')
+
+    final_companies = stable_companies
+    log.info(f'Final company count after score stability filter: {len(final_companies)}')
 
     # ── Step 28: Build reports ────────────────────────────────────────────
     from reports.report_builder import build_intraday_report
@@ -456,6 +510,15 @@ def run():
     tickers_reported = [c['ticker'] for c in final_companies]
     state = add_reported_companies(state, tickers_reported)
     state['runs'][slot]['companies'] = tickers_reported
+
+    # Save current slot's per-ticker confidence scores for next slot's
+    # score stability filter. Overwrites previous slot - intentional.
+    state['today_scores'] = {
+        c.get('ticker', ''): c.get('composite_confidence', 0)
+        for c in final_companies
+        if c.get('ticker')
+    }
+
     state = mark_slot_complete(state, slot)
     save_state(state)
 

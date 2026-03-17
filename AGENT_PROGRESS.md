@@ -3,7 +3,8 @@
 ## Session Log
 - Session 1: 2026-03-09 — Built §00 through §22 (main.py). Stopped mid-session due to quota limit.
 - Session 2: 2026-03-10 — Built §23 through §26 (full reports system + GitHub Actions workflow). COMPLETE.
-- Session 3: 2026-03-14 — Implementing AGENT_PROMPT_V8.md: §FIX-2, §FIX-3, §FIX-4 (logic fixes), §NEW-1 through §NEW-6 (templates + dashboard + cleanup). IN PROGRESS.
+- Session 3: 2026-03-14 — Implementing AGENT_PROMPT_V8.md: §FIX-2, §FIX-3, §FIX-4 (logic fixes), §NEW-1 through §NEW-6 (templates + dashboard + cleanup). COMPLETE.
+- Session 4: 2026-03-16 — Implementing AGENT_PROMPT_V9.md: §FIX 1-9 (commodity signal, industry dedup, score stability filter). IN PROGRESS.
 
 ## Completed Sections (verified by file audit)
 - §00 Agent Continuity Protocol
@@ -98,10 +99,17 @@
 - COMPLETED: main.py (one-line addition — step 28b dashboard call)
 - COMPLETED: .github/workflows/cleanup.yml (§NEW-6 new file)
 - COMPLETED: scripts/cleanup_reports.py (§NEW-6 new file)
+- COMPLETED: reports/commodity_signal.py (§FIX 1 V9 — NEW FILE)
+- COMPLETED: reports/report_builder.py (§FIX 2 V9 — import + commodity fetch + 2 context dict additions)
+- COMPLETED: reports/templates/intraday_email.html (§FIX 3 V9 — commodity block in story section)
+- COMPLETED: reports/templates/intraday_full.html (§FIX 4 V9 — commodity block in story section)
+- COMPLETED: reports/summary_builder.py (§FIX 5 V9 — _build_what_moved_today() only)
+- COMPLETED: utils/state_manager.py (§FIX 6 V9 — today_scores key in DEFAULT_STATE)
+- COMPLETED: main.py (§FIX 7/8/9 V9 — Step 27b industry dedup, Step 27c score stability, Step 32 today_scores save)
 
 ## Current Status
-SESSION 3 COMPLETE: All AGENT_PROMPT_V8.md changes implemented and syntax-verified.
-§FIX-2, §FIX-3, §FIX-4, §NEW-1 through §NEW-6 — all done. Dashboard live. Cleanup workflow live.
+SESSION 4 COMPLETE: All AGENT_PROMPT_V9.md changes implemented and syntax-verified.
+§FIX 1 through §FIX 9 — all done. Commodity signal live. Industry dedup live. Score stability filter live.
 
 ## What Needs To Be Built Next (in this exact order)
 

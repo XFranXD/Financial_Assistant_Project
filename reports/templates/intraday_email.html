@@ -74,6 +74,9 @@
     {% for s in story_sentences %}
     <p>{{ s }}</p>
     {% endfor %}
+    {% if commodity_summary %}
+    <p style="color:#8888aa;font-style:italic">{{ commodity_summary }}</p>
+    {% endif %}
   </div>
 
   <!-- Low Risk -->

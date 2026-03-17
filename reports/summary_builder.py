@@ -28,6 +28,7 @@ from reports.sentence_templates import (
     CLOSING_FULL_RANKED_ROW,
     DIRECTION_ARROW,
 )
+from reports.commodity_signal import get_commodity_signal
 
 log = get_logger('summary_builder')
 
@@ -131,6 +132,19 @@ def _build_what_moved_today(state: dict, sector_scores: dict) -> list[str]:
             'No dominant sector movements were detected in today\'s data. '
             'Markets appeared to trade without a clear directional theme.'
         )
+
+    # Commodity signal — append if Energy was active today
+    reported = state.get('reported_companies', [])
+    energy_tickers = ['XOM', 'CVX', 'COP', 'DVN', 'EOG', 'EQT', 'CTRA',
+                      'RRC', 'AR', 'CNX', 'KMI', 'SM', 'APA']
+    energy_reported = any(t in reported for t in energy_tickers)
+    if energy_reported:
+        try:
+            commodity_summary = get_commodity_signal().get('summary', '')
+            if commodity_summary:
+                sentences.append(commodity_summary)
+        except Exception as _ce:
+            log.warning(f'commodity_signal in closing report failed: {_ce}')
 
     return sentences[:5]
 

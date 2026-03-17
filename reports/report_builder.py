@@ -18,6 +18,7 @@ import pytz
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from utils.logger import get_logger
+from reports.commodity_signal import get_commodity_signal
 from reports.sentence_templates import (
     render_company_intro,
     render_financial_health,
@@ -345,6 +346,11 @@ def build_intraday_report(
     confirmed_sectors = list({c['sector'] for c in companies})
     story_sentences   = _build_story_sentences(all_articles, sector_scores, confirmed_sectors)
 
+    # ── Commodity signal (Energy context, narrative only) ─────────────────
+    commodity_summary = ''
+    if any(c.get('sector') == 'Energy' for c in companies):
+        commodity_summary = get_commodity_signal().get('summary', '')
+
     # ── Enrich all companies with display fields ──────────────────────────
     enriched = [_enrich_company_for_template(c) for c in companies]
 
@@ -388,6 +394,7 @@ def build_intraday_report(
             breadth_label    = breadth.get('label', 'neutral'),
             disclaimer       = DISCLAIMER,
             total_companies  = n_found,
+            commodity_summary = commodity_summary,
         )
         email_path = os.path.join(OUTPUT_DIR, f'intraday_email_{slot.replace(":", "")}_{ts_str}.html')
         with open(email_path, 'w', encoding='utf-8') as f:
@@ -414,6 +421,7 @@ def build_intraday_report(
             disclaimer       = DISCLAIMER,
             total_companies  = n_found,
             rotation         = rotation,
+            commodity_summary = commodity_summary,
         )
         full_path = os.path.join(OUTPUT_DIR, f'intraday_full_{slot.replace(":", "")}_{ts_str}.html')
         with open(full_path, 'w', encoding='utf-8') as f:

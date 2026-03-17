@@ -35,6 +35,7 @@ DEFAULT_STATE: dict = {
     'unusual_volume_flags':     [],
     'event_scores_today':       {},
     'indices_today':            {},
+    'today_scores':             {},
 }
 
 
