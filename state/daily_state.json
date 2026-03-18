@@ -1,62 +1,43 @@
 {
-  "date": "2026-03-17",
-  "reported_companies": [
-    "NEE",
-    "AEP",
-    "EQT",
-    "CTRA",
-    "PPL",
-    "RRC",
-    "KMI",
-    "EIX"
-  ],
-  "alpha_vantage_calls_today": 20,
+  "date": "2026-03-18",
+  "reported_companies": [],
+  "alpha_vantage_calls_today": 0,
   "runs": {
     "10:30": {
-      "companies": [
-        "EQT",
-        "NEE",
-        "AEP"
-      ],
+      "companies": [],
       "status": "complete"
     },
     "12:30": {
       "companies": [],
-      "status": "complete"
+      "status": "pending"
     },
     "14:30": {
-      "companies": [
-        "CTRA",
-        "KMI",
-        "RRC",
-        "PPL",
-        "EIX"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     },
     "16:10": {
       "companies": [],
-      "status": "complete"
+      "status": "pending"
     }
   },
   "failed_tickers": [],
   "api_failures": {},
   "sector_scores_today": {
-    "technology": 0.519,
-    "healthcare": -2.779,
-    "financials": -1.475,
-    "consumer_discretionary": -0.855,
-    "consumer_staples": -1.705,
-    "industrials": -2.793,
-    "materials": -1.702,
-    "energy": 4.893,
-    "utilities": 1.086,
-    "real_estate": -0.808,
-    "communication_services": -1.65,
-    "semiconductors": 0.978,
-    "defense": -3.305
+    "technology": -1.194,
+    "healthcare": -4.067,
+    "financials": -1.978,
+    "consumer_discretionary": -3.249,
+    "consumer_staples": -2.729,
+    "industrials": -3.179,
+    "materials": -3.457,
+    "energy": 3.418,
+    "utilities": 0.947,
+    "real_estate": -1.396,
+    "communication_services": -2.853,
+    "semiconductors": -0.561,
+    "defense": -3.511
   },
-  "breadth_score_today": 0.492,
+  "breadth_score_today": 0.154,
   "sector_breadth_ma_today": {
     "technology": {
       "breadth_ma_score": 0.0,
@@ -64,13 +45,13 @@
       "label": "sector is structurally weak"
     },
     "semiconductors": {
-      "breadth_ma_score": 0.4,
-      "pct": 40.0,
+      "breadth_ma_score": 0.3,
+      "pct": 30.0,
       "label": "mixed signals"
     },
     "healthcare": {
-      "breadth_ma_score": 0.5,
-      "pct": 50.0,
+      "breadth_ma_score": 0.3,
+      "pct": 30.0,
       "label": "mixed signals"
     },
     "financials": {
@@ -79,23 +60,23 @@
       "label": "sector is structurally weak"
     },
     "consumer_discretionary": {
+      "breadth_ma_score": 0.0,
+      "pct": 0.0,
+      "label": "sector is structurally weak"
+    },
+    "consumer_staples": {
       "breadth_ma_score": 0.3,
       "pct": 30.0,
       "label": "mixed signals"
     },
-    "consumer_staples": {
+    "industrials": {
       "breadth_ma_score": 0.5,
       "pct": 50.0,
       "label": "mixed signals"
     },
-    "industrials": {
-      "breadth_ma_score": 0.6,
-      "pct": 60.0,
-      "label": "healthy participation"
-    },
     "defense": {
-      "breadth_ma_score": 0.5,
-      "pct": 50.0,
+      "breadth_ma_score": 0.4,
+      "pct": 40.0,
       "label": "mixed signals"
     },
     "energy": {
@@ -114,13 +95,13 @@
       "label": "sector is genuinely strong"
     },
     "real_estate": {
-      "breadth_ma_score": 0.5,
-      "pct": 50.0,
+      "breadth_ma_score": 0.3,
+      "pct": 30.0,
       "label": "mixed signals"
     },
     "communication_services": {
-      "breadth_ma_score": 0.5,
-      "pct": 50.0,
+      "breadth_ma_score": 0.4,
+      "pct": 40.0,
       "label": "mixed signals"
     }
   },
@@ -128,26 +109,20 @@
   "event_scores_today": {},
   "indices_today": {
     "dow": {
-      "value": 46993.26,
-      "change_pct": 0.1,
-      "label": "Flat"
+      "value": 46225.15,
+      "change_pct": -1.63,
+      "label": "Falling"
     },
     "sp500": {
-      "value": 6716.09,
-      "change_pct": 0.25,
-      "label": "Rising"
+      "value": 6624.7,
+      "change_pct": -1.36,
+      "label": "Falling"
     },
     "nasdaq": {
-      "value": 22479.53,
-      "change_pct": 0.47,
-      "label": "Rising"
+      "value": 22152.42,
+      "change_pct": -1.46,
+      "label": "Falling"
     }
   },
-  "today_scores": {
-    "CTRA": 73.5,
-    "KMI": 67.4,
-    "RRC": 66.4,
-    "PPL": 57.1,
-    "EIX": 56.7
-  }
+  "today_scores": {}
 }
