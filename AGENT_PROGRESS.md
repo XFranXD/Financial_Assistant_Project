@@ -110,6 +110,8 @@
 ## Current Status
 SESSION 5 IN PROGRESS: Implementing AGENT_PROMPT_V10.md.
 NOW WORKING ON: reports/sentence_templates.py (§FIX 1)
+NOW WORKING ON .github/workflows/market_scan.yml
+NOW WORKING ON .github/workflows/keepalive.yml
 
 ## What Needs To Be Built Next (in this exact order)
 

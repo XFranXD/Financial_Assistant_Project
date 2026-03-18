@@ -54,4 +54,5 @@ jobs:
           git add --force reports/output/ docs/ state/ data/fundamentals_cache/ logs/ || true
           git diff --staged --quiet || \
             git commit -m "Auto: market scan $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git pull --rebase origin main
           git push
