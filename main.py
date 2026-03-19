@@ -51,7 +51,7 @@ def _load_json(path: str, default=None):
 def _determine_slot() -> str | None:
     """
     Identifies which scheduled run slot we are in.
-    Uses ±10 min tolerance to absorb GitHub Actions queue drift.
+    Uses ±75 min tolerance to absorb GitHub Actions queue drift.
     pytz handles EST/EDT automatically — no manual DST handling needed.
     Returns None if outside all windows.
     """
@@ -59,7 +59,7 @@ def _determine_slot() -> str | None:
     h, m   = now_et.hour, now_et.minute
     for slot in RUN_SLOTS:
         sh, sm = map(int, slot.split(':'))
-        if h == sh and abs(m - sm) <= 10:
+        if h == sh and abs(m - sm) <= 75:
             return slot
     return None
 
