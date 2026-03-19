@@ -1,10 +1,16 @@
 {
-  "date": "2026-03-18",
-  "reported_companies": [],
-  "alpha_vantage_calls_today": 0,
+  "date": "2026-03-19",
+  "reported_companies": [
+    "EQT",
+    "CTRA"
+  ],
+  "alpha_vantage_calls_today": 20,
   "runs": {
     "10:30": {
-      "companies": [],
+      "companies": [
+        "EQT",
+        "CTRA"
+      ],
       "status": "complete"
     },
     "12:30": {
@@ -23,21 +29,21 @@
   "failed_tickers": [],
   "api_failures": {},
   "sector_scores_today": {
-    "technology": -1.194,
-    "healthcare": -4.067,
-    "financials": -1.978,
-    "consumer_discretionary": -3.249,
-    "consumer_staples": -2.729,
-    "industrials": -3.179,
-    "materials": -3.457,
-    "energy": 3.418,
-    "utilities": 0.947,
-    "real_estate": -1.396,
-    "communication_services": -2.853,
-    "semiconductors": -0.561,
-    "defense": -3.511
+    "technology": -0.264,
+    "healthcare": -2.56,
+    "financials": -1.475,
+    "consumer_discretionary": -3.059,
+    "consumer_staples": NaN,
+    "industrials": NaN,
+    "materials": -4.993,
+    "energy": 4.288,
+    "utilities": 0.213,
+    "real_estate": -1.129,
+    "communication_services": -2.289,
+    "semiconductors": 1.418,
+    "defense": -3.621
   },
-  "breadth_score_today": 0.154,
+  "breadth_score_today": 0.269,
   "sector_breadth_ma_today": {
     "technology": {
       "breadth_ma_score": 0.0,
@@ -45,8 +51,8 @@
       "label": "sector is structurally weak"
     },
     "semiconductors": {
-      "breadth_ma_score": 0.3,
-      "pct": 30.0,
+      "breadth_ma_score": 0.4,
+      "pct": 40.0,
       "label": "mixed signals"
     },
     "healthcare": {
@@ -65,19 +71,19 @@
       "label": "sector is structurally weak"
     },
     "consumer_staples": {
-      "breadth_ma_score": 0.3,
-      "pct": 30.0,
-      "label": "mixed signals"
+      "breadth_ma_score": 0.1,
+      "pct": 10.0,
+      "label": "sector is structurally weak"
     },
     "industrials": {
-      "breadth_ma_score": 0.5,
-      "pct": 50.0,
-      "label": "mixed signals"
+      "breadth_ma_score": 0.0,
+      "pct": 0.0,
+      "label": "sector is structurally weak"
     },
     "defense": {
-      "breadth_ma_score": 0.4,
-      "pct": 40.0,
-      "label": "mixed signals"
+      "breadth_ma_score": 0.2,
+      "pct": 20.0,
+      "label": "sector is structurally weak"
     },
     "energy": {
       "breadth_ma_score": 0.9,
@@ -85,8 +91,8 @@
       "label": "sector is genuinely strong"
     },
     "materials": {
-      "breadth_ma_score": 0.4,
-      "pct": 40.0,
+      "breadth_ma_score": 0.3,
+      "pct": 30.0,
       "label": "mixed signals"
     },
     "utilities": {
@@ -109,20 +115,23 @@
   "event_scores_today": {},
   "indices_today": {
     "dow": {
-      "value": 46225.15,
-      "change_pct": -1.63,
-      "label": "Falling"
+      "value": NaN,
+      "change_pct": NaN,
+      "label": "Flat"
     },
     "sp500": {
-      "value": 6624.7,
-      "change_pct": -1.36,
+      "value": 6587.66,
+      "change_pct": -0.56,
       "label": "Falling"
     },
     "nasdaq": {
-      "value": 22152.42,
-      "change_pct": -1.46,
+      "value": 22011.2,
+      "change_pct": -0.64,
       "label": "Falling"
     }
   },
-  "today_scores": {}
+  "today_scores": {
+    "EQT": 59.2,
+    "CTRA": 58.8
+  }
 }
