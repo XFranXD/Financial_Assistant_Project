@@ -467,7 +467,7 @@ def build_intraday_report(
             total_companies  = n_found,
             commodity_summary = commodity_summary,
         )
-        email_path = os.path.join(OUTPUT_DIR, f'intraday_email_{slot.replace(":", "")}_{ts_str}.html')
+        email_path = os.path.join(OUTPUT_DIR, f'intraday_email_{slot.replace(":", "").replace("-", "_")}_{ts_str}.html')
         with open(email_path, 'w', encoding='utf-8') as f:
             f.write(email_html)
         log.info(f'Email report written: {email_path}')
@@ -494,7 +494,7 @@ def build_intraday_report(
             rotation         = rotation,
             commodity_summary = commodity_summary,
         )
-        full_path = os.path.join(OUTPUT_DIR, f'intraday_full_{slot.replace(":", "")}_{ts_str}.html')
+        full_path = os.path.join(OUTPUT_DIR, f'intraday_full_{slot.replace(":", "").replace("-", "_")}_{ts_str}.html')
         with open(full_path, 'w', encoding='utf-8') as f:
             f.write(full_html)
         log.info(f'Full report written: {full_path}')
@@ -511,7 +511,7 @@ def _write_fallback_email(slot, ts_str, pulse_lines, story_sentences, companies)
     Never raises — always returns a valid path.
     """
     os.makedirs(OUTPUT_DIR, exist_ok=True)
-    path = os.path.join(OUTPUT_DIR, f'fallback_{slot.replace(":", "")}_{ts_str}.html')
+    path = os.path.join(OUTPUT_DIR, f'fallback_{slot.replace(":", "").replace("-", "_")}_{ts_str}.html')
     try:
         lines = [
             '<html><body style="font-family:monospace">',

@@ -160,7 +160,7 @@ def _build_full_ranked_list(state: dict) -> list[str]:
     seen = set()
     rank = 1
 
-    for slot in ['10:30', '12:30', '14:30', '16:10']:
+    for slot in ['9:45-11:15', '11:45-13:15', '13:45-15:15', '16:00-17:20']:
         slot_data = state.get('runs', {}).get(slot, {})
         companies = slot_data.get('companies', [])
         for company_info in companies:
