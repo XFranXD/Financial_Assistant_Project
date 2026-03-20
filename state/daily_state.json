@@ -1,12 +1,6 @@
 {
   "date": "2026-03-20",
-  "reported_companies": [
-    "KMI",
-    "EQT",
-    "EOG",
-    "CTRA",
-    "DVN"
-  ],
+  "reported_companies": [],
   "alpha_vantage_calls_today": 20,
   "runs": {
     "10:30": {
@@ -14,23 +8,16 @@
       "status": "pending"
     },
     "12:30": {
-      "companies": [
-        "CTRA",
-        "EQT",
-        "KMI"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     },
     "14:30": {
       "companies": [],
-      "status": "complete"
+      "status": "pending"
     },
     "16:10": {
-      "companies": [
-        "DVN",
-        "EOG"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     }
   },
   "failed_tickers": [],
@@ -118,14 +105,7 @@
       "label": "mixed signals"
     }
   },
-  "unusual_volume_flags": [
-    "CVX",
-    "EOG",
-    "VLO",
-    "DVN",
-    "APA",
-    "OKE"
-  ],
+  "unusual_volume_flags": [],
   "event_scores_today": {},
   "indices_today": {
     "dow": {
