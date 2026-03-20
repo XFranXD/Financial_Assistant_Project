@@ -489,3 +489,81 @@ hint: Disable this message with "git config set advice.addIgnoredFile false"'
 2026-03-20T17:08:11 UTC | INFO     | main | [SCHEDULER] Time gate passed — matched slot 12:30
 2026-03-20T17:08:11 UTC | INFO     | main | Run slot: 12:30
 2026-03-20T17:08:11 UTC | INFO     | main | Slot 12:30 already complete today — exiting
+2026-03-20T19:11:09 UTC | INFO     | main | ============================================================
+2026-03-20T19:11:09 UTC | INFO     | main | AUTOMATED STOCK RESEARCH SYSTEM — starting run
+2026-03-20T19:11:09 UTC | INFO     | main | DISCLAIMER: This system does NOT perform trading, does NOT give investment advice, and does NOT make price predictions. It is a research data aggregation and scoring tool only.
+2026-03-20T19:11:09 UTC | INFO     | main | ============================================================
+2026-03-20T19:11:09 UTC | INFO     | main | [SCHEDULER] Time gate passed — matched slot 14:30
+2026-03-20T19:11:09 UTC | INFO     | main | Run slot: 14:30
+2026-03-20T19:11:10 UTC | INFO     | market_collector | Index dow: nan Flat (+nan%)
+2026-03-20T19:11:10 UTC | INFO     | market_collector | Index sp500: nan Flat (+nan%)
+2026-03-20T19:11:11 UTC | INFO     | market_collector | Index nasdaq: 21623.39 Falling (-2.12%)
+2026-03-20T19:11:11 UTC | INFO     | market_regime | VIX fetched: 27.86
+2026-03-20T19:11:11 UTC | INFO     | market_regime | Regime: elevated vix=27.86 risk_mult=1.2 opp_mult=0.85
+2026-03-20T19:11:11 UTC | INFO     | main | Regime: elevated vix=27.86
+2026-03-20T19:11:42 UTC | INFO     | market_breadth | Market breadth: 27/130 advancing (0.21) — weak breadth — most stocks declining
+2026-03-20T19:11:42 UTC | INFO     | sector_breadth_ma | Sector breadth MA technology: 0/10 = 0.00 (sector is structurally weak)
+2026-03-20T19:11:43 UTC | INFO     | sector_breadth_ma | Sector breadth MA semiconductors: 2/10 = 0.20 (sector is structurally weak)
+2026-03-20T19:11:45 UTC | INFO     | sector_breadth_ma | Sector breadth MA healthcare: 2/10 = 0.20 (sector is structurally weak)
+2026-03-20T19:11:46 UTC | INFO     | sector_breadth_ma | Sector breadth MA financials: 1/10 = 0.10 (sector is structurally weak)
+2026-03-20T19:11:47 UTC | INFO     | sector_breadth_ma | Sector breadth MA consumer_discretionary: 1/10 = 0.10 (sector is structurally weak)
+2026-03-20T19:11:49 UTC | INFO     | sector_breadth_ma | Sector breadth MA consumer_staples: 0/10 = 0.00 (sector is structurally weak)
+2026-03-20T19:11:50 UTC | INFO     | sector_breadth_ma | Sector breadth MA industrials: 1/10 = 0.10 (sector is structurally weak)
+2026-03-20T19:11:51 UTC | INFO     | sector_breadth_ma | Sector breadth MA defense: 2/10 = 0.20 (sector is structurally weak)
+2026-03-20T19:11:53 UTC | INFO     | sector_breadth_ma | Sector breadth MA energy: 9/10 = 0.90 (sector is genuinely strong)
+2026-03-20T19:11:54 UTC | INFO     | sector_breadth_ma | Sector breadth MA materials: 3/10 = 0.30 (mixed signals)
+2026-03-20T19:11:56 UTC | INFO     | sector_breadth_ma | Sector breadth MA utilities: 7/10 = 0.70 (healthy participation)
+2026-03-20T19:11:57 UTC | INFO     | sector_breadth_ma | Sector breadth MA real_estate: 2/10 = 0.20 (sector is structurally weak)
+2026-03-20T19:11:58 UTC | INFO     | sector_breadth_ma | Sector breadth MA communication_services: 4/10 = 0.40 (mixed signals)
+2026-03-20T19:12:01 UTC | INFO     | sector_momentum | Top 5 sectors: ['technology', 'healthcare', 'financials', 'consumer_discretionary', 'consumer_staples']
+2026-03-20T19:12:01 UTC | INFO     | sector_momentum | Sector momentum history updated (1 entries)
+2026-03-20T19:12:01 UTC | INFO     | sector_rotation_speed | Rotation speed: not enough history yet — skipping
+2026-03-20T19:12:01 UTC | INFO     | news_collector | reuters RSS: fetched 0 articles
+2026-03-20T19:12:02 UTC | INFO     | news_collector | ft RSS: fetched 13 articles
+2026-03-20T19:12:02 UTC | INFO     | news_collector | Finnhub: fetched 100 articles
+2026-03-20T19:12:02 UTC | INFO     | news_collector | Filter: 113 raw → 43 passed
+2026-03-20T19:12:02 UTC | INFO     | news_collector | Dedup: 43 → 43 articles
+2026-03-20T19:12:02 UTC | INFO     | news_collector | Sector confirmed: energy score=44.9 headlines=11
+2026-03-20T19:12:02 UTC | INFO     | news_collector | Sector confirmed: materials score=42.8 headlines=13
+2026-03-20T19:12:02 UTC | INFO     | news_collector | Sector confirmed: consumer_staples score=30.6 headlines=9
+2026-03-20T19:12:02 UTC | INFO     | news_collector | Sector confirmed: consumer_discretionary score=97.5 headlines=29
+2026-03-20T19:12:02 UTC | INFO     | news_collector | Sector confirmed: technology score=63.5 headlines=20
+2026-03-20T19:12:02 UTC | INFO     | news_collector | Sector confirmed: financials score=53.8 headlines=15
+2026-03-20T19:12:02 UTC | INFO     | news_collector | Sector confirmed: real_estate score=55.2 headlines=14
+2026-03-20T19:12:02 UTC | INFO     | news_collector | Sector confirmed: utilities score=56.8 headlines=18
+2026-03-20T19:12:02 UTC | INFO     | news_collector | Sector confirmed: industrials score=20.5 headlines=8
+2026-03-20T19:12:02 UTC | INFO     | news_collector | Sector confirmed: defense score=8.1 headlines=2
+2026-03-20T19:12:02 UTC | INFO     | news_collector | Confirmed sectors: ['energy', 'materials', 'consumer_staples', 'consumer_discretionary', 'technology', 'financials', 'real_estate', 'utilities', 'industrials', 'defense']
+2026-03-20T19:12:02 UTC | INFO     | main | News: 43 articles, 10 candidate sectors
+2026-03-20T19:12:02 UTC | INFO     | news_impact_scorer | SPY day move: 1.86%
+2026-03-20T19:12:02 UTC | INFO     | news_impact_scorer | Impact [energy]: sources=11 kw=44.9 spy=1.86% → impact=0.978 ✓ passes
+2026-03-20T19:12:02 UTC | INFO     | news_impact_scorer | Impact [materials]: sources=13 kw=42.9 spy=1.86% → impact=0.978 ✓ passes
+2026-03-20T19:12:02 UTC | INFO     | news_impact_scorer | Impact [consumer_staples]: sources=9 kw=30.6 spy=1.86% → impact=0.978 ✓ passes
+2026-03-20T19:12:02 UTC | INFO     | news_impact_scorer | Impact [consumer_discretionary]: sources=29 kw=97.5 spy=1.86% → impact=0.978 ✓ passes
+2026-03-20T19:12:02 UTC | INFO     | news_impact_scorer | Impact [technology]: sources=20 kw=63.5 spy=1.86% → impact=0.978 ✓ passes
+2026-03-20T19:12:02 UTC | INFO     | news_impact_scorer | Impact [financials]: sources=15 kw=53.8 spy=1.86% → impact=0.978 ✓ passes
+2026-03-20T19:12:02 UTC | INFO     | news_impact_scorer | Impact [real_estate]: sources=14 kw=55.2 spy=1.86% → impact=0.978 ✓ passes
+2026-03-20T19:12:02 UTC | INFO     | news_impact_scorer | Impact [utilities]: sources=18 kw=56.8 spy=1.86% → impact=0.978 ✓ passes
+2026-03-20T19:12:02 UTC | INFO     | news_impact_scorer | Impact [industrials]: sources=8 kw=20.5 spy=1.86% → impact=0.978 ✓ passes
+2026-03-20T19:12:02 UTC | INFO     | news_impact_scorer | Impact [defense]: sources=2 kw=8.1 spy=1.86% → impact=0.667 ✓ passes
+2026-03-20T19:12:02 UTC | INFO     | news_impact_scorer | Impact gate: 10 → 10 sectors passed
+2026-03-20T19:12:02 UTC | INFO     | main | Momentum gate: 10 → 4 sectors
+2026-03-20T19:12:02 UTC | INFO     | sector_mapper | Mapped 0 events → 0 sectors
+2026-03-20T19:12:02 UTC | INFO     | sector_validator | Sector consumer_staples/XLP: sig1=False sig2=False sig3=False tf_ok=False → REJECTED
+2026-03-20T19:12:02 UTC | INFO     | main | Sector consumer_staples: ETF confirmation failed
+2026-03-20T19:12:02 UTC | INFO     | sector_validator | Sector consumer_discretionary/XLY: sig1=False sig2=False sig3=False tf_ok=False → REJECTED
+2026-03-20T19:12:02 UTC | INFO     | main | Sector consumer_discretionary: ETF confirmation failed
+2026-03-20T19:12:02 UTC | INFO     | sector_validator | Sector technology/XLK: sig1=False sig2=False sig3=False tf_ok=False → REJECTED
+2026-03-20T19:12:02 UTC | INFO     | main | Sector technology: ETF confirmation failed
+2026-03-20T19:12:02 UTC | INFO     | sector_validator | Sector financials/XLF: sig1=False sig2=False sig3=False tf_ok=False → REJECTED
+2026-03-20T19:12:02 UTC | INFO     | main | Sector financials: ETF confirmation failed
+2026-03-20T19:12:02 UTC | INFO     | main | No sectors confirmed — writing empty report
+2026-03-20T19:12:02 UTC | INFO     | main | Empty report written: reports/output/empty_1430_2026-03-20T191202Z.html
+2026-03-20T19:12:02 UTC | WARNING  | main | Git commit failed (non-fatal): Cmd('git') failed due to: exit code(1)
+  cmdline: git add reports/output/ state/ data/fundamentals_cache/ logs/ --
+  stderr: 'The following paths are ignored by one of your .gitignore files:
+logs
+reports/output
+hint: Use -f if you really want to add them.
+hint: Disable this message with "git config set advice.addIgnoredFile false"'
+2026-03-20T19:12:02 UTC | INFO     | state_manager | Slot 14:30 marked complete
