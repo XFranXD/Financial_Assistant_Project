@@ -12,7 +12,7 @@ GMAIL_EMAIL           = os.environ.get('GMAIL_EMAIL', '')
 GMAIL_APP_PASSWORD    = os.environ.get('GMAIL_APP_PASSWORD', '')
 
 # ── Run Slot Schedule (Eastern Time) ──────────────────────────────────────
-RUN_SLOTS = ['10:30', '12:30', '14:30', '16:10']
+RUN_SLOTS = ['10:00', '12:00', '14:00', '16:10']
 CLOSING_SLOT = '16:10'
 TIMEZONE = 'America/New_York'
 
