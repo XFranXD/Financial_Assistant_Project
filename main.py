@@ -51,15 +51,15 @@ def _load_json(path: str, default=None):
 def _determine_slot() -> str | None:
     """
     Identifies which scheduled run slot we are in.
+    Converts both current time and slot time to total minutes since midnight.
     Uses ±75 min tolerance to absorb GitHub Actions queue drift.
-    pytz handles EST/EDT automatically — no manual DST handling needed.
-    Returns None if outside all windows.
     """
     now_et = datetime.now(pytz.timezone(TIMEZONE))
-    h, m   = now_et.hour, now_et.minute
+    current_minutes = now_et.hour * 60 + now_et.minute
     for slot in RUN_SLOTS:
         sh, sm = map(int, slot.split(':'))
-        if h == sh and abs(m - sm) <= 75:
+        slot_minutes = sh * 60 + sm
+        if abs(current_minutes - slot_minutes) <= 75:
             return slot
     return None
 
