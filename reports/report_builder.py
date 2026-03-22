@@ -74,11 +74,21 @@ DISCLAIMER = (
 )
 
 # ── Signal strength thresholds ─────────────────────────────────────────────
-# Used by combined reading logic. Locked here — do not change without updating
+# Used by combined reading logic. Locked — do not change without updating
 # the combined reading rules below.
 SIGNAL_STRONG   = 70   # confidence >= 70
 SIGNAL_MODERATE = 50   # confidence 50-69
-# confidence < 50 = weak signal
+# confidence < 50 = WEAK signal
+
+# ── EQ verdict vocabulary ──────────────────────────────────────────────────
+# Controlled vocabulary only. Maps directly from pass_tier.
+# Fatal flaw overrides pass_tier and always produces RISKY.
+# No other logic overrides this mapping.
+#   PASS        → SUPPORTIVE
+#   WATCH       → NEUTRAL
+#   FAIL        → WEAK
+#   fatal flaw  → RISKY
+#   no data     → UNAVAILABLE
 
 
 def _get_jinja_env() -> Environment:
@@ -152,7 +162,10 @@ def _build_story_sentences(all_articles: list, sector_scores: dict, confirmed_se
 
 
 def _signal_strength_label(conf_score: float) -> str:
-    """Returns signal strength label based on locked thresholds."""
+    """
+    Returns signal strength label based on locked thresholds.
+    STRONG >= 70 | MODERATE 50-69 | WEAK < 50
+    """
     if conf_score >= SIGNAL_STRONG:
         return 'STRONG'
     elif conf_score >= SIGNAL_MODERATE:
@@ -160,52 +173,104 @@ def _signal_strength_label(conf_score: float) -> str:
     return 'WEAK'
 
 
-def _build_combined_reading(conf_score: float, pass_tier: str, eq_available: bool) -> str:
+def _eq_verdict_from_tier(pass_tier: str, fatal: str) -> str:
+    """
+    Maps EQ pass tier to controlled vocabulary verdict.
+    Fatal flaw always overrides pass tier → RISKY.
+    Warnings do NOT affect verdict — they belong in details only.
+
+    Vocabulary:
+      SUPPORTIVE  — PASS tier
+      NEUTRAL     — WATCH tier
+      WEAK        — FAIL tier
+      RISKY       — fatal flaw present (overrides tier)
+      UNAVAILABLE — no EQ data
+    """
+    if fatal:
+        return 'RISKY'
+    tier = pass_tier.upper() if pass_tier else ''
+    if tier == 'PASS':
+        return 'SUPPORTIVE'
+    elif tier == 'WATCH':
+        return 'NEUTRAL'
+    elif tier == 'FAIL':
+        return 'WEAK'
+    return 'UNAVAILABLE'
+
+
+def _build_combined_reading(conf_score: float, pass_tier: str, eq_available: bool, fatal: str) -> str:
     """
     Deterministic combined reading of System 1 market signal and System 2
     earnings quality. Controls AI interpretation — no inference required.
 
-    Inputs:
-      conf_score   — System 1 composite confidence (0-100)
-      pass_tier    — System 2 EQ pass tier: PASS / WATCH / FAIL / '' (unavailable)
-      eq_available — whether System 2 returned valid data
+    Decision grid (7 cases, exhaustive):
+      Strong  + PASS  → highest priority candidate
+      Strong  + WATCH → signal present, fundamentals mixed
+      Strong  + FAIL  → high risk of false signal
+      Mod/Wk  + PASS  → fundamentals solid, signal needs confirmation
+      Mod/Wk  + WATCH → signal not confirmed, requires caution
+      Mod/Wk  + FAIL  → avoid
+      No EQ data      → no fundamental validation available
+
+    "Avoid" only triggers on:
+      - Moderate/Weak signal + FAIL tier
+      - Any signal + fatal flaw present
 
     Signal thresholds (locked):
-      Strong:   confidence >= 70
-      Moderate: confidence 50-69
-      Weak:     confidence < 50
+      STRONG   >= 70
+      MODERATE 50-69
+      WEAK     < 50
     """
     signal = _signal_strength_label(conf_score)
 
     if not eq_available:
         return (
-            f'Market signal is {signal.lower()}. Earnings quality unavailable. '
-            'Decision must rely on market data only.'
+            f'Market signal is {signal.lower()}. '
+            'No fundamental validation available. Decision based on market data only.'
         )
 
-    eq_pass = pass_tier.upper() if pass_tier else 'FAIL'
+    tier = pass_tier.upper() if pass_tier else 'FAIL'
 
-    if signal == 'STRONG' and eq_pass == 'PASS':
+    # Fatal flaw overrides all cases
+    if fatal:
         return (
-            'Market signal is strong. Earnings quality is strong. '
-            'Signal is supported by fundamentals. Highest priority candidate.'
+            f'Market signal is {signal.lower()}. Earnings quality is risky. '
+            'Fatal flaw detected in earnings structure. Avoid.'
         )
-    elif signal == 'STRONG' and eq_pass in ('WATCH', 'FAIL'):
-        return (
-            'Market signal is strong. Earnings quality is weak. '
-            'Signal is not supported by fundamentals. High risk of false signal.'
-        )
-    elif signal in ('MODERATE', 'WEAK') and eq_pass == 'PASS':
-        return (
-            f'Market signal is {signal.lower()}. Earnings quality is strong. '
-            'Fundamentals are solid but signal is not fully confirmed. '
-            'Requires further confirmation before action.'
-        )
-    else:
-        return (
-            f'Market signal is {signal.lower()}. Earnings quality is weak. '
-            'No alignment between signal and fundamentals. Avoid.'
-        )
+
+    if signal == 'STRONG':
+        if tier == 'PASS':
+            return (
+                'Market signal is strong. Earnings quality is strong. '
+                'Signal is supported by fundamentals. Highest priority candidate.'
+            )
+        elif tier == 'WATCH':
+            return (
+                'Market signal is strong. Earnings quality is mixed. '
+                'Signal is present but fundamentals require monitoring. Proceed with caution.'
+            )
+        else:  # FAIL
+            return (
+                'Market signal is strong. Earnings quality is weak. '
+                'Signal is not supported by fundamentals. High risk of false signal.'
+            )
+    else:  # MODERATE or WEAK
+        if tier == 'PASS':
+            return (
+                f'Market signal is {signal.lower()}. Earnings quality is strong. '
+                'Fundamentals are solid but signal is not fully confirmed. '
+                'Requires further confirmation before action.'
+            )
+        elif tier == 'WATCH':
+            return (
+                f'Market signal is {signal.lower()}. Earnings quality is mixed. '
+                'Signal is not fully confirmed by fundamentals. Requires caution.'
+            )
+        else:  # FAIL
+            return (
+                f'Market signal is {signal.lower()}. Earnings quality is weak. '
+                'No alignment between signal and fundamentals. Avoid.'
+            )
 
 
 def _build_eq_display(c: dict) -> dict:
@@ -214,28 +279,30 @@ def _build_eq_display(c: dict) -> dict:
     System 1 owns all EQ rendering. System 2 never produces HTML for System 1.
     Returns safe fallback display values when EQ data is unavailable.
 
-    EQ verdict uses controlled vocabulary only:
-      SUPPORTIVE — EQ PASS, earnings back the signal
-      WEAK       — EQ WATCH, minor concerns
-      RISKY      — EQ FAIL or fatal flaw present
+    EQ verdict controlled vocabulary (maps from pass_tier only):
+      SUPPORTIVE  — PASS
+      NEUTRAL     — WATCH
+      WEAK        — FAIL
+      RISKY       — fatal flaw present (overrides tier)
       UNAVAILABLE — no EQ data
     """
-    conf_score  = c.get('composite_confidence', 0)
+    conf_score   = c.get('composite_confidence', 0)
     eq_available = bool(c.get(EQ_AVAILABLE))
-    pass_tier   = c.get(PASS_TIER, '')
+    pass_tier    = c.get(PASS_TIER, '')
+    fatal        = c.get(FATAL_FLAW_REASON, '')
 
-    # Combined reading — always computed
-    combined_reading = _build_combined_reading(conf_score, pass_tier, eq_available)
+    combined_reading = _build_combined_reading(conf_score, pass_tier, eq_available, fatal)
     signal_strength  = _signal_strength_label(conf_score)
 
     if not eq_available:
         return {
             EQ_SCORE_DISPLAY:         'N/A',
-            EQ_LABEL_DISPLAY:         'Unavailable',
+            EQ_LABEL_DISPLAY:         'UNAVAILABLE',
             EQ_VERDICT_DISPLAY:       'UNAVAILABLE',
             EQ_TOP_RISKS_DISPLAY:     [],
             EQ_TOP_STRENGTHS_DISPLAY: [],
             EQ_WARNINGS_DISPLAY:      [],
+            'eq_pass_display':        'UNAVAILABLE',
             'eq_combined_reading':    combined_reading,
             'signal_strength':        signal_strength,
         }
@@ -245,27 +312,16 @@ def _build_eq_display(c: dict) -> dict:
     risks      = c.get(TOP_RISKS, [])
     strengths  = c.get(TOP_STRENGTHS, [])
     warnings   = c.get(WARNINGS, [])
-    fatal      = c.get(FATAL_FLAW_REASON, '')
     percentile = c.get(EQ_PERCENTILE, 0)
 
     score_display = f'{int(eq_score)}/100'
     label_display = eq_label if eq_label else 'Unknown'
 
-    # Controlled vocabulary EQ verdict
-    if fatal or pass_tier.upper() == 'FAIL':
-        eq_verdict = 'RISKY'
-    elif pass_tier.upper() == 'WATCH':
-        eq_verdict = 'WEAK'
-    elif pass_tier.upper() == 'PASS':
-        eq_verdict = 'SUPPORTIVE'
-    else:
-        eq_verdict = 'UNAVAILABLE'
+    # Verdict maps directly from pass tier — warnings do not affect this
+    eq_verdict = _eq_verdict_from_tier(pass_tier, fatal)
 
     # Pass tier display line
-    if percentile:
-        pass_display = f'{pass_tier} ({percentile}th percentile)'
-    else:
-        pass_display = pass_tier
+    pass_display = f'{pass_tier.upper()} ({percentile}th percentile)' if percentile else pass_tier.upper()
 
     warning_strings = []
     for w in warnings[:3]:
@@ -431,7 +487,7 @@ def _enrich_company_for_template(c: dict) -> dict:
     if dd_pct is not None and dd_pct > 20:
         notices.append(DRAWDOWN_NOTE.format(DRAWDOWN_PCT=f'{dd_pct:.0f}'))
 
-    # Summary block
+    # Summary block (System 1 verdict — market signal only)
     summary_score_line = SUMMARY_SCORE_LINE.format(
         SCORE         = int(conf_score),
         SCORE_MEANING = score_meaning(int(conf_score)),
@@ -463,9 +519,7 @@ def _enrich_company_for_template(c: dict) -> dict:
         summary_risks.append('[-] Lower trading activity than usual')
 
     summary_verdict_val = summary_verdict(conf_score, risk_score, section)
-
-    # Market verdict label for the MARKET SIGNAL ANALYSIS section
-    market_verdict = summary_verdict_val  # RESEARCH NOW / WATCH / SKIP
+    market_verdict      = summary_verdict_val
 
     # EQ display enrichment
     eq_display = _build_eq_display(c)
