@@ -1,279 +1,632 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{ subject }}</title>
-<style>
-  body{background:#0a0a0f;color:#e8e8f0;font-family:'Courier New',Courier,monospace;
-       font-size:14px;line-height:1.6;margin:0;padding:0}
-  .wrap{max-width:900px;margin:0 auto;padding:24px 16px}
-  h1{color:#ffffff;font-size:20px;margin:0 0 4px}
-  .meta{color:#8888aa;font-size:12px;margin-bottom:20px}
-  .market-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
-  .idx-card{background:#0f0f1a;border:1px solid #1e1e3a;border-radius:8px;padding:14px;text-align:center}
-  .idx-name{color:#8888aa;font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
-  .idx-val{font-size:22px;font-weight:bold;color:#e8e8f0}
-  .idx-chg{font-size:13px;margin-top:4px}
-  .idx-chg.up{color:#00ff88}
-  .idx-chg.dn{color:#ff3355}
-  .idx-chg.fl{color:#8888aa}
-  .story-block{background:#0f0f1a;border:1px solid #1e1e3a;border-radius:8px;
-               padding:16px;margin-bottom:20px;color:#8888aa;font-size:13px}
-  .story-block p{margin:4px 0}
-  .section-hdr{font-size:13px;font-weight:bold;text-transform:uppercase;letter-spacing:.08em;
-               padding:8px 0 6px;border-bottom:2px solid;margin-bottom:12px}
-  .sec-low .section-hdr{color:#00ff88;border-color:#00ff88}
-  .sec-mod .section-hdr{color:#ffcc00;border-color:#ffcc00}
-  .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:12px;margin-bottom:20px}
-  .card{background:#0f0f1a;border:1px solid #1e1e3a;border-radius:8px;padding:16px}
-  .card-title{font-size:15px;font-weight:bold;color:#00aaff;margin-bottom:8px}
-  .card-title .tk{color:#8888aa;font-size:12px}
-  .card-title .sec{color:#8888aa;font-size:12px;margin-left:6px}
-  .row{display:flex;margin:4px 0;font-size:13px;line-height:1.5}
-  .row .lbl{color:#8888aa;min-width:120px;flex-shrink:0}
-  .row .val{color:#e8e8f0;flex:1}
-  .warn{background:#1a1104;border-left:3px solid #ffcc00;padding:8px 10px;
-        margin-top:10px;font-size:12px;color:#ffcc00;border-radius:3px;line-height:1.5}
-  .note-box{background:#141428;border-left:3px solid #00aaff;padding:8px 10px;
-             margin-top:10px;font-size:12px;color:#8888aa;border-radius:3px}
-  .conf-strong{color:#00ff88;font-weight:bold}
-  .conf-mod{color:#ffcc00;font-weight:bold}
-  .conf-weak{color:#8888aa;font-weight:bold}
-  .summary-block{background:#141428;border:1px solid #1e1e3a;border-radius:4px;
-                 padding:8px 10px;margin-top:10px;font-size:12px}
-  .summary-hdr{color:#8888aa;font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
-  .verdict-now{color:#00ff88;font-weight:bold}
-  .verdict-watch{color:#ffcc00;font-weight:bold}
-  .verdict-skip{color:#8888aa;font-weight:bold}
-  .pos{color:#00ff88}
-  .neg{color:#ff3355}
-  .rotation-block{background:#141428;border:1px solid #1e1e3a;border-radius:8px;
-                  padding:14px;margin-bottom:20px}
-  .rotation-block h2{color:#8888aa;font-size:12px;text-transform:uppercase;letter-spacing:.06em;margin:0 0 10px}
-  .rot-row{display:flex;justify-content:space-between;font-size:13px;padding:3px 0;
-           border-bottom:1px solid #1e1e3a}
-  .rot-sector{color:#e8e8f0}
-  .rot-label{color:#8888aa;font-size:12px}
-  .rot-accel{color:#00ff88}
-  .rot-decel{color:#ff3355}
-  .metric-guide{margin-top:28px;padding-top:20px;border-top:1px solid #1e1e3a}
-  .metric-guide h3{color:#8888aa;font-size:11px;text-transform:uppercase;letter-spacing:.12em;margin:0 0 14px}
-  .guide-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
-  .guide-item{background:#0f0f1a;border:1px solid #1e1e3a;border-radius:6px;padding:10px 12px}
-  .guide-term{display:block;color:#00aaff;font-size:12px;font-weight:bold;margin-bottom:4px}
-  .guide-def{display:block;color:#8888aa;font-size:12px;line-height:1.5}
-  .disclaimer{margin-top:24px;font-size:11px;color:#444466;border-top:1px solid #1e1e3a;padding-top:12px}
-  @media(max-width:600px){
-    .market-grid{grid-template-columns:1fr}
-    .card-grid{grid-template-columns:1fr}
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ subject }}</title>
+  <style>
+    body {
+      background: #0a0a0f;
+      color: #e8e8f0;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0
+    }
+
+    .wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px 16px
+    }
+
+    h1 {
+      color: #ffffff;
+      font-size: 20px;
+      margin: 0 0 4px
+    }
+
+    .meta {
+      color: #8888aa;
+      font-size: 12px;
+      margin-bottom: 20px
+    }
+
+    .market-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px
+    }
+
+    .idx-card {
+      background: #0f0f1a;
+      border: 1px solid #1e1e3a;
+      border-radius: 8px;
+      padding: 14px;
+      text-align: center
+    }
+
+    .idx-name {
+      color: #8888aa;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 6px
+    }
+
+    .idx-val {
+      font-size: 22px;
+      font-weight: bold;
+      color: #e8e8f0
+    }
+
+    .idx-chg {
+      font-size: 13px;
+      margin-top: 4px
+    }
+
+    .idx-chg.up {
+      color: #00ff88
+    }
+
+    .idx-chg.dn {
+      color: #ff3355
+    }
+
+    .idx-chg.fl {
+      color: #8888aa
+    }
+
+    .story-block {
+      background: #0f0f1a;
+      border: 1px solid #1e1e3a;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 20px;
+      color: #8888aa;
+      font-size: 13px
+    }
+
+    .story-block p {
+      margin: 4px 0
+    }
+
+    .section-hdr {
+      font-size: 13px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      padding: 8px 0 6px;
+      border-bottom: 2px solid;
+      margin-bottom: 12px
+    }
+
+    .sec-low .section-hdr {
+      color: #00ff88;
+      border-color: #00ff88
+    }
+
+    .sec-mod .section-hdr {
+      color: #ffcc00;
+      border-color: #ffcc00
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px
+    }
+
+    .card {
+      background: #0f0f1a;
+      border: 1px solid #1e1e3a;
+      border-radius: 8px;
+      padding: 0;
+      overflow: hidden
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: bold;
+      color: #00aaff;
+      padding: 14px 16px 10px;
+      border-bottom: 1px solid #1e1e3a;
+      margin: 0
+    }
+
+    .card-title .tk {
+      color: #8888aa;
+      font-size: 12px
+    }
+
+    .card-title .sec {
+      color: #8888aa;
+      font-size: 12px;
+      margin-left: 6px
+    }
+
+    /* ── Three-section layout ─────────────────────────────── */
+    .analysis-section {
+      padding: 12px 16px;
+      border-bottom: 1px solid #1e1e3a
+    }
+
+    .analysis-section:last-child {
+      border-bottom: none
+    }
+
+    .section-label-inner {
+      font-size: 11px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      margin-bottom: 8px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid #1e1e3a
+    }
+
+    .sec-market .section-label-inner {
+      color: #00aaff
+    }
+
+    .sec-eq .section-label-inner {
+      color: #aa88ff
+    }
+
+    .sec-combined .section-label-inner {
+      color: #ffcc00
+    }
+
+    .row {
+      display: flex;
+      margin: 3px 0;
+      font-size: 13px;
+      line-height: 1.5
+    }
+
+    .row .lbl {
+      color: #8888aa;
+      min-width: 100px;
+      flex-shrink: 0
+    }
+
+    .row .val {
+      color: #e8e8f0;
+      flex: 1
+    }
+
+    /* Market verdict */
+    .mv-now {
+      color: #00ff88;
+      font-weight: bold
+    }
+
+    .mv-watch {
+      color: #ffcc00;
+      font-weight: bold
+    }
+
+    .mv-skip {
+      color: #8888aa;
+      font-weight: bold
+    }
+
+    /* EQ verdict controlled vocabulary */
+    .eq-v-supportive {
+      color: #00ff88;
+      font-weight: bold
+    }
+
+    .eq-v-weak {
+      color: #ffcc00;
+      font-weight: bold
+    }
+
+    .eq-v-risky {
+      color: #ff3355;
+      font-weight: bold
+    }
+
+    .eq-v-unavailable {
+      color: #8888aa;
+      font-weight: bold
+    }
+
+    /* Combined reading */
+    .combined-text {
+      color: #e8e8f0;
+      font-size: 13px;
+      line-height: 1.6
+    }
+
+    .eq-strength {
+      color: #00ff88;
+      font-size: 12px;
+      margin: 2px 0
+    }
+
+    .eq-risk {
+      color: #ff3355;
+      font-size: 12px;
+      margin: 2px 0
+    }
+
+    .warn {
+      background: #1a1104;
+      border-left: 3px solid #ffcc00;
+      padding: 8px 10px;
+      margin-top: 6px;
+      font-size: 12px;
+      color: #ffcc00;
+      border-radius: 3px;
+      line-height: 1.5
+    }
+
+    .note-box {
+      background: #141428;
+      border-left: 3px solid #00aaff;
+      padding: 8px 10px;
+      margin-top: 6px;
+      font-size: 12px;
+      color: #8888aa;
+      border-radius: 3px
+    }
+
+    .conf-strong {
+      color: #00ff88;
+      font-weight: bold
+    }
+
+    .conf-mod {
+      color: #ffcc00;
+      font-weight: bold
+    }
+
+    .conf-weak {
+      color: #8888aa;
+      font-weight: bold
+    }
+
+    .rotation-block {
+      background: #141428;
+      border: 1px solid #1e1e3a;
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 20px
+    }
+
+    .rotation-block h2 {
+      color: #8888aa;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin: 0 0 10px
+    }
+
+    .rot-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      padding: 3px 0;
+      border-bottom: 1px solid #1e1e3a
+    }
+
+    .rot-sector {
+      color: #e8e8f0
+    }
+
+    .rot-label {
+      color: #8888aa;
+      font-size: 12px
+    }
+
+    .rot-accel {
+      color: #00ff88
+    }
+
+    .rot-decel {
+      color: #ff3355
+    }
+
+    .metric-guide {
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid #1e1e3a
+    }
+
+    .metric-guide h3 {
+      color: #8888aa;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      margin: 0 0 14px
+    }
+
+    .guide-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px
+    }
+
+    .guide-item {
+      background: #0f0f1a;
+      border: 1px solid #1e1e3a;
+      border-radius: 6px;
+      padding: 10px 12px
+    }
+
+    .guide-term {
+      display: block;
+      color: #00aaff;
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 4px
+    }
+
+    .guide-def {
+      display: block;
+      color: #8888aa;
+      font-size: 12px;
+      line-height: 1.5
+    }
+
+    .disclaimer {
+      margin-top: 24px;
+      font-size: 11px;
+      color: #444466;
+      border-top: 1px solid #1e1e3a;
+      padding-top: 12px
+    }
+
+    @media(max-width:600px) {
+      .market-grid {
+        grid-template-columns: 1fr
+      }
+
+      .card-grid {
+        grid-template-columns: 1fr
+      }
+    }
+  </style>
 </head>
+
 <body>
-{% macro conf_bar(score) -%}
-{%- set filled = [score // 10, 10] | min | int -%}
-{%- set empty = 10 - filled -%}
-[{{ '█' * filled }}{{ '░' * empty }}] {{ score }}/100
-{%- endmacro %}
-<div class="wrap">
+  {% macro conf_bar(score) -%}
+  {%- set filled = [score // 10, 10] | min | int -%}
+  {%- set empty = 10 - filled -%}
+  [{{ '█' * filled }}{{ '░' * empty }}] {{ score }}/100
+  {%- endmacro %}
 
-  <h1>■ Stock Research — {{ slot }} Full Report</h1>
-  <div class="meta">{{ date_str }} · {{ time_str }} · Market regime: {{ regime_label }} · Breadth: {{ breadth_label }} · {{ total_companies }} opportunities found</div>
-
-  <!-- Market Pulse -->
-  <div class="market-grid">
-    {% for line in pulse_lines %}
-    <div class="idx-card">
-      <div class="idx-name">{{ loop.index == 1 and 'Dow Jones' or loop.index == 2 and 'S&amp;P 500' or 'Nasdaq' }}</div>
-      <div class="idx-val" style="font-size:13px;font-family:'Courier New'">{{ line }}</div>
+  {% macro render_card(c) %}
+  <div class="card">
+    <div class="card-title">
+      {{ c.display_name }} <span class="tk">({{ c.ticker }})</span>
+      <span class="sec">— {{ c.sector_plain }}{% if c.industry_label %} ({{ c.industry_label }}){% endif %}</span>
     </div>
-    {% endfor %}
-  </div>
 
-  <!-- Today's Story -->
-  <div class="story-block">
-    <p><strong>Today's story</strong></p>
-    {% for s in story_sentences %}
-    <p>{{ s }}</p>
-    {% endfor %}
-    {% if commodity_summary %}
-    <p style="color:#8888aa;font-style:italic">{{ commodity_summary }}</p>
+    <!-- ── MARKET SIGNAL ANALYSIS ───────────────────────────── -->
+    <div class="analysis-section sec-market">
+      <div class="section-label-inner">── MARKET SIGNAL ANALYSIS ────────</div>
+      <div class="row"><span class="lbl">Confidence:</span>
+        <span
+          class="val {% if c.confidence_label == 'STRONG' %}conf-strong{% elif c.confidence_label == 'MODERATE' %}conf-mod{% else %}conf-weak{% endif %}">
+          {{ conf_bar(c.conf_score_int) }} ({{ c.signal_strength }})
+        </span>
+      </div>
+      <div class="row"><span class="lbl">Trend:</span><span class="val">{{ c.trend_label }}</span></div>
+      <div class="row"><span class="lbl">Price:</span><span class="val">{{ c.price_line }}</span></div>
+      <div class="row"><span class="lbl">Volume:</span><span class="val">{{ c.volume_line }}</span></div>
+      <div class="row"><span class="lbl">Financials:</span><span class="val">{{ c.financial_health }}</span></div>
+      <div class="row"><span class="lbl">Risk:</span><span class="val">{{ c.section }}</span></div>
+      {% if c.moderate_risk_text %}
+      <div class="warn" style="margin-top:6px">■■ {{ c.moderate_risk_text }}</div>
+      {% endif %}
+      {% for notice in c.notices %}
+      <div class="{% if '■■' in notice %}warn{% else %}note-box{% endif %}" style="margin-top:4px">{{ notice }}</div>
+      {% endfor %}
+      <div class="row" style="margin-top:6px"><span class="lbl">Market verdict:</span>
+        <span
+          class="val {% if c.market_verdict == 'RESEARCH NOW' %}mv-now{% elif c.market_verdict == 'WATCH' %}mv-watch{% else %}mv-skip{% endif %}">
+          {{ c.market_verdict }}
+        </span>
+      </div>
+    </div>
+
+    <!-- ── EARNINGS QUALITY ANALYSIS ────────────────────────── -->
+    <div class="analysis-section sec-eq">
+      <div class="section-label-inner">── EARNINGS QUALITY ANALYSIS ─────</div>
+      {% if c.eq_available %}
+      <div class="row"><span class="lbl">EQ Score:</span>
+        <span class="val">{{ c.eq_score_display }} — {{ c.eq_label_display }}</span>
+      </div>
+      <div class="row"><span class="lbl">Pass tier:</span>
+        <span class="val">{{ c.eq_pass_display }}</span>
+      </div>
+      {% if c.eq_top_strengths_display %}
+      <div style="margin-top:4px">
+        {% for s in c.eq_top_strengths_display %}
+        <div class="eq-strength">[+] {{ s }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% if c.eq_top_risks_display %}
+      <div style="margin-top:2px">
+        {% for r in c.eq_top_risks_display %}
+        <div class="eq-risk">[!] {{ r }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% if c.eq_warnings_display %}
+      <div style="margin-top:2px">
+        {% for w in c.eq_warnings_display %}
+        <div class="eq-risk" style="color:#ffcc00">[w] {{ w }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% else %}
+      <div class="row"><span class="lbl">EQ Score:</span><span class="val" style="color:#8888aa">N/A</span></div>
+      <div class="row"><span class="lbl">Pass tier:</span><span class="val" style="color:#8888aa">Unavailable</span>
+      </div>
+      {% endif %}
+      <div class="row" style="margin-top:6px"><span class="lbl">EQ verdict:</span>
+        <span class="val
+        {% if c.eq_verdict_display == 'SUPPORTIVE' %}eq-v-supportive
+        {% elif c.eq_verdict_display == 'WEAK' %}eq-v-weak
+        {% elif c.eq_verdict_display == 'RISKY' %}eq-v-risky
+        {% else %}eq-v-unavailable{% endif %}">
+          {{ c.eq_verdict_display }}
+        </span>
+      </div>
+    </div>
+
+    <!-- ── COMBINED READING ──────────────────────────────────── -->
+    <div class="analysis-section sec-combined">
+      <div class="section-label-inner">── COMBINED READING ──────────────</div>
+      <div class="combined-text">{{ c.eq_combined_reading }}</div>
+    </div>
+
+  </div>
+  {% endmacro %}
+
+  <div class="wrap">
+
+    <h1>■ Stock Research — {{ slot }} Full Report</h1>
+    <div class="meta">{{ date_str }} · {{ time_str }} · Market regime: {{ regime_label }} · Breadth: {{ breadth_label }}
+      · {{ total_companies }} opportunities found</div>
+
+    <!-- Market Pulse -->
+    <div class="market-grid">
+      {% for line in pulse_lines %}
+      <div class="idx-card">
+        <div class="idx-name">{{ loop.index == 1 and 'Dow Jones' or loop.index == 2 and 'S&amp;P 500' or 'Nasdaq' }}
+        </div>
+        <div class="idx-val" style="font-size:13px;font-family:'Courier New'">{{ line }}</div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Today's Story -->
+    <div class="story-block">
+      <p><strong>Today's story</strong></p>
+      {% for s in story_sentences %}
+      <p>{{ s }}</p>
+      {% endfor %}
+      {% if commodity_summary %}
+      <p style="color:#8888aa;font-style:italic">{{ commodity_summary }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Low Risk -->
+    {% if low_risk %}
+    <div class="sec-low">
+      <div class="section-hdr">■ LOW RISK OPPORTUNITIES ({{ low_risk|length }})</div>
+      <div class="card-grid">
+        {% for c in low_risk %}{{ render_card(c) }}{% endfor %}
+      </div>
+    </div>
     {% endif %}
-  </div>
 
-  <!-- Low Risk -->
-  {% if low_risk %}
-  <div class="sec-low">
-    <div class="section-hdr">■ LOW RISK OPPORTUNITIES ({{ low_risk|length }})</div>
-    <div class="card-grid">
-      {% for c in low_risk %}
-      <div class="card">
-        <div class="card-title">{{ c.display_name }} <span class="tk">({{ c.ticker }})</span><span class="sec">— {{ c.sector_plain }}{% if c.industry_label %} ({{ c.industry_label }}){% endif %}</span></div>
-        <div class="row"><span class="lbl">■ Why today:</span><span class="val">{{ c.intro_sentence }}</span></div>
-        <div class="row"><span class="lbl">■ Trend:</span><span class="val">{{ c.trend_label }}</span></div>
-        <div class="row"><span class="lbl">■ Price:</span><span class="val">{{ c.price_line }}</span></div>
-        <div class="row"><span class="lbl">■ Financials:</span><span class="val">{{ c.financial_health }}</span></div>
-        <div class="row"><span class="lbl">■ Volume:</span><span class="val">{{ c.volume_line }}</span></div>
-        <div class="row"><span class="lbl">■ Confidence:</span>
-          <span class="val {% if c.confidence_label == 'STRONG' %}conf-strong{% elif c.confidence_label == 'MODERATE' %}conf-mod{% else %}conf-weak{% endif %}">
-            {{ conf_bar(c.conf_score_int) }}
-          </span>
-        </div>
-        <div class="row" style="color:#8888aa;font-size:12px"><span class="lbl"></span><span class="val">{{ c.conf_line }}</span></div>
-        {% for notice in c.notices %}
-        <div class="{% if '■■' in notice %}warn{% else %}note-box{% endif %}">{{ notice }}</div>
-        {% endfor %}
-        <!-- Summary Block -->
-        <div class="summary-block">
-          <div class="summary-hdr">Summary</div>
-          <div style="color:#e8e8f0;margin:2px 0">{{ c.summary_score_line }}</div>
-          {% for pos in c.summary_positives %}
-          <div class="pos">{{ pos }}</div>
-          {% endfor %}
-          {% for risk in c.summary_risks %}
-          <div class="neg">{{ risk }}</div>
-          {% endfor %}
-          <div style="margin-top:4px">Verdict:
-            <span class="{% if c.summary_verdict == 'RESEARCH NOW' %}verdict-now{% elif c.summary_verdict == 'WATCH' %}verdict-watch{% else %}verdict-skip{% endif %}">
-              {{ c.summary_verdict }}
-            </span>
-          </div>
-        </div>
+    <!-- Moderate Risk -->
+    {% if moderate_risk %}
+    <div class="sec-mod">
+      <div class="section-hdr">■ MODERATE RISK OPPORTUNITIES ({{ moderate_risk|length }})</div>
+      <div class="card-grid">
+        {% for c in moderate_risk %}{{ render_card(c) }}{% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- No opportunities -->
+    {% if not low_risk and not moderate_risk %}
+    <div class="story-block">
+      <p>No qualifying opportunities found for this run.</p>
+    </div>
+    {% endif %}
+
+    <!-- Sector Rotation -->
+    {% if rotation %}
+    <div class="rotation-block">
+      <h2>Sector Rotation Signals</h2>
+      {% for sector, rot in rotation.items() %}
+      <div class="rot-row">
+        <span class="rot-sector">{{ sector.replace('_', ' ').title() }}</span>
+        <span
+          class="{% if rot.accelerating %}rot-accel{% elif rot.rotation_speed < -2 %}rot-decel{% else %}rot-label{% endif %}">
+          {{ rot.label }}{% if rot.accelerating %} ▲{% endif %}
+        </span>
       </div>
       {% endfor %}
     </div>
-  </div>
-  {% endif %}
+    {% endif %}
 
-  <!-- Moderate Risk -->
-  {% if moderate_risk %}
-  <div class="sec-mod">
-    <div class="section-hdr">■ MODERATE RISK OPPORTUNITIES ({{ moderate_risk|length }})</div>
-    <div class="card-grid">
-      {% for c in moderate_risk %}
-      <div class="card">
-        <div class="card-title">{{ c.display_name }} <span class="tk">({{ c.ticker }})</span><span class="sec">— {{ c.sector_plain }}{% if c.industry_label %} ({{ c.industry_label }}){% endif %}</span></div>
-        <div class="row"><span class="lbl">■ Why today:</span><span class="val">{{ c.intro_sentence }}</span></div>
-        <div class="row"><span class="lbl">■ Trend:</span><span class="val">{{ c.trend_label }}</span></div>
-        <div class="row"><span class="lbl">■ Price:</span><span class="val">{{ c.price_line }}</span></div>
-        <div class="row"><span class="lbl">■ Financials:</span><span class="val">{{ c.financial_health }}</span></div>
-        <div class="row"><span class="lbl">■ Volume:</span><span class="val">{{ c.volume_line }}</span></div>
-        <div class="row"><span class="lbl">■ Confidence:</span>
-          <span class="val {% if c.confidence_label == 'STRONG' %}conf-strong{% elif c.confidence_label == 'MODERATE' %}conf-mod{% else %}conf-weak{% endif %}">
-            {{ conf_bar(c.conf_score_int) }}
-          </span>
+    <!-- Metric Guide -->
+    <div class="metric-guide">
+      <h3>METRIC GUIDE</h3>
+      <div class="guide-grid">
+
+        <div class="guide-item">
+          <span class="guide-term">Confidence Score (System 1)</span>
+          <span class="guide-def">Market signal strength 0-100. Measures momentum,
+            volume, sector alignment, and risk. Strong ≥70 · Moderate 50-69 · Weak &lt;50.
+            Does NOT measure earnings quality.</span>
         </div>
-        <div class="row" style="color:#8888aa;font-size:12px"><span class="lbl"></span><span class="val">{{ c.conf_line }}</span></div>
-        {% if c.moderate_risk_text %}
-        <div class="warn">■■ {{ c.moderate_risk_text }}</div>
-        {% endif %}
-        {% for notice in c.notices %}
-        <div class="{% if '■■' in notice %}warn{% else %}note-box{% endif %}">{{ notice }}</div>
-        {% endfor %}
-        <!-- Summary Block -->
-        <div class="summary-block">
-          <div class="summary-hdr">Summary</div>
-          <div style="color:#e8e8f0;margin:2px 0">{{ c.summary_score_line }}</div>
-          {% for pos in c.summary_positives %}
-          <div class="pos">{{ pos }}</div>
-          {% endfor %}
-          {% for risk in c.summary_risks %}
-          <div class="neg">{{ risk }}</div>
-          {% endfor %}
-          <div style="margin-top:4px">Verdict:
-            <span class="{% if c.summary_verdict == 'RESEARCH NOW' %}verdict-now{% elif c.summary_verdict == 'WATCH' %}verdict-watch{% else %}verdict-skip{% endif %}">
-              {{ c.summary_verdict }}
-            </span>
-          </div>
+
+        <div class="guide-item">
+          <span class="guide-term">EQ Score (System 2)</span>
+          <span class="guide-def">Earnings quality 0-100. Measures how well reported
+            profits are backed by real cash flows. Independent of market signal.
+            PASS ≥75 · WATCH 55-74 · FAIL &lt;55.</span>
         </div>
+
+        <div class="guide-item">
+          <span class="guide-term">EQ Verdict</span>
+          <span class="guide-def">SUPPORTIVE — earnings back the signal.
+            WEAK — minor concerns, monitor closely.
+            RISKY — earnings do not support the signal.
+            UNAVAILABLE — insufficient SEC filing data.</span>
+        </div>
+
+        <div class="guide-item">
+          <span class="guide-term">Combined Reading</span>
+          <span class="guide-def">Deterministic synthesis of System 1 market signal
+            and System 2 earnings quality. Use this as your starting point for
+            further research — it does not replace independent analysis.</span>
+        </div>
+
+        <div class="guide-item">
+          <span class="guide-term">Trend (1M/3M/6M)</span>
+          <span class="guide-def">Price return over 1, 3, and 6 months. Positive
+            across all three = confirmed momentum. One timeframe only = early stage.</span>
+        </div>
+
+        <div class="guide-item">
+          <span class="guide-term">Risk Score</span>
+          <span class="guide-def">Composite risk measure 0-100. Higher = more risk.
+            Factors: debt, volatility, liquidity, earnings stability, drawdown.</span>
+        </div>
+
+        <div class="guide-item">
+          <span class="guide-term">ROIC</span>
+          <span class="guide-def">Return on Invested Capital — profit generated per
+            dollar invested in the business. Above 15% = excellent. Below 8% = weak.</span>
+        </div>
+
+        <div class="guide-item">
+          <span class="guide-term">Drawdown</span>
+          <span class="guide-def">How far the stock has fallen from its 90-day
+            highest price. Above 20% = meaningful risk even if fundamentals look clean.</span>
+        </div>
+
       </div>
-      {% endfor %}
     </div>
+
+    <div class="disclaimer">{{ disclaimer }}</div>
+
   </div>
-  {% endif %}
-
-  <!-- No opportunities -->
-  {% if not low_risk and not moderate_risk %}
-  <div class="story-block"><p>No qualifying opportunities found for this run.</p></div>
-  {% endif %}
-
-  <!-- Sector Rotation -->
-  {% if rotation %}
-  <div class="rotation-block">
-    <h2>Sector Rotation Signals</h2>
-    {% for sector, rot in rotation.items() %}
-    <div class="rot-row">
-      <span class="rot-sector">{{ sector.replace('_', ' ').title() }}</span>
-      <span class="{% if rot.accelerating %}rot-accel{% elif rot.rotation_speed < -2 %}rot-decel{% else %}rot-label{% endif %}">
-        {{ rot.label }}{% if rot.accelerating %} ▲{% endif %}
-      </span>
-    </div>
-    {% endfor %}
-  </div>
-  {% endif %}
-
-  <!-- Metric Guide -->
-  <div class="metric-guide">
-    <h3>METRIC GUIDE</h3>
-    <div class="guide-grid">
-
-      <div class="guide-item">
-        <span class="guide-term">Confidence Score</span>
-        <span class="guide-def">Composite screening score 0-100. Not a profit
-          probability. 85+ = strong signal · 70-84 = solid · 60-69 = screening only</span>
-      </div>
-
-      <div class="guide-item">
-        <span class="guide-term">ROIC</span>
-        <span class="guide-def">Return on Invested Capital — profit generated per
-          dollar invested in the business. Above 15% = excellent. Below 8% = weak.</span>
-      </div>
-
-      <div class="guide-item">
-        <span class="guide-term">Trend (1M/3M/6M)</span>
-        <span class="guide-def">Price return over 1, 3, and 6 months. Positive
-          across all three = confirmed momentum. One timeframe only = early stage.</span>
-      </div>
-
-      <div class="guide-item">
-        <span class="guide-term">Signal Agreement</span>
-        <span class="guide-def">How many independent signals point the same
-          direction. Multiplicative — one weak signal pulls the whole score down.</span>
-      </div>
-
-      <div class="guide-item">
-        <span class="guide-term">Beta (Volatility)</span>
-        <span class="guide-def">Market baseline = 1.0. Beta 1.8 = stock moves
-          ~1.8x as much as the market. Higher beta = larger swings in both
-          directions.</span>
-      </div>
-
-      <div class="guide-item">
-        <span class="guide-term">Drawdown</span>
-        <span class="guide-def">How far the stock has fallen from its 90-day
-          highest price. Above 20% = meaningful risk even if fundamentals
-          look clean.</span>
-      </div>
-
-      <div class="guide-item">
-        <span class="guide-term">FCF</span>
-        <span class="guide-def">Free Cash Flow — real cash the business generates
-          after all expenses. Declining FCF is an early warning sign.</span>
-      </div>
-
-      <div class="guide-item">
-        <span class="guide-term">Risk Score</span>
-        <span class="guide-def">Composite risk measure 0-100. Higher = more risk.
-          Factors: debt, volatility, liquidity, earnings stability,
-          drawdown.</span>
-      </div>
-
-    </div>
-  </div>
-
-  <div class="disclaimer">{{ disclaimer }}</div>
-
-</div>
 </body>
+
 </html>

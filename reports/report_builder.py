@@ -73,6 +73,13 @@ DISCLAIMER = (
     'and does NOT make price predictions. It is a research data aggregation and scoring tool only.'
 )
 
+# ── Signal strength thresholds ─────────────────────────────────────────────
+# Used by combined reading logic. Locked here — do not change without updating
+# the combined reading rules below.
+SIGNAL_STRONG   = 70   # confidence >= 70
+SIGNAL_MODERATE = 50   # confidence 50-69
+# confidence < 50 = weak signal
+
 
 def _get_jinja_env() -> Environment:
     return Environment(
@@ -115,7 +122,6 @@ def _build_story_sentences(all_articles: list, sector_scores: dict, confirmed_se
         direction_plain = DIRECTION_PLAIN.get(direction, 'moving')
         sector_plain    = render_sector_plain(sector)
 
-        # Count articles that mention this sector
         sector_keyword = sector.replace('_', ' ')
         signal_count = sum(
             1 for a in all_articles
@@ -123,7 +129,6 @@ def _build_story_sentences(all_articles: list, sector_scores: dict, confirmed_se
             or sector in (a.get('title', '') + ' ' + a.get('summary', '')).lower()
         )
 
-        # Use signal-count variant when we have meaningful data, fallback otherwise
         if signal_count >= 2 and score_val > 0:
             sentences.append(TODAY_STORY_SENTENCE_SIGNALS.format(
                 SECTOR_PLAIN    = sector_plain,
@@ -146,43 +151,121 @@ def _build_story_sentences(all_articles: list, sector_scores: dict, confirmed_se
     return sentences
 
 
+def _signal_strength_label(conf_score: float) -> str:
+    """Returns signal strength label based on locked thresholds."""
+    if conf_score >= SIGNAL_STRONG:
+        return 'STRONG'
+    elif conf_score >= SIGNAL_MODERATE:
+        return 'MODERATE'
+    return 'WEAK'
+
+
+def _build_combined_reading(conf_score: float, pass_tier: str, eq_available: bool) -> str:
+    """
+    Deterministic combined reading of System 1 market signal and System 2
+    earnings quality. Controls AI interpretation — no inference required.
+
+    Inputs:
+      conf_score   — System 1 composite confidence (0-100)
+      pass_tier    — System 2 EQ pass tier: PASS / WATCH / FAIL / '' (unavailable)
+      eq_available — whether System 2 returned valid data
+
+    Signal thresholds (locked):
+      Strong:   confidence >= 70
+      Moderate: confidence 50-69
+      Weak:     confidence < 50
+    """
+    signal = _signal_strength_label(conf_score)
+
+    if not eq_available:
+        return (
+            f'Market signal is {signal.lower()}. Earnings quality unavailable. '
+            'Decision must rely on market data only.'
+        )
+
+    eq_pass = pass_tier.upper() if pass_tier else 'FAIL'
+
+    if signal == 'STRONG' and eq_pass == 'PASS':
+        return (
+            'Market signal is strong. Earnings quality is strong. '
+            'Signal is supported by fundamentals. Highest priority candidate.'
+        )
+    elif signal == 'STRONG' and eq_pass in ('WATCH', 'FAIL'):
+        return (
+            'Market signal is strong. Earnings quality is weak. '
+            'Signal is not supported by fundamentals. High risk of false signal.'
+        )
+    elif signal in ('MODERATE', 'WEAK') and eq_pass == 'PASS':
+        return (
+            f'Market signal is {signal.lower()}. Earnings quality is strong. '
+            'Fundamentals are solid but signal is not fully confirmed. '
+            'Requires further confirmation before action.'
+        )
+    else:
+        return (
+            f'Market signal is {signal.lower()}. Earnings quality is weak. '
+            'No alignment between signal and fundamentals. Avoid.'
+        )
+
+
 def _build_eq_display(c: dict) -> dict:
     """
     Builds display-ready EQ fields from raw EQ data on the candidate dict.
     System 1 owns all EQ rendering. System 2 never produces HTML for System 1.
     Returns safe fallback display values when EQ data is unavailable.
+
+    EQ verdict uses controlled vocabulary only:
+      SUPPORTIVE — EQ PASS, earnings back the signal
+      WEAK       — EQ WATCH, minor concerns
+      RISKY      — EQ FAIL or fatal flaw present
+      UNAVAILABLE — no EQ data
     """
-    if not c.get(EQ_AVAILABLE):
+    conf_score  = c.get('composite_confidence', 0)
+    eq_available = bool(c.get(EQ_AVAILABLE))
+    pass_tier   = c.get(PASS_TIER, '')
+
+    # Combined reading — always computed
+    combined_reading = _build_combined_reading(conf_score, pass_tier, eq_available)
+    signal_strength  = _signal_strength_label(conf_score)
+
+    if not eq_available:
         return {
             EQ_SCORE_DISPLAY:         'N/A',
-            EQ_LABEL_DISPLAY:         'No earnings data',
-            EQ_VERDICT_DISPLAY:       'EQ analysis unavailable for this ticker',
+            EQ_LABEL_DISPLAY:         'Unavailable',
+            EQ_VERDICT_DISPLAY:       'UNAVAILABLE',
             EQ_TOP_RISKS_DISPLAY:     [],
             EQ_TOP_STRENGTHS_DISPLAY: [],
             EQ_WARNINGS_DISPLAY:      [],
+            'eq_combined_reading':    combined_reading,
+            'signal_strength':        signal_strength,
         }
 
     eq_score   = c.get(EQ_SCORE_FINAL, 0)
     eq_label   = c.get(EQ_LABEL, '')
-    pass_tier  = c.get(PASS_TIER, '')
     risks      = c.get(TOP_RISKS, [])
     strengths  = c.get(TOP_STRENGTHS, [])
     warnings   = c.get(WARNINGS, [])
     fatal      = c.get(FATAL_FLAW_REASON, '')
     percentile = c.get(EQ_PERCENTILE, 0)
-    batch      = c.get(BATCH_REGIME, '')
 
     score_display = f'{int(eq_score)}/100'
     label_display = eq_label if eq_label else 'Unknown'
 
-    if fatal:
-        verdict = f'FATAL FLAW: {fatal}'
-    elif pass_tier == 'PASS':
-        verdict = f'Earnings quality PASS — {percentile}th percentile in batch ({batch})'
-    elif pass_tier == 'WATCH':
-        verdict = 'Earnings quality WATCH — monitor closely'
+    # Controlled vocabulary EQ verdict
+    if fatal or pass_tier.upper() == 'FAIL':
+        eq_verdict = 'RISKY'
+    elif pass_tier.upper() == 'WATCH':
+        eq_verdict = 'WEAK'
+    elif pass_tier.upper() == 'PASS':
+        eq_verdict = 'SUPPORTIVE'
     else:
-        verdict = f'Earnings quality FAIL — {eq_label}'
+        eq_verdict = 'UNAVAILABLE'
+
+    # Pass tier display line
+    if percentile:
+        pass_display = f'{pass_tier} ({percentile}th percentile)'
+    else:
+        pass_display = pass_tier
 
     warning_strings = []
     for w in warnings[:3]:
@@ -194,10 +277,13 @@ def _build_eq_display(c: dict) -> dict:
     return {
         EQ_SCORE_DISPLAY:         score_display,
         EQ_LABEL_DISPLAY:         label_display,
-        EQ_VERDICT_DISPLAY:       verdict,
+        EQ_VERDICT_DISPLAY:       eq_verdict,
         EQ_TOP_RISKS_DISPLAY:     risks[:3],
         EQ_TOP_STRENGTHS_DISPLAY: strengths[:3],
         EQ_WARNINGS_DISPLAY:      warning_strings,
+        'eq_pass_display':        pass_display,
+        'eq_combined_reading':    combined_reading,
+        'signal_strength':        signal_strength,
     }
 
 
@@ -216,15 +302,14 @@ def _enrich_company_for_template(c: dict) -> dict:
     sector     = c.get('sector', '')
     direction  = c.get('sector_data', {}).get('direction', 'positive')
 
-    # Determine primary event type (use first key in sector events if available)
     event_type = c.get('sector_data', {}).get('primary_event', '_unknown')
 
     # Price line
-    price     = c.get('current_price') or fin.get('current_price')
+    price      = c.get('current_price') or fin.get('current_price')
     change_pct = fin.get('price_change_pct')
     price_line = render_price_line(price, change_pct)
 
-    # Company intro — variant selected by per-company signals
+    # Company intro
     company_name     = c.get('company_name', c.get('ticker', ''))
     sector_plain_str = render_sector_plain(sector)
     final_rank       = c.get('final_rank', 99)
@@ -253,7 +338,7 @@ def _enrich_company_for_template(c: dict) -> dict:
             DIRECTION = DIRECTION_PLAIN.get(direction, 'moving'),
         )
 
-    # ── §FIX-2: Trend line with actual timeframe data ───────────────────────
+    # Trend line
     ram_label = ram.get('label', 'no trend data')
     mtf       = c.get('mtf', {})
     r1m       = mtf.get('r1m')
@@ -264,7 +349,7 @@ def _enrich_company_for_template(c: dict) -> dict:
         if v is None: return 'n/a'
         if v > 0:   return f'\u25b2{v:.1f}%'
         if v < 0:   return f'\u25bc{abs(v):.1f}%'
-        return '\u20130.0%'   # flat — neither up nor down arrow
+        return '\u20130.0%'
 
     if r1m is not None and r3m is not None and r6m is not None:
         trend_label = TREND_LINE_FULL.format(
@@ -283,22 +368,13 @@ def _enrich_company_for_template(c: dict) -> dict:
 
     momentum_label = mtf.get('label', 'no clear direction')
 
-    # ── §FIX-3: Extended financial health ───────────────────────────────────
-    margin_pct  = fin.get('profit_margin')
-    de_ratio    = fin.get('debt_to_equity')
-    fin_health  = render_financial_health(margin_pct, de_ratio)
+    # Financial health
+    margin_pct = fin.get('profit_margin')
+    de_ratio   = fin.get('debt_to_equity')
+    fin_health = render_financial_health(margin_pct, de_ratio)
 
-    # Extended financial health — use verified key names from financial_parser.py
-    # financial_parser.py confirmed output keys: operating_cash_flow, profit_margin,
-    # debt_to_equity, revenue_ttm, net_income_ttm, eps_ttm, beta, pe_ratio
-    # NOTE: ROIC is NOT returned by financial_parser.py — it is not in the dict.
-    # Compute a proxy from available data if possible, otherwise skip.
-    ocf_val  = fin.get('operating_cash_flow')   # operating cash flow (confirmed key)
-
-    # ROIC proxy: not directly available. Use opportunity_model output if present.
-    roic_val = c.get('roic_proxy')   # set by opportunity_model if computed, else None
-
-    # FCF proxy: operating_cash_flow is the closest available free-tier equivalent
+    ocf_val  = fin.get('operating_cash_flow')
+    roic_val = c.get('roic_proxy')
     fcf_val  = ocf_val
 
     if margin_pct is not None and fcf_val is not None:
@@ -308,28 +384,24 @@ def _enrich_company_for_template(c: dict) -> dict:
             ROIC       = roic_label(roic_val),
             FCF_LABEL  = fcf_direction_label(fcf_val),
         )
-    # If operating_cash_flow also unavailable, fin_health stays as set by
-    # render_financial_health() above — do not override it.
 
     # Risk section
-    section     = risk_section(risk_score)
-    conf_lbl    = confidence_label(conf_score)
+    section  = risk_section(risk_score)
+    conf_lbl = confidence_label(conf_score)
 
-    # Moderate risk explanation (only for MODERATE RISK companies)
     mod_risk_text = ''
     if section == 'MODERATE RISK':
-        risk_comps = c.get('risk_components', {})
-        dd_pct     = dd.get('drawdown_pct')
+        risk_comps    = c.get('risk_components', {})
+        dd_pct        = dd.get('drawdown_pct')
         mod_risk_text = render_moderate_risk_block(risk_comps, risk_score, dd_pct)
 
     # Volume line
-    vol_label  = ev.get('label', 'normal trading activity')
+    vol_label   = ev.get('label', 'normal trading activity')
     volume_line = VOLUME_LINE.format(VOLUME_LABEL=vol_label.capitalize())
 
-    # ── §FIX-3: Confidence breakdown line ───────────────────────────────────
+    # Confidence breakdown
     agr_raw  = c.get('signal_agreement', {}).get('agreement_score', 0)
-    agr_int  = int(agr_raw * 100)   # scaled to 0-100 for display only
-    # agr_raw stays in 0-1 range for threshold checks below in §FIX-4
+    agr_int  = int(agr_raw * 100)
     conf_line = CONFIDENCE_BREAKDOWN.format(
         CONFIDENCE_LABEL = conf_lbl,
         CONFIDENCE_SCORE = int(conf_score),
@@ -338,7 +410,7 @@ def _enrich_company_for_template(c: dict) -> dict:
         AGR_INT          = agr_int,
     )
 
-    # Optional notice lines (earnings, divergence, unusual volume, drawdown)
+    # Notices
     notices = []
     if c.get('earnings_warning'):
         days = fin.get('earnings_days', 5)
@@ -359,26 +431,23 @@ def _enrich_company_for_template(c: dict) -> dict:
     if dd_pct is not None and dd_pct > 20:
         notices.append(DRAWDOWN_NOTE.format(DRAWDOWN_PCT=f'{dd_pct:.0f}'))
 
-    # ── §FIX-4: Summary block ────────────────────────────────────────────
+    # Summary block
     summary_score_line = SUMMARY_SCORE_LINE.format(
         SCORE         = int(conf_score),
         SCORE_MEANING = score_meaning(int(conf_score)),
     )
 
     summary_positives = []
-    # ram dict confirmed keys from risk_adjusted_momentum.py:
-    # ram_score, raw_value, return_3m, volatility, label
-    ram_raw = ram.get('raw_value')   # float or None — always use .get(), never bracket
+    ram_raw = ram.get('raw_value')
     if ram_raw is not None and ram_raw > 1:
         summary_positives.append(f'[+] {ram_label}')
     if c.get('opportunity_score', 0) > 60:
         summary_positives.append('[+] Strong fundamental and momentum signals')
     elif fin.get('profit_margin', 0) > 20:
-        # use .get() with default — profit_margin may be None
         pm = fin.get('profit_margin', 0)
         if pm:
             summary_positives.append(f'[+] Solid profit margin ({pm:.0f}%)')
-    if agr_raw > 0.25:   # agr_raw is 0-1 scale — 0.25 means 25% agreement strength
+    if agr_raw > 0.25:
         summary_positives.append('[+] Multiple independent signals aligned')
 
     summary_risks = []
@@ -395,32 +464,36 @@ def _enrich_company_for_template(c: dict) -> dict:
 
     summary_verdict_val = summary_verdict(conf_score, risk_score, section)
 
-    # ── EQ display enrichment ─────────────────────────────────────────────
+    # Market verdict label for the MARKET SIGNAL ANALYSIS section
+    market_verdict = summary_verdict_val  # RESEARCH NOW / WATCH / SKIP
+
+    # EQ display enrichment
     eq_display = _build_eq_display(c)
 
     return {
-        **c,              # original candidate data first
-        **eq_display,     # EQ display fields second — these win on collision
-        'display_name':      company_name,
-        'sector_plain':      render_sector_plain(sector),
-        'industry_label':    c.get('financials', {}).get('industry', ''),
-        'intro_sentence':    intro,
-        'trend_label':       trend_label,
-        'momentum_label':    momentum_label,
-        'financial_health':  fin_health,
-        'volume_line':       volume_line,
-        'confidence_line':   conf_line,
-        'price_line':        price_line,
-        'section':           section,
-        'confidence_label':  conf_lbl,
-        'conf_score_int':    int(conf_score),
+        **c,
+        **eq_display,
+        'display_name':       company_name,
+        'sector_plain':       render_sector_plain(sector),
+        'industry_label':     c.get('financials', {}).get('industry', ''),
+        'intro_sentence':     intro,
+        'trend_label':        trend_label,
+        'momentum_label':     momentum_label,
+        'financial_health':   fin_health,
+        'volume_line':        volume_line,
+        'confidence_line':    conf_line,
+        'price_line':         price_line,
+        'section':            section,
+        'confidence_label':   conf_lbl,
+        'conf_score_int':     int(conf_score),
         'moderate_risk_text': mod_risk_text,
-        'notices':           notices,
-        'risk_score_int':    int(risk_score),
+        'notices':            notices,
+        'risk_score_int':     int(risk_score),
         'summary_score_line': summary_score_line,
         'summary_positives':  summary_positives[:2],
         'summary_risks':      summary_risks[:2],
         'summary_verdict':    summary_verdict_val,
+        'market_verdict':     market_verdict,
     }
 
 
@@ -446,28 +519,22 @@ def build_intraday_report(
     time_str = now_et.strftime('%H:%M ET')
     ts_str   = now_utc.strftime('%Y%m%dT%H%M%SZ')
 
-    # ── Market pulse block ────────────────────────────────────────────────
     pulse_lines = _build_market_pulse(indices)
 
-    # ── Story sentences ───────────────────────────────────────────────────
     confirmed_sectors = list({c['sector'] for c in companies})
     story_sentences   = _build_story_sentences(all_articles, sector_scores, confirmed_sectors)
 
-    # ── Commodity signal (Energy context, narrative only) ─────────────────
     commodity_summary = ''
     if any(c.get('sector') == 'energy' for c in companies):
         commodity_data    = get_commodity_signal()
         commodity_summary = commodity_data.get('summary', '')
 
-        # Interpretation: flag mismatch between commodity trend and candidate industries
         if commodity_summary:
             industries_present = [
                 c.get('financials', {}).get('industry', '').lower()
                 for c in companies if c.get('sector') == 'energy'
             ]
-            gas_producers_present = any(
-                'gas' in ind for ind in industries_present
-            )
+            gas_producers_present = any('gas' in ind for ind in industries_present)
             oil_producers_present = any(
                 'oil' in ind or 'exploration' in ind or 'crude' in ind
                 for ind in industries_present
@@ -488,49 +555,42 @@ def build_intraday_report(
             if interpretation:
                 commodity_summary += ' ' + interpretation
 
-    # ── Enrich all companies with display fields ──────────────────────────
     enriched = [_enrich_company_for_template(c) for c in companies]
 
-    # ── Split into email (top 7) and overflow ─────────────────────────────
     email_companies    = enriched[:EMAIL_MAX]
     overflow_companies = enriched[EMAIL_MAX:]
 
-    # ── Partition into LOW RISK / MODERATE RISK buckets ──────────────────
     def partition(lst):
-        low  = [c for c in lst if c['section'] == 'LOW RISK']
-        mod  = [c for c in lst if c['section'] == 'MODERATE RISK']
+        low = [c for c in lst if c['section'] == 'LOW RISK']
+        mod = [c for c in lst if c['section'] == 'MODERATE RISK']
         return low, mod
 
     email_low, email_mod = partition(email_companies)
     full_low, full_mod   = partition(enriched)
 
-    # Subject line
-    n_found = len(companies)
-    subject = f'■ Stock Research — {slot} Update — {n_found} opportunit{"y" if n_found == 1 else "ies"} found'
-
-    # Overflow notice
-    overflow_count   = len(overflow_companies)
-    overflow_notice  = f'+ {overflow_count} more companies found today. View full report: [LINK]' if overflow_count else ''
+    n_found         = len(companies)
+    subject         = f'■ Stock Research — {slot} Update — {n_found} opportunit{"y" if n_found == 1 else "ies"} found'
+    overflow_count  = len(overflow_companies)
+    overflow_notice = f'+ {overflow_count} more companies found today. View full report: [LINK]' if overflow_count else ''
 
     env = _get_jinja_env()
 
-    # ── Render email HTML ─────────────────────────────────────────────────
     try:
-        email_tpl = env.get_template('intraday_email.html')
+        email_tpl  = env.get_template('intraday_email.html')
         email_html = email_tpl.render(
-            subject          = subject,
-            slot             = slot,
-            date_str         = date_str,
-            time_str         = time_str,
-            pulse_lines      = pulse_lines,
-            story_sentences  = story_sentences,
-            low_risk         = email_low,
-            moderate_risk    = email_mod,
-            overflow_notice  = overflow_notice,
-            regime_label     = regime.get('label', 'Normal market'),
-            breadth_label    = breadth.get('label', 'neutral'),
-            disclaimer       = DISCLAIMER,
-            total_companies  = n_found,
+            subject           = subject,
+            slot              = slot,
+            date_str          = date_str,
+            time_str          = time_str,
+            pulse_lines       = pulse_lines,
+            story_sentences   = story_sentences,
+            low_risk          = email_low,
+            moderate_risk     = email_mod,
+            overflow_notice   = overflow_notice,
+            regime_label      = regime.get('label', 'Normal market'),
+            breadth_label     = breadth.get('label', 'neutral'),
+            disclaimer        = DISCLAIMER,
+            total_companies   = n_found,
             commodity_summary = commodity_summary,
         )
         email_path = os.path.join(OUTPUT_DIR, f'intraday_email_{slot.replace(":", "").replace("-", "_")}_{ts_str}.html')
@@ -541,23 +601,22 @@ def build_intraday_report(
         log.error(f'Failed to render email template: {e}')
         email_path = _write_fallback_email(slot, ts_str, pulse_lines, story_sentences, enriched)
 
-    # ── Render full browser HTML ──────────────────────────────────────────
     try:
         full_tpl  = env.get_template('intraday_full.html')
         full_html = full_tpl.render(
-            subject          = subject,
-            slot             = slot,
-            date_str         = date_str,
-            time_str         = time_str,
-            pulse_lines      = pulse_lines,
-            story_sentences  = story_sentences,
-            low_risk         = full_low,
-            moderate_risk    = full_mod,
-            regime_label     = regime.get('label', 'Normal market'),
-            breadth_label    = breadth.get('label', 'neutral'),
-            disclaimer       = DISCLAIMER,
-            total_companies  = n_found,
-            rotation         = rotation,
+            subject           = subject,
+            slot              = slot,
+            date_str          = date_str,
+            time_str          = time_str,
+            pulse_lines       = pulse_lines,
+            story_sentences   = story_sentences,
+            low_risk          = full_low,
+            moderate_risk     = full_mod,
+            regime_label      = regime.get('label', 'Normal market'),
+            breadth_label     = breadth.get('label', 'neutral'),
+            disclaimer        = DISCLAIMER,
+            total_companies   = n_found,
+            rotation          = rotation,
             commodity_summary = commodity_summary,
         )
         full_path = os.path.join(OUTPUT_DIR, f'intraday_full_{slot.replace(":", "").replace("-", "_")}_{ts_str}.html')
@@ -566,7 +625,7 @@ def build_intraday_report(
         log.info(f'Full report written: {full_path}')
     except Exception as e:
         log.error(f'Failed to render full template: {e}')
-        full_path = email_path   # fallback: same file
+        full_path = email_path
 
     return {'email': email_path, 'full': full_path}
 

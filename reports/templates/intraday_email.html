@@ -1,188 +1,426 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{ subject }}</title>
-<style>
-  body{background:#0a0a0f;color:#e8e8f0;font-family:'Courier New',Courier,monospace;
-       font-size:14px;line-height:1.6;margin:0;padding:0}
-  .wrap{max-width:600px;margin:0 auto;padding:16px}
-  .header{background:#0f0f1a;border:1px solid #1e1e3a;border-radius:6px;padding:12px 16px;margin-bottom:12px}
-  .header h1{margin:0;font-size:16px;color:#00aaff;font-weight:bold}
-  .header .sub{color:#8888aa;font-size:12px;margin-top:4px}
-  .pulse{background:#141428;border:1px solid #1e1e3a;border-radius:6px;padding:12px 16px;margin-bottom:12px}
-  .pulse h2{margin:0 0 8px;font-size:12px;color:#8888aa;text-transform:uppercase;letter-spacing:.05em}
-  .pulse-line{font-family:'Courier New',Courier,monospace;white-space:pre;padding:2px 0;color:#e8e8f0}
-  .story{background:#0f0f1a;border:1px solid #1e1e3a;border-radius:6px;
-         padding:12px 16px;margin-bottom:12px;font-size:13px;color:#8888aa}
-  .story p{margin:4px 0}
-  .section-label{font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:.08em;
-                  padding:6px 0 4px;border-bottom:1px solid #1e1e3a;margin-bottom:8px}
-  .section-low .section-label{color:#00ff88}
-  .section-mod .section-label{color:#ffcc00}
-  .card{border:1px solid #1e1e3a;border-radius:6px;padding:12px;margin-bottom:8px;background:#0f0f1a}
-  .card-name{font-weight:bold;color:#00aaff;margin-bottom:4px;font-size:14px}
-  .card-name .tk{color:#8888aa;font-size:12px}
-  .line{margin:3px 0;font-size:13px}
-  .lbl{color:#8888aa}
-  .warn{background:#1a1104;border-left:3px solid #ffcc00;padding:6px 8px;
-        margin-top:6px;font-size:12px;color:#ffcc00;border-radius:3px}
-  .note{background:#141428;border-left:3px solid #00aaff;padding:6px 8px;
-        margin-top:6px;font-size:12px;color:#8888aa;border-radius:3px}
-  .conf-strong{color:#00ff88;font-weight:bold}
-  .conf-mod{color:#ffcc00;font-weight:bold}
-  .conf-weak{color:#8888aa;font-weight:bold}
-  .summary-block{background:#141428;border:1px solid #1e1e3a;border-radius:4px;
-                 padding:8px 10px;margin-top:8px;font-size:12px}
-  .summary-hdr{color:#8888aa;font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
-  .verdict-now{color:#00ff88;font-weight:bold}
-  .verdict-watch{color:#ffcc00;font-weight:bold}
-  .verdict-skip{color:#8888aa;font-weight:bold}
-  .pos{color:#00ff88}
-  .neg{color:#ff3355}
-  .overflow{background:#0f0f1a;border:1px solid #1e1e3a;border-radius:6px;
-            padding:10px 16px;margin-top:8px;font-size:13px;color:#8888aa}
-  .disclaimer{margin-top:16px;font-size:11px;color:#444466;border-top:1px solid #1e1e3a;padding-top:8px}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ subject }}</title>
+  <style>
+    body {
+      background: #0a0a0f;
+      color: #e8e8f0;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0
+    }
+
+    .wrap {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 16px
+    }
+
+    .header {
+      background: #0f0f1a;
+      border: 1px solid #1e1e3a;
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin-bottom: 12px
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 16px;
+      color: #00aaff;
+      font-weight: bold
+    }
+
+    .header .sub {
+      color: #8888aa;
+      font-size: 12px;
+      margin-top: 4px
+    }
+
+    .pulse {
+      background: #141428;
+      border: 1px solid #1e1e3a;
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin-bottom: 12px
+    }
+
+    .pulse h2 {
+      margin: 0 0 8px;
+      font-size: 12px;
+      color: #8888aa;
+      text-transform: uppercase;
+      letter-spacing: .05em
+    }
+
+    .pulse-line {
+      font-family: 'Courier New', Courier, monospace;
+      white-space: pre;
+      padding: 2px 0;
+      color: #e8e8f0
+    }
+
+    .story {
+      background: #0f0f1a;
+      border: 1px solid #1e1e3a;
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: #8888aa
+    }
+
+    .story p {
+      margin: 4px 0
+    }
+
+    .section-label {
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      padding: 6px 0 4px;
+      border-bottom: 1px solid #1e1e3a;
+      margin-bottom: 8px
+    }
+
+    .section-low .section-label {
+      color: #00ff88
+    }
+
+    .section-mod .section-label {
+      color: #ffcc00
+    }
+
+    .card {
+      border: 1px solid #1e1e3a;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      background: #0f0f1a;
+      overflow: hidden
+    }
+
+    .card-name {
+      font-weight: bold;
+      color: #00aaff;
+      padding: 10px 12px 8px;
+      border-bottom: 1px solid #1e1e3a;
+      font-size: 14px
+    }
+
+    .card-name .tk {
+      color: #8888aa;
+      font-size: 12px
+    }
+
+    /* ── Three-section layout ─────────────────────────────── */
+    .analysis-section {
+      padding: 8px 12px;
+      border-bottom: 1px solid #1e1e3a;
+      font-size: 13px
+    }
+
+    .analysis-section:last-child {
+      border-bottom: none
+    }
+
+    .section-label-inner {
+      font-size: 10px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      margin-bottom: 6px;
+      padding-bottom: 3px;
+      border-bottom: 1px solid #1e1e3a
+    }
+
+    .sec-market .section-label-inner {
+      color: #00aaff
+    }
+
+    .sec-eq .section-label-inner {
+      color: #aa88ff
+    }
+
+    .sec-combined .section-label-inner {
+      color: #ffcc00
+    }
+
+    .line {
+      margin: 2px 0;
+      font-size: 13px
+    }
+
+    .lbl {
+      color: #8888aa
+    }
+
+    /* Market verdict */
+    .mv-now {
+      color: #00ff88;
+      font-weight: bold
+    }
+
+    .mv-watch {
+      color: #ffcc00;
+      font-weight: bold
+    }
+
+    .mv-skip {
+      color: #8888aa;
+      font-weight: bold
+    }
+
+    /* EQ verdict controlled vocabulary */
+    .eq-v-supportive {
+      color: #00ff88;
+      font-weight: bold
+    }
+
+    .eq-v-weak {
+      color: #ffcc00;
+      font-weight: bold
+    }
+
+    .eq-v-risky {
+      color: #ff3355;
+      font-weight: bold
+    }
+
+    .eq-v-unavailable {
+      color: #8888aa;
+      font-weight: bold
+    }
+
+    /* Combined reading */
+    .combined-text {
+      color: #e8e8f0;
+      font-size: 12px;
+      line-height: 1.6
+    }
+
+    .eq-strength {
+      color: #00ff88;
+      font-size: 12px;
+      margin: 1px 0
+    }
+
+    .eq-risk {
+      color: #ff3355;
+      font-size: 12px;
+      margin: 1px 0
+    }
+
+    .warn {
+      background: #1a1104;
+      border-left: 3px solid #ffcc00;
+      padding: 5px 8px;
+      margin-top: 5px;
+      font-size: 12px;
+      color: #ffcc00;
+      border-radius: 3px
+    }
+
+    .note {
+      background: #141428;
+      border-left: 3px solid #00aaff;
+      padding: 5px 8px;
+      margin-top: 5px;
+      font-size: 12px;
+      color: #8888aa;
+      border-radius: 3px
+    }
+
+    .conf-strong {
+      color: #00ff88;
+      font-weight: bold
+    }
+
+    .conf-mod {
+      color: #ffcc00;
+      font-weight: bold
+    }
+
+    .conf-weak {
+      color: #8888aa;
+      font-weight: bold
+    }
+
+    .overflow {
+      background: #0f0f1a;
+      border: 1px solid #1e1e3a;
+      border-radius: 6px;
+      padding: 10px 16px;
+      margin-top: 8px;
+      font-size: 13px;
+      color: #8888aa
+    }
+
+    .disclaimer {
+      margin-top: 16px;
+      font-size: 11px;
+      color: #444466;
+      border-top: 1px solid #1e1e3a;
+      padding-top: 8px
+    }
+  </style>
 </head>
+
 <body>
-{% macro conf_bar(score) -%}
-{%- set filled = [score // 10, 10] | min | int -%}
-{%- set empty = 10 - filled -%}
-[{{ '█' * filled }}{{ '░' * empty }}] {{ score }}/100
-{%- endmacro %}
-<div class="wrap">
+  {% macro conf_bar(score) -%}
+  {%- set filled = [score // 10, 10] | min | int -%}
+  {%- set empty = 10 - filled -%}
+  [{{ '█' * filled }}{{ '░' * empty }}] {{ score }}/100
+  {%- endmacro %}
 
-  <!-- Header -->
-  <div class="header">
-    <h1>■ Stock Research — {{ slot }} Update</h1>
-    <div class="sub">{{ date_str }} · {{ time_str }} · Market: {{ regime_label }} · Breadth: {{ breadth_label }}</div>
-  </div>
-
-  <!-- Market Pulse -->
-  <div class="pulse">
-    <h2>Market Pulse</h2>
-    {% for line in pulse_lines %}
-    <div class="pulse-line">{{ line }}</div>
-    {% endfor %}
-  </div>
-
-  <!-- Today's Story -->
-  <div class="story">
-    <p><em>Today's story</em></p>
-    {% for s in story_sentences %}
-    <p>{{ s }}</p>
-    {% endfor %}
-    {% if commodity_summary %}
-    <p style="color:#8888aa;font-style:italic">{{ commodity_summary }}</p>
-    {% endif %}
-  </div>
-
-  <!-- Low Risk -->
-  {% if low_risk %}
-  <div class="section-low">
-    <div class="section-label">■ LOW RISK OPPORTUNITIES</div>
-    {% for c in low_risk %}
-    <div class="card">
-      <div class="card-name">■■■ {{ c.display_name }} <span class="tk">({{ c.ticker }})</span> — {{ c.sector_plain }}{% if c.industry_label %} ({{ c.industry_label }}){% endif %} ■■■</div>
-      <div class="line">{{ c.intro_sentence }}</div>
-      <div class="line"><span class="lbl">■ Trend:</span> {{ c.trend_label }}</div>
-      <div class="line"><span class="lbl">■</span> {{ c.price_line }}</div>
-      <div class="line"><span class="lbl">■</span> {{ c.financial_health }}</div>
-      <div class="line"><span class="lbl">■</span> {{ c.volume_line }}</div>
-      <div class="line"><span class="lbl">■ Confidence:</span>
-        <span class="{% if c.confidence_label == 'STRONG' %}conf-strong{% elif c.confidence_label == 'MODERATE' %}conf-mod{% else %}conf-weak{% endif %}">
-          {{ conf_bar(c.conf_score_int) }}
-        </span>
-      </div>
-      <div class="line" style="color:#8888aa;font-size:12px">{{ c.conf_line }}</div>
-      {% for notice in c.notices %}
-      <div class="{% if '■■' in notice %}warn{% else %}note{% endif %}">{{ notice }}</div>
-      {% endfor %}
-      <!-- Summary Block -->
-      <hr style="border:none;border-top:1px solid #1e1e3a;margin:8px 0">
-      <div class="summary-block">
-        <div class="summary-hdr">Summary</div>
-        <div class="line" style="color:#e8e8f0">{{ c.summary_score_line }}</div>
-        {% for pos in c.summary_positives %}
-        <div class="line pos">{{ pos }}</div>
-        {% endfor %}
-        {% for risk in c.summary_risks %}
-        <div class="line neg">{{ risk }}</div>
-        {% endfor %}
-        <div class="line" style="margin-top:4px">Verdict:
-          <span class="{% if c.summary_verdict == 'RESEARCH NOW' %}verdict-now{% elif c.summary_verdict == 'WATCH' %}verdict-watch{% else %}verdict-skip{% endif %}">
-            {{ c.summary_verdict }}
-          </span>
-        </div>
-      </div>
+  {% macro render_card(c) %}
+  <div class="card">
+    <div class="card-name">
+      {{ c.display_name }} <span class="tk">({{ c.ticker }})</span>
+      — {{ c.sector_plain }}{% if c.industry_label %} ({{ c.industry_label }}){% endif %}
     </div>
-    {% endfor %}
-  </div>
-  {% endif %}
 
-  <!-- Moderate Risk -->
-  {% if moderate_risk %}
-  <div class="section-mod">
-    <div class="section-label">■ MODERATE RISK OPPORTUNITIES</div>
-    {% for c in moderate_risk %}
-    <div class="card">
-      <div class="card-name">■■ {{ c.display_name }} <span class="tk">({{ c.ticker }})</span> — {{ c.sector_plain }}{% if c.industry_label %} ({{ c.industry_label }}){% endif %} ■■</div>
-      <div class="line">{{ c.intro_sentence }}</div>
-      <div class="line"><span class="lbl">■ Trend:</span> {{ c.trend_label }}</div>
-      <div class="line"><span class="lbl">■</span> {{ c.price_line }}</div>
-      <div class="line"><span class="lbl">■</span> {{ c.financial_health }}</div>
-      <div class="line"><span class="lbl">■</span> {{ c.volume_line }}</div>
-      <div class="line"><span class="lbl">■ Confidence:</span>
-        <span class="{% if c.confidence_label == 'STRONG' %}conf-strong{% elif c.confidence_label == 'MODERATE' %}conf-mod{% else %}conf-weak{% endif %}">
-          {{ conf_bar(c.conf_score_int) }}
+    <!-- ── MARKET SIGNAL ANALYSIS ───────────────────────────── -->
+    <div class="analysis-section sec-market">
+      <div class="section-label-inner">── MARKET SIGNAL ANALYSIS ────────</div>
+      <div class="line"><span class="lbl">Confidence: </span>
+        <span
+          class="{% if c.confidence_label == 'STRONG' %}conf-strong{% elif c.confidence_label == 'MODERATE' %}conf-mod{% else %}conf-weak{% endif %}">
+          {{ conf_bar(c.conf_score_int) }} ({{ c.signal_strength }})
         </span>
       </div>
-      <div class="line" style="color:#8888aa;font-size:12px">{{ c.conf_line }}</div>
+      <div class="line"><span class="lbl">Trend: </span>{{ c.trend_label }}</div>
+      <div class="line"><span class="lbl">Volume: </span>{{ c.volume_line }}</div>
+      <div class="line"><span class="lbl">Risk: </span>{{ c.section }}</div>
       {% if c.moderate_risk_text %}
-      <div class="warn">■■ {{ c.moderate_risk_text }}</div>
+      <div class="warn" style="margin-top:4px">■■ {{ c.moderate_risk_text }}</div>
       {% endif %}
       {% for notice in c.notices %}
-      <div class="{% if '■■' in notice %}warn{% else %}note{% endif %}">{{ notice }}</div>
+      <div class="{% if '■■' in notice %}warn{% else %}note{% endif %}" style="margin-top:3px">{{ notice }}</div>
       {% endfor %}
-      <!-- Summary Block -->
-      <hr style="border:none;border-top:1px solid #1e1e3a;margin:8px 0">
-      <div class="summary-block">
-        <div class="summary-hdr">Summary</div>
-        <div class="line" style="color:#e8e8f0">{{ c.summary_score_line }}</div>
-        {% for pos in c.summary_positives %}
-        <div class="line pos">{{ pos }}</div>
-        {% endfor %}
-        {% for risk in c.summary_risks %}
-        <div class="line neg">{{ risk }}</div>
-        {% endfor %}
-        <div class="line" style="margin-top:4px">Verdict:
-          <span class="{% if c.summary_verdict == 'RESEARCH NOW' %}verdict-now{% elif c.summary_verdict == 'WATCH' %}verdict-watch{% else %}verdict-skip{% endif %}">
-            {{ c.summary_verdict }}
-          </span>
-        </div>
+      <div class="line" style="margin-top:5px"><span class="lbl">Market verdict: </span>
+        <span
+          class="{% if c.market_verdict == 'RESEARCH NOW' %}mv-now{% elif c.market_verdict == 'WATCH' %}mv-watch{% else %}mv-skip{% endif %}">
+          {{ c.market_verdict }}
+        </span>
       </div>
     </div>
-    {% endfor %}
+
+    <!-- ── EARNINGS QUALITY ANALYSIS ────────────────────────── -->
+    <div class="analysis-section sec-eq">
+      <div class="section-label-inner">── EARNINGS QUALITY ANALYSIS ─────</div>
+      {% if c.eq_available %}
+      <div class="line"><span class="lbl">EQ Score: </span>{{ c.eq_score_display }} — {{ c.eq_label_display }}</div>
+      <div class="line"><span class="lbl">Pass tier: </span>{{ c.eq_pass_display }}</div>
+      {% if c.eq_top_strengths_display %}
+      <div style="margin-top:3px">
+        {% for s in c.eq_top_strengths_display %}
+        <div class="eq-strength">[+] {{ s }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% if c.eq_top_risks_display %}
+      <div style="margin-top:2px">
+        {% for r in c.eq_top_risks_display %}
+        <div class="eq-risk">[!] {{ r }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% if c.eq_warnings_display %}
+      <div style="margin-top:2px">
+        {% for w in c.eq_warnings_display %}
+        <div class="eq-risk" style="color:#ffcc00">[w] {{ w }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% else %}
+      <div class="line" style="color:#8888aa">EQ Score: N/A · Pass tier: Unavailable</div>
+      {% endif %}
+      <div class="line" style="margin-top:5px"><span class="lbl">EQ verdict: </span>
+        <span class="
+        {% if c.eq_verdict_display == 'SUPPORTIVE' %}eq-v-supportive
+        {% elif c.eq_verdict_display == 'WEAK' %}eq-v-weak
+        {% elif c.eq_verdict_display == 'RISKY' %}eq-v-risky
+        {% else %}eq-v-unavailable{% endif %}">
+          {{ c.eq_verdict_display }}
+        </span>
+      </div>
+    </div>
+
+    <!-- ── COMBINED READING ──────────────────────────────────── -->
+    <div class="analysis-section sec-combined">
+      <div class="section-label-inner">── COMBINED READING ──────────────</div>
+      <div class="combined-text">{{ c.eq_combined_reading }}</div>
+    </div>
+
   </div>
-  {% endif %}
+  {% endmacro %}
 
-  <!-- No opportunities -->
-  {% if not low_risk and not moderate_risk %}
-  <div class="story">
-    <p>No qualifying opportunities found for this run.</p>
+  <div class="wrap">
+
+    <!-- Header -->
+    <div class="header">
+      <h1>■ Stock Research — {{ slot }} Update</h1>
+      <div class="sub">{{ date_str }} · {{ time_str }} · Market: {{ regime_label }} · Breadth: {{ breadth_label }}</div>
+    </div>
+
+    <!-- Market Pulse -->
+    <div class="pulse">
+      <h2>Market Pulse</h2>
+      {% for line in pulse_lines %}
+      <div class="pulse-line">{{ line }}</div>
+      {% endfor %}
+    </div>
+
+    <!-- Today's Story -->
+    <div class="story">
+      <p><em>Today's story</em></p>
+      {% for s in story_sentences %}
+      <p>{{ s }}</p>
+      {% endfor %}
+      {% if commodity_summary %}
+      <p style="color:#8888aa;font-style:italic">{{ commodity_summary }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Low Risk -->
+    {% if low_risk %}
+    <div class="section-low">
+      <div class="section-label">■ LOW RISK OPPORTUNITIES</div>
+      {% for c in low_risk %}{{ render_card(c) }}{% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Moderate Risk -->
+    {% if moderate_risk %}
+    <div class="section-mod">
+      <div class="section-label">■ MODERATE RISK OPPORTUNITIES</div>
+      {% for c in moderate_risk %}{{ render_card(c) }}{% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- No opportunities -->
+    {% if not low_risk and not moderate_risk %}
+    <div class="story">
+      <p>No qualifying opportunities found for this run.</p>
+    </div>
+    {% endif %}
+
+    <!-- Overflow notice -->
+    {% if overflow_notice %}
+    <div class="overflow">{{ overflow_notice }}</div>
+    {% endif %}
+
+    <!-- Disclaimer -->
+    <div class="disclaimer">{{ disclaimer }}</div>
+
   </div>
-  {% endif %}
-
-  <!-- Overflow notice -->
-  {% if overflow_notice %}
-  <div class="overflow">{{ overflow_notice }}</div>
-  {% endif %}
-
-  <!-- Disclaimer -->
-  <div class="disclaimer">{{ disclaimer }}</div>
-
-</div>
 </body>
+
 </html>
