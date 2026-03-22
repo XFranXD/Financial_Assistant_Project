@@ -343,15 +343,7 @@
       {% else %}
       <div class="line" style="color:#8888aa">EQ Score: N/A · Pass tier: UNAVAILABLE</div>
       {% endif %}
-      <div class="line" style="margin-top:5px"><span class="lbl">EQ verdict: </span>
-        <span class="
-        {% if c.eq_verdict_display == 'SUPPORTIVE' %}eq-v-supportive
-        {% elif c.eq_verdict_display == 'WEAK' %}eq-v-weak
-        {% elif c.eq_verdict_display == 'RISKY' %}eq-v-risky
-        {% else %}eq-v-unavailable{% endif %}">
-          {{ c.eq_verdict_display }}
-        </span>
-      </div>
+
     </div>
 
     <!-- ── COMBINED READING ──────────────────────────────────── -->
