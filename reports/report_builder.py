@@ -309,7 +309,7 @@ def _build_eq_display(c: dict, market_verdict: str = '') -> dict:
 
     if not eq_available:
         return {
-            EQ_SCORE_DISPLAY:         'N/A',
+            EQ_SCORE_DISPLAY:         'UNAVAILABLE',
             EQ_LABEL_DISPLAY:         'UNAVAILABLE',
             EQ_VERDICT_DISPLAY:       'UNAVAILABLE',
             EQ_TOP_RISKS_DISPLAY:     [],
