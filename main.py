@@ -75,10 +75,10 @@ def _determine_slot() -> str | None:
     return None
 
 
-def _is_market_open() -> bool:
-    """Returns True on weekdays. Full market-open check via slot schedule is sufficient."""
-    now_et = datetime.now(pytz.timezone(TIMEZONE))
-    return now_et.weekday() < 5  # Mon-Fri
+# def _is_market_open() -> bool:
+#     """Returns True on weekdays. Full market-open check via slot schedule is sufficient."""
+#     now_et = datetime.now(pytz.timezone(TIMEZONE))
+#     return now_et.weekday() < 5  # Mon-Fri
 
 
 def _check_validated_file():
