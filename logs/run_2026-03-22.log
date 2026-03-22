@@ -74,3 +74,56 @@ hint: Disable this message with "git config set advice.addIgnoredFile false"'
 2026-03-22T02:42:57 UTC | WARNING  | main | Could not determine slot from time — defaulting to 9:45-11:15
 2026-03-22T02:42:57 UTC | INFO     | main | Run slot: 9:45-11:15
 2026-03-22T02:42:57 UTC | INFO     | main | Slot 9:45-11:15 already complete today — exiting
+2026-03-22T02:45:02 UTC | INFO     | main | ============================================================
+2026-03-22T02:45:02 UTC | INFO     | main | AUTOMATED STOCK RESEARCH SYSTEM — starting run
+2026-03-22T02:45:02 UTC | INFO     | main | DISCLAIMER: This system does NOT perform trading, does NOT give investment advice, and does NOT make price predictions. It is a research data aggregation and scoring tool only.
+2026-03-22T02:45:02 UTC | INFO     | main | ============================================================
+2026-03-22T02:45:02 UTC | WARNING  | main | Could not determine slot from time — defaulting to 9:45-11:15
+2026-03-22T02:45:02 UTC | INFO     | main | Run slot: 9:45-11:15
+2026-03-22T02:45:02 UTC | INFO     | market_collector | Index dow: 45577.47 Falling (-0.96%)
+2026-03-22T02:45:02 UTC | INFO     | market_collector | Index sp500: 6506.48 Falling (-1.51%)
+2026-03-22T02:45:02 UTC | INFO     | market_collector | Index nasdaq: 21647.61 Falling (-2.01%)
+2026-03-22T02:45:03 UTC | INFO     | market_regime | VIX fetched: 26.78
+2026-03-22T02:45:03 UTC | INFO     | market_regime | Regime: elevated vix=26.78 risk_mult=1.2 opp_mult=0.85
+2026-03-22T02:45:03 UTC | INFO     | main | Regime: elevated vix=26.78
+2026-03-22T02:45:24 UTC | INFO     | market_breadth | Market breadth: 24/130 advancing (0.18) — weak breadth — most stocks declining
+2026-03-22T02:45:25 UTC | INFO     | sector_breadth_ma | Sector breadth MA technology: 0/10 = 0.00 (sector is structurally weak)
+2026-03-22T02:45:25 UTC | INFO     | sector_breadth_ma | Sector breadth MA semiconductors: 4/10 = 0.40 (mixed signals)
+2026-03-22T02:45:26 UTC | INFO     | sector_breadth_ma | Sector breadth MA healthcare: 2/10 = 0.20 (sector is structurally weak)
+2026-03-22T02:45:27 UTC | INFO     | sector_breadth_ma | Sector breadth MA financials: 1/10 = 0.10 (sector is structurally weak)
+2026-03-22T02:45:28 UTC | INFO     | sector_breadth_ma | Sector breadth MA consumer_discretionary: 0/10 = 0.00 (sector is structurally weak)
+2026-03-22T02:45:29 UTC | INFO     | sector_breadth_ma | Sector breadth MA consumer_staples: 0/10 = 0.00 (sector is structurally weak)
+2026-03-22T02:45:30 UTC | INFO     | sector_breadth_ma | Sector breadth MA industrials: 2/10 = 0.20 (sector is structurally weak)
+2026-03-22T02:45:30 UTC | INFO     | sector_breadth_ma | Sector breadth MA defense: 2/10 = 0.20 (sector is structurally weak)
+2026-03-22T02:45:31 UTC | INFO     | sector_breadth_ma | Sector breadth MA energy: 9/10 = 0.90 (sector is genuinely strong)
+2026-03-22T02:45:32 UTC | INFO     | sector_breadth_ma | Sector breadth MA materials: 3/10 = 0.30 (mixed signals)
+2026-03-22T02:45:33 UTC | INFO     | sector_breadth_ma | Sector breadth MA utilities: 6/10 = 0.60 (healthy participation)
+2026-03-22T02:45:34 UTC | INFO     | sector_breadth_ma | Sector breadth MA real_estate: 2/10 = 0.20 (sector is structurally weak)
+2026-03-22T02:45:35 UTC | INFO     | sector_breadth_ma | Sector breadth MA communication_services: 4/10 = 0.40 (mixed signals)
+2026-03-22T02:45:37 UTC | INFO     | sector_momentum | Top 5 sectors: ['energy', 'semiconductors', 'financials', 'technology', 'communication_services']
+2026-03-22T02:45:37 UTC | INFO     | sector_momentum | Sector momentum history updated (1 entries)
+2026-03-22T02:45:37 UTC | INFO     | sector_rotation_speed | Rotation speed: not enough history yet — skipping
+2026-03-22T02:45:37 UTC | INFO     | news_collector | reuters RSS: fetched 0 articles
+2026-03-22T02:45:37 UTC | INFO     | news_collector | ft RSS: fetched 13 articles
+2026-03-22T02:45:38 UTC | INFO     | news_collector | Finnhub: fetched 100 articles
+2026-03-22T02:45:38 UTC | INFO     | news_collector | Filter: 113 raw → 17 passed
+2026-03-22T02:45:38 UTC | INFO     | news_collector | Dedup: 17 → 17 articles
+2026-03-22T02:45:38 UTC | INFO     | news_collector | Sector gated: financials score=4.8 headlines=1 (need score>=4, headlines>=2)
+2026-03-22T02:45:38 UTC | INFO     | news_collector | Sector gated: real_estate score=4.0 headlines=1 (need score>=4, headlines>=2)
+2026-03-22T02:45:38 UTC | INFO     | news_collector | Sector confirmed: consumer_discretionary score=8.0 headlines=2
+2026-03-22T02:45:38 UTC | INFO     | news_collector | Sector gated: utilities score=3.0 headlines=1 (need score>=4, headlines>=2)
+2026-03-22T02:45:38 UTC | INFO     | news_collector | Sector confirmed: consumer_staples score=7.2 headlines=2
+2026-03-22T02:45:38 UTC | INFO     | news_collector | Sector gated: energy score=4.8 headlines=1 (need score>=4, headlines>=2)
+2026-03-22T02:45:38 UTC | INFO     | news_collector | Sector gated: materials score=4.5 headlines=1 (need score>=4, headlines>=2)
+2026-03-22T02:45:38 UTC | INFO     | news_collector | Sector gated: technology score=3.6 headlines=1 (need score>=4, headlines>=2)
+2026-03-22T02:45:38 UTC | INFO     | news_collector | Confirmed sectors: ['consumer_discretionary', 'consumer_staples']
+2026-03-22T02:45:38 UTC | INFO     | main | News: 17 articles, 2 candidate sectors
+2026-03-22T02:45:38 UTC | INFO     | news_impact_scorer | SPY day move: 1.43%
+2026-03-22T02:45:38 UTC | INFO     | news_impact_scorer | Impact [consumer_discretionary]: sources=2 kw=8.0 spy=1.43% → impact=0.602 ✓ passes
+2026-03-22T02:45:38 UTC | INFO     | news_impact_scorer | Impact [consumer_staples]: sources=2 kw=7.2 spy=1.43% → impact=0.589 ✗ below threshold
+2026-03-22T02:45:38 UTC | INFO     | news_impact_scorer | Sector dropped by impact gate: consumer_staples (sources=2 kw=7.2 spy=1.43% → impact=0.589 ✗ below threshold)
+2026-03-22T02:45:38 UTC | INFO     | news_impact_scorer | Impact gate: 2 → 1 sectors passed
+2026-03-22T02:45:38 UTC | INFO     | main | Momentum gate: 1 → 0 sectors
+2026-03-22T02:45:38 UTC | INFO     | sector_mapper | Mapped 0 events → 0 sectors
+2026-03-22T02:45:38 UTC | INFO     | main | No sectors confirmed — writing empty report
+2026-03-22T02:45:38 UTC | INFO     | main | Empty report written: reports/output/empty_945-1115_2026-03-22T024538Z.html
