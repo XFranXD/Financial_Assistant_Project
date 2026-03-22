@@ -75,10 +75,10 @@ def _determine_slot() -> str | None:
     return None
 
 
-# def _is_market_open() -> bool:
-#     """Returns True on weekdays. Full market-open check via slot schedule is sufficient."""
-#     now_et = datetime.now(pytz.timezone(TIMEZONE))
-#     return now_et.weekday() < 5  # Mon-Fri
+def _is_market_open() -> bool:
+    """Returns True on weekdays. Full market-open check via slot schedule is sufficient."""
+    now_et = datetime.now(pytz.timezone(TIMEZONE))
+    return now_et.weekday() < 5  # Mon-Fri
 
 
 def _check_validated_file():
@@ -177,9 +177,9 @@ def run():
 
     # ── Step 3: Load state, check market open, check duplicate slot ────────
     state = load_state()
-    if not _is_market_open():
-        log.info('Market closed (weekend) — exiting')
-        sys.exit(0)
+    # if not _is_market_open():
+    #     log.info('Market closed (weekend) — exiting')
+    #     sys.exit(0)
 
     if state['runs'].get(slot, {}).get('status') == 'complete':
         log.info(f'Slot {slot} already complete today — exiting')
