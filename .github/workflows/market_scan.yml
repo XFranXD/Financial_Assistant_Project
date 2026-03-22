@@ -15,6 +15,11 @@ on:
     - cron: '10 21 * * 1-5'
     - cron: '10 20 * * 1-5'
   workflow_dispatch:
+    inputs:
+      force_tickers:
+        description: 'Debug mode — comma-separated tickers to force-run (skips all gates and market checks). Leave blank for normal run.'
+        required: false
+        default: ''
 
 
 jobs:
@@ -54,6 +59,7 @@ jobs:
           GMAIL_EMAIL:           ${{ secrets.GMAIL_EMAIL }}
           GMAIL_APP_PASSWORD:    ${{ secrets.GMAIL_APP_PASSWORD }}
           GITHUB_PAGES_URL:      ${{ secrets.PAGES_URL }}
+          FORCE_TICKERS:         ${{ github.event.inputs.force_tickers }}
         run: python main.py
 
       - name: Commit outputs

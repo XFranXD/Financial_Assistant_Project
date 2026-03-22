@@ -134,12 +134,234 @@ def _fetch_av_data(ticker: str, state: dict) -> dict | None:
             log.warning(f'AV error for {ticker}: {body.get("Error Message")}')
             return None
         return {
-            'market_cap':    float(body.get('MarketCapitalization', 0) or 0) or None,
+            'market_cap':     float(body.get('MarketCapitalization', 0) or 0) or None,
             'debt_to_equity': float(body.get('DebtToEquityRatio', 0) or 0) or None,
             'profit_margin':  float(body.get('ProfitMargin', 0) or 0) * 100 if body.get('ProfitMargin') else None,
             'eps_ttm':        float(body.get('EPS', 0) or 0) or None,
         }
     return _call()
+
+
+# ── Force-ticker pipeline (debug mode) ────────────────────────────────────
+
+def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> None:
+    """
+    Debug mode: skip all sector/news gates and run the full per-company
+    analysis pipeline directly against the provided ticker list.
+    Triggered only when FORCE_TICKERS env var is set on a manual
+    workflow_dispatch run. Never activates on scheduled runs.
+
+    Produces a full report and email identical to a normal run.
+    Does NOT update state slot completion — debug runs are invisible
+    to the score stability filter and daily dedup logic.
+    """
+    log.info(f'[DEBUG] Force-ticker mode active — tickers: {force_tickers}')
+    log.info(f'[DEBUG] Skipping all sector/news gates')
+
+    # Fetch market context needed for scoring
+    from collectors.market_collector import get_index_snapshot
+    from analyzers.market_regime import get_regime
+    from analyzers.market_breadth import compute_market_breadth
+    from analyzers.sector_breadth_ma import compute_sector_breadth_ma
+    from analyzers.sector_momentum import compute_sector_momentum, get_sector_pe, get_sector_median_return
+    from analyzers.sector_rotation_speed import compute_rotation_speed
+    from collectors.news_collector import collect_news
+    from analyzers.event_detector import detect_events, summarise_sector_events
+
+    indices = get_index_snapshot()
+    regime  = get_regime()
+    breadth = compute_market_breadth()
+
+    breadth_stocks = _load_json(SECTOR_BREADTH_STOCKS_FILE, {})
+    breadth_stocks.pop('_comment', None)
+    sector_breadth_ma = compute_sector_breadth_ma(breadth_stocks)
+    sector_scores     = compute_sector_momentum()
+    rotation          = compute_rotation_speed(sector_scores)
+
+    articles, _ = collect_news()
+    event_map   = detect_events(articles)
+    e2s_data    = _load_json('data/event_to_sector.json', {})
+    sector_events = summarise_sector_events(event_map, e2s_data)
+
+    from collectors.financial_parser import get_financials, enrich_with_alpha_vantage
+    from filters.candidate_filter import passes_candidate_filter
+    from analyzers.volume_confirmation import compute_volume_confirmation
+    from analyzers.unusual_volume import detect_unusual_volume
+    from analyzers.risk_adjusted_momentum import compute_risk_adjusted_momentum
+    from analyzers.multi_timeframe_momentum import compute_mtf_momentum
+    from analyzers.trend_stability import compute_trend_stability
+    from analyzers.drawdown_risk import compute_drawdown_risk
+    from analyzers.risk_model import compute_risk_score
+    from analyzers.opportunity_model import compute_opportunity_score, compute_composite_confidence
+    from analyzers.signal_agreement import compute_signal_agreement, sector_rank_to_score
+
+    all_candidates: list[dict] = []
+
+    for ticker in force_tickers:
+        ticker = ticker.strip().upper()
+        log.info(f'[DEBUG] Processing forced ticker: {ticker}')
+
+        fin = get_financials(ticker)
+
+        # Use a neutral sector context for forced tickers
+        sector           = 'unknown'
+        sector_pe        = get_sector_pe('energy')       # neutral fallback
+        sector_median_ret = get_sector_median_return('energy')
+        etf_return       = None
+        bma_score        = 0.5
+        sector_momentum_val = 50
+        sector_rank      = 7
+        sector_data      = {'direction': 'positive', 'validation': {'confirmed': True}}
+
+        # AV enrichment if budget allows
+        av_data = _fetch_av_data(ticker, state)
+        if av_data:
+            state['alpha_vantage_calls_today'] = state.get('alpha_vantage_calls_today', 0) + 1
+            save_state(state)
+            fin = enrich_with_alpha_vantage(ticker, av_data, fin)
+
+        vol_result       = compute_volume_confirmation(ticker)
+        uv_result        = detect_unusual_volume(ticker, vol_result.get('volume_ratio'))
+        ram_result       = compute_risk_adjusted_momentum(ticker)
+        mtf_result       = compute_mtf_momentum(ticker)
+        stability_result = compute_trend_stability(ticker)
+        dd_result        = compute_drawdown_risk(ticker)
+        risk_result      = compute_risk_score(fin, regime, dd_result.get('drawdown_score'))
+
+        opp_result = compute_opportunity_score(
+            fin, regime, breadth, sector_pe, sector_median_ret,
+            ram_result.get('ram_score'), mtf_result.get('mtf_score'),
+            vol_result.get('volume_score'), bma_score, etf_return,
+        )
+
+        sec_str       = sector_rank_to_score(sector_rank)
+        norm_ev_score = 0.0   # no sector event context in force mode
+        agreement     = compute_signal_agreement(
+            momentum_score  = ram_result.get('ram_score', 0.5),
+            sector_strength = sec_str,
+            event_score     = norm_ev_score,
+            volume_score    = vol_result.get('volume_score', 0.5),
+        )
+
+        conf_result = compute_composite_confidence(
+            risk_score            = risk_result['risk_score'],
+            opportunity_score     = opp_result['opportunity_score'],
+            agreement_score       = agreement['agreement_score'],
+            sector_momentum_score = sector_momentum_val,
+        )
+
+        log.info(
+            f'[DEBUG] {ticker}: conf={conf_result["composite_confidence"]} '
+            f'risk={risk_result["risk_score"]} opp={opp_result["opportunity_score"]}'
+        )
+
+        candidate = {
+            'ticker':               ticker,
+            'sector':               sector,
+            'company_name':         ticker,
+            'current_price':        fin.get('current_price'),
+            'financials':           fin,
+            'risk_score':           risk_result['risk_score'],
+            'risk_label':           risk_result['risk_label'],
+            'risk_components':      risk_result['components'],
+            'opportunity_score':    opp_result['opportunity_score'],
+            'bucket_scores':        opp_result['bucket_scores'],
+            'agreement_score':      agreement['agreement_score'],
+            'agreement_label':      agreement['label'],
+            'composite_confidence': conf_result['composite_confidence'],
+            'confidence_label':     conf_result['confidence_label'],
+            'volume_confirmation':  vol_result,
+            'unusual_volume':       uv_result,
+            'ram':                  ram_result,
+            'mtf':                  mtf_result,
+            'trend_stability':      stability_result,
+            'drawdown':             dd_result,
+            'earnings_warning':     risk_result.get('earnings_warning', False),
+            'divergence_warning':   risk_result.get('divergence_warning', False),
+            'sector_rank':          sector_rank,
+            'sector_data':          sector_data,
+            'rotation':             {},
+            'disclaimer':           DISCLAIMER,
+        }
+        all_candidates.append(candidate)
+
+    if not all_candidates:
+        log.warning('[DEBUG] No candidates built from forced tickers — check ticker symbols')
+        return
+
+    # EQ enrichment
+    try:
+        eq_tickers = [c['ticker'] for c in all_candidates]
+        log.info(f'[DEBUG][EQ] Running EQ analysis on {len(eq_tickers)} forced tickers')
+        eq_results = run_eq_analyzer(eq_tickers)
+        eq_map = {
+            r.get('ticker'): r
+            for r in eq_results
+            if isinstance(r.get('ticker'), str) and r.get('ticker')
+        }
+        for candidate in all_candidates:
+            t         = candidate.get('ticker', '')
+            eq        = eq_map.get(t, {})
+            eq_result = eq.get('eq_result', {})
+            if (eq_result and isinstance(eq_result, dict)
+                    and not eq.get('error') and not eq.get('skipped')):
+                candidate[EQ_AVAILABLE]            = True
+                candidate[EQ_SCORE_FINAL]          = eq_result.get(EQ_SCORE_FINAL, 0)
+                candidate[EQ_LABEL]                = eq_result.get(EQ_LABEL, '')
+                candidate[PASS_TIER]               = eq_result.get(PASS_TIER, '')
+                candidate[FINAL_CLASSIFICATION]    = eq_result.get(FINAL_CLASSIFICATION, '')
+                candidate[TOP_RISKS]               = eq_result.get(TOP_RISKS, [])
+                candidate[TOP_STRENGTHS]           = eq_result.get(TOP_STRENGTHS, [])
+                candidate[WARNINGS]                = eq_result.get(WARNINGS, [])
+                candidate[DATA_CONFIDENCE]         = eq_result.get(DATA_CONFIDENCE, 0)
+                candidate[COMBINED_PRIORITY_SCORE] = eq.get(COMBINED_PRIORITY_SCORE, 0)
+                candidate[EQ_PERCENTILE]           = eq_result.get(EQ_PERCENTILE, 0)
+                candidate[BATCH_REGIME]            = eq_result.get(BATCH_REGIME, '')
+                candidate[FATAL_FLAW_REASON]       = eq_result.get(FATAL_FLAW_REASON, '')
+            else:
+                candidate[EQ_AVAILABLE] = False
+                log.info(f'[DEBUG][EQ] {t}: no EQ data — skipped or error')
+    except Exception as eq_err:
+        log.warning(f'[DEBUG][EQ] EQ analysis failed (non-fatal): {eq_err}')
+        for candidate in all_candidates:
+            candidate[EQ_AVAILABLE] = False
+
+    # Build and send report
+    from reports.report_builder import build_intraday_report
+    html_files = build_intraday_report(
+        companies     = all_candidates,
+        slot          = slot,
+        indices       = indices,
+        breadth       = breadth,
+        regime        = regime,
+        all_articles  = articles,
+        sector_scores = sector_scores,
+        rotation      = rotation,
+    )
+
+    try:
+        from reports.dashboard_builder import build_dashboard
+        build_dashboard(
+            companies = all_candidates,
+            slot      = slot,
+            indices   = indices,
+            breadth   = breadth,
+            regime    = regime,
+            rotation  = rotation,
+        )
+    except Exception as _dash_err:
+        log.warning(f'[DEBUG] Dashboard build skipped: {_dash_err}')
+
+    from reports.email_sender import send_email
+    send_email(
+        companies = all_candidates,
+        slot      = slot,
+        indices   = indices,
+        html_path = html_files.get('email'),
+    )
+
+    _commit_outputs()
+    log.info(f'[DEBUG] Force-ticker run complete. Tickers: {force_tickers}')
 
 
 # ── Main pipeline ──────────────────────────────────────────────────────────
@@ -149,6 +371,22 @@ def run():
     log.info('AUTOMATED STOCK RESEARCH SYSTEM — starting run')
     log.info(DISCLAIMER)
     log.info('=' * 60)
+
+    # ── Force-ticker debug mode check ─────────────────────────────────────
+    # Only active when FORCE_TICKERS env var is set via workflow_dispatch input.
+    # Scheduled runs never set this variable — behavior is completely unchanged.
+    force_tickers_raw = os.environ.get('FORCE_TICKERS', '').strip()
+    force_tickers = [t.strip().upper() for t in force_tickers_raw.split(',') if t.strip()]
+
+    if force_tickers:
+        log.info(f'[DEBUG] FORCE_TICKERS detected — entering debug mode')
+        _check_validated_file()
+        state = load_state()
+        slot  = _determine_slot() or RUN_SLOTS[0]
+        log.info(f'[DEBUG] Using slot: {slot}')
+        _run_force_ticker_pipeline(force_tickers, slot, state)
+        sys.exit(0)
+    # ── End force-ticker check ────────────────────────────────────────────
 
     # ── Time gate — skip ghost triggers from dual DST crons ───────────────
     # workflow_dispatch runs bypass this check intentionally.
@@ -170,7 +408,6 @@ def run():
     # ── Step 2: Determine run slot ────────────────────────────────────────
     slot = _determine_slot()
     if slot is None:
-        # GitHub Actions sends duplicate cron entries for DST — pick first slot match
         slot = RUN_SLOTS[0]
         log.warning(f'Could not determine slot from time — defaulting to {slot}')
     log.info(f'Run slot: {slot}')
@@ -400,7 +637,7 @@ def run():
             candidate = {
                 'ticker':              ticker,
                 'sector':              sector,
-                'company_name':        ticker,   # enriched later from yf info if available
+                'company_name':        ticker,
                 'current_price':       fin.get('current_price'),
                 'financials':          fin,
                 'risk_score':          risk_result['risk_score'],
@@ -435,10 +672,7 @@ def run():
     ranked_companies = rank_candidates(all_candidates, regime['risk_cap'])
     log.info(f'Post-ranking count: {len(ranked_companies)}')
 
-    # ── Step 27b: Within-industry deduplication ─────────────────────────────
-    # Keep top 2 per industry subgroup.
-    # Sort by composite_confidence (primary) then r3m from mtf dict (secondary).
-    # Industry key is in candidate['financials']['industry'] - access via .get().
+    # ── Step 27b: Within-industry deduplication ───────────────────────────
     industry_groups: dict = defaultdict(list)
     for _c in ranked_companies:
         _industry = _c.get('financials', {}).get('industry', 'Unknown')
@@ -460,15 +694,12 @@ def run():
         if _dropped:
             log.info(f'Industry dedup [{_industry}]: kept={_kept} dropped={_dropped}')
 
-    # Re-sort by composite_confidence to restore overall ranking order
     deduplicated.sort(key=lambda c: c.get('composite_confidence', 0), reverse=True)
 
     final_companies = deduplicated
     log.info(f'Final company count after industry dedup: {len(final_companies)}')
 
     # ── Step 27c: Score stability filter ─────────────────────────────────
-    # First appearance today: always allowed.
-    # Subsequent appearance: current confidence must be >= prior slot confidence.
     today_prior_scores = state.get('today_scores', {})
     stable_companies: list = []
     for _c in final_companies:
@@ -557,7 +788,7 @@ def run():
         rotation      = rotation,
     )
 
-    # ── Step 28b — Dashboard update (non-fatal) ──────────────────────────────
+    # ── Step 28b — Dashboard update (non-fatal) ───────────────────────────
     try:
         from reports.dashboard_builder import build_dashboard
         build_dashboard(
@@ -570,7 +801,6 @@ def run():
         )
     except Exception as _dash_err:
         log.warning(f'Dashboard build skipped: {_dash_err}')
-    # ── End step 28b ──────────────────────────────────────────────────────────
 
     # ── Step 29: Send email ───────────────────────────────────────────────
     from reports.email_sender import send_email
@@ -583,7 +813,7 @@ def run():
     if not email_sent:
         log.warning('Email delivery failed — report still committed to repo')
 
-    # ── Step 30: Closing report if 16:10 slot ─────────────────────────────
+    # ── Step 30: Closing report if closing slot ───────────────────────────
     if slot == CLOSING_SLOT:
         from reports.summary_builder import build_closing_report
         build_closing_report(state, indices, sector_scores, rotation)
@@ -596,8 +826,6 @@ def run():
     state = add_reported_companies(state, tickers_reported)
     state['runs'][slot]['companies'] = tickers_reported
 
-    # Save current slot's per-ticker confidence scores for next slot's
-    # score stability filter. Overwrites previous slot - intentional.
     state['today_scores'] = {
         c.get('ticker', ''): c.get('composite_confidence', 0)
         for c in final_companies
@@ -633,7 +861,6 @@ def _commit_outputs() -> None:
         import git
         repo = git.Repo(search_parent_directories=True)
         repo.git.add('reports/output/', 'state/', 'data/fundamentals_cache/', 'logs/', '--')
-        # Check if anything is staged
         if repo.index.diff('HEAD') or repo.untracked_files:
             ts  = datetime.now(pytz.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
             repo.index.commit(f'Auto: market scan {ts}')
