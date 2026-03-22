@@ -198,79 +198,91 @@ def _eq_verdict_from_tier(pass_tier: str, fatal: str) -> str:
     return 'UNAVAILABLE'
 
 
-def _build_combined_reading(conf_score: float, pass_tier: str, eq_available: bool, fatal: str) -> str:
+def _alignment_state(market_verdict: str, eq_verdict: str, eq_available: bool) -> str:
+    """
+    Deterministic alignment state between System 1 market verdict and
+    System 2 EQ verdict.
+
+    Alignment vocabulary (locked):
+      ALIGNED  — market and earnings both positive
+      PARTIAL  — partial agreement, one side weaker
+      CONFLICT — signals contradict each other
+      UNKNOWN  — EQ data unavailable
+    """
+    if not eq_available or eq_verdict == 'UNAVAILABLE':
+        return 'UNKNOWN'
+    mv = market_verdict.upper()
+    ev = eq_verdict.upper()
+    if mv == 'RESEARCH NOW':
+        if ev == 'SUPPORTIVE':
+            return 'ALIGNED'
+        elif ev == 'NEUTRAL':
+            return 'PARTIAL'
+        else:  # WEAK or RISKY
+            return 'CONFLICT'
+    elif mv == 'WATCH':
+        if ev == 'SUPPORTIVE':
+            return 'PARTIAL'
+        elif ev == 'NEUTRAL':
+            return 'PARTIAL'
+        else:  # WEAK or RISKY
+            return 'CONFLICT'
+    else:  # SKIP
+        return 'CONFLICT'
+
+
+def _build_combined_reading(conf_score: float, pass_tier: str, eq_available: bool, fatal: str, market_verdict: str = '') -> dict:
     """
     Deterministic combined reading of System 1 market signal and System 2
-    earnings quality. Controls AI interpretation — no inference required.
+    earnings quality. Returns a structured dict for template rendering.
+    Controls AI interpretation — no inference required.
 
-    Decision grid (7 cases, exhaustive):
-      Strong  + PASS  → highest priority candidate
-      Strong  + WATCH → signal present, fundamentals mixed
-      Strong  + FAIL  → high risk of false signal
-      Mod/Wk  + PASS  → fundamentals solid, signal needs confirmation
-      Mod/Wk  + WATCH → signal not confirmed, requires caution
-      Mod/Wk  + FAIL  → avoid
-      No EQ data      → no fundamental validation available
-
-    "Avoid" only triggers on:
-      - Moderate/Weak signal + FAIL tier
-      - Any signal + fatal flaw present
+    Output keys:
+      market_line    — Market classification line
+      earnings_line  — Earnings classification line
+      alignment      — ALIGNED / PARTIAL / CONFLICT / UNKNOWN
+      conclusion     — Final declarative conclusion sentence
 
     Signal thresholds (locked):
       STRONG   >= 70
       MODERATE 50-69
       WEAK     < 50
     """
-    signal = _signal_strength_label(conf_score)
+    signal     = _signal_strength_label(conf_score)
+    eq_verdict = _eq_verdict_from_tier(pass_tier, fatal) if eq_available else 'UNAVAILABLE'
+    alignment  = _alignment_state(market_verdict, eq_verdict, eq_available)
+
+    market_line   = f'Market:    {market_verdict.upper() if market_verdict else signal} ({signal.lower()} signal)'
+    earnings_line = f'Earnings:  {eq_verdict}'
+    align_line    = f'Alignment: {alignment}'
 
     if not eq_available:
-        return (
-            f'Market signal is {signal.lower()}. '
-            'No fundamental validation available. Decision based on market data only.'
-        )
+        conclusion = 'No fundamental validation available.'
+    elif fatal:
+        conclusion = 'Fatal flaw detected in earnings structure. Avoid.'
+    elif alignment == 'ALIGNED':
+        conclusion = 'Signal is supported by fundamentals. Highest priority candidate.'
+    elif alignment == 'PARTIAL':
+        tier = pass_tier.upper() if pass_tier else ''
+        if signal == 'STRONG':
+            conclusion = 'Signal is present but fundamentals require monitoring. Proceed with caution.'
+        elif tier == 'PASS':
+            conclusion = 'Fundamentals are solid but signal is not fully confirmed. Requires further confirmation.'
+        else:
+            conclusion = 'Signal is not fully confirmed by fundamentals. Requires caution.'
+    else:  # CONFLICT
+        tier = pass_tier.upper() if pass_tier else 'FAIL'
+        if signal == 'STRONG':
+            conclusion = 'Signal is not supported by fundamentals. High risk of false signal.'
+        else:
+            conclusion = 'No alignment between signal and fundamentals. Avoid.'
 
-    tier = pass_tier.upper() if pass_tier else 'FAIL'
-
-    # Fatal flaw overrides all cases
-    if fatal:
-        return (
-            f'Market signal is {signal.lower()}. Earnings quality is risky. '
-            'Fatal flaw detected in earnings structure. Avoid.'
-        )
-
-    if signal == 'STRONG':
-        if tier == 'PASS':
-            return (
-                'Market signal is strong. Earnings quality is strong. '
-                'Signal is supported by fundamentals. Highest priority candidate.'
-            )
-        elif tier == 'WATCH':
-            return (
-                'Market signal is strong. Earnings quality is mixed. '
-                'Signal is present but fundamentals require monitoring. Proceed with caution.'
-            )
-        else:  # FAIL
-            return (
-                'Market signal is strong. Earnings quality is weak. '
-                'Signal is not supported by fundamentals. High risk of false signal.'
-            )
-    else:  # MODERATE or WEAK
-        if tier == 'PASS':
-            return (
-                f'Market signal is {signal.lower()}. Earnings quality is strong. '
-                'Fundamentals are solid but signal is not fully confirmed. '
-                'Requires further confirmation before action.'
-            )
-        elif tier == 'WATCH':
-            return (
-                f'Market signal is {signal.lower()}. Earnings quality is mixed. '
-                'Signal is not fully confirmed by fundamentals. Requires caution.'
-            )
-        else:  # FAIL
-            return (
-                f'Market signal is {signal.lower()}. Earnings quality is weak. '
-                'No alignment between signal and fundamentals. Avoid.'
-            )
+    return {
+        'market_line':   market_line,
+        'earnings_line': earnings_line,
+        'alignment':     alignment,
+        'conclusion':    conclusion,
+    }
 
 
 def _build_eq_display(c: dict) -> dict:
@@ -291,7 +303,8 @@ def _build_eq_display(c: dict) -> dict:
     pass_tier    = c.get(PASS_TIER, '')
     fatal        = c.get(FATAL_FLAW_REASON, '')
 
-    combined_reading = _build_combined_reading(conf_score, pass_tier, eq_available, fatal)
+    market_verdict_raw = c.get('market_verdict', '')
+    combined_reading = _build_combined_reading(conf_score, pass_tier, eq_available, fatal, market_verdict_raw)
     signal_strength  = _signal_strength_label(conf_score)
 
     if not eq_available:
@@ -305,6 +318,7 @@ def _build_eq_display(c: dict) -> dict:
             'eq_pass_display':        'UNAVAILABLE',
             'eq_combined_reading':    combined_reading,
             'signal_strength':        signal_strength,
+            'eq_alignment':           combined_reading.get('alignment', 'UNKNOWN'),
         }
 
     eq_score   = c.get(EQ_SCORE_FINAL, 0)
@@ -340,6 +354,7 @@ def _build_eq_display(c: dict) -> dict:
         'eq_pass_display':        pass_display,
         'eq_combined_reading':    combined_reading,
         'signal_strength':        signal_strength,
+        'eq_alignment':           combined_reading.get('alignment', 'UNKNOWN'),
     }
 
 

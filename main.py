@@ -204,7 +204,7 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
         fin = get_financials(ticker)
 
         # Use a neutral sector context for forced tickers
-        sector           = 'unknown'
+        sector           = fin.get('industry', '') or 'unknown'
         sector_pe        = get_sector_pe('energy')       # neutral fallback
         sector_median_ret = get_sector_median_return('energy')
         etf_return       = None
@@ -258,7 +258,7 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
         candidate = {
             'ticker':               ticker,
             'sector':               sector,
-            'company_name':         ticker,
+            'company_name':         fin.get('company_name', ticker),
             'current_price':        fin.get('current_price'),
             'financials':           fin,
             'risk_score':           risk_result['risk_score'],
@@ -414,9 +414,9 @@ def run():
 
     # ── Step 3: Load state, check market open, check duplicate slot ────────
     state = load_state()
-    # if not _is_market_open():
-    #     log.info('Market closed (weekend) — exiting')
-    #     sys.exit(0)
+    if not _is_market_open():
+        log.info('Market closed (weekend) — exiting')
+        sys.exit(0)
 
     if state['runs'].get(slot, {}).get('status') == 'complete':
         log.info(f'Slot {slot} already complete today — exiting')

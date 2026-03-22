@@ -469,7 +469,7 @@
       {% endif %}
       {% else %}
       <div class="row"><span class="lbl">EQ Score:</span><span class="val" style="color:#8888aa">N/A</span></div>
-      <div class="row"><span class="lbl">Pass tier:</span><span class="val" style="color:#8888aa">Unavailable</span>
+      <div class="row"><span class="lbl">Pass tier:</span><span class="val" style="color:#8888aa">UNAVAILABLE</span>
       </div>
       {% endif %}
       <div class="row" style="margin-top:6px"><span class="lbl">EQ verdict:</span>
@@ -486,7 +486,19 @@
     <!-- ── COMBINED READING ──────────────────────────────────── -->
     <div class="analysis-section sec-combined">
       <div class="section-label-inner">── COMBINED READING ──────────────</div>
-      <div class="combined-text">{{ c.eq_combined_reading }}</div>
+      <div class="combined-text">{{ c.eq_combined_reading.market_line }}</div>
+      <div class="combined-text">{{ c.eq_combined_reading.earnings_line }}</div>
+      <div class="combined-text">
+        Alignment:
+        <span class="
+        {%- if c.eq_alignment == 'ALIGNED' %} eq-v-supportive
+        {%- elif c.eq_alignment == 'PARTIAL' %} eq-v-weak
+        {%- elif c.eq_alignment == 'CONFLICT' %} eq-v-risky
+        {%- else %} eq-v-unavailable{%- endif %}">
+          {{ c.eq_alignment }}
+        </span>
+      </div>
+      <div class="combined-text" style="margin-top:4px">{{ c.eq_combined_reading.conclusion }}</div>
     </div>
 
   </div>
