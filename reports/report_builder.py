@@ -335,7 +335,8 @@ def _build_eq_display(c: dict, market_verdict: str = '') -> dict:
     eq_verdict = _eq_verdict_from_tier(pass_tier, fatal)
 
     # Pass tier display line
-    pass_display = f'{pass_tier.upper()} ({percentile}th percentile)' if percentile else pass_tier.upper()
+    eq_verdict_for_display = _eq_verdict_from_tier(pass_tier, fatal)
+    pass_display = f'{pass_tier.upper()} ({eq_verdict_for_display})' + (f' — {percentile}th percentile' if percentile else '')
 
     warning_strings = []
     for w in warnings[:3]:

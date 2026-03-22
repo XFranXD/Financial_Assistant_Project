@@ -106,7 +106,7 @@ DIVERGENCE_WARNING = (
 )
 
 VOLUME_LINE = (
-    "Trading activity: {VOLUME_LABEL}."
+    "{VOLUME_LABEL}."
 )
 
 CONFIDENCE_LINE = (
