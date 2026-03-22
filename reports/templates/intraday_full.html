@@ -405,7 +405,8 @@
   <div class="card">
     <div class="card-title">
       {{ c.display_name }} <span class="tk">({{ c.ticker }})</span>
-      <span class="sec">— {{ c.sector_plain }}{% if c.industry_label %} ({{ c.industry_label }}){% endif %}</span>
+      <span class="sec">— {{ c.sector_plain }}{% if c.industry_label and c.industry_label != c.sector_plain %} ({{
+        c.industry_label }}){% endif %}</span>
     </div>
 
     <!-- ── MARKET SIGNAL ANALYSIS ───────────────────────────── -->

@@ -252,30 +252,31 @@ def _build_combined_reading(conf_score: float, pass_tier: str, eq_available: boo
     eq_verdict = _eq_verdict_from_tier(pass_tier, fatal) if eq_available else 'UNAVAILABLE'
     alignment  = _alignment_state(market_verdict, eq_verdict, eq_available)
 
-    market_line   = f'Market:    {market_verdict.upper() if market_verdict else signal} ({signal.lower()} signal)'
+    mv_display    = market_verdict.upper() if market_verdict else signal
+    market_line   = f'Market:    {mv_display} ({int(conf_score)}/100, {signal})'
     earnings_line = f'Earnings:  {eq_verdict}'
     align_line    = f'Alignment: {alignment}'
 
     if not eq_available:
-        conclusion = 'No fundamental validation available.'
+        conclusion = 'Conclusion: No fundamental validation available.'
     elif fatal:
-        conclusion = 'Fatal flaw detected in earnings structure. Avoid.'
+        conclusion = 'Conclusion: Fatal flaw detected in earnings structure. Avoid.'
     elif alignment == 'ALIGNED':
-        conclusion = 'Signal is supported by fundamentals. Highest priority candidate.'
+        conclusion = 'Conclusion: Signal is supported by fundamentals. Highest priority candidate.'
     elif alignment == 'PARTIAL':
         tier = pass_tier.upper() if pass_tier else ''
         if signal == 'STRONG':
-            conclusion = 'Signal is present but fundamentals require monitoring. Proceed with caution.'
+            conclusion = 'Conclusion: Signal is present but fundamentals require monitoring. Proceed with caution.'
         elif tier == 'PASS':
-            conclusion = 'Fundamentals are solid but signal is not fully confirmed. Requires further confirmation.'
+            conclusion = 'Conclusion: Fundamentals are solid but signal is not fully confirmed. Requires further confirmation.'
         else:
-            conclusion = 'Signal is not fully confirmed by fundamentals. Requires caution.'
+            conclusion = 'Conclusion: Signal is not fully confirmed by fundamentals. Requires caution.'
     else:  # CONFLICT
         tier = pass_tier.upper() if pass_tier else 'FAIL'
         if signal == 'STRONG':
-            conclusion = 'Signal is not supported by fundamentals. High risk of false signal.'
+            conclusion = 'Conclusion: Signal is not supported by fundamentals. High risk of false signal.'
         else:
-            conclusion = 'No alignment between signal and fundamentals. Avoid.'
+            conclusion = 'Conclusion: No alignment between signal and fundamentals. Avoid.'
 
     return {
         'market_line':   market_line,
@@ -285,7 +286,7 @@ def _build_combined_reading(conf_score: float, pass_tier: str, eq_available: boo
     }
 
 
-def _build_eq_display(c: dict) -> dict:
+def _build_eq_display(c: dict, market_verdict: str = '') -> dict:
     """
     Builds display-ready EQ fields from raw EQ data on the candidate dict.
     System 1 owns all EQ rendering. System 2 never produces HTML for System 1.
@@ -303,8 +304,7 @@ def _build_eq_display(c: dict) -> dict:
     pass_tier    = c.get(PASS_TIER, '')
     fatal        = c.get(FATAL_FLAW_REASON, '')
 
-    market_verdict_raw = c.get('market_verdict', '')
-    combined_reading = _build_combined_reading(conf_score, pass_tier, eq_available, fatal, market_verdict_raw)
+    combined_reading = _build_combined_reading(conf_score, pass_tier, eq_available, fatal, market_verdict)
     signal_strength  = _signal_strength_label(conf_score)
 
     if not eq_available:
@@ -536,8 +536,9 @@ def _enrich_company_for_template(c: dict) -> dict:
     summary_verdict_val = summary_verdict(conf_score, risk_score, section)
     market_verdict      = summary_verdict_val
 
-    # EQ display enrichment
-    eq_display = _build_eq_display(c)
+    # EQ display enrichment — market_verdict passed explicitly so combined reading
+    # has the correct verdict before the return dict is assembled
+    eq_display = _build_eq_display(c, market_verdict)
 
     return {
         **c,
