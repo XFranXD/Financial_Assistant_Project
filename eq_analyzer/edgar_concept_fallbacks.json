@@ -1,0 +1,100 @@
+{
+  "net_income": {
+    "primary": "NetIncomeLoss",
+    "fallbacks": [
+      "NetIncome",
+      "ProfitLoss",
+      "NetIncomeLossAvailableToCommonStockholdersBasic",
+      "NetIncomeLossAttributableToParent"
+    ],
+    "unit": "USD",
+    "statement": "income_statement",
+    "description": "Net income / net earnings reported on income statement"
+  },
+  "operating_cash_flow": {
+    "primary": "NetCashProvidedByUsedInOperatingActivities",
+    "fallbacks": [
+      "NetCashProvidedByUsedInOperatingActivitiesContinuingOperations",
+      "NetCashProvidedByOperatingActivities",
+      "CashGeneratedFromOperations",
+      "NetCashFromOperatingActivities"
+    ],
+    "unit": "USD",
+    "statement": "cash_flow",
+    "description": "Operating cash flow from cash flow statement"
+  },
+  "capex": {
+    "primary": "PaymentsToAcquirePropertyPlantAndEquipment",
+    "fallbacks": [
+      "PaymentsToAcquireProductiveAssets",
+      "PurchaseOfPropertyPlantAndEquipment",
+      "AcquisitionsOfPropertyPlantAndEquipment",
+      "PaymentsForCapitalExpenditures",
+      "CapitalExpenditures",
+      "PurchaseOfProductiveAssets",
+      "PaymentsToAcquireOtherProductiveAssets"
+    ],
+    "unit": "USD",
+    "statement": "cash_flow",
+    "description": "Capital expenditures — payments to acquire property, plant, equipment"
+  },
+  "revenue": {
+    "primary": "Revenues",
+    "fallbacks": [
+      "RevenueFromContractWithCustomerExcludingAssessedTax",
+      "RevenueFromContractWithCustomerIncludingAssessedTax",
+      "SalesRevenueNet",
+      "Revenue",
+      "TotalRevenues",
+      "OperatingRevenue",
+      "SalesRevenueGoodsNet",
+      "RevenueNetOfInterestExpense",
+      "InterestAndDividendIncomeOperating",
+      "RevenuesNetOfInterestExpense"
+    ],
+    "unit": "USD",
+    "statement": "income_statement",
+    "description": "Total revenue / net sales from income statement"
+  },
+  "accounts_receivable": {
+    "primary": "AccountsReceivableNetCurrent",
+    "fallbacks": [
+      "ReceivablesNetCurrent",
+      "AccountsReceivableNet",
+      "TradeAndOtherReceivablesNetCurrent",
+      "AccountsNotesAndLoansReceivableNetCurrent",
+      "TradeReceivablesCurrent",
+      "ReceivablesFromCustomers",
+      "NetReceivables"
+    ],
+    "unit": "USD",
+    "statement": "balance_sheet",
+    "description": "Accounts receivable net of allowances, current portion"
+  },
+  "total_assets": {
+    "primary": "Assets",
+    "fallbacks": [
+      "TotalAssets",
+      "AssetsNet"
+    ],
+    "unit": "USD",
+    "statement": "balance_sheet",
+    "description": "Total assets from balance sheet"
+  },
+  "long_term_debt": {
+    "primary": "LongTermDebtNoncurrent",
+    "fallbacks": [
+      "LongTermDebt",
+      "LongTermDebtAndCapitalLeaseObligations",
+      "DebtLongtermAndShorttermCombinedAmount",
+      "LongTermDebtCurrent",
+      "LongTermNotesPayable",
+      "SeniorLongTermNotes",
+      "LongTermDebtFairValue",
+      "OtherLongTermDebt"
+    ],
+    "unit": "USD",
+    "statement": "balance_sheet",
+    "description": "Long-term debt from balance sheet — used for debt trend in Long-Term Trends module"
+  }
+}

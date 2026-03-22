@@ -1,0 +1,118 @@
+{
+  "edgar": {
+    "base_url": "https://data.sec.gov",
+    "company_facts_endpoint": "/api/xbrl/companyfacts/CIK{cik}.json",
+    "submissions_endpoint": "/submissions/CIK{cik}.json",
+    "company_tickers_url": "https://www.sec.gov/files/company_tickers.json",
+    "cik_search_fallback_url": "https://efts.sec.gov/LATEST/search-index?q=%22{ticker}%22&forms=10-K,10-Q",
+    "rate_limit_seconds": 0.25,
+    "user_agent": "EarningsQualityAnalyzer contact@example.com",
+    "request_timeout_seconds": 30
+  },
+  "cik_cache": {
+    "path": "ticker_cik_cache.json"
+  },
+  "staleness": {
+    "current_max_days": 119,
+    "warning_max_days": 179,
+    "penalty_max_days": 269,
+    "penalty_points": 10,
+    "skip_threshold_days": 270
+  },
+  "data_requirements": {
+    "full_quarters": 8,
+    "minimum_quarters": 6,
+    "skip_below_quarters": 6
+  },
+  "scoring": {
+    "weights": {
+      "cash_conversion":      0.23,
+      "accruals":             0.19,
+      "revenue_quality":      0.16,
+      "long_term_trends":     0.16,
+      "fcf_sustainability":   0.11,
+      "earnings_consistency": 0.10,
+      "dividend_stability":   0.05
+    },
+    "failed_thresholds": {
+      "eq_score_floor": 40,
+      "cash_conversion_auto_fail": 30,
+      "accruals_auto_fail": 25,
+      "simultaneous_flags_limit": 2
+    },
+    "score_bands": {
+      "strong_min": 75,
+      "acceptable_min": 55,
+      "weak_min": 35,
+      "poor_min": 0
+    },
+    "fcf_flag": {
+      "window_quarters": 6,
+      "negative_threshold": 3
+    }
+  },
+  "earnings_timing_modifier": {
+    "max_penalty_points": 5,
+    "high_risk_days": 3,
+    "high_risk_penalty": 5,
+    "moderate_risk_days": 10,
+    "moderate_risk_penalty": 3,
+    "low_moderate_risk_days": 30,
+    "low_moderate_risk_penalty": 1
+  },
+  "anomaly_detection": {
+    "growth_ratio_cap": 5.0,
+    "margin_ratio_cap": 2.0,
+    "dso_days_cap": 730,
+    "bsar_cap": 0.50,
+    "weight_reduction_on_anomaly": 0.50,
+    "flag_label": "DATA ANOMALY — VERIFY MANUALLY"
+  },
+  "data_reliability": {
+    "critical_metrics": ["net_income", "operating_cash_flow", "revenue"],
+    "high_threshold": 0.90,
+    "moderate_threshold": 0.70
+  },
+  "earnings_timing": {
+    "finnhub_env_var": "FINNHUB_API_KEY",
+    "alphavantage_env_var": "ALPHAVANTAGE_API_KEY",
+    "cache_max_age_hours": 24,
+    "look_ahead_days": 90,
+    "high_risk_days": 3,
+    "moderate_risk_days": 10,
+    "low_moderate_risk_days": 30
+  },
+  "dividend_stability": {
+    "not_applicable_if_zero_quarters": 8,
+    "payout_ratio_watch": 0.60,
+    "payout_ratio_high_risk": 0.90,
+    "cut_detection_threshold": 0.10,
+    "lookback_quarters": 12
+  },
+  "long_term_trends": {
+    "improving_slope_threshold": 0.02,
+    "deteriorating_slope_threshold": -0.02,
+    "recent_momentum_quarters": 2,
+    "sub_weights": {
+      "revenue": 0.30,
+      "margin": 0.30,
+      "debt": 0.25,
+      "fcf": 0.15
+    }
+  },
+  "fcf_investment_phase": {
+    "capex_revenue_threshold": 0.15,
+    "consecutive_quarters_required": 2
+  },
+  "output": {
+    "max_candidates_per_run": 7,
+    "report_title": "Earnings Quality Report"
+  },
+  "email": {
+    "smtp_server": "smtp.gmail.com",
+    "smtp_port": 587,
+    "sender_env_var": "GMAIL_USER",
+    "password_env_var": "GMAIL_APP_PASSWORD",
+    "recipient_env_var": "RECIPIENT_EMAIL"
+  }
+}

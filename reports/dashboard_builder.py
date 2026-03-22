@@ -99,6 +99,9 @@ def _update_rank_board(companies):
                                or c.get('financials', {}).get('current_price')),
                 'confidence': round(new_conf, 1),
                 'risk':       round(c.get('risk_score', 50), 1),
+                'eq_score':   round(c.get('eq_score_final', 0), 1),
+                'eq_label':   c.get('eq_label', ''),
+                'eq_pass':    c.get('pass_tier', ''),
             }
 
     with open(rank_path, 'w') as f:

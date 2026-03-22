@@ -53,6 +53,13 @@ from reports.sentence_templates import (
     COMPANY_INTRO_FUNDAMENTALS,
     COMPANY_INTRO_STANDARD,
 )
+from contracts.eq_schema import (
+    EQ_AVAILABLE, EQ_SCORE_FINAL, EQ_LABEL, PASS_TIER,
+    TOP_RISKS, TOP_STRENGTHS, WARNINGS, FATAL_FLAW_REASON,
+    EQ_PERCENTILE, BATCH_REGIME, EQ_SCORE_DISPLAY,
+    EQ_LABEL_DISPLAY, EQ_VERDICT_DISPLAY, EQ_TOP_RISKS_DISPLAY,
+    EQ_TOP_STRENGTHS_DISPLAY, EQ_WARNINGS_DISPLAY,
+)
 
 log = get_logger('report_builder')
 
@@ -137,6 +144,61 @@ def _build_story_sentences(all_articles: list, sector_scores: dict, confirmed_se
             'See company details below for specific research opportunities.'
         )
     return sentences
+
+
+def _build_eq_display(c: dict) -> dict:
+    """
+    Builds display-ready EQ fields from raw EQ data on the candidate dict.
+    System 1 owns all EQ rendering. System 2 never produces HTML for System 1.
+    Returns safe fallback display values when EQ data is unavailable.
+    """
+    if not c.get(EQ_AVAILABLE):
+        return {
+            EQ_SCORE_DISPLAY:         'N/A',
+            EQ_LABEL_DISPLAY:         'No earnings data',
+            EQ_VERDICT_DISPLAY:       'EQ analysis unavailable for this ticker',
+            EQ_TOP_RISKS_DISPLAY:     [],
+            EQ_TOP_STRENGTHS_DISPLAY: [],
+            EQ_WARNINGS_DISPLAY:      [],
+        }
+
+    eq_score   = c.get(EQ_SCORE_FINAL, 0)
+    eq_label   = c.get(EQ_LABEL, '')
+    pass_tier  = c.get(PASS_TIER, '')
+    risks      = c.get(TOP_RISKS, [])
+    strengths  = c.get(TOP_STRENGTHS, [])
+    warnings   = c.get(WARNINGS, [])
+    fatal      = c.get(FATAL_FLAW_REASON, '')
+    percentile = c.get(EQ_PERCENTILE, 0)
+    batch      = c.get(BATCH_REGIME, '')
+
+    score_display = f'{int(eq_score)}/100'
+    label_display = eq_label if eq_label else 'Unknown'
+
+    if fatal:
+        verdict = f'FATAL FLAW: {fatal}'
+    elif pass_tier == 'PASS':
+        verdict = f'Earnings quality PASS — {percentile}th percentile in batch ({batch})'
+    elif pass_tier == 'WATCH':
+        verdict = 'Earnings quality WATCH — monitor closely'
+    else:
+        verdict = f'Earnings quality FAIL — {eq_label}'
+
+    warning_strings = []
+    for w in warnings[:3]:
+        if isinstance(w, dict):
+            warning_strings.append(w.get('message', str(w)))
+        else:
+            warning_strings.append(str(w))
+
+    return {
+        EQ_SCORE_DISPLAY:         score_display,
+        EQ_LABEL_DISPLAY:         label_display,
+        EQ_VERDICT_DISPLAY:       verdict,
+        EQ_TOP_RISKS_DISPLAY:     risks[:3],
+        EQ_TOP_STRENGTHS_DISPLAY: strengths[:3],
+        EQ_WARNINGS_DISPLAY:      warning_strings,
+    }
 
 
 def _enrich_company_for_template(c: dict) -> dict:
@@ -333,8 +395,12 @@ def _enrich_company_for_template(c: dict) -> dict:
 
     summary_verdict_val = summary_verdict(conf_score, risk_score, section)
 
+    # ── EQ display enrichment ─────────────────────────────────────────────
+    eq_display = _build_eq_display(c)
+
     return {
-        **c,
+        **c,              # original candidate data first
+        **eq_display,     # EQ display fields second — these win on collision
         'display_name':      company_name,
         'sector_plain':      render_sector_plain(sector),
         'industry_label':    c.get('financials', {}).get('industry', ''),

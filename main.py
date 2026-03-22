@@ -31,6 +31,14 @@ from utils.state_manager import load_state, save_state, mark_slot_complete, add_
 
 log = get_logger('main')
 
+from eq_analyzer.main import run_eq_analyzer
+from contracts.eq_schema import (
+    EQ_SCORE_FINAL, EQ_LABEL, PASS_TIER, FINAL_CLASSIFICATION,
+    TOP_RISKS, TOP_STRENGTHS, WARNINGS, DATA_CONFIDENCE,
+    COMBINED_PRIORITY_SCORE, EQ_PERCENTILE, BATCH_REGIME,
+    EQ_AVAILABLE, FATAL_FLAW_REASON,
+)
+
 DISCLAIMER = (
     'DISCLAIMER: This system does NOT perform trading, does NOT give investment advice, '
     'and does NOT make price predictions. It is a research data aggregation and scoring tool only.'
@@ -479,6 +487,62 @@ def run():
 
     final_companies = stable_companies
     log.info(f'Final company count after score stability filter: {len(final_companies)}')
+
+    # ── Step 27d: Earnings Quality enrichment ────────────────────────────
+    # Run System 2 (EQ Analyzer) against all final candidates.
+    # System 2 returns raw data only. System 1 owns all rendering.
+    # combined_priority_score is available as a secondary signal but does
+    # NOT replace or reorder System 1's composite_confidence ranking.
+    try:
+        eq_tickers = [c['ticker'] for c in final_companies if c.get('ticker')]
+        if eq_tickers:
+            log.info(f'[EQ] Running earnings quality analysis on {len(eq_tickers)} tickers')
+            eq_results = run_eq_analyzer(eq_tickers)
+            eq_map = {
+                r.get('ticker'): r
+                for r in eq_results
+                if isinstance(r.get('ticker'), str) and r.get('ticker')
+            }
+
+            for candidate in final_companies:
+                t         = candidate.get('ticker', '')
+                eq        = eq_map.get(t, {})
+                eq_result = eq.get('eq_result', {})
+
+                if (eq_result
+                        and isinstance(eq_result, dict)
+                        and not eq.get('error')
+                        and not eq.get('skipped')):
+                    candidate[EQ_AVAILABLE]             = True
+                    candidate[EQ_SCORE_FINAL]           = eq_result.get(EQ_SCORE_FINAL, 0)
+                    candidate[EQ_LABEL]                 = eq_result.get(EQ_LABEL, '')
+                    candidate[PASS_TIER]                = eq_result.get(PASS_TIER, '')
+                    candidate[FINAL_CLASSIFICATION]     = eq_result.get(FINAL_CLASSIFICATION, '')
+                    candidate[TOP_RISKS]                = eq_result.get(TOP_RISKS, [])
+                    candidate[TOP_STRENGTHS]            = eq_result.get(TOP_STRENGTHS, [])
+                    candidate[WARNINGS]                 = eq_result.get(WARNINGS, [])
+                    candidate[DATA_CONFIDENCE]          = eq_result.get(DATA_CONFIDENCE, 0)
+                    candidate[COMBINED_PRIORITY_SCORE]  = eq.get(COMBINED_PRIORITY_SCORE, 0)
+                    candidate[EQ_PERCENTILE]            = eq_result.get(EQ_PERCENTILE, 0)
+                    candidate[BATCH_REGIME]             = eq_result.get(BATCH_REGIME, '')
+                    candidate[FATAL_FLAW_REASON]        = eq_result.get(FATAL_FLAW_REASON, '')
+                else:
+                    candidate[EQ_AVAILABLE] = False
+                    log.info(f'[EQ] {t}: no EQ data — skipped or error')
+
+            log.info(
+                f'[EQ] Enrichment complete. '
+                f'{sum(1 for c in final_companies if c.get(EQ_AVAILABLE))} enriched / '
+                f'{len(final_companies)} total'
+            )
+        else:
+            log.info('[EQ] No candidates for EQ analysis')
+
+    except Exception as eq_err:
+        log.warning(f'[EQ] EQ analysis failed (non-fatal): {eq_err}')
+        for candidate in final_companies:
+            candidate[EQ_AVAILABLE] = False
+    # ── End Step 27d ─────────────────────────────────────────────────────
 
     # ── Step 28: Build reports ────────────────────────────────────────────
     from reports.report_builder import build_intraday_report
