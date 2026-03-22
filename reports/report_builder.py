@@ -253,28 +253,28 @@ def _build_combined_reading(conf_score: float, pass_tier: str, eq_available: boo
     alignment  = _alignment_state(market_verdict, eq_verdict, eq_available)
 
     mv_display    = market_verdict.upper() if market_verdict else signal
-    market_line   = f'Market:    {mv_display} ({int(conf_score)}/100, {signal})'
+    market_line   = f'Market:    {mv_display} ({int(conf_score)}/100)'
     earnings_line = f'Earnings:  {eq_verdict}'
     align_line    = f'Alignment: {alignment}'
 
     if not eq_available:
         conclusion = 'Conclusion: No fundamental validation available.'
     elif fatal:
-        conclusion = 'Conclusion: Fatal flaw detected in earnings structure. Avoid.'
+        conclusion = 'Conclusion: Fatal flaw in earnings structure. Avoid.'
     elif alignment == 'ALIGNED':
-        conclusion = 'Conclusion: Signal is supported by fundamentals. Highest priority candidate.'
+        conclusion = 'Conclusion: Signal supported by fundamentals. Highest priority candidate.'
     elif alignment == 'PARTIAL':
         tier = pass_tier.upper() if pass_tier else ''
         if signal == 'STRONG':
-            conclusion = 'Conclusion: Signal is present but fundamentals require monitoring. Proceed with caution.'
+            conclusion = 'Conclusion: Signal present. Fundamentals require monitoring. Proceed with caution.'
         elif tier == 'PASS':
-            conclusion = 'Conclusion: Fundamentals are solid but signal is not fully confirmed. Requires further confirmation.'
+            conclusion = 'Conclusion: Fundamentals solid. Signal not fully confirmed. Requires further confirmation.'
         else:
-            conclusion = 'Conclusion: Signal is not fully confirmed by fundamentals. Requires caution.'
+            conclusion = 'Conclusion: Signal not fully confirmed. Requires caution.'
     else:  # CONFLICT
         tier = pass_tier.upper() if pass_tier else 'FAIL'
         if signal == 'STRONG':
-            conclusion = 'Conclusion: Signal is not supported by fundamentals. High risk of false signal.'
+            conclusion = 'Conclusion: Signal not supported by fundamentals. High risk of false signal.'
         else:
             conclusion = 'Conclusion: No alignment between signal and fundamentals. Avoid.'
 
