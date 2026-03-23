@@ -26,6 +26,9 @@ def run_rotation_analyzer(candidates: list[dict]) -> list[dict]:
                 result['ticker'] = ticker
                 results.append(result)
             except Exception as e:
+                import traceback
+                import logging
+                logging.getLogger('main').warning(f'[ROT] {ticker} exception: {traceback.format_exc()}')
                 results.append({
                     'ticker':          ticker,
                     'rotation_status': 'SKIP',
