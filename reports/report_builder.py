@@ -86,7 +86,7 @@ SIGNAL_STRONG   = 70   # confidence >= 70
 SIGNAL_MODERATE = 50   # confidence 50-69
 # confidence < 50 = WEAK signal
 
-# ── EQ verdict vocabulary ──────────────────────────────────────────────────
+# ── EQ verdict vocabu# No lary ──────────────────────────────────────────────────
 # Controlled vocabulary only. Maps directly from pass_tier.
 # Fatal flaw overrides pass_tier and always produces RISKY.
 # No other logic overrides this mapping.
@@ -297,7 +297,7 @@ def _build_combined_reading(conf_score: float, pass_tier: str,
             conclusion = 'Conclusion: Sector timing is favorable but market signal is weak — insufficient basis to act.'
         else:
             # WATCH or unset
-            conclusion = 'Conclusion: Sector timing is favorable but signal lacks fundamental validation — not actionable.'
+            conclusion = 'Conclusion: Sector timing is favorable but fundamental data is unavailable — not actionable.'
             
     elif not eq_available and rs == 'WAIT':
         conclusion = 'Conclusion: No fundamental validation and sector timing is not favorable — not actionable.'
@@ -331,7 +331,7 @@ def _build_combined_reading(conf_score: float, pass_tier: str,
         elif rs == 'SUPPORT' and signal == 'STRONG':
             conclusion = 'Conclusion: Strong signal with sector support. Fundamentals require monitoring.'
         elif rs == 'SUPPORT' and eq_available:
-            conclusion = 'Conclusion: Signal lacks strong fundamental validation despite favorable timing — not actionable.'
+            conclusion = 'Conclusion: Sector timing is favorable but fundamentals fail to provide strong validation — not actionable.'
         elif rs == 'SUPPORT':
             conclusion = 'Conclusion: Sector timing is favorable but signal lacks fundamental validation — not actionable.'
         elif tier == 'PASS':
