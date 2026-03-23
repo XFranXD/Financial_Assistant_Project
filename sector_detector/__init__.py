@@ -38,4 +38,7 @@ def run_rotation_analyzer(candidates: list[dict]) -> list[dict]:
                 })
         return results
     except Exception:
+        import traceback
+        import logging
+        logging.getLogger('main').warning(f'[ROT] outer exception: {traceback.format_exc()}')
         return []
