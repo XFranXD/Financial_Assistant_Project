@@ -210,8 +210,21 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
 
         fin = get_financials(ticker)
 
-        # Use a neutral sector context for forced tickers
-        sector           = fin.get('industry', '') or 'unknown'
+        # Map company industry to System 1 sector key for System 3 compatibility
+        _industry = fin.get('industry', '') or ''
+        _sector_map = _load_json('data/sector_tickers.json', {})
+        _sector_map.pop('_comment', None)
+        sector = 'unknown'
+        for _sec_key, _tickers in _sector_map.items():
+            for _entry in _tickers:
+                _t = _entry['ticker'] if isinstance(_entry, dict) else _entry
+                if _t == ticker:
+                    sector = _sec_key
+                    break
+            if sector != 'unknown':
+                break
+        if sector == 'unknown':
+            sector = 'energy'  # fallback for force-ticker mode
         sector_pe        = get_sector_pe('energy')       # neutral fallback
         sector_median_ret = get_sector_median_return('energy')
         etf_return       = None
