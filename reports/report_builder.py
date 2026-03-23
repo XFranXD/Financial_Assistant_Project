@@ -297,8 +297,8 @@ def _build_combined_reading(conf_score: float, pass_tier: str,
             conclusion = 'Conclusion: Sector timing is favorable but market signal is weak — insufficient basis to act.'
         else:
             # WATCH or unset
-            conclusion = 'Conclusion: Sector timing is favorable but signal needs confirmation — not actionable.'
-
+            conclusion = 'Conclusion: Sector timing is favorable but signal lacks fundamental validation — not actionable.'
+            
     elif not eq_available and rs == 'WAIT':
         conclusion = 'Conclusion: No fundamental validation and sector timing is not favorable — not actionable.'
 
