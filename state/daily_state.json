@@ -1,11 +1,14 @@
 {
   "date": "2026-03-23",
   "reported_companies": [
-    "CTRA",
     "EQT",
+    "CTRA",
     "NVDA",
     "LRCX",
-    "AMAT"
+    "KMI",
+    "DVN",
+    "AMAT",
+    "RRC"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -29,8 +32,12 @@
       "status": "complete"
     },
     "16:00-17:20": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "KMI",
+        "DVN",
+        "RRC"
+      ],
+      "status": "complete"
     }
   },
   "failed_tickers": [],
@@ -138,8 +145,8 @@
     }
   },
   "today_scores": {
-    "LRCX": 56.4,
-    "NVDA": 53.1,
-    "AMAT": 52.8
+    "KMI": 66.5,
+    "DVN": 63.9,
+    "RRC": 63.1
   }
 }
