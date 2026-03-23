@@ -317,7 +317,10 @@ def _build_combined_reading(conf_score: float, pass_tier: str,
         conclusion = 'Conclusion: Fatal flaw in earnings structure. Avoid.'
 
     elif alignment == 'ALIGNED':
-        conclusion = 'Conclusion: Signal supported by fundamentals and sector timing. Highest priority candidate.'
+        if mv == 'RESEARCH NOW':
+            conclusion = 'Conclusion: Signal supported by fundamentals and sector timing. Highest priority candidate.'
+        else:
+            conclusion = 'Conclusion: High-quality setup — fundamentals and sector timing aligned, but market signal unconfirmed — monitor for confirmation.'
 
     elif alignment == 'PARTIAL':
         tier = pass_tier.upper() if pass_tier else ''
@@ -837,4 +840,3 @@ def _write_fallback_email(slot, ts_str, pulse_lines, story_sentences, companies)
     except Exception as e:
         log.error(f'Fallback email write failed: {e}')
     return path
-    
