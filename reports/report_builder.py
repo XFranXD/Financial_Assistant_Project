@@ -330,10 +330,14 @@ def _build_combined_reading(conf_score: float, pass_tier: str,
             conclusion = 'Conclusion: Signal not fully confirmed and sector timing is not favorable — not actionable.'
         elif rs == 'SUPPORT' and signal == 'STRONG':
             conclusion = 'Conclusion: Strong signal with sector support. Fundamentals require monitoring.'
+        elif rs == 'SUPPORT' and eq_available:
+            conclusion = 'Conclusion: Signal not fully confirmed despite favorable timing and mixed fundamentals — not actionable.'
+        elif rs == 'SUPPORT':
+            conclusion = 'Conclusion: Sector timing is favorable but signal lacks fundamental validation — not actionable.'
         elif tier == 'PASS':
-            conclusion = 'Conclusion: Fundamentals solid but signal not fully confirmed — not actionable.'
+            conclusion = 'Conclusion: Fundamentals solid but signal lacks sufficient strength — not actionable.'
         else:
-            conclusion = 'Conclusion: Signal not fully confirmed and timing is not favorable — not actionable.'
+            conclusion = 'Conclusion: Signal not fully confirmed — not actionable.'
 
     else:  # CONFLICT
         if signal == 'STRONG':
