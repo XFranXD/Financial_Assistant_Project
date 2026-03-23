@@ -1,674 +1,445 @@
-# AGENT INTEGRATION PROMPT
+# SYSTEM 3 → SYSTEM 1 INTEGRATION
+# AI AGENT MASTER PROMPT v1.2
 
-## CONTEXT
+## MISSION
 
-You are working on a zero-cost automated stock research engine built in Python 3.11 on Linux Ubuntu. The project lives at `/home/alejandro/Project_Financial_Assistant/`. No paid APIs, no ML, no trading logic.
+Wire System 3 (Sector Rotation Detector) into System 1 (Financial Assistant). System 3 source files have already been copied into `sector_detector/` inside the System 1 project. Everything lives inside `/home/alejandro/Project_Financial_Assistant/`.
 
-The system has been expanded with a second analytical engine called the Earnings Quality Analyzer (System 2). Its files have already been manually copied into `/home/alejandro/Project_Financial_Assistant/eq_analyzer/`. Your job is to fuse System 2 into System 1 so they operate as a single engine under one `main.py` orchestrator.
+This is a targeted integration. Do not rebuild anything. Do not modify any scoring logic. Do not touch any System 2 files. Apply only the changes described below to exactly the files listed.
+
+**Goal: inject rotation_signal and rotation context into every candidate card and combined reading across all report types.**
 
 ---
 
-## CURRENT STATE AFTER MANUAL COPY
+## ARCHITECTURE RULES
 
+- System 3 returns raw data only. System 1 owns all rendering.
+- System 3 call is non-fatal. System 1 always continues if System 3 fails.
+- `composite_confidence` is System 1's primary ranking signal. System 3 never modifies it.
+- Rotation is a timing modifier only — it never reorders candidates.
+- `contracts/sector_schema.py` is the single source of truth for all System 3 key names.
+- System 1 sector names already match System 3 sector names exactly. No mapping needed.
+- System 3 source files live at `sector_detector/` inside the System 1 project. No external path dependency.
+
+---
+
+## PROJECT STRUCTURE AFTER INTEGRATION
 ```
 /home/alejandro/Project_Financial_Assistant/
-  main.py                          ← System 1 orchestrator
-  config.py                        ← System 1 config
-  analyzers/                       ← System 1 analyzers
-  collectors/                      ← System 1 collectors
-  filters/                         ← System 1 filters
+  sector_detector/
+    __init__.py              ← System 3 entry point (modify this)
+    main.py                  ← System 3 main (already copied)
+    data_fetcher.py          ← System 3 module (already copied)
+    momentum_scorer.py       ← System 3 module (already copied)
+    relative_strength_scorer.py ← System 3 module (already copied)
+    volume_scorer.py         ← System 3 module (already copied)
+    rotation_engine.py       ← System 3 module (already copied)
+    output_formatter.py      ← System 3 module (already copied)
+  contracts/
+    eq_schema.py             ← System 2 contract (do not touch)
+    sector_schema.py         ← System 3 contract (create this)
+  main.py                    ← System 1 orchestrator (add Step 27e)
   reports/
-    report_builder.py              ← System 1 report builder
-    email_builder.py               ← System 1 email builder
-    dashboard_builder.py           ← System 1 dashboard builder
-    email_sender.py
-    summary_builder.py
-    sentence_templates.py
-    commodity_signal.py
+    report_builder.py        ← modify
     templates/
-  utils/
-  eq_analyzer/                     ← System 2 files just copied
-    main.py                        ← needs refactoring into run_eq_analyzer()
-    data_validator.py
-    edgar_fetcher.py
-    eq_handoff.py
-    eq_scorer.py
-    report_builder.py              ← needs rename to eq_report_builder.py
-    notifier.py                    ← needs deletion
-    __init__.py
-    module_accruals.py
-    module_cash_conversion.py
-    module_dividend_stability.py
-    module_earnings_consistency.py
-    module_earnings_timing.py
-    module_fcf_sustainability.py
-    module_long_term_trends.py
-    module_revenue_quality.py
-    config.json                    ← System 2 config, keep here
-    edgar_concept_fallbacks.json
-    ticker_cik_cache.json
-  contracts/                       ← does not exist yet, you create it
-  sector_detector/                 ← does not exist yet, you create it
-```
+      intraday_email.html    ← modify
+      intraday_full.html     ← modify
+      closing_email.html     ← modify
+      closing_full.html      ← modify
 
----
-
-## TASK OVERVIEW
-
-Execute these phases in strict order. Complete each phase fully before moving to the next. After each phase print a clear completion message.
-
----
-
-## PHASE 1 — FOLDER SETUP
-
-Create these two folders:
-
-```bash
-mkdir -p /home/alejandro/Project_Financial_Assistant/contracts
-mkdir -p /home/alejandro/Project_Financial_Assistant/sector_detector
-```
-
-Create a placeholder file in `sector_detector/`:
-
-File: `/home/alejandro/Project_Financial_Assistant/sector_detector/__init__.py`
-
-Content:
-```python
-# sector_detector/ — reserved for System 3 (Sector Rotation Detector)
-# Do not add any code here until System 3 design begins.
-```
-
-Print: `PHASE 1 COMPLETE — folders created`
-
----
-
-## PHASE 2 — CREATE CONTRACTS LAYER
-
-Create `/home/alejandro/Project_Financial_Assistant/contracts/__init__.py` as an empty file.
-
-Create `/home/alejandro/Project_Financial_Assistant/contracts/eq_schema.py` with this exact content:
-
-```python
-"""
-contracts/eq_schema.py
-Shared data contract between System 1 and eq_analyzer (System 2).
+STEP 1 — CREATE contracts/sector_schema.py
+Create this file exactly:
+python"""
+contracts/sector_schema.py
+Shared data contract between System 1 and sector_detector (System 3).
 All key names used to exchange data between systems are defined here.
-When a key name changes in System 2, update it here only — nowhere else.
-System 3 will add sector_schema.py to this folder when ready.
+When a key name changes in System 3, update it here only — nowhere else.
 
-RENDERING RULE: System 2 returns RAW DATA ONLY.
+RENDERING RULE: System 3 returns RAW DATA ONLY.
 System 1 owns all rendering — HTML, email, and dashboard display.
-eq_analyzer never produces HTML for System 1 consumption.
+sector_detector never produces HTML for System 1 consumption.
 Display keys below are built exclusively by System 1's report_builder.py.
+
+KEY NAMING RULE: raw data keys match System 3 output field names exactly.
+No translation layer between System 3 output and System 1 storage.
 """
 
-# ── Core EQ result keys (raw data from System 2) ──────────────────────────
-EQ_SCORE_FINAL          = "eq_score_final"
-EQ_LABEL                = "eq_label"
-EQ_MODIFIER             = "eq_modifier"
-PASS_TIER               = "pass_tier"
-FINAL_CLASSIFICATION    = "final_classification"
-WARNING_SCORE           = "warning_score"
-WARNINGS                = "warnings"
-TOP_RISKS               = "top_risks"
-TOP_STRENGTHS           = "top_strengths"
-DATA_CONFIDENCE         = "data_confidence"
-SCORE_CONFIDENCE        = "score_confidence"
-ECONOMIC_INTEGRITY      = "economic_integrity_score"
-FATAL_FLAW_REASON       = "fatal_flaw_reason"
-EQ_PERCENTILE           = "eq_percentile"
-COMBINED_PRIORITY_SCORE = "combined_priority_score"
-BATCH_REGIME            = "batch_regime"
-BATCH_MEDIAN            = "batch_median"
+# ── Core rotation result keys (raw data from System 3) ────────────────────
+# These match System 3 output_formatter.py field names exactly.
+ROTATION_SCORE          = "rotation_score"
+ROTATION_STATUS         = "rotation_status"
+ROTATION_SIGNAL         = "rotation_signal"
+SECTOR_ETF              = "sector_etf"
+MOMENTUM_SCORE          = "momentum_score"
+RELATIVE_STRENGTH_SCORE = "relative_strength_score"
+VOLUME_SCORE            = "volume_score"
+ROTATION_CONFIDENCE     = "data_confidence"
+TIMEFRAMES_USED         = "timeframes_used"
+ROTATION_REASONING      = "reasoning"
+
+# ── Availability flag ──────────────────────────────────────────────────────
+ROTATION_AVAILABLE      = "rotation_available"
 
 # ── Display keys built by System 1's report_builder.py ────────────────────
-# These are never set by eq_analyzer. They are computed from the raw keys above.
-EQ_SCORE_DISPLAY         = "eq_score_display"
-EQ_LABEL_DISPLAY         = "eq_label_display"
-EQ_VERDICT_DISPLAY       = "eq_verdict_display"
-EQ_TOP_RISKS_DISPLAY     = "eq_top_risks_display"
-EQ_TOP_STRENGTHS_DISPLAY = "eq_top_strengths_display"
-EQ_WARNINGS_DISPLAY      = "eq_warnings_display"
-EQ_AVAILABLE             = "eq_available"
-```
+# These are never set by sector_detector. Computed from raw keys above.
+ROTATION_SCORE_DISPLAY  = "rotation_score_display"
+ROTATION_SIGNAL_DISPLAY = "rotation_signal_display"
+ROTATION_ETF_DISPLAY    = "rotation_etf_display"
 
-Print: `PHASE 2 COMPLETE — contracts layer created`
-
----
-
-## PHASE 3 — CLEAN UP eq_analyzer
-
-### 3A — Delete notifier.py
-
-Delete this file entirely:
-```
-/home/alejandro/Project_Financial_Assistant/eq_analyzer/notifier.py
-```
-
-System 1 owns all email sending. `notifier.py` must not exist in the integrated engine.
-
-### 3B — Rename report_builder.py
-
-Rename:
-```
-/home/alejandro/Project_Financial_Assistant/eq_analyzer/report_builder.py
-→
-/home/alejandro/Project_Financial_Assistant/eq_analyzer/eq_report_builder.py
-```
-
-### 3C — Update all internal imports across eq_analyzer
-
-Every `.py` file inside `eq_analyzer/` currently uses flat imports that worked when files lived inside `src/`. Now that they live inside `eq_analyzer/`, all internal imports must use the `eq_analyzer.` prefix.
-
-Go through every `.py` file inside `eq_analyzer/` and apply these exact replacements:
-
-| Old import | New import |
-|---|---|
-| `from edgar_fetcher import` | `from eq_analyzer.edgar_fetcher import` |
-| `from data_validator import` | `from eq_analyzer.data_validator import` |
-| `from eq_scorer import` | `from eq_analyzer.eq_scorer import` |
-| `from report_builder import` | `from eq_analyzer.eq_report_builder import` |
-| `from eq_handoff import` | `from eq_analyzer.eq_handoff import` |
-| `from notifier import` | DELETE this line entirely |
-| `import module_cash_conversion` | `from eq_analyzer import module_cash_conversion` |
-| `import module_accruals` | `from eq_analyzer import module_accruals` |
-| `import module_revenue_quality` | `from eq_analyzer import module_revenue_quality` |
-| `import module_long_term_trends` | `from eq_analyzer import module_long_term_trends` |
-| `import module_fcf_sustainability` | `from eq_analyzer import module_fcf_sustainability` |
-| `import module_earnings_consistency` | `from eq_analyzer import module_earnings_consistency` |
-| `import module_earnings_timing` | `from eq_analyzer import module_earnings_timing` |
-| `import module_dividend_stability` | `from eq_analyzer import module_dividend_stability` |
-| `from src.` | `from eq_analyzer.` — only apply to actual import statements, not comments or strings |
-
-Also update the `MODULE_RUNNERS` dict in `eq_analyzer/main.py` to reference the correctly imported module names after the above changes are applied.
-
-### 3D — Fix config and fallback paths in eq_analyzer/main.py
-
-Update `load_config()` to point to:
-```python
-Path(__file__).parent / "config.json"
-```
-
-Update `load_fallbacks()` to point to:
-```python
-Path(__file__).parent / "edgar_concept_fallbacks.json"
-```
-
-Check `edgar_fetcher.py` for any path that previously pointed to `src/` or repo root for `ticker_cik_cache.json`. Update it to:
-```python
-Path(__file__).parent / "ticker_cik_cache.json"
-```
-
-Print: `PHASE 3 COMPLETE — eq_analyzer cleaned and imports updated`
-
----
-
-## PHASE 4 — REFACTOR eq_analyzer/main.py INTO SUBMAIN
-
-Refactor `eq_analyzer/main.py` into a `run_eq_analyzer()` function that:
-
-- Accepts a list of ticker strings as its only argument
-- Runs the full pipeline (fetch → validate → modules → score → handoff)
-- Returns a normalized list of result dicts — one per ticker
-- Does NOT send email
-- Does NOT write any files except `ticker_cik_cache.json` (cache save only, not a report)
-- Does NOT call `sys.exit()`
-- Does NOT produce any HTML output — System 2 returns raw data only, System 1 owns all rendering
-
-Keep all existing pipeline logic intact. Only remove the email delivery and HTML output layer.
-
-The refactored `eq_analyzer/main.py` must follow this structure:
-
-```python
-"""
-eq_analyzer/main.py — System 2 Submain
-Called by System 1's main.py via run_eq_analyzer(tickers).
-Returns normalized list of per-ticker result dicts. Never sends email,
-never writes report files, never produces HTML.
-
-RENDERING RULE: System 2 returns RAW DATA ONLY.
-System 1 owns all rendering. No html_block is produced for System 1 consumption.
-The text_block is retained only for standalone testing via __main__.
-
-Pipeline per ticker:
-    1. EDGAR fetch
-    2. Data validation
-    3. Module execution (M1-M7 composite)
-    4. Earnings timing (post-score modifier)
-    5. Composite scoring
-    6. Batch percentile ranking (mutates results in-place, also returns list)
-    7. Handoff dict construction via eq_handoff.py
-
-Returns:
-    List of normalized dicts. Each dict contains fields defined in
-    contracts/eq_schema.py plus: ticker, passed, skipped, error, eq_result.
+STEP 2 — REWRITE sector_detector/init.py
+System 3 source files are already inside sector_detector/. The __init__.py imports directly from them — no path injection needed.
+Replace the current placeholder content with:
+python"""
+sector_detector/__init__.py
+Entry point for System 3 (Sector Rotation Detector).
+All System 3 source files live inside this package.
+System 1 calls run_rotation_analyzer(candidates) from here.
 """
 
-import logging
-from pathlib import Path
-
-logger = logging.getLogger(__name__)
-
-ROOT_DIR = Path(__file__).parent  # eq_analyzer/ directory
+from sector_detector.main import get_rotation_result
 
 
-def load_config() -> dict:
-    path = ROOT_DIR / "config.json"
-    logger.info(f"[EQ_ANALYZER] Loading config: {path}")
-    with open(path) as f:
-        import json
-        return json.load(f)
-
-
-def load_fallbacks() -> dict:
-    path = ROOT_DIR / "edgar_concept_fallbacks.json"
-    logger.info(f"[EQ_ANALYZER] Loading EDGAR fallbacks: {path}")
-    with open(path) as f:
-        import json
-        return json.load(f)
-
-
-def process_ticker(ticker, fetcher, config) -> dict:
-    # keep exactly as-is from original — no changes to pipeline logic
-    ...
-
-
-def compute_batch_percentile_ranks(results: list) -> list:
-    # NOTE: mutates results in-place AND returns the list
-    # Always use as: results = compute_batch_percentile_ranks(results)
-    ...
-
-
-def normalize_result(r: dict) -> dict:
+def run_rotation_analyzer(candidates: list[dict]) -> list[dict]:
     """
-    Enforces output shape at the submain boundary.
-    Guarantees System 1 never receives missing keys from System 2.
-    Called on every result before returning from run_eq_analyzer.
-
-    combined_priority_score is a handoff-level field computed by eq_handoff.py
-    and attached directly to the top-level result dict — not nested inside
-    eq_result. Always read it from eq (top-level), never from eq_result.
-
-    eq_result uses `or {}` not `default={}` to handle explicit None values.
+    Accepts a list of candidate dicts with 'ticker' and 'sector' keys.
+    Returns a list of rotation result dicts, one per candidate.
+    Non-fatal — returns empty list on any failure.
     """
-    return {
-        "ticker":                  r.get("ticker", ""),
-        "eq_result":               r.get("eq_result") or {},
-        "passed":                  r.get("passed", False),
-        "skipped":                 r.get("skipped", False),
-        "error":                   r.get("error", None),
-        "combined_priority_score": r.get("combined_priority_score", 0),
-        "text_block":              r.get("text_block", ""),
-    }
-
-
-def run_eq_analyzer(tickers: list) -> list:
-    """
-    Entry point called by System 1's main.py.
-    Accepts list of ticker strings.
-    Returns normalized list of result dicts — one per ticker.
-    Never raises — all exceptions caught per ticker and returned as error result.
-    """
-    logger.info(f"[EQ_ANALYZER] Starting run for {len(tickers)} tickers: {tickers}")
-
     try:
-        config    = load_config()
-        fallbacks = load_fallbacks()
-    except Exception as e:
-        logger.critical(f"[EQ_ANALYZER] Fatal: failed to load config or fallbacks: {e}")
-        return [normalize_result({"ticker": t, "passed": False,
-                                  "error": "config load failed"}) for t in tickers]
+        results = []
+        for c in candidates:
+            ticker = c.get('ticker', '')
+            sector = c.get('sector', '')
+            if not ticker or not sector:
+                continue
+            try:
+                result = get_rotation_result(ticker, sector)
+                result['ticker'] = ticker
+                results.append(result)
+            except Exception as e:
+                results.append({
+                    'ticker':          ticker,
+                    'rotation_status': 'SKIP',
+                    'rotation_signal': 'UNKNOWN',
+                    'rotation_score':  None,
+                    'error':           str(e)
+                })
+        return results
+    except Exception:
+        return []
 
-    from eq_analyzer.edgar_fetcher import EdgarFetcher
-    fetcher = EdgarFetcher(config, fallbacks)
-    results = []
+STEP 3 — UPDATE sector_detector/main.py IMPORTS
+System 3's main.py was built as a standalone script. Its internal imports use bare module names like from data_fetcher import .... These must be updated to package-relative imports so they work inside System 1.
+Open sector_detector/main.py and update all internal imports from:
+pythonfrom data_fetcher import ...
+from rotation_engine import ...
+from output_formatter import ...
+To:
+pythonfrom sector_detector.data_fetcher import ...
+from sector_detector.rotation_engine import ...
+from sector_detector.output_formatter import ...
+Apply the same pattern to all other files inside sector_detector/ that import from sibling modules. Check each file:
 
-    for ticker in tickers:
-        try:
-            result = process_ticker(ticker, fetcher, config)
-            results.append(result)
-        except Exception as e:
-            logger.error(f"[EQ_ANALYZER] Unhandled exception for {ticker}: {e}")
-            results.append({
-                "ticker": ticker, "passed": False,
-                "eq_score_final": 0, "error": str(e)
-            })
+rotation_engine.py — likely imports from multiple scorers
+output_formatter.py — likely imports from rotation_engine
+All scorer files — check for any cross-imports
 
-    fetcher.save_cik_cache()
+For each bare import like from momentum_scorer import ... change it to from sector_detector.momentum_scorer import ....
 
-    # Mutates in-place and returns list — always assign back
-    results = compute_batch_percentile_ranks(results)
-
-    # Rebuild text_block after percentiles assigned (for standalone testing only)
-    from eq_analyzer.eq_report_builder import build_text_block
-    for r in results:
-        if (
-            "eq_result" in r
-            and r.get("eq_result")
-            and not r.get("skipped")
-            and not r.get("error")
-            and "module_results" in r
-        ):
-            r["text_block"] = build_text_block(r["eq_result"], r["module_results"])
-
-    # Enforce output shape at boundary before returning to System 1
-    results = [normalize_result(r) for r in results]
-
-    logger.info(
-        f"[EQ_ANALYZER] Run complete. "
-        f"{sum(1 for r in results if r.get('passed'))} passed / {len(results)} total"
-    )
-    return results
-
-
-# Standalone testing only — not used by System 1
-if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--tickers", type=str)
-    args = parser.parse_args()
-    tickers = [t.strip().upper() for t in args.tickers.split(",")
-               if t.strip()] if args.tickers else []
-    results = run_eq_analyzer(tickers)
-    for r in results:
-        print(r.get("text_block") or r.get("ticker"))
-```
-
-Print: `PHASE 4 COMPLETE — eq_analyzer submain refactored`
-
----
-
-## PHASE 5 — WIRE System 1 main.py TO CALL eq_analyzer
-
-Open `/home/alejandro/Project_Financial_Assistant/main.py`.
-
-### 5A — Add imports at top of file
-
-After the existing imports block add:
-
-```python
-from eq_analyzer.main import run_eq_analyzer
-from contracts.eq_schema import (
-    EQ_SCORE_FINAL, EQ_LABEL, PASS_TIER, FINAL_CLASSIFICATION,
-    TOP_RISKS, TOP_STRENGTHS, WARNINGS, DATA_CONFIDENCE,
-    COMBINED_PRIORITY_SCORE, EQ_PERCENTILE, BATCH_REGIME,
-    EQ_AVAILABLE, FATAL_FLAW_REASON,
+STEP 4 — ADD Step 27e to main.py
+Add the following import at the top of main.py alongside the existing System 2 import:
+pythonfrom sector_detector import run_rotation_analyzer
+Also add this import alongside the existing contract imports:
+pythonfrom contracts.sector_schema import (
+    ROTATION_AVAILABLE, ROTATION_SCORE, ROTATION_STATUS,
+    ROTATION_SIGNAL, SECTOR_ETF, ROTATION_CONFIDENCE,
+    ROTATION_REASONING, TIMEFRAMES_USED
 )
-```
-
-### 5B — Insert Step 27d after Step 27c and before Step 28
-
-```python
-    # ── Step 27d: Earnings Quality enrichment ────────────────────────────
-    # Run System 2 (EQ Analyzer) against all final candidates.
-    # System 2 returns raw data only. System 1 owns all rendering.
-    # combined_priority_score is available as a secondary signal but does
-    # NOT replace or reorder System 1's composite_confidence ranking.
+Then add Step 27e immediately after the # ── End Step 27d ───── line:
+python    # ── Step 27e: Sector Rotation enrichment ─────────────────────────────
+    # Run System 3 (Sector Rotation Detector) against all final candidates.
+    # System 3 returns raw data only. System 1 owns all rendering.
+    # rotation_signal is a timing modifier only — does NOT reorder candidates.
     try:
-        eq_tickers = [c['ticker'] for c in final_companies if c.get('ticker')]
-        if eq_tickers:
-            log.info(f'[EQ] Running earnings quality analysis on {len(eq_tickers)} tickers')
-            eq_results = run_eq_analyzer(eq_tickers)
-            eq_map = {
-                r.get('ticker'): r
-                for r in eq_results
-                if isinstance(r.get('ticker'), str) and r.get('ticker')
-            }
+        rotation_candidates = [
+            {'ticker': c.get('ticker', ''), 'sector': c.get('sector', '')}
+            for c in final_companies
+            if c.get('ticker') and c.get('sector')
+        ]
+        if rotation_candidates:
+            log.info(f'[ROT] Running rotation analysis on {len(rotation_candidates)} candidates')
+            rotation_results = run_rotation_analyzer(rotation_candidates)
 
-            for candidate in final_companies:
-                t         = candidate.get('ticker', '')
-                eq        = eq_map.get(t, {})
-                eq_result = eq.get('eq_result', {})
+            if not rotation_results:
+                log.warning('[ROT] No results returned from System 3')
+            else:
+                rotation_map = {
+                    r.get('ticker'): r
+                    for r in rotation_results
+                    if isinstance(r.get('ticker'), str) and r.get('ticker')
+                }
 
-                if (eq_result
-                        and isinstance(eq_result, dict)
-                        and not eq.get('error')
-                        and not eq.get('skipped')):
-                    candidate[EQ_AVAILABLE]             = True
-                    candidate[EQ_SCORE_FINAL]           = eq_result.get(EQ_SCORE_FINAL, 0)
-                    candidate[EQ_LABEL]                 = eq_result.get(EQ_LABEL, '')
-                    candidate[PASS_TIER]                = eq_result.get(PASS_TIER, '')
-                    candidate[FINAL_CLASSIFICATION]     = eq_result.get(FINAL_CLASSIFICATION, '')
-                    candidate[TOP_RISKS]                = eq_result.get(TOP_RISKS, [])
-                    candidate[TOP_STRENGTHS]            = eq_result.get(TOP_STRENGTHS, [])
-                    candidate[WARNINGS]                 = eq_result.get(WARNINGS, [])
-                    candidate[DATA_CONFIDENCE]          = eq_result.get(DATA_CONFIDENCE, 0)
-                    candidate[COMBINED_PRIORITY_SCORE]  = eq.get(COMBINED_PRIORITY_SCORE, 0)
-                    candidate[EQ_PERCENTILE]            = eq_result.get(EQ_PERCENTILE, 0)
-                    candidate[BATCH_REGIME]             = eq_result.get(BATCH_REGIME, '')
-                    candidate[FATAL_FLAW_REASON]        = eq_result.get(FATAL_FLAW_REASON, '')
-                else:
-                    candidate[EQ_AVAILABLE] = False
-                    log.info(f'[EQ] {t}: no EQ data — skipped or error')
+                for candidate in final_companies:
+                    t   = candidate.get('ticker', '')
+                    rot = rotation_map.get(t, {})
 
-            log.info(
-                f'[EQ] Enrichment complete. '
-                f'{sum(1 for c in final_companies if c.get(EQ_AVAILABLE))} enriched / '
-                f'{len(final_companies)} total'
-            )
+                    if (rot
+                            and rot.get('rotation_status') not in ('SKIP', None)
+                            and not rot.get('error')):
+                        candidate[ROTATION_AVAILABLE]  = True
+                        candidate[ROTATION_SCORE]      = rot.get(ROTATION_SCORE)
+                        candidate[ROTATION_STATUS]     = rot.get(ROTATION_STATUS, '')
+                        candidate[ROTATION_SIGNAL]     = rot.get(ROTATION_SIGNAL, 'UNKNOWN')
+                        candidate[SECTOR_ETF]          = rot.get(SECTOR_ETF, '')
+                        candidate[ROTATION_CONFIDENCE] = rot.get(ROTATION_CONFIDENCE, '')
+                        candidate[ROTATION_REASONING]  = rot.get(ROTATION_REASONING, '')
+                        candidate[TIMEFRAMES_USED]     = rot.get(TIMEFRAMES_USED, [])
+                    else:
+                        candidate[ROTATION_AVAILABLE]  = False
+                        candidate[ROTATION_SIGNAL]     = 'UNKNOWN'
+                        log.info(f'[ROT] {t}: no rotation data — skipped or error')
+
+                log.info(
+                    f'[ROT] Enrichment complete. '
+                    f'{sum(1 for c in final_companies if c.get(ROTATION_AVAILABLE))} enriched / '
+                    f'{len(final_companies)} total'
+                )
         else:
-            log.info('[EQ] No candidates for EQ analysis')
+            log.info('[ROT] No candidates for rotation analysis')
 
-    except Exception as eq_err:
-        log.warning(f'[EQ] EQ analysis failed (non-fatal): {eq_err}')
+    except Exception as rot_err:
+        log.warning(f'[ROT] Rotation analysis failed (non-fatal): {rot_err}')
         for candidate in final_companies:
-            candidate[EQ_AVAILABLE] = False
-    # ── End Step 27d ─────────────────────────────────────────────────────
-```
+            candidate[ROTATION_AVAILABLE] = False
+            candidate[ROTATION_SIGNAL]    = 'UNKNOWN'
+    # ── End Step 27e ─────────────────────────────────────────────────────
 
-### 5C — Constraints for this wiring
-
-- EQ call is wrapped in try/except and is NON-FATAL. System 1 continues normally if EQ fails.
-- `composite_confidence` remains System 1's primary ranking signal. Do not reorder candidates.
-- Do NOT modify any existing steps 1 through 27c.
-- Insert Step 27d only — nothing else in main.py changes.
-
-Print: `PHASE 5 COMPLETE — System 1 main.py wired to call eq_analyzer`
-
----
-
-## PHASE 6 — UPDATE report_builder.py TO RENDER EQ DATA
-
-Open `/home/alejandro/Project_Financial_Assistant/reports/report_builder.py`.
-
-### 6A — Add EQ import at top
-
-After existing imports add:
-
-```python
-from contracts.eq_schema import (
-    EQ_AVAILABLE, EQ_SCORE_FINAL, EQ_LABEL, PASS_TIER,
-    TOP_RISKS, TOP_STRENGTHS, WARNINGS, FATAL_FLAW_REASON,
-    EQ_PERCENTILE, BATCH_REGIME, EQ_SCORE_DISPLAY,
-    EQ_LABEL_DISPLAY, EQ_VERDICT_DISPLAY, EQ_TOP_RISKS_DISPLAY,
-    EQ_TOP_STRENGTHS_DISPLAY, EQ_WARNINGS_DISPLAY,
+STEP 5 — MODIFY reports/report_builder.py
+Add these imports at the top alongside existing contract imports:
+pythonfrom contracts.sector_schema import (
+    ROTATION_AVAILABLE, ROTATION_SCORE, ROTATION_STATUS,
+    ROTATION_SIGNAL, SECTOR_ETF, ROTATION_CONFIDENCE,
+    ROTATION_REASONING, ROTATION_SCORE_DISPLAY,
+    ROTATION_SIGNAL_DISPLAY, ROTATION_ETF_DISPLAY
 )
-```
-
-### 6B — Add _build_eq_display function
-
-Add this function before `_enrich_company_for_template()`:
-
-```python
-def _build_eq_display(c: dict) -> dict:
+A. Add _build_rotation_display() after _build_eq_display():
+pythondef _build_rotation_display(c: dict) -> dict:
     """
-    Builds display-ready EQ fields from raw EQ data on the candidate dict.
-    System 1 owns all EQ rendering. System 2 never produces HTML for System 1.
-    Returns safe fallback display values when EQ data is unavailable.
+    Builds display-ready rotation fields from raw System 3 data on the
+    candidate dict. System 1 owns all rendering.
+    Returns safe fallback display values when rotation data is unavailable.
+
+    rotation_signal controlled vocabulary:
+      SUPPORT  — sector flow supports acting now
+      WAIT     — neutral timing environment
+      WEAKEN   — sector flow weakens the setup
+      UNKNOWN  — insufficient data or SKIP
     """
-    if not c.get(EQ_AVAILABLE):
+    rotation_available = bool(c.get(ROTATION_AVAILABLE))
+
+    if not rotation_available:
         return {
-            EQ_SCORE_DISPLAY:         'N/A',
-            EQ_LABEL_DISPLAY:         'No earnings data',
-            EQ_VERDICT_DISPLAY:       'EQ analysis unavailable for this ticker',
-            EQ_TOP_RISKS_DISPLAY:     [],
-            EQ_TOP_STRENGTHS_DISPLAY: [],
-            EQ_WARNINGS_DISPLAY:      [],
+            ROTATION_SCORE_DISPLAY:  'UNAVAILABLE',
+            ROTATION_SIGNAL_DISPLAY: 'UNKNOWN',
+            ROTATION_ETF_DISPLAY:    '',
+            'rotation_available':    False,
+            'rotation_conf_note':    '',
         }
 
-    eq_score   = c.get(EQ_SCORE_FINAL, 0)
-    eq_label   = c.get(EQ_LABEL, '')
-    pass_tier  = c.get(PASS_TIER, '')
-    risks      = c.get(TOP_RISKS, [])
-    strengths  = c.get(TOP_STRENGTHS, [])
-    warnings   = c.get(WARNINGS, [])
-    fatal      = c.get(FATAL_FLAW_REASON, '')
-    percentile = c.get(EQ_PERCENTILE, 0)
-    batch      = c.get(BATCH_REGIME, '')
+    score  = c.get(ROTATION_SCORE)
+    signal = c.get(ROTATION_SIGNAL, 'UNKNOWN')
+    etf    = c.get(SECTOR_ETF, '')
+    conf   = c.get(ROTATION_CONFIDENCE, '')
 
-    score_display = f'{int(eq_score)}/100'
-    label_display = eq_label if eq_label else 'Unknown'
+    score_display = f'{score:.1f}/100' if score is not None else 'N/A'
+    conf_note     = f' ({conf.lower()} confidence)' if conf and conf != 'HIGH' else ''
 
-    if fatal:
-        verdict = f'FATAL FLAW: {fatal}'
-    elif pass_tier == 'PASS':
-        verdict = f'Earnings quality PASS — {percentile}th percentile in batch ({batch})'
-    elif pass_tier == 'WATCH':
-        verdict = 'Earnings quality WATCH — monitor closely'
+    return {
+        ROTATION_SCORE_DISPLAY:  score_display,
+        ROTATION_SIGNAL_DISPLAY: signal,
+        ROTATION_ETF_DISPLAY:    etf,
+        'rotation_available':    True,
+        'rotation_conf_note':    conf_note,
+    }
+B. Replace _alignment_state() with three-dimensional version:
+pythondef _alignment_state(market_verdict: str, eq_verdict: str,
+                     eq_available: bool,
+                     rotation_signal: str = 'UNKNOWN') -> str:
+    """
+    Deterministic alignment state across System 1, System 2, and System 3.
+
+    Three-dimensional alignment logic:
+      market    → +1 if RESEARCH NOW / -1 if SKIP / 0 otherwise
+      earnings  → +1 if SUPPORTIVE / -1 if WEAK or RISKY / 0 otherwise
+      rotation  → +1 if SUPPORT / -1 if WEAKEN / 0 if WAIT or UNKNOWN
+
+    Final label:
+      >= 2  → ALIGNED
+      0–1   → PARTIAL
+      < 0   → CONFLICT
+    """
+    alignment_score = 0
+
+    mv = market_verdict.upper() if market_verdict else ''
+    if mv == 'RESEARCH NOW':
+        alignment_score += 1
+    elif mv == 'SKIP':
+        alignment_score -= 1
+
+    if eq_available and eq_verdict not in ('UNAVAILABLE', ''):
+        ev = eq_verdict.upper()
+        if ev == 'SUPPORTIVE':
+            alignment_score += 1
+        elif ev in ('WEAK', 'RISKY'):
+            alignment_score -= 1
+
+    rs = rotation_signal.upper() if rotation_signal else 'UNKNOWN'
+    if rs == 'SUPPORT':
+        alignment_score += 1
+    elif rs == 'WEAKEN':
+        alignment_score -= 1
+
+    if alignment_score >= 2:
+        return 'ALIGNED'
+    elif alignment_score >= 0:
+        return 'PARTIAL'
     else:
-        verdict = f'Earnings quality FAIL — {eq_label}'
+        return 'CONFLICT'
+C. Replace _build_combined_reading() with rotation-aware version:
+pythondef _build_combined_reading(conf_score: float, pass_tier: str,
+                            eq_available: bool, fatal: str,
+                            market_verdict: str = '',
+                            rotation_signal: str = 'UNKNOWN',
+                            rotation_available: bool = False) -> dict:
+    """
+    Deterministic combined reading of System 1, System 2, and System 3.
+    Returns a structured dict for template rendering.
+    Controls AI interpretation — no inference required.
 
-    warning_strings = []
-    for w in warnings[:3]:
-        if isinstance(w, dict):
-            warning_strings.append(w.get('message', str(w)))
+    Output keys:
+      market_line    — Market classification line
+      earnings_line  — Earnings classification line
+      rotation_line  — Rotation timing line
+      alignment      — ALIGNED / PARTIAL / CONFLICT
+      conclusion     — Final declarative conclusion sentence
+    """
+    signal     = _signal_strength_label(conf_score)
+    eq_verdict = _eq_verdict_from_tier(pass_tier, fatal) if eq_available else 'UNAVAILABLE'
+    rs         = rotation_signal.upper() if rotation_signal else 'UNKNOWN'
+    alignment  = _alignment_state(market_verdict, eq_verdict, eq_available, rs)
+
+    mv_display    = market_verdict.upper() if market_verdict else signal
+    market_line   = f'Market:    {mv_display} ({int(conf_score)}/100)'
+    earnings_line = f'Earnings:  {eq_verdict}'
+    rotation_line = f'Rotation:  {rs}'
+
+    if not eq_available and not rotation_available:
+        conclusion = 'Conclusion: No fundamental or timing validation available.'
+    elif not eq_available and rs == 'SUPPORT':
+        conclusion = 'Conclusion: Sector timing supports acting. No fundamental validation available.'
+    elif not eq_available and rs == 'WEAKEN':
+        conclusion = 'Conclusion: Sector timing weakens this setup. No fundamental validation available.'
+    elif not eq_available:
+        conclusion = 'Conclusion: No fundamental validation available.'
+    elif fatal:
+        conclusion = 'Conclusion: Fatal flaw in earnings structure. Avoid.'
+    elif alignment == 'ALIGNED':
+        conclusion = 'Conclusion: Signal supported by fundamentals and sector timing. Highest priority candidate.'
+    elif alignment == 'PARTIAL':
+        tier = pass_tier.upper() if pass_tier else ''
+        if rs == 'WEAKEN':
+            conclusion = 'Conclusion: Signal present but sector flow is unfavorable — timing risk elevated.'
+        elif rs == 'SUPPORT' and signal == 'STRONG':
+            conclusion = 'Conclusion: Strong signal with sector support. Fundamentals require monitoring.'
+        elif tier == 'PASS':
+            conclusion = 'Conclusion: Fundamentals solid. Signal not fully confirmed. Requires further confirmation.'
         else:
-            warning_strings.append(str(w))
+            conclusion = 'Conclusion: Signal not fully confirmed. Requires caution.'
+    else:  # CONFLICT
+        if signal == 'STRONG':
+            conclusion = 'Conclusion: Signal not supported by fundamentals. High risk of false signal.'
+        else:
+            conclusion = 'Conclusion: No alignment between signal and fundamentals. Avoid.'
 
     return {
-        EQ_SCORE_DISPLAY:         score_display,
-        EQ_LABEL_DISPLAY:         label_display,
-        EQ_VERDICT_DISPLAY:       verdict,
-        EQ_TOP_RISKS_DISPLAY:     risks[:3],
-        EQ_TOP_STRENGTHS_DISPLAY: strengths[:3],
-        EQ_WARNINGS_DISPLAY:      warning_strings,
+        'market_line':    market_line,
+        'earnings_line':  earnings_line,
+        'rotation_line':  rotation_line,
+        'alignment':      alignment,
+        'conclusion':     conclusion,
     }
-```
+D. Update both _build_combined_reading() calls inside _build_eq_display():
+Find both calls to _build_combined_reading() inside _build_eq_display() and replace each with:
+pythonrotation_signal    = c.get(ROTATION_SIGNAL, 'UNKNOWN')
+rotation_available = bool(c.get(ROTATION_AVAILABLE))
+combined_reading   = _build_combined_reading(
+    conf_score, pass_tier, eq_available, fatal, market_verdict,
+    rotation_signal, rotation_available
+)
+E. Add rotation display fields to both return dicts in _build_eq_display():
+In both the if not eq_available return dict and the main return dict add:
+python**_build_rotation_display(c),
 
-### 6C — Call _build_eq_display inside _enrich_company_for_template
+STEP 6 — UPDATE ALL FOUR TEMPLATES
+Apply identical changes to all four templates:
 
-At the end of `_enrich_company_for_template()`, just before the final `return` statement, add:
+reports/templates/intraday_email.html
+reports/templates/intraday_full.html
+reports/templates/closing_email.html
+reports/templates/closing_full.html
 
-```python
-    # ── EQ display enrichment ─────────────────────────────────────────────
-    eq_display = _build_eq_display(c)
-```
+A. Add rotation section immediately before <!-- ── COMBINED READING -->:
+html<!-- ── SECTOR ROTATION ANALYSIS ──────────────────────────── -->
+<div class="analysis-section sec-rotation">
+  <div class="section-label-inner">── SECTOR ROTATION ANALYSIS ───────</div>
+  {% if c.rotation_available %}
+  <div class="line">
+    Sector ETF:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <span class="val">{{ c.rotation_etf_display }}</span>
+  </div>
+  <div class="line">
+    Rotation score:&nbsp;
+    <span class="val">{{ c.rotation_score_display }}</span>
+    {{ c.rotation_conf_note }}
+  </div>
+  <div class="line">
+    Timing signal:&nbsp;&nbsp;
+    <span class="
+    {%- if c.rotation_signal_display == 'SUPPORT' %} eq-v-supportive
+    {%- elif c.rotation_signal_display == 'WEAKEN' %} eq-v-risky
+    {%- elif c.rotation_signal_display == 'WAIT' %} eq-v-weak
+    {%- else %} eq-v-unavailable{%- endif %}">
+      {{ c.rotation_signal_display }}
+    </span>
+  </div>
+  {% else %}
+  <div class="line" style="color:#8888aa">Rotation: UNAVAILABLE</div>
+  {% endif %}
+</div>
+B. Add rotation line to combined reading block after earnings_line and before Alignment::
+html<div class="combined-text">{{ c.eq_combined_reading.rotation_line }}</div>
 
-Then merge into the returned dict with `**c` first and `**eq_display` second so EQ display fields win on any collision:
+STEP 7 — VERIFY contracts/init.py
+Open contracts/__init__.py. If it is empty or does not exist, no change needed. Python will find sector_schema directly as a module in the contracts package.
 
-```python
-    return {
-        **c,              # original candidate data first
-        **eq_display,     # EQ display fields second — these win on collision
-        'display_name':      company_name,
-        # ... rest of existing return keys unchanged
-    }
-```
+EXECUTION
+After all changes run:
+bashcd /home/alejandro/Project_Financial_Assistant
+FORCE_TICKERS=XOM,COP python3 main.py
+Report the full terminal output. The integration is complete when:
 
-### 6D — Update dashboard_builder.py rank board
+No import errors
+[ROT] Running rotation analysis... appears in logs
+rotation_signal appears in generated HTML
+Combined reading shows Rotation line in all report types
+No crashes
 
-Open `/home/alejandro/Project_Financial_Assistant/reports/dashboard_builder.py`.
 
-In `_update_rank_board()`, update the per-ticker entry to store EQ data:
+DO NOT
 
-```python
-        rank_data['stocks'][ticker] = {
-            'ticker':     ticker,
-            'name':       c.get('company_name', ticker),
-            'sector':     c.get('sector', ''),
-            'price':      (c.get('current_price')
-                           or c.get('financials', {}).get('current_price')),
-            'confidence': round(new_conf, 1),
-            'risk':       round(c.get('risk_score', 50), 1),
-            'eq_score':   round(c.get('eq_score_final', 0), 1),
-            'eq_label':   c.get('eq_label', ''),
-            'eq_pass':    c.get('pass_tier', ''),
-        }
-```
-
-Print: `PHASE 6 COMPLETE — report_builder.py and dashboard_builder.py updated`
-
----
-
-## PHASE 7 — VERIFY IMPORTS AND SYNTAX
-
-Run these checks in order. Fix any error before continuing to the next check.
-
-### 7A — Syntax check all modified files
-
-```bash
-cd /home/alejandro/Project_Financial_Assistant
-
-python3 -m py_compile main.py && echo "main.py OK"
-python3 -m py_compile eq_analyzer/main.py && echo "eq_analyzer/main.py OK"
-python3 -m py_compile eq_analyzer/edgar_fetcher.py && echo "edgar_fetcher.py OK"
-python3 -m py_compile eq_analyzer/eq_scorer.py && echo "eq_scorer.py OK"
-python3 -m py_compile eq_analyzer/data_validator.py && echo "data_validator.py OK"
-python3 -m py_compile eq_analyzer/eq_handoff.py && echo "eq_handoff.py OK"
-python3 -m py_compile eq_analyzer/eq_report_builder.py && echo "eq_report_builder.py OK"
-python3 -m py_compile reports/report_builder.py && echo "report_builder.py OK"
-python3 -m py_compile contracts/eq_schema.py && echo "eq_schema.py OK"
-```
-
-### 7B — Import check for eq_analyzer submain
-
-```bash
-cd /home/alejandro/Project_Financial_Assistant && python3 -c "from eq_analyzer.main import run_eq_analyzer; print('run_eq_analyzer import OK')"
-```
-
-### 7C — Import check for contracts
-
-```bash
-cd /home/alejandro/Project_Financial_Assistant && python3 -c "from contracts.eq_schema import EQ_SCORE_FINAL, EQ_AVAILABLE; print('contracts import OK')"
-```
-
-### 7D — Dry run eq_analyzer standalone against one ticker
-
-```bash
-cd /home/alejandro/Project_Financial_Assistant && python3 -m eq_analyzer.main --tickers AAPL
-```
-
-This makes real EDGAR network calls — allow up to 30 seconds. An EDGAR error result is acceptable. Import or syntax errors are not acceptable and must be fixed before continuing.
-
-Print: `PHASE 7 COMPLETE — all syntax and import checks passed`
-
----
-
-## PHASE 8 — FINAL CHECKLIST
-
-Confirm every item is true before printing completion:
-
-- `eq_analyzer/notifier.py` does not exist
-- `eq_analyzer/report_builder.py` does not exist — renamed to `eq_report_builder.py`
-- `eq_analyzer/main.py` has `run_eq_analyzer()` and `normalize_result()` functions
-- `eq_analyzer/main.py` has no `send_report()` call and no `sys.exit()` outside `__main__`
-- `eq_analyzer/main.py` produces no html_block for System 1 consumption
-- `results = compute_batch_percentile_ranks(results)` assigns back explicitly
-- `normalize_result()` uses `r.get("eq_result") or {}` not `r.get("eq_result", {})`
-- `contracts/eq_schema.py` exists with all key constants and rendering rule comment
-- `sector_detector/__init__.py` exists
-- `main.py` has Step 27d block with `isinstance(eq_result, dict)` guard
-- `main.py` Step 27d EQ block is fully wrapped in try/except and is non-fatal
-- `main.py` eq_map construction guards for non-empty string ticker
-- `main.py` reads `COMBINED_PRIORITY_SCORE` from top-level `eq` dict not from `eq_result`
-- `reports/report_builder.py` has `_build_eq_display()` function
-- `reports/report_builder.py` calls `_build_eq_display()` inside `_enrich_company_for_template()`
-- `reports/report_builder.py` return dict has `**c` first then `**eq_display` second
-- `reports/dashboard_builder.py` stores `eq_score`, `eq_label`, `eq_pass` in rank entries
-- All Phase 7 checks passed with no errors
-
-Print: `INTEGRATION COMPLETE — System 2 fused into System 1`
-
----
-
-## HARD CONSTRAINTS
-
-- Do NOT modify any existing System 1 pipeline steps 1 through 27c
-- Do NOT change `_determine_slot()` — leave it exactly as-is
-- Do NOT merge `reports/report_builder.py` with `eq_analyzer/eq_report_builder.py`
-- Do NOT add investment disclaimers to any output
-- Do NOT reorder candidates based on EQ results
-- Do NOT produce HTML inside eq_analyzer for System 1 consumption
-- The EQ call in Step 27d must always be non-fatal
-- All file paths use absolute paths based on `/home/alejandro/Project_Financial_Assistant/`
-- Python version is 3.11, OS is Linux Ubuntu
+Modify any System 2 files
+Modify any scoring or ranking logic
+Change composite_confidence calculation
+Change candidate order
+Add rotation to dashboard_builder
+Modify any System 3 source files except to fix import paths in Step 3

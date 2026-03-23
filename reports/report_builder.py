@@ -60,6 +60,12 @@ from contracts.eq_schema import (
     EQ_LABEL_DISPLAY, EQ_VERDICT_DISPLAY, EQ_TOP_RISKS_DISPLAY,
     EQ_TOP_STRENGTHS_DISPLAY, EQ_WARNINGS_DISPLAY,
 )
+from contracts.sector_schema import (
+    ROTATION_AVAILABLE, ROTATION_SCORE, ROTATION_STATUS,
+    ROTATION_SIGNAL, SECTOR_ETF, ROTATION_CONFIDENCE,
+    ROTATION_REASONING, ROTATION_SCORE_DISPLAY,
+    ROTATION_SIGNAL_DISPLAY, ROTATION_ETF_DISPLAY
+)
 
 log = get_logger('report_builder')
 
@@ -198,91 +204,112 @@ def _eq_verdict_from_tier(pass_tier: str, fatal: str) -> str:
     return 'UNAVAILABLE'
 
 
-def _alignment_state(market_verdict: str, eq_verdict: str, eq_available: bool) -> str:
+def _alignment_state(market_verdict: str, eq_verdict: str,
+                     eq_available: bool,
+                     rotation_signal: str = 'UNKNOWN') -> str:
     """
-    Deterministic alignment state between System 1 market verdict and
-    System 2 EQ verdict.
+    Deterministic alignment state across System 1, System 2, and System 3.
 
-    Alignment vocabulary (locked):
-      ALIGNED  — market and earnings both positive
-      PARTIAL  — partial agreement, one side weaker
-      CONFLICT — signals contradict each other
-      UNKNOWN  — EQ data unavailable
+    Three-dimensional alignment logic:
+      market    → +1 if RESEARCH NOW / -1 if SKIP / 0 otherwise
+      earnings  → +1 if SUPPORTIVE / -1 if WEAK or RISKY / 0 otherwise
+      rotation  → +1 if SUPPORT / -1 if WEAKEN / 0 if WAIT or UNKNOWN
+
+    Final label:
+      >= 2  → ALIGNED
+      0–1   → PARTIAL
+      < 0   → CONFLICT
     """
-    if not eq_available or eq_verdict == 'UNAVAILABLE':
-        return 'UNKNOWN'
-    mv = market_verdict.upper()
-    ev = eq_verdict.upper()
+    alignment_score = 0
+
+    mv = market_verdict.upper() if market_verdict else ''
     if mv == 'RESEARCH NOW':
+        alignment_score += 1
+    elif mv == 'SKIP':
+        alignment_score -= 1
+
+    if eq_available and eq_verdict not in ('UNAVAILABLE', ''):
+        ev = eq_verdict.upper()
         if ev == 'SUPPORTIVE':
-            return 'ALIGNED'
-        elif ev == 'NEUTRAL':
-            return 'PARTIAL'
-        else:  # WEAK or RISKY
-            return 'CONFLICT'
-    elif mv == 'WATCH':
-        if ev == 'SUPPORTIVE':
-            return 'PARTIAL'
-        elif ev == 'NEUTRAL':
-            return 'PARTIAL'
-        else:  # WEAK or RISKY
-            return 'CONFLICT'
-    else:  # SKIP
+            alignment_score += 1
+        elif ev in ('WEAK', 'RISKY'):
+            alignment_score -= 1
+
+    rs = rotation_signal.upper() if rotation_signal else 'UNKNOWN'
+    if rs == 'SUPPORT':
+        alignment_score += 1
+    elif rs == 'WEAKEN':
+        alignment_score -= 1
+
+    if alignment_score >= 2:
+        return 'ALIGNED'
+    elif alignment_score >= 0:
+        return 'PARTIAL'
+    else:
         return 'CONFLICT'
 
 
-def _build_combined_reading(conf_score: float, pass_tier: str, eq_available: bool, fatal: str, market_verdict: str = '') -> dict:
+def _build_combined_reading(conf_score: float, pass_tier: str,
+                            eq_available: bool, fatal: str,
+                            market_verdict: str = '',
+                            rotation_signal: str = 'UNKNOWN',
+                            rotation_available: bool = False) -> dict:
     """
-    Deterministic combined reading of System 1 market signal and System 2
-    earnings quality. Returns a structured dict for template rendering.
+    Deterministic combined reading of System 1, System 2, and System 3.
+    Returns a structured dict for template rendering.
     Controls AI interpretation — no inference required.
 
     Output keys:
       market_line    — Market classification line
       earnings_line  — Earnings classification line
-      alignment      — ALIGNED / PARTIAL / CONFLICT / UNKNOWN
+      rotation_line  — Rotation timing line
+      alignment      — ALIGNED / PARTIAL / CONFLICT
       conclusion     — Final declarative conclusion sentence
-
-    Signal thresholds (locked):
-      STRONG   >= 70
-      MODERATE 50-69
-      WEAK     < 50
     """
     signal     = _signal_strength_label(conf_score)
     eq_verdict = _eq_verdict_from_tier(pass_tier, fatal) if eq_available else 'UNAVAILABLE'
-    alignment  = _alignment_state(market_verdict, eq_verdict, eq_available)
+    rs         = rotation_signal.upper() if rotation_signal else 'UNKNOWN'
+    alignment  = _alignment_state(market_verdict, eq_verdict, eq_available, rs)
 
     mv_display    = market_verdict.upper() if market_verdict else signal
     market_line   = f'Market:    {mv_display} ({int(conf_score)}/100)'
     earnings_line = f'Earnings:  {eq_verdict}'
-    align_line    = f'Alignment: {alignment}'
+    rotation_line = f'Rotation:  {rs}'
 
-    if not eq_available:
+    if not eq_available and not rotation_available:
+        conclusion = 'Conclusion: No fundamental or timing validation available.'
+    elif not eq_available and rs == 'SUPPORT':
+        conclusion = 'Conclusion: Sector timing supports acting. No fundamental validation available.'
+    elif not eq_available and rs == 'WEAKEN':
+        conclusion = 'Conclusion: Sector timing weakens this setup. No fundamental validation available.'
+    elif not eq_available:
         conclusion = 'Conclusion: No fundamental validation available.'
     elif fatal:
         conclusion = 'Conclusion: Fatal flaw in earnings structure. Avoid.'
     elif alignment == 'ALIGNED':
-        conclusion = 'Conclusion: Signal supported by fundamentals. Highest priority candidate.'
+        conclusion = 'Conclusion: Signal supported by fundamentals and sector timing. Highest priority candidate.'
     elif alignment == 'PARTIAL':
         tier = pass_tier.upper() if pass_tier else ''
-        if signal == 'STRONG':
-            conclusion = 'Conclusion: Signal present. Fundamentals require monitoring. Proceed with caution.'
+        if rs == 'WEAKEN':
+            conclusion = 'Conclusion: Signal present but sector flow is unfavorable — timing risk elevated.'
+        elif rs == 'SUPPORT' and signal == 'STRONG':
+            conclusion = 'Conclusion: Strong signal with sector support. Fundamentals require monitoring.'
         elif tier == 'PASS':
             conclusion = 'Conclusion: Fundamentals solid. Signal not fully confirmed. Requires further confirmation.'
         else:
             conclusion = 'Conclusion: Signal not fully confirmed. Requires caution.'
     else:  # CONFLICT
-        tier = pass_tier.upper() if pass_tier else 'FAIL'
         if signal == 'STRONG':
             conclusion = 'Conclusion: Signal not supported by fundamentals. High risk of false signal.'
         else:
             conclusion = 'Conclusion: No alignment between signal and fundamentals. Avoid.'
 
     return {
-        'market_line':   market_line,
-        'earnings_line': earnings_line,
-        'alignment':     alignment,
-        'conclusion':    conclusion,
+        'market_line':    market_line,
+        'earnings_line':  earnings_line,
+        'rotation_line':  rotation_line,
+        'alignment':      alignment,
+        'conclusion':     conclusion,
     }
 
 
@@ -304,11 +331,17 @@ def _build_eq_display(c: dict, market_verdict: str = '') -> dict:
     pass_tier    = c.get(PASS_TIER, '')
     fatal        = c.get(FATAL_FLAW_REASON, '')
 
-    combined_reading = _build_combined_reading(conf_score, pass_tier, eq_available, fatal, market_verdict)
+    rotation_signal    = c.get(ROTATION_SIGNAL, 'UNKNOWN')
+    rotation_available = bool(c.get(ROTATION_AVAILABLE))
+    combined_reading   = _build_combined_reading(
+        conf_score, pass_tier, eq_available, fatal, market_verdict,
+        rotation_signal, rotation_available
+    )
     signal_strength  = _signal_strength_label(conf_score)
 
     if not eq_available:
         return {
+            **_build_rotation_display(c),
             EQ_SCORE_DISPLAY:         'UNAVAILABLE',
             EQ_LABEL_DISPLAY:         'UNAVAILABLE',
             EQ_VERDICT_DISPLAY:       'UNAVAILABLE',
@@ -346,6 +379,7 @@ def _build_eq_display(c: dict, market_verdict: str = '') -> dict:
             warning_strings.append(str(w))
 
     return {
+        **_build_rotation_display(c),
         EQ_SCORE_DISPLAY:         score_display,
         EQ_LABEL_DISPLAY:         label_display,
         EQ_VERDICT_DISPLAY:       eq_verdict,
@@ -356,6 +390,45 @@ def _build_eq_display(c: dict, market_verdict: str = '') -> dict:
         'eq_combined_reading':    combined_reading,
         'signal_strength':        signal_strength,
         'eq_alignment':           combined_reading.get('alignment', 'UNKNOWN'),
+    }
+
+def _build_rotation_display(c: dict) -> dict:
+    """
+    Builds display-ready rotation fields from raw System 3 data on the
+    candidate dict. System 1 owns all rendering.
+    Returns safe fallback display values when rotation data is unavailable.
+
+    rotation_signal controlled vocabulary:
+      SUPPORT  — sector flow supports acting now
+      WAIT     — neutral timing environment
+      WEAKEN   — sector flow weakens the setup
+      UNKNOWN  — insufficient data or SKIP
+    """
+    rotation_available = bool(c.get(ROTATION_AVAILABLE))
+
+    if not rotation_available:
+        return {
+            ROTATION_SCORE_DISPLAY:  'UNAVAILABLE',
+            ROTATION_SIGNAL_DISPLAY: 'UNKNOWN',
+            ROTATION_ETF_DISPLAY:    '',
+            'rotation_available':    False,
+            'rotation_conf_note':    '',
+        }
+
+    score  = c.get(ROTATION_SCORE)
+    signal = c.get(ROTATION_SIGNAL, 'UNKNOWN')
+    etf    = c.get(SECTOR_ETF, '')
+    conf   = c.get(ROTATION_CONFIDENCE, '')
+
+    score_display = f'{score:.1f}/100' if score is not None else 'N/A'
+    conf_note     = f' ({conf.lower()} confidence)' if conf and conf != 'HIGH' else ''
+
+    return {
+        ROTATION_SCORE_DISPLAY:  score_display,
+        ROTATION_SIGNAL_DISPLAY: signal,
+        ROTATION_ETF_DISPLAY:    etf,
+        'rotation_available':    True,
+        'rotation_conf_note':    conf_note,
     }
 
 

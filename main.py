@@ -39,6 +39,13 @@ from contracts.eq_schema import (
     EQ_AVAILABLE, FATAL_FLAW_REASON,
 )
 
+from sector_detector import run_rotation_analyzer
+from contracts.sector_schema import (
+    ROTATION_AVAILABLE, ROTATION_SCORE, ROTATION_STATUS,
+    ROTATION_SIGNAL, SECTOR_ETF, ROTATION_CONFIDENCE,
+    ROTATION_REASONING, TIMEFRAMES_USED
+)
+
 DISCLAIMER = (
     'DISCLAIMER: This system does NOT perform trading, does NOT give investment advice, '
     'and does NOT make price predictions. It is a research data aggregation and scoring tool only.'
@@ -325,6 +332,60 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
         log.warning(f'[DEBUG][EQ] EQ analysis failed (non-fatal): {eq_err}')
         for candidate in all_candidates:
             candidate[EQ_AVAILABLE] = False
+
+    # Sector Rotation enrichment (Debug)
+    try:
+        rotation_candidates = [
+            {'ticker': c.get('ticker', ''), 'sector': c.get('sector', '')}
+            for c in all_candidates
+            if c.get('ticker') and c.get('sector')
+        ]
+        if rotation_candidates:
+            log.info(f'[ROT] Running rotation analysis on {len(rotation_candidates)} candidates')
+            rotation_results = run_rotation_analyzer(rotation_candidates)
+
+            if not rotation_results:
+                log.warning('[ROT] No results returned from System 3')
+            else:
+                rotation_map = {
+                    r.get('ticker'): r
+                    for r in rotation_results
+                    if isinstance(r.get('ticker'), str) and r.get('ticker')
+                }
+
+                for candidate in all_candidates:
+                    t   = candidate.get('ticker', '')
+                    rot = rotation_map.get(t, {})
+
+                    if (rot
+                            and rot.get('rotation_status') not in ('SKIP', None)
+                            and not rot.get('error')):
+                        candidate[ROTATION_AVAILABLE]  = True
+                        candidate[ROTATION_SCORE]      = rot.get(ROTATION_SCORE)
+                        candidate[ROTATION_STATUS]     = rot.get(ROTATION_STATUS, '')
+                        candidate[ROTATION_SIGNAL]     = rot.get(ROTATION_SIGNAL, 'UNKNOWN')
+                        candidate[SECTOR_ETF]          = rot.get(SECTOR_ETF, '')
+                        candidate[ROTATION_CONFIDENCE] = rot.get(ROTATION_CONFIDENCE, '')
+                        candidate[ROTATION_REASONING]  = rot.get(ROTATION_REASONING, '')
+                        candidate[TIMEFRAMES_USED]     = rot.get(TIMEFRAMES_USED, [])
+                    else:
+                        candidate[ROTATION_AVAILABLE]  = False
+                        candidate[ROTATION_SIGNAL]     = 'UNKNOWN'
+                        log.info(f'[ROT] {t}: no rotation data — skipped or error')
+
+                log.info(
+                    f'[ROT] Enrichment complete. '
+                    f'{sum(1 for c in all_candidates if c.get(ROTATION_AVAILABLE))} enriched / '
+                    f'{len(all_candidates)} total'
+                )
+        else:
+            log.info('[ROT] No candidates for rotation analysis')
+
+    except Exception as rot_err:
+        log.warning(f'[ROT] Rotation analysis failed (non-fatal): {rot_err}')
+        for candidate in all_candidates:
+            candidate[ROTATION_AVAILABLE] = False
+            candidate[ROTATION_SIGNAL]    = 'UNKNOWN'
 
     # Build and send report
     from reports.report_builder import build_intraday_report
@@ -774,6 +835,64 @@ def run():
         for candidate in final_companies:
             candidate[EQ_AVAILABLE] = False
     # ── End Step 27d ─────────────────────────────────────────────────────
+
+    # ── Step 27e: Sector Rotation enrichment ─────────────────────────────
+    # Run System 3 (Sector Rotation Detector) against all final candidates.
+    # System 3 returns raw data only. System 1 owns all rendering.
+    # rotation_signal is a timing modifier only — does NOT reorder candidates.
+    try:
+        rotation_candidates = [
+            {'ticker': c.get('ticker', ''), 'sector': c.get('sector', '')}
+            for c in final_companies
+            if c.get('ticker') and c.get('sector')
+        ]
+        if rotation_candidates:
+            log.info(f'[ROT] Running rotation analysis on {len(rotation_candidates)} candidates')
+            rotation_results = run_rotation_analyzer(rotation_candidates)
+
+            if not rotation_results:
+                log.warning('[ROT] No results returned from System 3')
+            else:
+                rotation_map = {
+                    r.get('ticker'): r
+                    for r in rotation_results
+                    if isinstance(r.get('ticker'), str) and r.get('ticker')
+                }
+
+                for candidate in final_companies:
+                    t   = candidate.get('ticker', '')
+                    rot = rotation_map.get(t, {})
+
+                    if (rot
+                            and rot.get('rotation_status') not in ('SKIP', None)
+                            and not rot.get('error')):
+                        candidate[ROTATION_AVAILABLE]  = True
+                        candidate[ROTATION_SCORE]      = rot.get(ROTATION_SCORE)
+                        candidate[ROTATION_STATUS]     = rot.get(ROTATION_STATUS, '')
+                        candidate[ROTATION_SIGNAL]     = rot.get(ROTATION_SIGNAL, 'UNKNOWN')
+                        candidate[SECTOR_ETF]          = rot.get(SECTOR_ETF, '')
+                        candidate[ROTATION_CONFIDENCE] = rot.get(ROTATION_CONFIDENCE, '')
+                        candidate[ROTATION_REASONING]  = rot.get(ROTATION_REASONING, '')
+                        candidate[TIMEFRAMES_USED]     = rot.get(TIMEFRAMES_USED, [])
+                    else:
+                        candidate[ROTATION_AVAILABLE]  = False
+                        candidate[ROTATION_SIGNAL]     = 'UNKNOWN'
+                        log.info(f'[ROT] {t}: no rotation data — skipped or error')
+
+                log.info(
+                    f'[ROT] Enrichment complete. '
+                    f'{sum(1 for c in final_companies if c.get(ROTATION_AVAILABLE))} enriched / '
+                    f'{len(final_companies)} total'
+                )
+        else:
+            log.info('[ROT] No candidates for rotation analysis')
+
+    except Exception as rot_err:
+        log.warning(f'[ROT] Rotation analysis failed (non-fatal): {rot_err}')
+        for candidate in final_companies:
+            candidate[ROTATION_AVAILABLE] = False
+            candidate[ROTATION_SIGNAL]    = 'UNKNOWN'
+    # ── End Step 27e ─────────────────────────────────────────────────────
 
     # ── Step 28: Build reports ────────────────────────────────────────────
     from reports.report_builder import build_intraday_report

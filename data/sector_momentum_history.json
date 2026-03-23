@@ -3,5 +3,39 @@
     "description": "Rolling 10-day sector ranking history. Updated every run by sector_rotation_speed.py.",
     "max_entries": 10
   },
-  "history": []
+  "history": [
+    {
+      "date": "2026-03-23",
+      "rankings": {
+        "technology": 4,
+        "healthcare": 7,
+        "financials": 3,
+        "consumer_discretionary": 8,
+        "consumer_staples": 10,
+        "industrials": 6,
+        "materials": 13,
+        "energy": 1,
+        "utilities": 12,
+        "real_estate": 9,
+        "communication_services": 5,
+        "semiconductors": 2,
+        "defense": 11
+      },
+      "scores": {
+        "technology": -0.849,
+        "healthcare": -3.171,
+        "financials": -0.251,
+        "consumer_discretionary": -3.366,
+        "consumer_staples": -4.059,
+        "industrials": -2.366,
+        "materials": -4.517,
+        "energy": 3.767,
+        "utilities": -4.424,
+        "real_estate": -3.998,
+        "communication_services": -2.333,
+        "semiconductors": 1.509,
+        "defense": -4.079
+      }
+    }
+  ]
 }

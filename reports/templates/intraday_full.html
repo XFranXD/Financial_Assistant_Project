@@ -477,11 +477,40 @@
 
     </div>
 
+    <!-- ── SECTOR ROTATION ANALYSIS ──────────────────────────── -->
+    <div class="analysis-section sec-rotation">
+      <div class="section-label-inner">── SECTOR ROTATION ANALYSIS ───────</div>
+      {% if c.rotation_available %}
+      <div class="line">
+        Sector ETF:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <span class="val">{{ c.rotation_etf_display }}</span>
+      </div>
+      <div class="line">
+        Rotation score:&nbsp;
+        <span class="val">{{ c.rotation_score_display }}</span>
+        {{ c.rotation_conf_note }}
+      </div>
+      <div class="line">
+        Timing signal:&nbsp;&nbsp;
+        <span class="
+        {%- if c.rotation_signal_display == 'SUPPORT' %} eq-v-supportive
+        {%- elif c.rotation_signal_display == 'WEAKEN' %} eq-v-risky
+        {%- elif c.rotation_signal_display == 'WAIT' %} eq-v-weak
+        {%- else %} eq-v-unavailable{%- endif %}">
+          {{ c.rotation_signal_display }}
+        </span>
+      </div>
+      {% else %}
+      <div class="line" style="color:#8888aa">Rotation: UNAVAILABLE</div>
+      {% endif %}
+    </div>
+
     <!-- ── COMBINED READING ──────────────────────────────────── -->
     <div class="analysis-section sec-combined">
       <div class="section-label-inner">── COMBINED READING ──────────────</div>
       <div class="combined-text">{{ c.eq_combined_reading.market_line }}</div>
       <div class="combined-text">{{ c.eq_combined_reading.earnings_line }}</div>
+      <div class="combined-text">{{ c.eq_combined_reading.rotation_line }}</div>
       <div class="combined-text">
         Alignment:
         <span class="
