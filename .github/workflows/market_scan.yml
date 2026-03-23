@@ -2,15 +2,15 @@ name: Market Scan
 
 on:
   schedule:
-    # 10:00 ET — EST (UTC-5): 15:00 UTC | EDT (UTC-4): 14:00 UTC
-    - cron: '0 15 * * 1-5'
-    - cron: '0 14 * * 1-5'
-    # 12:00 ET — EST: 17:00 UTC | EDT: 16:00 UTC
-    - cron: '0 17 * * 1-5'
-    - cron: '0 16 * * 1-5'
-    # 14:00 ET — EST: 19:00 UTC | EDT: 18:00 UTC
-    - cron: '0 19 * * 1-5'
-    - cron: '0 18 * * 1-5'
+    # 9:45 ET — EST (UTC-5): 14:45 UTC | EDT (UTC-4): 13:45 UTC
+    - cron: '45 14 * * 1-5'
+    - cron: '45 13 * * 1-5'
+    # 11:45 ET — EST: 16:45 UTC | EDT: 15:45 UTC
+    - cron: '45 16 * * 1-5'
+    - cron: '45 15 * * 1-5'
+    # 13:45 ET — EST: 18:45 UTC | EDT: 17:45 UTC
+    - cron: '45 18 * * 1-5'
+    - cron: '45 17 * * 1-5'
     # 16:10 ET — EST: 21:10 UTC | EDT: 20:10 UTC
     - cron: '10 21 * * 1-5'
     - cron: '10 20 * * 1-5'
