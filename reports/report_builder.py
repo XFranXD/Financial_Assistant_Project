@@ -265,10 +265,18 @@ def _build_combined_reading(conf_score: float, pass_tier: str,
       rotation_line  — Rotation timing line
       alignment      — ALIGNED / PARTIAL / CONFLICT
       conclusion     — Final declarative conclusion sentence
+
+    Conclusion rules (market is gatekeeper, rotation is modifier only):
+      RESEARCH NOW + SUPPORT  → proactive
+      WATCH + SUPPORT         → favorable timing but needs confirmation
+      SKIP + SUPPORT          → hard block — rotation cannot override SKIP
+      WATCH + WEAKEN          → not actionable
+      any + WEAKEN (non-WATCH)→ weakens setup
     """
     signal     = _signal_strength_label(conf_score)
     eq_verdict = _eq_verdict_from_tier(pass_tier, fatal) if eq_available else 'UNAVAILABLE'
     rs         = rotation_signal.upper() if rotation_signal else 'UNKNOWN'
+    mv         = market_verdict.upper() if market_verdict else ''
     alignment  = _alignment_state(market_verdict, eq_verdict, eq_available, rs)
 
     mv_display    = market_verdict.upper() if market_verdict else signal
@@ -276,18 +284,35 @@ def _build_combined_reading(conf_score: float, pass_tier: str,
     earnings_line = f'Earnings:  {eq_verdict}'
     rotation_line = f'Rotation:  {rs}'
 
+    # ── No EQ data branch ─────────────────────────────────────────────────
     if not eq_available and not rotation_available:
         conclusion = 'Conclusion: No fundamental or timing validation available.'
+
     elif not eq_available and rs == 'SUPPORT':
-        conclusion = 'Conclusion: Sector timing supports acting. No fundamental validation available.'
+        if mv == 'RESEARCH NOW':
+            conclusion = 'Conclusion: Sector timing supports acting. No fundamental validation available.'
+        elif mv == 'SKIP':
+            conclusion = 'Conclusion: Sector timing is favorable but market signal is weak — insufficient basis to act.'
+        else:
+            # WATCH or unset
+            conclusion = 'Conclusion: Sector timing is favorable but signal needs confirmation before acting.'
+
     elif not eq_available and rs == 'WEAKEN':
-        conclusion = 'Conclusion: Sector timing weakens this setup. No fundamental validation available.'
+        if mv == 'WATCH':
+            conclusion = 'Conclusion: Weak signal and unfavorable sector timing — not actionable.'
+        else:
+            conclusion = 'Conclusion: Sector timing weakens this setup. No fundamental validation available.'
+
     elif not eq_available:
         conclusion = 'Conclusion: No fundamental validation available.'
+
+    # ── EQ data present branch ─────────────────────────────────────────────
     elif fatal:
         conclusion = 'Conclusion: Fatal flaw in earnings structure. Avoid.'
+
     elif alignment == 'ALIGNED':
         conclusion = 'Conclusion: Signal supported by fundamentals and sector timing. Highest priority candidate.'
+
     elif alignment == 'PARTIAL':
         tier = pass_tier.upper() if pass_tier else ''
         if rs == 'WEAKEN':
@@ -298,6 +323,7 @@ def _build_combined_reading(conf_score: float, pass_tier: str,
             conclusion = 'Conclusion: Fundamentals solid. Signal not fully confirmed. Requires further confirmation.'
         else:
             conclusion = 'Conclusion: Signal not fully confirmed. Requires caution.'
+
     else:  # CONFLICT
         if signal == 'STRONG':
             conclusion = 'Conclusion: Signal not supported by fundamentals. High risk of false signal.'
@@ -391,6 +417,7 @@ def _build_eq_display(c: dict, market_verdict: str = '') -> dict:
         'signal_strength':        signal_strength,
         'eq_alignment':           combined_reading.get('alignment', 'UNKNOWN'),
     }
+
 
 def _build_rotation_display(c: dict) -> dict:
     """
