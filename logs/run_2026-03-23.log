@@ -1,0 +1,92 @@
+2026-03-23T01:46:22 UTC | INFO     | main | ============================================================
+2026-03-23T01:46:22 UTC | INFO     | main | AUTOMATED STOCK RESEARCH SYSTEM — starting run
+2026-03-23T01:46:22 UTC | INFO     | main | DISCLAIMER: This system does NOT perform trading, does NOT give investment advice, and does NOT make price predictions. It is a research data aggregation and scoring tool only.
+2026-03-23T01:46:22 UTC | INFO     | main | ============================================================
+2026-03-23T01:46:22 UTC | INFO     | main | [DEBUG] FORCE_TICKERS detected — entering debug mode
+2026-03-23T01:46:22 UTC | INFO     | state_manager | New trading day (2026-03-23) — resetting state
+2026-03-23T01:46:22 UTC | INFO     | main | [DEBUG] Using slot: 9:45-11:15
+2026-03-23T01:46:22 UTC | INFO     | main | [DEBUG] Force-ticker mode active — tickers: ['XOM', 'CVX', 'COP']
+2026-03-23T01:46:22 UTC | INFO     | main | [DEBUG] Skipping all sector/news gates
+2026-03-23T01:46:23 UTC | INFO     | market_collector | Index dow: 45577.47 Falling (-0.96%)
+2026-03-23T01:46:23 UTC | INFO     | market_collector | Index sp500: 6506.48 Falling (-1.51%)
+2026-03-23T01:46:23 UTC | INFO     | market_collector | Index nasdaq: 21647.61 Falling (-2.01%)
+2026-03-23T01:46:23 UTC | INFO     | market_regime | VIX fetched: 26.78
+2026-03-23T01:46:23 UTC | INFO     | market_regime | Regime: elevated vix=26.78 risk_mult=1.2 opp_mult=0.85
+2026-03-23T01:46:47 UTC | INFO     | market_breadth | Market breadth: 24/130 advancing (0.18) — weak breadth — most stocks declining
+2026-03-23T01:46:48 UTC | INFO     | sector_breadth_ma | Sector breadth MA technology: 0/10 = 0.00 (sector is structurally weak)
+2026-03-23T01:46:49 UTC | INFO     | sector_breadth_ma | Sector breadth MA semiconductors: 4/10 = 0.40 (mixed signals)
+2026-03-23T01:46:50 UTC | INFO     | sector_breadth_ma | Sector breadth MA healthcare: 2/10 = 0.20 (sector is structurally weak)
+2026-03-23T01:46:51 UTC | INFO     | sector_breadth_ma | Sector breadth MA financials: 1/10 = 0.10 (sector is structurally weak)
+2026-03-23T01:46:52 UTC | INFO     | sector_breadth_ma | Sector breadth MA consumer_discretionary: 0/10 = 0.00 (sector is structurally weak)
+2026-03-23T01:46:53 UTC | INFO     | sector_breadth_ma | Sector breadth MA consumer_staples: 0/10 = 0.00 (sector is structurally weak)
+2026-03-23T01:46:54 UTC | INFO     | sector_breadth_ma | Sector breadth MA industrials: 2/10 = 0.20 (sector is structurally weak)
+2026-03-23T01:46:55 UTC | INFO     | sector_breadth_ma | Sector breadth MA defense: 2/10 = 0.20 (sector is structurally weak)
+2026-03-23T01:46:57 UTC | INFO     | sector_breadth_ma | Sector breadth MA energy: 9/10 = 0.90 (sector is genuinely strong)
+2026-03-23T01:46:58 UTC | INFO     | sector_breadth_ma | Sector breadth MA materials: 3/10 = 0.30 (mixed signals)
+2026-03-23T01:46:59 UTC | INFO     | sector_breadth_ma | Sector breadth MA utilities: 6/10 = 0.60 (healthy participation)
+2026-03-23T01:47:00 UTC | INFO     | sector_breadth_ma | Sector breadth MA real_estate: 2/10 = 0.20 (sector is structurally weak)
+2026-03-23T01:47:01 UTC | INFO     | sector_breadth_ma | Sector breadth MA communication_services: 4/10 = 0.40 (mixed signals)
+2026-03-23T01:47:04 UTC | INFO     | sector_momentum | Top 5 sectors: ['energy', 'semiconductors', 'financials', 'technology', 'communication_services']
+2026-03-23T01:47:04 UTC | INFO     | sector_momentum | Sector momentum history updated (1 entries)
+2026-03-23T01:47:04 UTC | INFO     | sector_rotation_speed | Rotation speed: not enough history yet — skipping
+2026-03-23T01:47:04 UTC | INFO     | news_collector | reuters RSS: fetched 0 articles
+2026-03-23T01:47:05 UTC | INFO     | news_collector | ft RSS: fetched 11 articles
+2026-03-23T01:47:05 UTC | INFO     | news_collector | Finnhub: fetched 100 articles
+2026-03-23T01:47:05 UTC | INFO     | news_collector | Filter: 111 raw → 24 passed
+2026-03-23T01:47:05 UTC | INFO     | news_collector | Dedup: 24 → 24 articles
+2026-03-23T01:47:05 UTC | INFO     | news_collector | Sector confirmed: energy score=19.2 headlines=6
+2026-03-23T01:47:05 UTC | INFO     | news_collector | Sector confirmed: materials score=14.5 headlines=6
+2026-03-23T01:47:05 UTC | INFO     | news_collector | Sector confirmed: consumer_discretionary score=25.4 headlines=10
+2026-03-23T01:47:05 UTC | INFO     | news_collector | Sector confirmed: industrials score=18.1 headlines=7
+2026-03-23T01:47:05 UTC | INFO     | news_collector | Sector confirmed: utilities score=9.2 headlines=4
+2026-03-23T01:47:05 UTC | INFO     | news_collector | Sector confirmed: technology score=12.6 headlines=6
+2026-03-23T01:47:05 UTC | INFO     | news_collector | Sector gated: financials score=2.9 headlines=2 (need score>=4, headlines>=2)
+2026-03-23T01:47:05 UTC | INFO     | news_collector | Sector confirmed: defense score=6.3 headlines=2
+2026-03-23T01:47:05 UTC | INFO     | news_collector | Confirmed sectors: ['energy', 'materials', 'consumer_discretionary', 'industrials', 'utilities', 'technology', 'defense']
+2026-03-23T01:47:05 UTC | INFO     | main | [DEBUG] Processing forced ticker: XOM
+2026-03-23T01:47:05 UTC | INFO     | financial_parser | XOM: using cached financials (6d old)
+2026-03-23T01:47:05 UTC | INFO     | volume_confirmation | XOM volume ratio=1.30 score=0.43 label=higher activity than usual
+2026-03-23T01:47:06 UTC | INFO     | risk_adjusted_momentum | XOM RAM raw=23.52 score=1.00
+2026-03-23T01:47:06 UTC | INFO     | multi_timeframe_momentum | XOM MTF 1m=5.762732250047251 3m=36.899965585743274 6m=42.315570293770335 score=1.00
+2026-03-23T01:47:06 UTC | INFO     | trend_stability | XOM trend stability: dev=0.0991 score=0.01
+2026-03-23T01:47:06 UTC | INFO     | drawdown_risk | XOM drawdown=0.0% score=1.00
+2026-03-23T01:47:06 UTC | INFO     | risk_model | Risk score: raw=7.2 penalty=0 mult=1.2 final=8.7
+2026-03-23T01:47:06 UTC | INFO     | opportunity_model | Opp score: b1=31.8 b2=77.2 b3=47.3 raw=53.1 x0.85 x0.85 = 38.4
+2026-03-23T01:47:06 UTC | INFO     | signal_agreement | Signal agreement: m=1.00 s=0.50 e=0.50 v=0.43 -> 0.108
+2026-03-23T01:47:06 UTC | INFO     | opportunity_model | Composite confidence: 57.6 (Moderate confidence)
+2026-03-23T01:47:06 UTC | INFO     | main | [DEBUG] XOM: conf=57.6 risk=8.7 opp=38.4
+2026-03-23T01:47:06 UTC | INFO     | main | [DEBUG] Processing forced ticker: CVX
+2026-03-23T01:47:06 UTC | INFO     | financial_parser | CVX: using cached financials (6d old)
+2026-03-23T01:47:06 UTC | INFO     | volume_confirmation | CVX volume ratio=2.96 score=0.99 label=unusually high trading activity
+2026-03-23T01:47:06 UTC | INFO     | unusual_volume | CVX UNUSUAL VOLUME: ratio=3.0x — significantly more active than normal
+2026-03-23T01:47:06 UTC | INFO     | risk_adjusted_momentum | CVX RAM raw=26.20 score=1.00
+2026-03-23T01:47:07 UTC | INFO     | multi_timeframe_momentum | CVX MTF 1m=9.173069087681638 3m=36.2382168617835 6m=29.67668560072898 score=0.98
+2026-03-23T01:47:07 UTC | INFO     | trend_stability | CVX trend stability: dev=0.1128 score=0.00
+2026-03-23T01:47:07 UTC | INFO     | drawdown_risk | CVX drawdown=0.0% score=1.00
+2026-03-23T01:47:07 UTC | INFO     | risk_model | Risk score: raw=11.8 penalty=0 mult=1.2 final=14.1
+2026-03-23T01:47:07 UTC | INFO     | opportunity_model | Opp score: b1=23.2 b2=76.8 b3=69.5 raw=53.9 x0.85 x0.85 = 38.9
+2026-03-23T01:47:07 UTC | INFO     | signal_agreement | Signal agreement: m=1.00 s=0.50 e=0.50 v=0.99 -> 0.247
+2026-03-23T01:47:07 UTC | INFO     | opportunity_model | Composite confidence: 58.6 (Moderate confidence)
+2026-03-23T01:47:07 UTC | INFO     | main | [DEBUG] CVX: conf=58.6 risk=14.1 opp=38.9
+2026-03-23T01:47:07 UTC | INFO     | main | [DEBUG] Processing forced ticker: COP
+2026-03-23T01:47:07 UTC | INFO     | financial_parser | COP: using cached financials (6d old)
+2026-03-23T01:47:07 UTC | INFO     | main | AV budget exhausted — skipping AV for COP
+2026-03-23T01:47:07 UTC | INFO     | volume_confirmation | COP volume ratio=3.31 score=1.00 label=unusually high trading activity
+2026-03-23T01:47:07 UTC | INFO     | unusual_volume | COP UNUSUAL VOLUME: ratio=3.3x — very unusual trading volume
+2026-03-23T01:47:07 UTC | INFO     | risk_adjusted_momentum | COP RAM raw=20.17 score=1.00
+2026-03-23T01:47:07 UTC | INFO     | multi_timeframe_momentum | COP MTF 1m=13.737792216280727 3m=34.69640542022483 6m=38.09853926828351 score=1.00
+2026-03-23T01:47:07 UTC | INFO     | trend_stability | COP trend stability: dev=0.1416 score=0.00
+2026-03-23T01:47:07 UTC | INFO     | drawdown_risk | COP drawdown=0.0% score=1.00
+2026-03-23T01:47:07 UTC | INFO     | risk_model | Risk score: raw=13.2 penalty=0 mult=1.2 final=15.8
+2026-03-23T01:47:07 UTC | INFO     | opportunity_model | Opp score: b1=43.6 b2=77.2 b3=70.0 raw=62.4 x0.85 x0.85 = 45.1
+2026-03-23T01:47:07 UTC | INFO     | signal_agreement | Signal agreement: m=1.00 s=0.50 e=0.50 v=1.00 -> 0.250
+2026-03-23T01:47:07 UTC | INFO     | opportunity_model | Composite confidence: 60.3 (Moderate confidence)
+2026-03-23T01:47:07 UTC | INFO     | main | [DEBUG] COP: conf=60.3 risk=15.8 opp=45.1
+2026-03-23T01:47:07 UTC | INFO     | main | [DEBUG][EQ] Running EQ analysis on 3 forced tickers
+2026-03-23T01:47:10 UTC | INFO     | main | [DEBUG][EQ] XOM: no EQ data — skipped or error
+2026-03-23T01:47:10 UTC | INFO     | main | [DEBUG][EQ] CVX: no EQ data — skipped or error
+2026-03-23T01:47:10 UTC | INFO     | report_builder | Email report written: /home/runner/work/Financial_Assistant_Project/Financial_Assistant_Project/reports/output/intraday_email_945_1115_20260323T014710Z.html
+2026-03-23T01:47:10 UTC | INFO     | report_builder | Full report written: /home/runner/work/Financial_Assistant_Project/Financial_Assistant_Project/reports/output/intraday_full_945_1115_20260323T014710Z.html
+2026-03-23T01:47:10 UTC | INFO     | dashboard_builder | Dashboard updated successfully
+2026-03-23T01:47:10 UTC | INFO     | email_sender | Using pre-built HTML: /home/runner/work/Financial_Assistant_Project/Financial_Assistant_Project/reports/output/intraday_email_945_1115_20260323T014710Z.html
+2026-03-23T01:47:13 UTC | INFO     | email_sender | Email sent to francisco.ale.caballero01+stocks@gmail.com: ■ Stock Research — 9:45-11:15 Update — 3 opportunities found
