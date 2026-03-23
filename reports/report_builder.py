@@ -271,7 +271,9 @@ def _build_combined_reading(conf_score: float, pass_tier: str,
       WATCH + SUPPORT         → favorable timing but needs confirmation
       SKIP + SUPPORT          → hard block — rotation cannot override SKIP
       WATCH + WEAKEN          → not actionable
-      any + WEAKEN (non-WATCH)→ weakens setup
+      WAIT always appears in conclusion — never silent
+      "requires caution" banned — replaced with explicit action status
+      Every non-actionable conclusion ends with "— not actionable"
     """
     signal     = _signal_strength_label(conf_score)
     eq_verdict = _eq_verdict_from_tier(pass_tier, fatal) if eq_available else 'UNAVAILABLE'
@@ -286,7 +288,7 @@ def _build_combined_reading(conf_score: float, pass_tier: str,
 
     # ── No EQ data branch ─────────────────────────────────────────────────
     if not eq_available and not rotation_available:
-        conclusion = 'Conclusion: No fundamental or timing validation available.'
+        conclusion = 'Conclusion: No fundamental or timing validation available — not actionable.'
 
     elif not eq_available and rs == 'SUPPORT':
         if mv == 'RESEARCH NOW':
@@ -295,16 +297,20 @@ def _build_combined_reading(conf_score: float, pass_tier: str,
             conclusion = 'Conclusion: Sector timing is favorable but market signal is weak — insufficient basis to act.'
         else:
             # WATCH or unset
-            conclusion = 'Conclusion: Sector timing is favorable but signal needs confirmation before acting.'
+            conclusion = 'Conclusion: Sector timing is favorable but signal needs confirmation — not actionable.'
+
+    elif not eq_available and rs == 'WAIT':
+        conclusion = 'Conclusion: No fundamental validation and sector timing is not favorable — not actionable.'
 
     elif not eq_available and rs == 'WEAKEN':
         if mv == 'WATCH':
             conclusion = 'Conclusion: Weak signal and unfavorable sector timing — not actionable.'
         else:
-            conclusion = 'Conclusion: Sector timing weakens this setup. No fundamental validation available.'
+            conclusion = 'Conclusion: Sector timing weakens this setup. No fundamental validation available — not actionable.'
 
     elif not eq_available:
-        conclusion = 'Conclusion: No fundamental validation available.'
+        # UNKNOWN rotation
+        conclusion = 'Conclusion: No fundamental validation available — not actionable.'
 
     # ── EQ data present branch ─────────────────────────────────────────────
     elif fatal:
@@ -316,19 +322,21 @@ def _build_combined_reading(conf_score: float, pass_tier: str,
     elif alignment == 'PARTIAL':
         tier = pass_tier.upper() if pass_tier else ''
         if rs == 'WEAKEN':
-            conclusion = 'Conclusion: Signal present but sector flow is unfavorable — timing risk elevated.'
+            conclusion = 'Conclusion: Signal present but sector flow is unfavorable — timing risk elevated — not actionable.'
+        elif rs == 'WAIT':
+            conclusion = 'Conclusion: Signal not fully confirmed and sector timing is not favorable — not actionable.'
         elif rs == 'SUPPORT' and signal == 'STRONG':
             conclusion = 'Conclusion: Strong signal with sector support. Fundamentals require monitoring.'
         elif tier == 'PASS':
-            conclusion = 'Conclusion: Fundamentals solid. Signal not fully confirmed. Requires further confirmation.'
+            conclusion = 'Conclusion: Fundamentals solid but signal not fully confirmed — not actionable.'
         else:
-            conclusion = 'Conclusion: Signal not fully confirmed. Requires caution.'
+            conclusion = 'Conclusion: Signal not fully confirmed and timing is not favorable — not actionable.'
 
     else:  # CONFLICT
         if signal == 'STRONG':
-            conclusion = 'Conclusion: Signal not supported by fundamentals. High risk of false signal.'
+            conclusion = 'Conclusion: Signal not supported by fundamentals. High risk of false signal — not actionable.'
         else:
-            conclusion = 'Conclusion: No alignment between signal and fundamentals. Avoid.'
+            conclusion = 'Conclusion: No alignment between signal and fundamentals — not actionable.'
 
     return {
         'market_line':    market_line,
@@ -829,3 +837,4 @@ def _write_fallback_email(slot, ts_str, pulse_lines, story_sentences, companies)
     except Exception as e:
         log.error(f'Fallback email write failed: {e}')
     return path
+    
