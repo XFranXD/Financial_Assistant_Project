@@ -22,11 +22,107 @@
   },
   "failed_tickers": [],
   "api_failures": {},
-  "sector_scores_today": {},
-  "breadth_score_today": null,
-  "sector_breadth_ma_today": {},
+  "sector_scores_today": {
+    "technology": NaN,
+    "healthcare": NaN,
+    "financials": NaN,
+    "consumer_discretionary": NaN,
+    "consumer_staples": NaN,
+    "industrials": NaN,
+    "materials": NaN,
+    "energy": NaN,
+    "utilities": NaN,
+    "real_estate": NaN,
+    "communication_services": NaN,
+    "semiconductors": NaN,
+    "defense": NaN
+  },
+  "breadth_score_today": 0.615,
+  "sector_breadth_ma_today": {
+    "technology": {
+      "breadth_ma_score": 0.0,
+      "pct": 0.0,
+      "label": "sector is structurally weak"
+    },
+    "semiconductors": {
+      "breadth_ma_score": 0.4,
+      "pct": 40.0,
+      "label": "mixed signals"
+    },
+    "healthcare": {
+      "breadth_ma_score": 0.3,
+      "pct": 30.0,
+      "label": "mixed signals"
+    },
+    "financials": {
+      "breadth_ma_score": 0.1,
+      "pct": 10.0,
+      "label": "sector is structurally weak"
+    },
+    "consumer_discretionary": {
+      "breadth_ma_score": 0.1,
+      "pct": 10.0,
+      "label": "sector is structurally weak"
+    },
+    "consumer_staples": {
+      "breadth_ma_score": 0.0,
+      "pct": 0.0,
+      "label": "sector is structurally weak"
+    },
+    "industrials": {
+      "breadth_ma_score": 0.4,
+      "pct": 40.0,
+      "label": "mixed signals"
+    },
+    "defense": {
+      "breadth_ma_score": 0.0,
+      "pct": 0.0,
+      "label": "sector is structurally weak"
+    },
+    "energy": {
+      "breadth_ma_score": 1.0,
+      "pct": 100.0,
+      "label": "sector is genuinely strong"
+    },
+    "materials": {
+      "breadth_ma_score": 0.3,
+      "pct": 30.0,
+      "label": "mixed signals"
+    },
+    "utilities": {
+      "breadth_ma_score": 0.7,
+      "pct": 70.0,
+      "label": "healthy participation"
+    },
+    "real_estate": {
+      "breadth_ma_score": 0.2,
+      "pct": 20.0,
+      "label": "sector is structurally weak"
+    },
+    "communication_services": {
+      "breadth_ma_score": 0.5,
+      "pct": 50.0,
+      "label": "mixed signals"
+    }
+  },
   "unusual_volume_flags": [],
   "event_scores_today": {},
-  "indices_today": {},
+  "indices_today": {
+    "dow": {
+      "value": 46138.08,
+      "change_pct": -0.15,
+      "label": "Falling"
+    },
+    "sp500": {
+      "value": 6558.52,
+      "change_pct": -0.34,
+      "label": "Falling"
+    },
+    "nasdaq": {
+      "value": NaN,
+      "change_pct": NaN,
+      "label": "Flat"
+    }
+  },
   "today_scores": {}
 }
