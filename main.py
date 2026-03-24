@@ -416,12 +416,14 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
     try:
         from reports.dashboard_builder import build_dashboard
         build_dashboard(
-            companies = all_candidates,
-            slot      = slot,
-            indices   = indices,
-            breadth   = breadth,
-            regime    = regime,
-            rotation  = rotation,
+            companies   = all_candidates,
+            slot        = slot,
+            indices     = indices,
+            breadth     = breadth,
+            regime      = regime,
+            rotation    = rotation,
+            prompt_text = html_files.get('prompt', ''),
+            is_debug    = True,
         )
     except Exception as _dash_err:
         log.warning(f'[DEBUG] Dashboard build skipped: {_dash_err}')
@@ -924,12 +926,14 @@ def run():
     try:
         from reports.dashboard_builder import build_dashboard
         build_dashboard(
-            companies = final_companies,
-            slot      = slot,
-            indices   = state.get('indices_today', {}),
-            breadth   = breadth,
-            regime    = regime,
-            rotation  = rotation,
+            companies   = final_companies,
+            slot        = slot,
+            indices     = state.get('indices_today', {}),
+            breadth     = breadth,
+            regime      = regime,
+            rotation    = rotation,
+            prompt_text = html_files.get('prompt', ''),
+            is_debug    = False,
         )
     except Exception as _dash_err:
         log.warning(f'Dashboard build skipped: {_dash_err}')

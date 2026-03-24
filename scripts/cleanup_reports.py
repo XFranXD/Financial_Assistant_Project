@@ -10,6 +10,7 @@ Policy:
 
 Never deletes the reports/output/ directory itself.
 Rebuilds docs/assets/data/reports.json index after cleanup.
+Prunes weekly_archive.json of stale entries after cleanup.
 """
 
 import os
@@ -48,22 +49,105 @@ def run_cleanup():
             print(f'Error processing {fname}: {e}')
 
     _rebuild_index()
+    _prune_weekly_archive()
     print(f'Cleanup complete. Removed {removed} file(s).')
 
 
 def _rebuild_index():
-    """Remove stale entries from reports.json after file deletion."""
+    """Rebuild reports.json from files actually present on disk.
+    Reads existing JSON for metadata, removes entries whose HTML files
+    no longer exist. Never invents new entries — only prunes stale ones."""
     index_path = os.path.join(DATA_DIR, 'reports.json')
-    if not os.path.exists(DATA_DIR) or not os.path.exists(index_path):
+    if not os.path.exists(index_path):
+        print('reports.json not found — skipping index rebuild.')
         return
     try:
         with open(index_path) as f:
             index = json.load(f)
+
+        existing_files = set(os.listdir(REPORTS_DIR)) if os.path.exists(REPORTS_DIR) else set()
+
+        original_count = len(index.get('reports', []))
+        clean_reports  = []
+
+        for entry in index.get('reports', []):
+            # Each entry in reports.json does not store the filename directly.
+            # We match by date + time + slot to infer the filename pattern.
+            # Conservative approach: keep the entry unless we can confirm
+            # its corresponding full HTML file is gone.
+            date   = entry.get('date', '').replace('-', '')
+            # slot stored as "09:30" but filenames use "0930"
+            slot_s = entry.get('slot', '').replace(':', '')
+            # Look for any intraday_full file matching both date and slot
+            matched = any(
+                f.startswith('intraday_full') and date in f and slot_s in f
+                for f in existing_files
+            )
+            if matched or not date:
+                clean_reports.append(entry)
+
+        index['reports'] = clean_reports
+        pruned = original_count - len(clean_reports)
+
         with open(index_path, 'w') as f:
             json.dump(index, f, indent=2)
-        print('reports.json index updated.')
+
+        print(f'reports.json rebuilt: {len(clean_reports)} entries kept, {pruned} pruned.')
     except Exception as e:
-        print(f'Index rebuild skipped: {e}')
+        print(f'Index rebuild failed: {e}')
+
+
+def _prune_weekly_archive():
+    """Remove stale prompt entries from weekly_archive.json.
+    An entry is stale if its run timestamp date has no corresponding
+    HTML file in reports/output/. Conservative: only prunes runs older
+    than DELETE_DAYS with no matching file."""
+    archive_path = os.path.join(DATA_DIR, 'weekly_archive.json')
+    if not os.path.exists(archive_path):
+        return
+    try:
+        with open(archive_path) as f:
+            archive = json.load(f)
+
+        existing_files = set(os.listdir(REPORTS_DIR)) if os.path.exists(REPORTS_DIR) else set()
+        now = datetime.now(pytz.utc)
+        pruned_runs = 0
+
+        for week_key, week_data in list(archive.get('weeks', {}).items()):
+            clean_runs = []
+            for run in week_data.get('runs', []):
+                ts = run.get('timestamp', '')
+                if not ts:
+                    clean_runs.append(run)
+                    continue
+                try:
+                    run_date = datetime.strptime(ts[:10], '%Y-%m-%d').replace(tzinfo=pytz.utc)
+                    age_days = (now - run_date).days
+                except Exception:
+                    clean_runs.append(run)
+                    continue
+
+                if age_days <= DELETE_DAYS:
+                    clean_runs.append(run)
+                else:
+                    date_fragment = ts[:10].replace('-', '')
+                    has_file = any(date_fragment in f for f in existing_files)
+                    if has_file:
+                        clean_runs.append(run)
+                    else:
+                        pruned_runs += 1
+
+            week_data['runs'] = clean_runs
+
+        # Remove empty weeks
+        archive['weeks'] = {k: v for k, v in archive['weeks'].items() if v.get('runs')}
+
+        with open(archive_path, 'w') as f:
+            json.dump(archive, f, indent=2)
+
+        print(f'weekly_archive.json pruned: {pruned_runs} stale run(s) removed.')
+    except Exception as e:
+        print(f'weekly_archive prune failed: {e}')
 
 
 if __name__ == '__main__':
