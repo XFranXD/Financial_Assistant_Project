@@ -1,14 +1,19 @@
 {
   "date": "2026-03-24",
   "reported_companies": [
-    "LRCX",
-    "DVN",
-    "RRC",
-    "MRVL",
-    "KMI",
     "AMAT",
+    "ADI",
+    "KMI",
+    "MRVL",
+    "DVN",
+    "LRCX",
     "CTRA",
-    "EQT"
+    "EQT",
+    "TXN",
+    "COP",
+    "XOM",
+    "AR",
+    "RRC"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -35,8 +40,14 @@
       "status": "complete"
     },
     "16:00-17:20": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "XOM",
+        "COP",
+        "AR",
+        "ADI",
+        "TXN"
+      ],
+      "status": "complete"
     }
   },
   "failed_tickers": [],
@@ -144,11 +155,10 @@
     }
   },
   "today_scores": {
-    "DVN": 64.2,
-    "KMI": 63.7,
-    "RRC": 62.3,
-    "LRCX": 56.8,
-    "AMAT": 53.9,
-    "MRVL": 53.0
+    "XOM": 64.9,
+    "COP": 62.8,
+    "AR": 61.1,
+    "ADI": 53.7,
+    "TXN": 53.3
   }
 }
