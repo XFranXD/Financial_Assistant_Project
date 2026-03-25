@@ -573,6 +573,7 @@ def _render_archive_html(weeks: dict) -> str:
             candidates = run.get('candidates', [])
             regime_color = '#00ff88' if 'LOW' in regime.upper() else '#ffcc00' if 'MOD' in regime.upper() else '#ff3355'
 
+            _em = '\u2014'
             cand_rows = ''
             for c in candidates:
                 al = c.get('alignment', '')
@@ -588,10 +589,10 @@ def _render_archive_html(weeks: dict) -> str:
                     f'<td style="padding:5px 10px;font-weight:bold;color:#e8e8f0;">{c.get("ticker","")}</td>'
                     f'<td style="padding:5px 10px;color:#8888aa;font-size:11px;">{c.get("sector","").replace("_"," ").title()}</td>'
                     f'<td style="padding:5px 10px;color:#00aaff;">{c.get("confidence",0):.0f}</td>'
-                    f'<td style="padding:5px 10px;color:{mv_c};font-size:11px;">{mv or "\u2014"}</td>'
-                    f'<td style="padding:5px 10px;color:{eq_c};font-size:11px;">{eq or "\u2014"}</td>'
-                    f'<td style="padding:5px 10px;color:{rv_c};font-size:11px;">{rv or "\u2014"}</td>'
-                    f'<td style="padding:5px 10px;color:{al_c};font-size:11px;">{al or "\u2014"}</td>'
+                    f'<td style="padding:5px 10px;color:{mv_c};font-size:11px;">{mv or _em}</td>'
+                    f'<td style="padding:5px 10px;color:{eq_c};font-size:11px;">{eq or _em}</td>'
+                    f'<td style="padding:5px 10px;color:{rv_c};font-size:11px;">{rv or _em}</td>'
+                    f'<td style="padding:5px 10px;color:{al_c};font-size:11px;">{al or _em}</td>'
                     f'</tr>'
                 )
 

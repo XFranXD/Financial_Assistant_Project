@@ -714,13 +714,13 @@ def _build_ai_prompt(
             return 'N/A'
         return f'{val:,.0f} ({chg:+.1f}%)'
 
-    # Index values
-    dow_val = indices.get('dow_val')
-    dow_chg = indices.get('dow_chg')
-    sp_val  = indices.get('sp_val')
-    sp_chg  = indices.get('sp_chg')
-    nas_val = indices.get('nas_val')
-    nas_chg = indices.get('nas_chg')
+    # Index values — get_index_snapshot() returns nested dicts keyed by 'dow', 'sp500', 'nasdaq'
+    dow_val = indices.get('dow',    {}).get('value')
+    dow_chg = indices.get('dow',    {}).get('change_pct')
+    sp_val  = indices.get('sp500',  {}).get('value')
+    sp_chg  = indices.get('sp500',  {}).get('change_pct')
+    nas_val = indices.get('nasdaq', {}).get('value')
+    nas_chg = indices.get('nasdaq', {}).get('change_pct')
 
     # Market condition labels — guard against None regime/breadth dicts
     regime_label  = regime.get('label', 'N/A')  if regime  else 'N/A'
@@ -1125,3 +1125,4 @@ def _write_fallback_email(slot, ts_str, pulse_lines, story_sentences, companies)
     except Exception as e:
         log.error(f'Fallback email write failed: {e}')
     return path
+    
