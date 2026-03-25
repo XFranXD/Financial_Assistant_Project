@@ -18,10 +18,11 @@ import json
 from datetime import datetime
 import pytz
 
-REPORTS_DIR = os.path.join('reports', 'output')
-DATA_DIR    = os.path.join('docs', 'assets', 'data')
-KEEP_DAYS   = 30
-DELETE_DAYS = 90
+REPORTS_DIR      = os.path.join('reports', 'output')
+SERVED_REPORTS_DIR = os.path.join('docs', 'reports')
+DATA_DIR         = os.path.join('docs', 'assets', 'data')
+KEEP_DAYS        = 30
+DELETE_DAYS      = 90
 
 
 def run_cleanup():
@@ -48,9 +49,28 @@ def run_cleanup():
         except Exception as e:
             print(f'Error processing {fname}: {e}')
 
+    # Also prune docs/reports/ on the same policy
+    served_removed = 0
+    if os.path.exists(SERVED_REPORTS_DIR):
+        for fname in os.listdir(SERVED_REPORTS_DIR):
+            if not fname.endswith('.html'):
+                continue
+            fpath = os.path.join(SERVED_REPORTS_DIR, fname)
+            try:
+                mtime = datetime.fromtimestamp(os.path.getmtime(fpath), tz=pytz.utc)
+                age   = (now - mtime).days
+                if age > DELETE_DAYS:
+                    os.remove(fpath)
+                    served_removed += 1
+                    print(f'Deleted served report ({age}d old): {fname}')
+                elif age > KEEP_DAYS:
+                    print(f'Aged served report ({age}d): {fname}')
+            except Exception as e:
+                print(f'Error processing served report {fname}: {e}')
+
     _rebuild_index()
     _prune_weekly_archive()
-    print(f'Cleanup complete. Removed {removed} file(s).')
+    print(f'Cleanup complete. Removed {removed} output + {served_removed} served file(s).')
 
 
 def _rebuild_index():
