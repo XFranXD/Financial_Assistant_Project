@@ -423,6 +423,7 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
             regime      = regime,
             rotation    = rotation,
             prompt_text = html_files.get('prompt', ''),
+            full_url    = html_files.get('full_url', ''),
             is_debug    = True,
         )
     except Exception as _dash_err:
@@ -933,6 +934,7 @@ def run():
             regime      = regime,
             rotation    = rotation,
             prompt_text = html_files.get('prompt', ''),
+            full_url    = html_files.get('full_url', ''),
             is_debug    = False,
         )
     except Exception as _dash_err:
