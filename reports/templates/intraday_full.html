@@ -666,11 +666,40 @@
                   letter-spacing:.08em;margin-bottom:8px;">
         AI RESEARCH PROMPT
       </div>
-      <div style="color:#555577;font-size:11px;font-family:monospace;margin-bottom:12px;">
-        Select all text in the box below and paste into any AI assistant
-        (Claude, ChatGPT, Gemini) for entry and exit timing analysis.
+      <div
+        style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+        <div style="color:#555577;font-size:11px;font-family:monospace;">
+          Paste into any AI assistant (Claude, ChatGPT, Gemini) for entry and exit timing analysis.
+        </div>
+        <button id="copy-prompt-btn" onclick="
+          var txt = document.getElementById('ai-prompt-text').innerText;
+          navigator.clipboard.writeText(txt).then(function() {
+            var btn = document.getElementById('copy-prompt-btn');
+            btn.innerText = 'Copied!';
+            btn.style.background = '#00aa55';
+            btn.style.borderColor = '#00aa55';
+            setTimeout(function() {
+              btn.innerText = 'Copy Prompt';
+              btn.style.background = 'transparent';
+              btn.style.borderColor = '#2a2a4a';
+            }, 2000);
+          }).catch(function() {
+            document.getElementById('ai-prompt-text').select();
+          });
+        " style="
+          background:transparent;
+          border:1px solid #2a2a4a;
+          border-radius:5px;
+          color:#8888aa;
+          font-size:12px;
+          font-family:'Courier New',Courier,monospace;
+          padding:6px 14px;
+          cursor:pointer;
+          transition:all .2s;
+          white-space:nowrap;
+        ">Copy Prompt</button>
       </div>
-      <pre style="
+      <pre id="ai-prompt-text" style="
         background:#050508;
         border:1px solid #2a2a4a;
         border-radius:6px;
