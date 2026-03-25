@@ -22,11 +22,107 @@
   },
   "failed_tickers": [],
   "api_failures": {},
-  "sector_scores_today": {},
-  "breadth_score_today": null,
-  "sector_breadth_ma_today": {},
+  "sector_scores_today": {
+    "technology": -0.606,
+    "healthcare": -1.836,
+    "financials": 0.534,
+    "consumer_discretionary": -0.399,
+    "consumer_staples": -2.701,
+    "industrials": -0.744,
+    "materials": 0.402,
+    "energy": 4.505,
+    "utilities": -2.491,
+    "real_estate": -4.455,
+    "communication_services": -2.642,
+    "semiconductors": 2.321,
+    "defense": -3.257
+  },
+  "breadth_score_today": 0.631,
+  "sector_breadth_ma_today": {
+    "technology": {
+      "breadth_ma_score": 0.1,
+      "pct": 10.0,
+      "label": "sector is structurally weak"
+    },
+    "semiconductors": {
+      "breadth_ma_score": 0.6,
+      "pct": 60.0,
+      "label": "healthy participation"
+    },
+    "healthcare": {
+      "breadth_ma_score": 0.3,
+      "pct": 30.0,
+      "label": "mixed signals"
+    },
+    "financials": {
+      "breadth_ma_score": 0.1,
+      "pct": 10.0,
+      "label": "sector is structurally weak"
+    },
+    "consumer_discretionary": {
+      "breadth_ma_score": 0.1,
+      "pct": 10.0,
+      "label": "sector is structurally weak"
+    },
+    "consumer_staples": {
+      "breadth_ma_score": 0.0,
+      "pct": 0.0,
+      "label": "sector is structurally weak"
+    },
+    "industrials": {
+      "breadth_ma_score": 0.4,
+      "pct": 40.0,
+      "label": "mixed signals"
+    },
+    "defense": {
+      "breadth_ma_score": 0.0,
+      "pct": 0.0,
+      "label": "sector is structurally weak"
+    },
+    "energy": {
+      "breadth_ma_score": 1.0,
+      "pct": 100.0,
+      "label": "sector is genuinely strong"
+    },
+    "materials": {
+      "breadth_ma_score": 0.3,
+      "pct": 30.0,
+      "label": "mixed signals"
+    },
+    "utilities": {
+      "breadth_ma_score": 0.7,
+      "pct": 70.0,
+      "label": "healthy participation"
+    },
+    "real_estate": {
+      "breadth_ma_score": 0.2,
+      "pct": 20.0,
+      "label": "sector is structurally weak"
+    },
+    "communication_services": {
+      "breadth_ma_score": 0.4,
+      "pct": 40.0,
+      "label": "mixed signals"
+    }
+  },
   "unusual_volume_flags": [],
   "event_scores_today": {},
-  "indices_today": {},
+  "indices_today": {
+    "dow": {
+      "value": 46479.87,
+      "change_pct": 0.77,
+      "label": "Rising"
+    },
+    "sp500": {
+      "value": 6611.18,
+      "change_pct": 0.84,
+      "label": "Rising"
+    },
+    "nasdaq": {
+      "value": 22047.97,
+      "change_pct": 1.31,
+      "label": "Rising"
+    }
+  },
   "today_scores": {}
 }

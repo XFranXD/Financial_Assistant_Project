@@ -884,3 +884,85 @@
 2026-03-25T12:10:40 UTC | INFO     | email_sender | Email sent to francisco.ale.caballero01+stocks@gmail.com: ■ Stock Research — 9:45-11:15 Update — 3 opportunities found
 2026-03-25T12:10:41 UTC | INFO     | main | Git: committed and pushed
 2026-03-25T12:10:41 UTC | INFO     | main | [DEBUG] Force-ticker run complete. Tickers: ['XOM', 'CVX', 'COP']
+2026-03-25T14:45:01 UTC | INFO     | main | ============================================================
+2026-03-25T14:45:01 UTC | INFO     | main | AUTOMATED STOCK RESEARCH SYSTEM — starting run
+2026-03-25T14:45:01 UTC | INFO     | main | DISCLAIMER: This system does NOT perform trading, does NOT give investment advice, and does NOT make price predictions. It is a research data aggregation and scoring tool only.
+2026-03-25T14:45:01 UTC | INFO     | main | ============================================================
+2026-03-25T14:45:01 UTC | INFO     | main | [SCHEDULER] Time gate passed — matched slot 9:45-11:15
+2026-03-25T14:45:01 UTC | INFO     | main | Run slot: 9:45-11:15
+2026-03-25T14:45:02 UTC | INFO     | market_collector | Index dow: 46479.87 Rising (+0.77%)
+2026-03-25T14:45:02 UTC | INFO     | market_collector | Index sp500: 6611.18 Rising (+0.84%)
+2026-03-25T14:45:02 UTC | INFO     | market_collector | Index nasdaq: 22047.97 Rising (+1.31%)
+2026-03-25T14:45:02 UTC | INFO     | market_regime | VIX fetched: 25.36
+2026-03-25T14:45:02 UTC | INFO     | market_regime | Regime: elevated vix=25.36 risk_mult=1.2 opp_mult=0.85
+2026-03-25T14:45:02 UTC | INFO     | main | Regime: elevated vix=25.36
+2026-03-25T14:45:26 UTC | INFO     | market_breadth | Market breadth: 82/130 advancing (0.63) — strong breadth — most stocks rising
+2026-03-25T14:45:27 UTC | INFO     | sector_breadth_ma | Sector breadth MA technology: 1/10 = 0.10 (sector is structurally weak)
+2026-03-25T14:45:27 UTC | INFO     | sector_breadth_ma | Sector breadth MA semiconductors: 6/10 = 0.60 (healthy participation)
+2026-03-25T14:45:29 UTC | INFO     | sector_breadth_ma | Sector breadth MA healthcare: 3/10 = 0.30 (mixed signals)
+2026-03-25T14:45:30 UTC | INFO     | sector_breadth_ma | Sector breadth MA financials: 1/10 = 0.10 (sector is structurally weak)
+2026-03-25T14:45:30 UTC | INFO     | sector_breadth_ma | Sector breadth MA consumer_discretionary: 1/10 = 0.10 (sector is structurally weak)
+2026-03-25T14:45:32 UTC | INFO     | sector_breadth_ma | Sector breadth MA consumer_staples: 0/10 = 0.00 (sector is structurally weak)
+2026-03-25T14:45:33 UTC | INFO     | sector_breadth_ma | Sector breadth MA industrials: 4/10 = 0.40 (mixed signals)
+2026-03-25T14:45:34 UTC | INFO     | sector_breadth_ma | Sector breadth MA defense: 0/10 = 0.00 (sector is structurally weak)
+2026-03-25T14:45:35 UTC | INFO     | sector_breadth_ma | Sector breadth MA energy: 10/10 = 1.00 (sector is genuinely strong)
+2026-03-25T14:45:37 UTC | INFO     | sector_breadth_ma | Sector breadth MA materials: 3/10 = 0.30 (mixed signals)
+2026-03-25T14:45:38 UTC | INFO     | sector_breadth_ma | Sector breadth MA utilities: 7/10 = 0.70 (healthy participation)
+2026-03-25T14:45:38 UTC | INFO     | sector_breadth_ma | Sector breadth MA real_estate: 2/10 = 0.20 (sector is structurally weak)
+2026-03-25T14:45:39 UTC | INFO     | sector_breadth_ma | Sector breadth MA communication_services: 4/10 = 0.40 (mixed signals)
+2026-03-25T14:45:42 UTC | INFO     | sector_momentum | Top 5 sectors: ['energy', 'semiconductors', 'financials', 'materials', 'consumer_discretionary']
+2026-03-25T14:45:42 UTC | INFO     | sector_momentum | Sector momentum history updated (2 entries)
+2026-03-25T14:45:42 UTC | INFO     | sector_rotation_speed | Rotation technology: rank 4 -> 6 speed=-2 (losing momentum)
+2026-03-25T14:45:42 UTC | INFO     | sector_rotation_speed | Rotation healthcare: rank 7 -> 8 speed=-1 (stable)
+2026-03-25T14:45:42 UTC | INFO     | sector_rotation_speed | Rotation financials: rank 3 -> 3 speed=0 (stable)
+2026-03-25T14:45:42 UTC | INFO     | sector_rotation_speed | Rotation consumer_discretionary: rank 8 -> 5 speed=3 (gaining momentum)
+2026-03-25T14:45:42 UTC | INFO     | sector_rotation_speed | Rotation consumer_staples: rank 10 -> 11 speed=-1 (stable)
+2026-03-25T14:45:42 UTC | INFO     | sector_rotation_speed | Rotation industrials: rank 6 -> 7 speed=-1 (stable)
+2026-03-25T14:45:42 UTC | INFO     | sector_rotation_speed | Rotation materials: rank 13 -> 4 speed=9 (rapidly gaining strength)
+2026-03-25T14:45:42 UTC | INFO     | sector_rotation_speed | Rotation energy: rank 1 -> 1 speed=0 (stable)
+2026-03-25T14:45:42 UTC | INFO     | sector_rotation_speed | Rotation utilities: rank 12 -> 9 speed=3 (gaining momentum)
+2026-03-25T14:45:42 UTC | INFO     | sector_rotation_speed | Rotation real_estate: rank 9 -> 13 speed=-4 (rapidly losing strength)
+2026-03-25T14:45:42 UTC | INFO     | sector_rotation_speed | Rotation communication_services: rank 5 -> 10 speed=-5 (rapidly losing strength)
+2026-03-25T14:45:42 UTC | INFO     | sector_rotation_speed | Rotation semiconductors: rank 2 -> 2 speed=0 (stable)
+2026-03-25T14:45:42 UTC | INFO     | sector_rotation_speed | Rotation defense: rank 11 -> 12 speed=-1 (stable)
+2026-03-25T14:45:42 UTC | INFO     | news_collector | reuters RSS: fetched 0 articles
+2026-03-25T14:45:42 UTC | INFO     | news_collector | ft RSS: fetched 10 articles
+2026-03-25T14:45:43 UTC | INFO     | news_collector | Finnhub: fetched 100 articles
+2026-03-25T14:45:43 UTC | INFO     | news_collector | Filter: 110 raw → 35 passed
+2026-03-25T14:45:43 UTC | INFO     | news_collector | Dedup: 35 → 35 articles
+2026-03-25T14:45:43 UTC | INFO     | news_collector | Sector confirmed: defense score=24.3 headlines=5
+2026-03-25T14:45:43 UTC | INFO     | news_collector | Sector confirmed: energy score=37.5 headlines=9
+2026-03-25T14:45:43 UTC | INFO     | news_collector | Sector confirmed: materials score=32.5 headlines=9
+2026-03-25T14:45:43 UTC | INFO     | news_collector | Sector confirmed: technology score=43.4 headlines=12
+2026-03-25T14:45:43 UTC | INFO     | news_collector | Sector confirmed: consumer_discretionary score=58.8 headlines=16
+2026-03-25T14:45:43 UTC | INFO     | news_collector | Sector confirmed: financials score=23.8 headlines=6
+2026-03-25T14:45:43 UTC | INFO     | news_collector | Sector confirmed: real_estate score=24.0 headlines=5
+2026-03-25T14:45:43 UTC | INFO     | news_collector | Sector confirmed: utilities score=26.5 headlines=8
+2026-03-25T14:45:43 UTC | INFO     | news_collector | Sector confirmed: consumer_staples score=14.0 headlines=4
+2026-03-25T14:45:43 UTC | INFO     | news_collector | Sector confirmed: industrials score=8.6 headlines=4
+2026-03-25T14:45:43 UTC | INFO     | news_collector | Confirmed sectors: ['defense', 'energy', 'materials', 'technology', 'consumer_discretionary', 'financials', 'real_estate', 'utilities', 'consumer_staples', 'industrials']
+2026-03-25T14:45:43 UTC | INFO     | main | News: 35 articles, 10 candidate sectors
+2026-03-25T14:45:43 UTC | INFO     | news_impact_scorer | SPY day move: 0.81%
+2026-03-25T14:45:43 UTC | INFO     | news_impact_scorer | Impact [defense]: sources=5 kw=24.3 spy=0.81% → impact=0.822 ✓ passes
+2026-03-25T14:45:43 UTC | INFO     | news_impact_scorer | Impact [energy]: sources=9 kw=37.5 spy=0.81% → impact=0.822 ✓ passes
+2026-03-25T14:45:43 UTC | INFO     | news_impact_scorer | Impact [materials]: sources=9 kw=32.5 spy=0.81% → impact=0.822 ✓ passes
+2026-03-25T14:45:43 UTC | INFO     | news_impact_scorer | Impact [technology]: sources=12 kw=43.4 spy=0.81% → impact=0.822 ✓ passes
+2026-03-25T14:45:43 UTC | INFO     | news_impact_scorer | Impact [consumer_discretionary]: sources=16 kw=58.8 spy=0.81% → impact=0.822 ✓ passes
+2026-03-25T14:45:43 UTC | INFO     | news_impact_scorer | Impact [financials]: sources=6 kw=23.9 spy=0.81% → impact=0.822 ✓ passes
+2026-03-25T14:45:43 UTC | INFO     | news_impact_scorer | Impact [real_estate]: sources=5 kw=24.0 spy=0.81% → impact=0.822 ✓ passes
+2026-03-25T14:45:43 UTC | INFO     | news_impact_scorer | Impact [utilities]: sources=8 kw=26.6 spy=0.81% → impact=0.822 ✓ passes
+2026-03-25T14:45:43 UTC | INFO     | news_impact_scorer | Impact [consumer_staples]: sources=4 kw=13.9 spy=0.81% → impact=0.731 ✓ passes
+2026-03-25T14:45:43 UTC | INFO     | news_impact_scorer | Impact [industrials]: sources=4 kw=8.6 spy=0.81% → impact=0.650 ✓ passes
+2026-03-25T14:45:43 UTC | INFO     | news_impact_scorer | Impact gate: 10 → 10 sectors passed
+2026-03-25T14:45:43 UTC | INFO     | main | Momentum gate: 10 → 4 sectors
+2026-03-25T14:45:43 UTC | INFO     | sector_mapper | Mapped 0 events → 0 sectors
+2026-03-25T14:45:43 UTC | INFO     | sector_validator | Sector energy/XLE: sig1=False sig2=True sig3=False tf_ok=True → REJECTED
+2026-03-25T14:45:43 UTC | INFO     | main | Sector energy: ETF confirmation failed
+2026-03-25T14:45:43 UTC | INFO     | sector_validator | Sector materials/XLB: sig1=True sig2=True sig3=False tf_ok=False → REJECTED
+2026-03-25T14:45:43 UTC | INFO     | main | Sector materials: ETF confirmation failed
+2026-03-25T14:45:43 UTC | INFO     | sector_validator | Sector consumer_discretionary/XLY: sig1=True sig2=True sig3=False tf_ok=False → REJECTED
+2026-03-25T14:45:43 UTC | INFO     | main | Sector consumer_discretionary: ETF confirmation failed
+2026-03-25T14:45:43 UTC | INFO     | sector_validator | Sector financials/XLF: sig1=True sig2=True sig3=False tf_ok=False → REJECTED
+2026-03-25T14:45:43 UTC | INFO     | main | Sector financials: ETF confirmation failed
+2026-03-25T14:45:43 UTC | INFO     | main | No sectors confirmed — writing empty report
+2026-03-25T14:45:43 UTC | INFO     | main | Empty report written: reports/output/empty_945-1115_2026-03-25T144543Z.html
