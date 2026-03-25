@@ -752,6 +752,20 @@ def _build_ai_prompt(
         "    - No major contradictions in any signal\n"
         "  If these conditions are not all met, LATE TREND must not be overridden.\n"
         "\n"
+        "LATE TREND OVERRIDE CLARIFICATION:\n"
+        "  Even if LATE TREND is overridden by strong counter-evidence,\n"
+        "  it must NOT be classified as BUY NOW.\n"
+        "  A LATE TREND override can only upgrade the entry from AVOID to WAIT.\n"
+        "  WAIT is the maximum allowed entry when timing is LATE TREND.\n"
+        "\n"
+        "MAJOR SIGNAL CONFLICT DEFINITION:\n"
+        "  A major conflict exists if any of the following are true:\n"
+        "    - Market verdict is SKIP while Rotation is SUPPORT\n"
+        "    - Commodity trend contradicts sector direction\n"
+        "    - Earnings = FAIL or RISKY while price trend is strong\n"
+        "  Note: WATCH vs SUPPORT is a minor conflict, not a major one.\n"
+        "  Only the above conditions qualify as major conflicts.\n"
+        "\n"
         "BUY NOW CRITERIA (hard gate):\n"
         "  BUY NOW is only allowed if ALL of the following are true:\n"
         "    - Timing quality is EARLY TREND or MID TREND\n"
@@ -1162,4 +1176,3 @@ def _write_fallback_email(slot, ts_str, pulse_lines, story_sentences, companies)
     except Exception as e:
         log.error(f'Fallback email write failed: {e}')
     return path
-    

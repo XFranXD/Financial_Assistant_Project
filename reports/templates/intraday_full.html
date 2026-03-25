@@ -666,38 +666,51 @@
                   letter-spacing:.08em;margin-bottom:8px;">
         AI RESEARCH PROMPT
       </div>
-      <div
-        style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
-        <div style="color:#555577;font-size:11px;font-family:monospace;">
-          Paste into any AI assistant (Claude, ChatGPT, Gemini) for entry and exit timing analysis.
-        </div>
+      <div style="color:#555577;font-size:11px;font-family:monospace;margin-bottom:10px;">
+        Paste into any AI assistant (Claude, ChatGPT, Gemini) for entry and exit timing analysis.
+      </div>
+      <div style="margin-bottom:12px;">
         <button id="copy-prompt-btn" onclick="
-          var txt = document.getElementById('ai-prompt-text').innerText;
-          navigator.clipboard.writeText(txt).then(function() {
-            var btn = document.getElementById('copy-prompt-btn');
-            btn.innerText = 'Copied!';
-            btn.style.background = '#00aa55';
-            btn.style.borderColor = '#00aa55';
-            setTimeout(function() {
-              btn.innerText = 'Copy Prompt';
-              btn.style.background = 'transparent';
-              btn.style.borderColor = '#2a2a4a';
-            }, 2000);
-          }).catch(function() {
-            document.getElementById('ai-prompt-text').select();
-          });
+          var el = document.getElementById('ai-prompt-text');
+          var txt = el.innerText || el.textContent;
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(txt).then(function() {
+              var btn = document.getElementById('copy-prompt-btn');
+              btn.innerText = '✓ Copied!';
+              btn.style.background = '#00aa55';
+              btn.style.borderColor = '#00aa55';
+              btn.style.color = '#ffffff';
+              setTimeout(function() {
+                btn.innerText = '⧉ Copy Full Prompt';
+                btn.style.background = '#0f1f2f';
+                btn.style.borderColor = '#00aaff';
+                btn.style.color = '#00aaff';
+              }, 2500);
+            }).catch(function() {
+              var r = document.createRange();
+              r.selectNode(el);
+              window.getSelection().removeAllRanges();
+              window.getSelection().addRange(r);
+            });
+          } else {
+            var r = document.createRange();
+            r.selectNode(el);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(r);
+          }
         " style="
-          background:transparent;
-          border:1px solid #2a2a4a;
-          border-radius:5px;
-          color:#8888aa;
-          font-size:12px;
+          background:#0f1f2f;
+          border:1px solid #00aaff;
+          border-radius:6px;
+          color:#00aaff;
+          font-size:13px;
           font-family:'Courier New',Courier,monospace;
-          padding:6px 14px;
+          padding:10px 20px;
           cursor:pointer;
-          transition:all .2s;
-          white-space:nowrap;
-        ">Copy Prompt</button>
+          width:100%;
+          text-align:center;
+          letter-spacing:.04em;
+        ">⧉ Copy Full Prompt</button>
       </div>
       <pre id="ai-prompt-text" style="
         background:#050508;
