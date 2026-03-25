@@ -1,6 +1,9 @@
 {
   "date": "2026-03-25",
-  "reported_companies": [],
+  "reported_companies": [
+    "CTRA",
+    "EQT"
+  ],
   "alpha_vantage_calls_today": 20,
   "runs": {
     "9:45-11:15": {
@@ -8,8 +11,11 @@
       "status": "complete"
     },
     "11:45-13:15": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "CTRA",
+        "EQT"
+      ],
+      "status": "complete"
     },
     "13:45-15:15": {
       "companies": [],
@@ -124,5 +130,8 @@
       "label": "Rising"
     }
   },
-  "today_scores": {}
+  "today_scores": {
+    "CTRA": 68.4,
+    "EQT": 66.4
+  }
 }
