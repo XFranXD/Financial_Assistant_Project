@@ -1141,11 +1141,22 @@ def build_intraday_report(
         with open(full_path, 'w', encoding='utf-8') as f:
             f.write(full_html)
         log.info(f'Full report written: {full_path}')
+
+        # Copy to docs/reports/ so GitHub Pages can serve it
+        docs_reports_dir = os.path.join(os.path.dirname(__file__), '..', 'docs', 'reports')
+        os.makedirs(docs_reports_dir, exist_ok=True)
+        full_fname  = os.path.basename(full_path)
+        served_path = os.path.join(docs_reports_dir, full_fname)
+        with open(served_path, 'w', encoding='utf-8') as f:
+            f.write(full_html)
+        full_url = f'reports/{full_fname}'
+        log.info(f'Full report served at docs/{full_url}')
     except Exception as e:
         log.error(f'Failed to render full template: {e}')
         full_path = email_path
+        full_url  = ''
 
-    return {'email': email_path, 'full': full_path, 'prompt': prompt_text}
+    return {'email': email_path, 'full': full_path, 'full_url': full_url, 'prompt': prompt_text}
 
 
 def _write_fallback_email(slot, ts_str, pulse_lines, story_sentences, companies) -> str:
