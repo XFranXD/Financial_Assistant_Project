@@ -28,6 +28,7 @@ def build_dashboard(
     regime: dict,
     rotation: dict,
     prompt_text: str = '',
+    full_url: str = '',
     is_debug: bool = False,
 ) -> None:
     """
@@ -43,18 +44,18 @@ def build_dashboard(
     try:
         os.makedirs(DOCS_DIR, exist_ok=True)
         os.makedirs(DATA_DIR, exist_ok=True)
-        _update_reports_index(companies, slot, indices, breadth, regime)
+        _update_reports_index(companies, slot, indices, breadth, regime, full_url)
         _update_rank_board(companies)
         _write_index_page(indices, breadth, regime)
         _write_rank_page()
-        _update_weekly_archive(companies, slot, breadth, regime, prompt_text, is_debug)
+        _update_weekly_archive(companies, slot, breadth, regime, prompt_text, is_debug, full_url)
         _write_archive_page()
         log.info('Dashboard updated successfully')
     except Exception as e:
         log.error(f'Dashboard build failed (non-fatal): {e}')
 
 
-def _update_reports_index(companies, slot, indices, breadth, regime):
+def _update_reports_index(companies, slot, indices, breadth, regime, full_url=''):
     index_path = os.path.join(DATA_DIR, 'reports.json')
     try:
         with open(index_path) as f:
@@ -79,6 +80,7 @@ def _update_reports_index(companies, slot, indices, breadth, regime):
             for c in companies[:5]
         ],
         'verdicts':    [c.get('summary_verdict', '') for c in companies[:5]],
+        'report_url':  full_url,
     }
     index['reports'].insert(0, entry)
     index['reports'] = index['reports'][:50]
@@ -183,6 +185,7 @@ def _update_weekly_archive(
     regime: dict,
     prompt_text: str = '',
     is_debug: bool = False,
+    full_url: str = '',
 ) -> None:
     """Write or update weekly_archive.json. Skips entirely on debug runs."""
 
@@ -226,7 +229,8 @@ def _update_weekly_archive(
             }
             for c in companies
         ],
-        'prompt': prompt_text[:12000],
+        'prompt':     prompt_text[:12000],
+        'report_url': full_url,
     }
 
     # Duplicate run guard
@@ -570,6 +574,7 @@ def _render_archive_html(weeks: dict) -> str:
             count      = run.get('count', 0)
             vc         = run.get('verdict_counts', {})
             prompt     = run.get('prompt', '')
+            report_url = run.get('report_url', '')
             candidates = run.get('candidates', [])
             regime_color = '#00ff88' if 'LOW' in regime.upper() else '#ffcc00' if 'MOD' in regime.upper() else '#ff3355'
 
@@ -611,14 +616,37 @@ def _render_archive_html(weeks: dict) -> str:
 
             prompt_html = ''
             if prompt:
-                safe = _html.escape(prompt)
+                safe       = _html.escape(prompt)
+                prompt_id  = f'prompt_{run_id}'
+                view_link  = (
+                    f'<a href="{report_url}" target="_blank" style="'
+                    f'display:inline-block;background:#0f1f2f;border:1px solid #00aaff;'
+                    f'border-radius:6px;color:#00aaff;font-size:12px;font-family:monospace;'
+                    f'padding:8px 16px;text-decoration:none;margin-bottom:10px;">'
+                    f'\u2197 View Full Report</a>'
+                ) if report_url else ''
                 prompt_html = (
                     f'<div style="margin-top:16px;">'
+                    f'{view_link}'
                     f'<div style="color:#555577;font-size:10px;font-family:monospace;'
                     f'text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">AI Research Prompt</div>'
-                    f'<div style="color:#444466;font-size:11px;font-family:monospace;margin-bottom:6px;">'
-                    f'Select all and paste into Claude, ChatGPT, or Gemini</div>'
-                    f'<pre style="background:#050508;border:1px solid #2a2a4a;border-radius:6px;'
+                    f'<div style="margin-bottom:8px;">'
+                    f'<button onclick="'
+                    f'var el=document.getElementById(\'{prompt_id}\');'
+                    f'var txt=el.innerText||el.textContent;'
+                    f'if(navigator.clipboard&&navigator.clipboard.writeText){{'
+                    f'navigator.clipboard.writeText(txt).then(function(){{'
+                    f'var b=document.getElementById(\'btn_{prompt_id}\');'
+                    f'b.innerText=\'\u2713 Copied!\';b.style.background=\'#00aa55\';b.style.borderColor=\'#00aa55\';b.style.color=\'#fff\';'
+                    f'setTimeout(function(){{b.innerText=\'\u29c9 Copy Prompt\';b.style.background=\'#0f1f2f\';b.style.borderColor=\'#00aaff\';b.style.color=\'#00aaff\';}},2500);}});}}'
+                    f'else{{var r=document.createRange();r.selectNode(el);window.getSelection().removeAllRanges();window.getSelection().addRange(r);}}'
+                    f'" id="btn_{prompt_id}" style="'
+                    f'background:#0f1f2f;border:1px solid #00aaff;border-radius:6px;'
+                    f'color:#00aaff;font-size:12px;font-family:monospace;'
+                    f'padding:8px 16px;cursor:pointer;width:100%;text-align:center;">'
+                    f'\u29c9 Copy Prompt</button>'
+                    f'</div>'
+                    f'<pre id="{prompt_id}" style="background:#050508;border:1px solid #2a2a4a;border-radius:6px;'
                     f'padding:14px;font-family:Courier New,monospace;font-size:11px;line-height:1.6;'
                     f'color:#c8c8e0;overflow-x:auto;white-space:pre;max-height:360px;overflow-y:auto;">'
                     f'{safe}</pre>'
