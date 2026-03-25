@@ -185,8 +185,6 @@ def _update_weekly_archive(
     is_debug: bool = False,
 ) -> None:
     """Write or update weekly_archive.json. Skips entirely on debug runs."""
-    if is_debug:
-        return
 
     archive_path = os.path.join(DATA_DIR, 'weekly_archive.json')
     try:
@@ -201,6 +199,7 @@ def _update_weekly_archive(
 
     run_entry = {
         'id':        run_id,
+        'run_type':  'MANUAL' if is_debug else 'SCHEDULED',
         'timestamp': now_et.strftime('%Y-%m-%dT%H:%M'),
         'slot':      slot,
         'breadth':   breadth.get('label', '') if breadth else '',
@@ -559,6 +558,14 @@ def _render_archive_html(weeks: dict) -> str:
             run_id     = run.get('id', f'run_{id(run)}').replace(':', '_').replace('-', '_').replace('.', '_')
             ts         = run.get('timestamp', '')
             slot       = run.get('slot', '')
+            run_type   = run.get('run_type', 'SCHEDULED')
+            is_manual  = run_type == 'MANUAL'
+            type_badge = (
+                '<span style="background:#1a0a2a;border:1px solid #6600aa;color:#aa44ff;'
+                'font-size:10px;padding:1px 6px;border-radius:3px;margin-left:8px;'
+                'text-transform:uppercase;letter-spacing:.05em;">MANUAL RUN</span>'
+                if is_manual else ''
+            )
             regime     = run.get('regime', '')
             count      = run.get('count', 0)
             vc         = run.get('verdict_counts', {})
@@ -623,6 +630,7 @@ def _render_archive_html(weeks: dict) -> str:
                 f' onclick="var e=document.getElementById(\'body_{run_id}\');e.style.display=e.style.display===\'none\'?\'block\':\'none\';">'
                 f'<div style="font-family:monospace;">'
                 f'<span style="color:#e8e8f0;font-size:13px;">{ts}</span>'
+                f'{type_badge}'
                 f'<span style="color:#8888aa;font-size:12px;"> \u00b7 {slot} \u00b7 {count} stock{"s" if count!=1 else ""}</span>'
                 f'<span style="color:{regime_color};font-size:11px;margin-left:10px;">{regime}</span>'
                 f'</div>'

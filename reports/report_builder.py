@@ -970,6 +970,8 @@ def build_intraday_report(
     Returns dict: {'email': str path, 'full': str path}
     Called by main.py step 28.
     """
+    from config import GITHUB_PAGES_URL
+    dashboard_url = GITHUB_PAGES_URL
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     now_utc  = datetime.now(pytz.utc)
     now_et   = now_utc.astimezone(pytz.timezone('America/New_York'))
@@ -1055,6 +1057,7 @@ def build_intraday_report(
             disclaimer        = DISCLAIMER,
             total_companies   = n_found,
             commodity_summary = commodity_summary,
+            dashboard_url     = dashboard_url,
         )
         email_path = os.path.join(OUTPUT_DIR, f'intraday_email_{slot.replace(":", "").replace("-", "_")}_{ts_str}.html')
         with open(email_path, 'w', encoding='utf-8') as f:

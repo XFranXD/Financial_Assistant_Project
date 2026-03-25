@@ -150,5 +150,59 @@ def _prune_weekly_archive():
         print(f'weekly_archive prune failed: {e}')
 
 
+def _dry_run():
+    """Show what cleanup would delete without actually deleting anything."""
+    now          = datetime.now(pytz.utc)
+    would_delete = []
+    would_age    = []
+
+    if not os.path.exists(REPORTS_DIR):
+        print(f'Reports dir not found: {REPORTS_DIR}')
+        return
+
+    for fname in os.listdir(REPORTS_DIR):
+        if not fname.endswith('.html'):
+            continue
+        fpath = os.path.join(REPORTS_DIR, fname)
+        try:
+            mtime = datetime.fromtimestamp(os.path.getmtime(fpath), tz=pytz.utc)
+            age   = (now - mtime).days
+            if age > DELETE_DAYS:
+                would_delete.append((fname, age))
+            elif age > KEEP_DAYS:
+                would_age.append((fname, age))
+        except Exception as e:
+            print(f'Error reading {fname}: {e}')
+
+    if would_delete:
+        print(f'\nWould DELETE ({len(would_delete)} files):')
+        for fname, age in sorted(would_delete, key=lambda x: x[1], reverse=True):
+            print(f'  {fname}  ({age}d old)')
+    else:
+        print('\nNo files would be deleted.')
+
+    if would_age:
+        print(f'\nWould LOG as aged ({len(would_age)} files):')
+        for fname, age in sorted(would_age, key=lambda x: x[1], reverse=True):
+            print(f'  {fname}  ({age}d old)')
+    else:
+        print('No files in aged range.')
+
+    print(f'\nDry run complete. Run with --force to execute deletions.')
+
+
 if __name__ == '__main__':
-    run_cleanup()
+    import sys
+    if '--force' in sys.argv:
+        print('Running cleanup (--force flag detected)...')
+        run_cleanup()
+    else:
+        print('Manual cleanup mode.')
+        print(f'This will delete HTML report files older than {DELETE_DAYS} days.')
+        print('Run with --force to execute, or press Enter to do a dry run (no deletions).')
+        choice = input('> ').strip().lower()
+        if choice == '':
+            # Dry run — show what would be deleted without deleting
+            _dry_run()
+        else:
+            print('Aborted.')

@@ -56,7 +56,7 @@ EMAIL_MAX_COMPANIES     = 7          # overflow goes to browser link
 
 # ── Report Domain (GitHub Pages) ──────────────────────────────────────────
 # Set GITHUB_PAGES_URL in env or update this value after first deploy
-GITHUB_PAGES_URL = os.environ.get('GITHUB_PAGES_URL', 'https://your-username.github.io/your-repo')
+GITHUB_PAGES_URL = os.environ.get('GITHUB_PAGES_URL', 'https://xfranxd.github.io/Financial_Assistant_Project')
 
 # ── Sector Equivalence Mapping (yfinance sector → internal sector name) ────
 SECTOR_EQUIVALENCE = {
