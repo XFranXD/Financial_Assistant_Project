@@ -2,15 +2,18 @@
   "date": "2026-03-26",
   "reported_companies": [
     "LIN",
-    "NEM",
-    "RRC",
+    "EOG",
     "CTRA",
+    "NEM",
     "KMI",
-    "EQT",
+    "CF",
     "AR",
     "COP",
-    "CF",
-    "DVN"
+    "DVN",
+    "EQT",
+    "XOM",
+    "SM",
+    "RRC"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -40,8 +43,12 @@
       "status": "complete"
     },
     "16:00-17:20": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "XOM",
+        "EOG",
+        "SM"
+      ],
+      "status": "complete"
     }
   },
   "failed_tickers": [],
@@ -149,7 +156,8 @@
     }
   },
   "today_scores": {
-    "COP": 58.9,
-    "AR": 57.6
+    "XOM": 58.5,
+    "EOG": 56.1,
+    "SM": 54.3
   }
 }
