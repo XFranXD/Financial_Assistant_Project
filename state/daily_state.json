@@ -1,7 +1,7 @@
 {
   "date": "2026-03-27",
   "reported_companies": [],
-  "alpha_vantage_calls_today": 0,
+  "alpha_vantage_calls_today": 20,
   "runs": {
     "9:45-11:15": {
       "companies": [],
@@ -23,21 +23,21 @@
   "failed_tickers": [],
   "api_failures": {},
   "sector_scores_today": {
-    "technology": -3.441,
-    "healthcare": -1.098,
-    "financials": -1.029,
-    "consumer_discretionary": -1.487,
-    "consumer_staples": -0.149,
-    "industrials": -0.99,
-    "materials": 2.998,
-    "energy": 6.441,
-    "utilities": 1.466,
-    "real_estate": -1.675,
-    "communication_services": -4.104,
-    "semiconductors": -1.928,
-    "defense": -2.724
+    "technology": -3.295,
+    "healthcare": -1.302,
+    "financials": -1.334,
+    "consumer_discretionary": -1.608,
+    "consumer_staples": 0.115,
+    "industrials": -1.138,
+    "materials": 3.323,
+    "energy": 6.955,
+    "utilities": 1.685,
+    "real_estate": -1.667,
+    "communication_services": -4.446,
+    "semiconductors": -1.534,
+    "defense": -2.925
   },
-  "breadth_score_today": 0.423,
+  "breadth_score_today": 0.415,
   "sector_breadth_ma_today": {
     "technology": {
       "breadth_ma_score": 0.0,
@@ -65,13 +65,13 @@
       "label": "sector is structurally weak"
     },
     "consumer_staples": {
-      "breadth_ma_score": 0.1,
-      "pct": 10.0,
+      "breadth_ma_score": 0.2,
+      "pct": 20.0,
       "label": "sector is structurally weak"
     },
     "industrials": {
-      "breadth_ma_score": 0.0,
-      "pct": 0.0,
+      "breadth_ma_score": 0.1,
+      "pct": 10.0,
       "label": "sector is structurally weak"
     },
     "defense": {
@@ -90,9 +90,9 @@
       "label": "mixed signals"
     },
     "utilities": {
-      "breadth_ma_score": 0.7,
-      "pct": 70.0,
-      "label": "healthy participation"
+      "breadth_ma_score": 0.8,
+      "pct": 80.0,
+      "label": "sector is genuinely strong"
     },
     "real_estate": {
       "breadth_ma_score": 0.2,
@@ -109,18 +109,18 @@
   "event_scores_today": {},
   "indices_today": {
     "dow": {
-      "value": 45556.37,
-      "change_pct": -0.88,
+      "value": 45471.78,
+      "change_pct": -1.06,
       "label": "Falling"
     },
     "sp500": {
-      "value": 6419.13,
-      "change_pct": -0.9,
+      "value": 6412.12,
+      "change_pct": -1.0,
       "label": "Falling"
     },
     "nasdaq": {
-      "value": 21126.53,
-      "change_pct": -1.32,
+      "value": 21098.43,
+      "change_pct": -1.45,
       "label": "Falling"
     }
   },
