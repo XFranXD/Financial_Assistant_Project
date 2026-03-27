@@ -1,11 +1,14 @@
 {
   "date": "2026-03-27",
   "reported_companies": [
-    "DVN",
-    "CTRA",
+    "COP",
     "KMI",
     "EQT",
-    "RRC"
+    "CTRA",
+    "DVN",
+    "RRC",
+    "XOM",
+    "AR"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -29,8 +32,12 @@
       "status": "complete"
     },
     "16:00-17:20": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "XOM",
+        "COP",
+        "AR"
+      ],
+      "status": "complete"
     }
   },
   "failed_tickers": [],
@@ -138,7 +145,8 @@
     }
   },
   "today_scores": {
-    "DVN": 58.7,
-    "RRC": 55.9
+    "XOM": 60.1,
+    "COP": 57.9,
+    "AR": 56.0
   }
 }
