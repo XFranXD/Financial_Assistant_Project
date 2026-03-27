@@ -36,21 +36,21 @@
   "failed_tickers": [],
   "api_failures": {},
   "sector_scores_today": {
-    "technology": -3.787,
-    "healthcare": -1.502,
-    "financials": -1.761,
-    "consumer_discretionary": -2.256,
-    "consumer_staples": -0.016,
-    "industrials": -1.533,
-    "materials": 3.102,
-    "energy": 6.751,
-    "utilities": 1.283,
-    "real_estate": -2.005,
-    "communication_services": -4.853,
-    "semiconductors": -2.328,
-    "defense": -3.174
+    "technology": -3.841,
+    "healthcare": -1.858,
+    "financials": -2.028,
+    "consumer_discretionary": -2.294,
+    "consumer_staples": -0.179,
+    "industrials": -1.616,
+    "materials": 3.151,
+    "energy": 6.809,
+    "utilities": 1.045,
+    "real_estate": -2.144,
+    "communication_services": -4.733,
+    "semiconductors": -2.146,
+    "defense": -3.326
   },
-  "breadth_score_today": 0.362,
+  "breadth_score_today": 0.323,
   "sector_breadth_ma_today": {
     "technology": {
       "breadth_ma_score": 0.0,
@@ -83,8 +83,8 @@
       "label": "sector is structurally weak"
     },
     "industrials": {
-      "breadth_ma_score": 0.1,
-      "pct": 10.0,
+      "breadth_ma_score": 0.0,
+      "pct": 0.0,
       "label": "sector is structurally weak"
     },
     "defense": {
@@ -113,8 +113,8 @@
       "label": "sector is structurally weak"
     },
     "communication_services": {
-      "breadth_ma_score": 0.4,
-      "pct": 40.0,
+      "breadth_ma_score": 0.5,
+      "pct": 50.0,
       "label": "mixed signals"
     }
   },
@@ -122,18 +122,18 @@
   "event_scores_today": {},
   "indices_today": {
     "dow": {
-      "value": 45230.09,
-      "change_pct": -1.59,
+      "value": 45166.64,
+      "change_pct": -1.73,
       "label": "Falling"
     },
     "sp500": {
-      "value": 6380.62,
-      "change_pct": -1.49,
+      "value": 6368.85,
+      "change_pct": -1.67,
       "label": "Falling"
     },
     "nasdaq": {
-      "value": 20992.54,
-      "change_pct": -1.94,
+      "value": 20948.36,
+      "change_pct": -2.15,
       "label": "Falling"
     }
   },
