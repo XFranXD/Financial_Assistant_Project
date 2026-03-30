@@ -347,7 +347,7 @@ _HOME_BELOW_JS = """
   function syncBelow(){
     var el=document.getElementById('home-below');
     if(!el){rafID=null;return;}
-    var h=expandHeight;
+    var h=expandHeight+(expandHeight>0?8:0);
     el.style.transform='translateY('+h+'px)';
     if(!isAnimating&&Math.abs(h-lastH)<0.5){
       stableFrames++;
