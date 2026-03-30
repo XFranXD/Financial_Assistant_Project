@@ -343,25 +343,32 @@ function buildIdxChart(d){
 
 _HOME_BELOW_JS = """
 (function(){
-  let rafID=null;
+  var rafID=null,lastH=-1,stableFrames=0;
   function syncBelow(){
     var el=document.getElementById('home-below');
-    if(!el)return;
-    el.style.transform='translateY('+expandHeight+'px)';
+    if(!el){rafID=null;return;}
+    var h=expandHeight;
+    el.style.transform='translateY('+h+'px)';
+    if(!isAnimating&&Math.abs(h-lastH)<0.5){
+      stableFrames++;
+      if(stableFrames>=2){
+        el.style.transform=h<1?'':'translateY('+h+'px)';
+        rafID=null;lastH=-1;stableFrames=0;return;
+      }
+    } else {
+      stableFrames=0;
+    }
+    lastH=h;
     rafID=requestAnimationFrame(syncBelow);
   }
-  function startSync(){ if(!rafID) rafID=requestAnimationFrame(syncBelow); }
-  function stopSync(){
-    if(rafID){cancelAnimationFrame(rafID);rafID=null;}
-    var el=document.getElementById('home-below');
-    if(el) el.style.transform='translateY(0)';
+  function ensureRunning(){
+    stableFrames=0;
+    if(!rafID) rafID=requestAnimationFrame(syncBelow);
   }
   var _origToggle=window.toggleIdx;
   window.toggleIdx=function(key){
-    var wasOpen=expandHeight>20;
+    ensureRunning();
     _origToggle(key);
-    if(!wasOpen||currentIdx===null) startSync();
-    if(currentIdx===null) setTimeout(stopSync,360);
   };
 })();
 """
