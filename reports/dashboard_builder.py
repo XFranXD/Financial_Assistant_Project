@@ -25,6 +25,7 @@ _FONTS_LINK = (
     ':wght@400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">'
 )
 _CHARTJS = '<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>'
+_EM = '\u2014'  # em dash — safe to use inside f-string expressions
 
 
 # ── Safe helpers ────────────────────────────────────────────────────────────
@@ -419,7 +420,7 @@ function closeExpRowInstant(row){
 }
 """
 
-_EXP_T_JS = """
+_EXP_T_JS = r"""
 window._mreCharts=window._mreCharts||{};
 function mkC(cid,data){
   if(typeof Chart==='undefined')return;
@@ -908,8 +909,8 @@ def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, ind
                 f'<div class="rp-sect">{_esc(s.get("sector","").replace("_"," ").title())}</div>'
                 f'<div class="rp-conf {c_cls}">{_fmt_score(conf, 0)}</div>'
                 f'<div style="font-size:11px;color:var(--mist);">{_fmt_score(s.get("risk_score"), 0)}</div>'
-                f'<div><span class="ntag {_eq_cls(eq_v)}">{_esc(eq_v) or "\u2014"}</span></div>'
-                f'<div><span class="ntag {_rot_cls(rot_s)}">{_esc(rot_s) or "\u2014"}</span></div>'
+                f'<div><span class="ntag {_eq_cls(eq_v)}">{_esc(eq_v) or _EM}</span></div>'
+                f'<div><span class="ntag {_rot_cls(rot_s)}">{_esc(rot_s) or _EM}</span></div>'
                 f'</div>'
                 f'<div class="rp-exp" id="rp{i}"><div class="rp-exp-inner">'
                 f'<div class="pex-item"><div class="pex-k">1M Return</div><div class="pex-v">{_fmt_pct(s.get("return_1m"))}</div></div>'
@@ -976,7 +977,7 @@ def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, ind
                 f'</div>'
                 f'<div class="rcard-body"><div class="rcard-inner">'
                 f'<div class="rcard-cols">'
-                f'<div><div class="rcc-k">Sys 1 &middot; Tickers</div><div class="rcc-v">{tickers or "\u2014"}'
+                f'<div><div class="rcc-k">Sys 1 &middot; Tickers</div><div class="rcc-v">{tickers or _EM}'
                 f'<br><span style="color:var(--mist);font-size:10px">Top conf: {_fmt_score(top_score, 0)}/100</span></div></div>'
                 f'<div><div class="rcc-k">Verdicts</div><div class="rcc-v">'
                 f'<span style="color:var(--up)">RN:{rn_c}</span> '
@@ -1144,7 +1145,7 @@ def _render_rank_html(rank_data: dict) -> str:
                 f'<div class="est"><div class="est-k">6M Return</div><div class="est-v">{_fmt_pct(stock.get("return_6m"))}</div></div>'
                 f'<div class="est"><div class="est-k">Opportunity</div><div class="est-v">{_fmt_score(stock.get("opportunity_score"),0)}/100</div></div>'
                 f'<div class="est"><div class="est-k">Signal Agree</div><div class="est-v">{_fmt_score(stock.get("signal_agreement"),2)}</div></div>'
-                f'<div class="est"><div class="est-k">Verdict</div><div class="est-v {_conf_cls(conf)}">{_esc(verdict or "\u2014")}</div></div>'
+                f'<div class="est"><div class="est-k">Verdict</div><div class="est-v {_conf_cls(conf)}">{_esc(verdict) or _EM}</div></div>'
                 f'</div>'
                 f'<div class="exp-chart">{chart_el}</div>'
                 f'</div></div>'
@@ -1157,8 +1158,8 @@ def _render_rank_html(rank_data: dict) -> str:
                 f'<div class="td-p">{_fmt_price(stock.get("price"))}</div>'
                 f'<div class="td-c {_conf_cls(conf)}">{_fmt_score(conf,0)}</div>'
                 f'<div class="td-r">{_fmt_score(risk,0)}</div>'
-                f'<div><span class="ntag {_eq_cls(eq_v)}" style="font-size:8px">{_esc(eq_v) or "\u2014"}</span></div>'
-                f'<div><span class="ntag {_rot_cls(rot_s)}" style="font-size:8px">{_esc(rot_s) or "\u2014"}</span></div>'
+                f'<div><span class="ntag {_eq_cls(eq_v)}" style="font-size:8px">{_esc(eq_v) or _EM}</span></div>'
+                f'<div><span class="ntag {_rot_cls(rot_s)}" style="font-size:8px">{_esc(rot_s) or _EM}</span></div>'
                 f'</div>'
                 f'{exp_row}'
             )
@@ -1252,7 +1253,7 @@ def _render_archive_html(archive_data: dict) -> str:
                     f'</div><span class="rcard-badge {b_cls}">{_esc(breadth).title()}</span></div>'
                     f'<div class="rcard-body"><div class="rcard-inner">'
                     f'<div class="rcard-cols">'
-                    f'<div><div class="rcc-k">Sys 1</div><div class="rcc-v">{tickers or "\u2014"}'
+                    f'<div><div class="rcc-k">Sys 1</div><div class="rcc-v">{tickers or _EM}'
                     f'<br><span style="color:var(--mist);font-size:10px">Top conf: {_fmt_score(top_conf, 0)}/100</span></div></div>'
                     f'<div><div class="rcc-k">Verdicts</div><div class="rcc-v">'
                     f'<span style="color:var(--up)">RN:{rn_c}</span> <span style="color:var(--nt)">W:{w_c}</span> <span style="color:var(--dn)">S:{s_c}</span>'

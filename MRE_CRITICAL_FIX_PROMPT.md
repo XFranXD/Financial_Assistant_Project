@@ -1,3 +1,187 @@
+# MRE — CRITICAL FIX PROMPT
+# Two files to fix. Read everything before touching anything.
+# Do not touch any file not listed below.
+
+---
+
+## WHAT IS BROKEN AND WHY
+
+Every run crashes with this error:
+
+    Dashboard build skipped: f-string expression part cannot include a backslash
+
+This means `dashboard_builder.py` has never successfully produced new output
+since the frontend redesign was deployed. The live dashboard still shows the
+old pre-redesign HTML because the new render functions have never executed.
+
+The cause is 7 specific lines in `dashboard_builder.py` where `"\u2014"` (the
+em dash character) appears inside the `{}` expression part of an f-string.
+Python 3.11 does not allow backslash escapes inside f-string expressions at
+runtime. This crashes the entire `build_dashboard()` call.
+
+The second issue is `docs/guide.html` — it was replaced with a thin 3-section
+stub instead of keeping the real operational content with all 12 sections.
+
+**IMPORTANT — py_compile warning:** The `py_compile` verification step below
+will print `OK` even BEFORE the fix is applied, because `py_compile` on
+Python 3.12 does not catch this class of error. Only the regex scan and the
+presence of `_EM` in the file are reliable proof the fix was applied correctly.
+Do not use `py_compile` output as confirmation — use the regex scan.
+
+---
+
+## FIX 1 — dashboard_builder.py: 7 f-string backslash bugs
+
+File: `reports/dashboard_builder.py`
+
+### Step 1 — Add a module-level constant near the top of the file
+
+Find the block of module-level constants (where `_FONTS_LINK`, `_CHARTJS`,
+`_safe_json` etc. are defined). Add this line with them:
+
+```python
+_EM = '\u2014'  # em dash — safe to use inside f-string expressions
+```
+
+This constant holds the em dash character directly, with no backslash escape,
+so it can safely be referenced inside `{}` expression parts of f-strings.
+
+### Step 2 — Fix all 7 lines
+
+Make ONLY these 7 line replacements. Change nothing else.
+
+**Line 911** — replace:
+```python
+                f'<div><span class="ntag {_eq_cls(eq_v)}">{_esc(eq_v) or "\u2014"}</span></div>'
+```
+with:
+```python
+                f'<div><span class="ntag {_eq_cls(eq_v)}">{_esc(eq_v) or _EM}</span></div>'
+```
+
+**Line 912** — replace:
+```python
+                f'<div><span class="ntag {_rot_cls(rot_s)}">{_esc(rot_s) or "\u2014"}</span></div>'
+```
+with:
+```python
+                f'<div><span class="ntag {_rot_cls(rot_s)}">{_esc(rot_s) or _EM}</span></div>'
+```
+
+**Line 979** — replace:
+```python
+                f'<div><div class="rcc-k">Sys 1 &middot; Tickers</div><div class="rcc-v">{tickers or "\u2014"}'
+```
+with:
+```python
+                f'<div><div class="rcc-k">Sys 1 &middot; Tickers</div><div class="rcc-v">{tickers or _EM}'
+```
+
+**Line 1147** — replace:
+```python
+                f'<div class="est"><div class="est-k">Verdict</div><div class="est-v {_conf_cls(conf)}">{_esc(verdict or "\u2014")}</div></div>'
+```
+with:
+```python
+                f'<div class="est"><div class="est-k">Verdict</div><div class="est-v {_conf_cls(conf)}">{_esc(verdict) or _EM}</div></div>'
+```
+
+**Line 1160** — replace:
+```python
+                f'<div><span class="ntag {_eq_cls(eq_v)}" style="font-size:8px">{_esc(eq_v) or "\u2014"}</span></div>'
+```
+with:
+```python
+                f'<div><span class="ntag {_eq_cls(eq_v)}" style="font-size:8px">{_esc(eq_v) or _EM}</span></div>'
+```
+
+**Line 1161** — replace:
+```python
+                f'<div><span class="ntag {_rot_cls(rot_s)}" style="font-size:8px">{_esc(rot_s) or "\u2014"}</span></div>'
+```
+with:
+```python
+                f'<div><span class="ntag {_rot_cls(rot_s)}" style="font-size:8px">{_esc(rot_s) or _EM}</span></div>'
+```
+
+**Line 1255** — replace:
+```python
+                    f'<div><div class="rcc-k">Sys 1</div><div class="rcc-v">{tickers or "\u2014"}'
+```
+with:
+```python
+                    f'<div><div class="rcc-k">Sys 1</div><div class="rcc-v">{tickers or _EM}'
+```
+
+### Step 3 — Fix the SyntaxWarning in _EXP_T_JS
+
+There is a secondary non-crash issue: the `_EXP_T_JS` triple-quoted string
+constant (around line 422) contains a JS regex `[\d.]` which generates a
+`SyntaxWarning: invalid escape sequence '\d'` on Python 3.12+ because `\d`
+is not a recognized Python escape sequence in a regular string.
+
+Find this line inside `_EXP_T_JS`:
+```python
+          var prefix=raw.match(/^[▲▼]/)?.[0]||'',suffix=raw.replace(/^[▲▼]?[\d.]+/,'');
+```
+
+Fix by changing the opening `"""` of `_EXP_T_JS` to `r"""` (raw string), which
+suppresses all Python escape processing inside it and is safe because the
+string contains no Python escape sequences that need to be interpreted:
+
+Find the line that reads:
+```python
+_EXP_T_JS = """
+```
+Replace it with:
+```python
+_EXP_T_JS = r"""
+```
+
+This silences the warning without changing any content of the JS string.
+
+### Step 4 — Verify the fix
+
+Run the regex scan to confirm all 7 lines are fixed:
+
+```bash
+python3 -c "
+import re
+with open('reports/dashboard_builder.py') as f:
+    lines = f.readlines()
+found = False
+for i, line in enumerate(lines, 1):
+    if 'f\"' not in line and \"f'\" not in line:
+        continue
+    matches = re.findall(r'\{[^{}]*\\\\[u0-9][^{}]*\}', line)
+    if matches:
+        print(f'Line {i} still has backslash in expression: {matches}')
+        found = True
+if not found:
+    print('OK — no backslash-in-expression issues found')
+"
+```
+
+This must print `OK — no backslash-in-expression issues found`.
+
+Also confirm `_EM` exists in the file:
+
+```bash
+grep -n "_EM" reports/dashboard_builder.py | head -5
+```
+
+Must show the constant definition and at least some of the 7 fixed lines.
+
+---
+
+## FIX 2 — Restore docs/guide.html with real content + new design
+
+File: `docs/guide.html`
+
+The current guide is a 91-line stub with only 3 sections. Replace the entire
+contents of `docs/guide.html` with the following complete 12-section version:
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -281,3 +465,19 @@
 
 </body>
 </html>
+```
+
+---
+
+## VERIFICATION
+
+After both fixes, confirm ALL of these:
+
+- [ ] Regex scan prints `OK — no backslash-in-expression issues found`
+- [ ] `grep -n "_EM" reports/dashboard_builder.py` shows the constant definition and multiple usages
+- [ ] None of the 7 original lines contain `"\u2014"` inside `{}` any more
+- [ ] `_EXP_T_JS = r"""` (raw string, not plain `"""`)
+- [ ] `docs/guide.html` contains all 12 numbered sections (1 through 12)
+- [ ] `docs/guide.html` uses the new design classes (`guide-section`, `guide-head`, `guide-card`, `thresh`, `sys-pill`, `scanlines`, `nav`, `brand-pulse`)
+- [ ] `docs/guide.html` does NOT contain fake placeholder tickers
+- [ ] No other files were touched
