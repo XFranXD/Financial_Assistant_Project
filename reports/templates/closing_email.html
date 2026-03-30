@@ -5,27 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{{ subject }}</title>
 <style>
-  body{background:#0a0a0f;color:#e8e8f0;font-family:'Courier New',Courier,monospace;
+  body{background:#0a0610;color:#f0eaff;font-family:'Share Tech Mono','Courier New',monospace;
        font-size:14px;line-height:1.6;margin:0;padding:0}
   .wrap{max-width:600px;margin:0 auto;padding:16px}
-  .header{background:#0f0f1a;border:1px solid #1e1e3a;border-radius:6px;padding:12px 16px;margin-bottom:12px}
-  .header h1{margin:0;font-size:16px;color:#00aaff;font-weight:bold}
-  .header .sub{color:#8888aa;font-size:12px;margin-top:4px}
-  .block{background:#141428;border:1px solid #1e1e3a;border-radius:6px;padding:12px 16px;margin-bottom:12px}
-  .block h2{margin:0 0 8px;font-size:12px;color:#8888aa;text-transform:uppercase;letter-spacing:.05em}
-  .story{background:#0f0f1a;border:1px solid #1e1e3a;border-radius:6px;
-         padding:12px 16px;margin-bottom:12px;font-size:13px;color:#8888aa}
+  .header{background:#130f22;border:1px solid #2c224e;border-radius:6px;padding:12px 16px;margin-bottom:12px}
+  .header h1{margin:0;font-size:16px;color:#00e5ff;font-weight:bold}
+  .header .sub{color:#8878b8;font-size:12px;margin-top:4px}
+  .block{background:#1a1430;border:1px solid #2c224e;border-radius:6px;padding:12px 16px;margin-bottom:12px}
+  .block h2{margin:0 0 8px;font-size:12px;color:#8878b8;text-transform:uppercase;letter-spacing:.05em}
+  .story{background:#130f22;border:1px solid #2c224e;border-radius:6px;
+         padding:12px 16px;margin-bottom:12px;font-size:13px;color:#8878b8}
   .story p{margin:4px 0}
-  .idx-line{font-family:'Courier New',Courier,monospace;white-space:pre;padding:2px 0;color:#e8e8f0;font-size:13px}
-  .idx-sentence{color:#8888aa;font-size:12px;padding-left:4px;margin-bottom:6px}
+  .idx-line{font-family:'Share Tech Mono','Courier New',monospace;white-space:pre;padding:2px 0;color:#f0eaff;font-size:13px}
+  .idx-sentence{color:#8878b8;font-size:12px;padding-left:4px;margin-bottom:6px}
   .section-label{font-size:12px;font-weight:bold;text-transform:uppercase;letter-spacing:.08em;
-                  padding:6px 0 4px;border-bottom:1px solid #1e1e3a;margin-bottom:8px}
-  .ranked-row{padding:6px 0;border-bottom:1px solid #1e1e3a;font-size:13px;color:#e8e8f0}
+                  padding:6px 0 4px;border-bottom:1px solid #2c224e;margin-bottom:8px}
+  .ranked-row{padding:6px 0;border-bottom:1px solid #2c224e;font-size:13px;color:#f0eaff}
   .ranked-row:last-child{border-bottom:none}
-  .watch-item{padding:4px 0;font-size:13px;color:#8888aa}
-  .watch-item.accel{color:#00ff88}
-  .moved-item{padding:4px 0;font-size:13px;color:#8888aa}
-  .disclaimer{margin-top:16px;font-size:11px;color:#444466;border-top:1px solid #1e1e3a;padding-top:8px}
+  .watch-item{padding:4px 0;font-size:13px;color:#8878b8}
+  .watch-item.accel{color:#39e8a0}
+  .moved-item{padding:4px 0;font-size:13px;color:#8878b8}
+  .disclaimer{margin-top:16px;font-size:11px;color:#4a3d72;border-top:1px solid #2c224e;padding-top:8px}
 </style>
 </head>
 <body>
@@ -62,7 +62,7 @@
     <div class="ranked-row">{{ row }}</div>
     {% endfor %}
     {% else %}
-    <div class="ranked-row" style="color:#8888aa">No companies reported today.</div>
+    <div class="ranked-row" style="color:#8878b8">No companies reported today.</div>
     {% endif %}
   </div>
 

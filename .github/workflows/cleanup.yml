@@ -22,7 +22,7 @@ jobs:
         run: pip install pytz
 
       - name: Run cleanup
-        run: python scripts/cleanup_reports.py
+        run: python scripts/cleanup_reports.py --force
 
       - name: Commit cleanup
         run: |

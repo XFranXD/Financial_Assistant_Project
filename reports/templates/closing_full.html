@@ -5,52 +5,78 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{{ subject }}</title>
 <style>
-  body{background:#0a0a0f;color:#e8e8f0;font-family:'Courier New',Courier,monospace;
+  :root {
+    --void:    #0a0610;
+    --l1:      #130f22;
+    --l2:      #1a1430;
+    --l3:      #221a3e;
+    --l4:      #2c224e;
+    --pu:      #9b59ff;
+    --pu-lt:   #c084ff;
+    --pu-dk:   #5e2ba8;
+    --mg:      #ff6eb4;
+    --sun:     #ff9a3c;
+    --cyan:    #00e5ff;
+    --up:      #39e8a0;
+    --dn:      #ff4d6d;
+    --nt:      #ff9a3c;
+    --snow:    #f0eaff;
+    --slate:   #8878b8;
+    --mist:    #4a3d72;
+    --ghost:   #2a2248;
+    --rim:     rgba(155,89,255,0.12);
+    --rim2:    rgba(155,89,255,0.25);
+    --ff-head: 'Orbitron', sans-serif;
+    --ff-mono: 'Share Tech Mono', monospace;
+  }
+  body{background:var(--void);color:var(--snow);font-family:var(--ff-mono);
        font-size:14px;line-height:1.6;margin:0;padding:0}
   .wrap{max-width:900px;margin:0 auto;padding:24px 16px}
-  h1{color:#ffffff;font-size:22px;margin:0 0 4px}
-  .meta{color:#8888aa;font-size:12px;margin-bottom:20px}
-  .block{background:#0f0f1a;border:1px solid #1e1e3a;border-radius:8px;padding:16px;margin-bottom:20px}
-  .block h2{margin:0 0 12px;font-size:13px;color:#8888aa;text-transform:uppercase;letter-spacing:.06em;
-            border-bottom:1px solid #1e1e3a;padding-bottom:6px}
+  h1{color:var(--snow);font-size:22px;margin:0 0 4px}
+  .meta{color:var(--slate);font-size:12px;margin-bottom:20px}
+  .block{background:var(--l1);border:1px solid var(--rim);border-radius:8px;padding:16px;margin-bottom:20px}
+  .block h2{margin:0 0 12px;font-size:13px;color:var(--slate);text-transform:uppercase;letter-spacing:.06em;
+            border-bottom:1px solid var(--rim);padding-bottom:6px}
   .market-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:6px}
-  .idx-card{background:#141428;border:1px solid #1e1e3a;border-radius:6px;padding:12px;text-align:center}
-  .idx-name{color:#8888aa;font-size:11px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
-  .idx-pulse{font-family:'Courier New',Courier,monospace;font-size:13px;color:#e8e8f0}
-  .idx-sentence{color:#8888aa;font-size:12px;margin-top:4px;line-height:1.4}
-  .story-line{padding:4px 0;font-size:13px;color:#8888aa;border-bottom:1px solid #1e1e3a}
+  .idx-card{background:var(--l2);border:1px solid var(--rim);border-radius:6px;padding:12px;text-align:center}
+  .idx-name{color:var(--slate);font-size:11px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+  .idx-pulse{font-family:var(--ff-mono);font-size:13px;color:var(--snow)}
+  .idx-sentence{color:var(--slate);font-size:12px;margin-top:4px;line-height:1.4}
+  .story-line{padding:4px 0;font-size:13px;color:var(--slate);border-bottom:1px solid var(--rim)}
   .story-line:last-child{border-bottom:none}
   .ranked-table{width:100%;border-collapse:collapse;font-size:13px}
-  .ranked-table th{text-align:left;color:#8888aa;font-size:11px;text-transform:uppercase;
-                    letter-spacing:.05em;padding:6px 8px;border-bottom:1px solid #1e1e3a}
-  .ranked-table td{padding:6px 8px;border-bottom:1px solid #1e1e3a;color:#e8e8f0;vertical-align:top}
+  .ranked-table th{text-align:left;color:var(--slate);font-size:11px;text-transform:uppercase;
+                    letter-spacing:.05em;padding:6px 8px;border-bottom:1px solid var(--rim)}
+  .ranked-table td{padding:6px 8px;border-bottom:1px solid var(--rim);color:var(--snow);vertical-align:top}
   .ranked-table tr:last-child td{border-bottom:none}
-  .conf-strong{color:#00ff88;font-weight:bold}
-  .conf-mod{color:#ffcc00;font-weight:bold}
-  .conf-weak{color:#8888aa;font-weight:bold}
-  .watch-item{padding:5px 0;font-size:13px;color:#8888aa;border-bottom:1px solid #1e1e3a}
+  .conf-strong{color:var(--up);font-weight:bold}
+  .conf-mod{color:var(--nt);font-weight:bold}
+  .conf-weak{color:var(--slate);font-weight:bold}
+  .watch-item{padding:5px 0;font-size:13px;color:var(--slate);border-bottom:1px solid var(--rim)}
   .watch-item:last-child{border-bottom:none}
-  .watch-item.accel{color:#00ff88}
+  .watch-item.accel{color:var(--up)}
   .rotation-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px;margin-top:12px}
-  .rot-cell{background:#141428;border:1px solid #1e1e3a;border-radius:6px;padding:10px 12px}
-  .rot-sector{color:#e8e8f0;font-size:13px;font-weight:bold}
-  .rot-score{color:#8888aa;font-size:12px}
+  .rot-cell{background:var(--l2);border:1px solid var(--rim);border-radius:6px;padding:10px 12px}
+  .rot-sector{color:var(--snow);font-size:13px;font-weight:bold}
+  .rot-score{color:var(--slate);font-size:12px}
   .rot-label{font-size:12px;margin-top:2px}
-  .rot-up{color:#00ff88}
-  .rot-dn{color:#ff3355}
-  .rot-flat{color:#8888aa}
-  .metric-guide{margin-top:28px;padding-top:20px;border-top:1px solid #1e1e3a}
-  .metric-guide h3{color:#8888aa;font-size:11px;text-transform:uppercase;letter-spacing:.12em;margin:0 0 14px}
+  .rot-up{color:var(--up)}
+  .rot-dn{color:var(--dn)}
+  .rot-flat{color:var(--slate)}
+  .metric-guide{margin-top:28px;padding-top:20px;border-top:1px solid var(--rim)}
+  .metric-guide h3{color:var(--slate);font-size:11px;text-transform:uppercase;letter-spacing:.12em;margin:0 0 14px}
   .guide-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
-  .guide-item{background:#0f0f1a;border:1px solid #1e1e3a;border-radius:6px;padding:10px 12px}
-  .guide-term{display:block;color:#00aaff;font-size:12px;font-weight:bold;margin-bottom:4px}
-  .guide-def{display:block;color:#8888aa;font-size:12px;line-height:1.5}
-  .disclaimer{margin-top:24px;font-size:11px;color:#444466;border-top:1px solid #1e1e3a;padding-top:12px}
+  .guide-item{background:var(--l1);border:1px solid var(--rim);border-radius:6px;padding:10px 12px}
+  .guide-term{display:block;color:var(--cyan);font-size:12px;font-weight:bold;margin-bottom:4px}
+  .guide-def{display:block;color:var(--slate);font-size:12px;line-height:1.5}
+  .disclaimer{margin-top:24px;font-size:11px;color:var(--mist);border-top:1px solid var(--rim);padding-top:12px}
   @media(max-width:600px){
     .market-grid{grid-template-columns:1fr}
     .rotation-grid{grid-template-columns:1fr}
   }
 </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 </head>
 <body>
 <div class="wrap">
@@ -93,13 +119,13 @@
       <tbody>
         {% for row in ranked_list %}
         <tr>
-          <td colspan="6" style="font-family:'Courier New';font-size:12px;color:#8888aa">{{ row }}</td>
+          <td colspan="6" style="font-family:var(--ff-mono);font-size:12px;color:var(--slate)">{{ row }}</td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
     {% else %}
-    <div style="color:#8888aa;font-size:13px">No companies were reported today.</div>
+    <div style="color:var(--slate);font-size:13px">No companies were reported today.</div>
     {% endif %}
   </div>
 

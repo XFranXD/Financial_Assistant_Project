@@ -3,538 +3,89 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Research Guide — Stock Research</title>
+<meta name="description" content="MRE Research Guide — How to read scores and act on signals">
+<title>MRE // Research Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/style.css">
-<style>
-  body {
-    background: #0a0a0f;
-    color: #e8e8f0;
-    margin: 0; padding: 0;
-    font-family: 'JetBrains Mono','Fira Code','Courier New', monospace;
-  }
-  .wrap {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 24px 16px 60px;
-  }
-  h1 { color: #ffffff; font-size: 22px; margin: 20px 0 4px; }
-  h2 {
-    color: #8888aa;
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: .1em;
-    border-bottom: 1px solid #1e1e3a;
-    padding-bottom: 6px;
-    margin: 36px 0 14px;
-  }
-  h3 {
-    color: #00aaff;
-    font-size: 13px;
-    margin: 20px 0 8px;
-    text-transform: uppercase;
-    letter-spacing: .06em;
-  }
-  p { color: #8888aa; font-size: 13px; line-height: 1.75; margin: 6px 0 10px; }
-
-  .sys-badge {
-    display: inline-block;
-    font-size: 11px;
-    font-weight: bold;
-    padding: 2px 8px;
-    border-radius: 3px;
-    margin-bottom: 10px;
-    text-transform: uppercase;
-    letter-spacing: .06em;
-  }
-  .sys1 { background: #0a1a2a; border: 1px solid #00aaff; color: #00aaff; }
-  .sys2 { background: #0a2a1a; border: 1px solid #00ff88; color: #00ff88; }
-  .sys3 { background: #1a1a0a; border: 1px solid #ffcc00; color: #ffcc00; }
-  .sys4 { background: #1a0a2a; border: 1px solid #aa55ff; color: #aa55ff; }
-
-  .def-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 10px;
-    margin: 10px 0 16px;
-  }
-  .def-item {
-    background: #0f0f1a;
-    border: 1px solid #1e1e3a;
-    border-radius: 6px;
-    padding: 12px 14px;
-  }
-  .def-term { color: #e8e8f0; font-size: 12px; font-weight: bold; margin-bottom: 5px; }
-  .def-body { color: #8888aa; font-size: 12px; line-height: 1.6; }
-
-  .signal-row {
-    display: flex;
-    gap: 14px;
-    align-items: flex-start;
-    padding: 7px 0;
-    border-bottom: 1px solid #1e1e3a;
-    font-size: 13px;
-  }
-  .signal-row:last-child { border-bottom: none; }
-  .signal-key { font-weight: bold; min-width: 150px; flex-shrink: 0; }
-  .signal-desc { color: #8888aa; }
-
-  .verdict-row {
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
-    padding: 8px 0;
-    border-bottom: 1px solid #1e1e3a;
-    font-size: 13px;
-  }
-  .verdict-row:last-child { border-bottom: none; }
-  .verdict-badge { font-weight: bold; min-width: 180px; flex-shrink: 0; font-size: 12px; }
-
-  .green  { color: #00ff88; }
-  .yellow { color: #ffcc00; }
-  .red    { color: #ff3355; }
-  .blue   { color: #00aaff; }
-  .purple { color: #aa55ff; }
-  .muted  { color: #8888aa; }
-
-  .info-box {
-    background: #0f0f1a;
-    border-left: 3px solid #00aaff;
-    padding: 12px 16px;
-    border-radius: 3px;
-    margin: 12px 0;
-    font-size: 13px;
-    color: #8888aa;
-    line-height: 1.7;
-  }
-  .info-box strong { color: #e8e8f0; display: block; margin-bottom: 4px; }
-
-  .warn-box {
-    background: #1a1104;
-    border-left: 3px solid #ffcc00;
-    padding: 12px 16px;
-    border-radius: 3px;
-    margin: 12px 0;
-    font-size: 13px;
-    color: #ffcc00;
-    line-height: 1.7;
-  }
-  .warn-box strong { display: block; margin-bottom: 4px; }
-
-  .rule-block {
-    background: #050508;
-    border: 1px solid #2a2a4a;
-    border-radius: 6px;
-    padding: 14px 16px;
-    margin: 10px 0;
-    font-size: 12px;
-    color: #c8c8e0;
-    line-height: 1.8;
-    white-space: pre-wrap;
-    font-family: 'Courier New', monospace;
-  }
-
-  .toc {
-    background: #0f0f1a;
-    border: 1px solid #1e1e3a;
-    border-radius: 6px;
-    padding: 16px 20px;
-    margin: 16px 0 28px;
-  }
-  .toc-title { color: #8888aa; font-size: 11px; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 10px; }
-  .toc a { display: block; color: #8888aa; font-size: 12px; padding: 3px 0; text-decoration: none; }
-  .toc a:hover { color: #00aaff; }
-  .toc a span { color: #444466; margin-right: 8px; }
-
-  .disclaimer {
-    margin-top: 36px;
-    font-size: 12px;
-    color: #444466;
-    border-top: 1px solid #1e1e3a;
-    padding-top: 14px;
-    line-height: 1.7;
-  }
-</style>
 </head>
 <body>
+<div class="scanlines"></div>
 
-<div style="background:#0f0f1a;border-bottom:1px solid #1e1e3a;padding:12px 24px;display:flex;align-items:center;justify-content:space-between;">
-  <span style="color:#ffffff;font-family:monospace;font-weight:bold;font-size:14px;">STOCK RESEARCH</span>
-  <div>
-    <a href="index.html" style="color:#8888aa;margin:0 12px;font-family:monospace;font-size:13px;">HOME</a>
-    <a href="rank.html" style="color:#8888aa;margin:0 12px;font-family:monospace;font-size:13px;">RANK</a>
-    <a href="archive.html" style="color:#8888aa;margin:0 12px;font-family:monospace;font-size:13px;">ARCHIVE</a>
-    <a href="guide.html" style="color:#ffffff;text-decoration:underline;text-decoration-color:#00aaff;margin:0 12px;font-family:monospace;font-size:13px;">GUIDE</a>
+<nav>
+  <div class="brand">
+    <div class="brand-pulse"></div>
+    <span>MRE // System</span>
+  </div>
+  <div class="nav-tabs">
+    <a href="index.html"   class="tab">Home</a>
+    <a href="rank.html"    class="tab">Rank</a>
+    <a href="news.html"    class="tab">News</a>
+    <a href="archive.html" class="tab">Archive</a>
+    <a href="guide.html"   class="tab on">Guide</a>
+  </div>
+</nav>
+
+<div class="pages">
+<div id="p-guide" class="page on">
+  <div class="pg-eyebrow">Documentation &middot; v2</div>
+  <div class="pg-title">Research <span class="hi">Guide</span></div>
+  <div class="pg-sub">How to read scores and act on signals</div>
+
+  <div class="guide-section stagger-1">
+    <div class="guide-head"><span>System</span> Architecture</div>
+    <div style="margin-bottom:14px">
+      <span class="sys-pill sp1">System 1 &middot; Research Engine</span>
+      <span class="sys-pill sp2">System 2 &middot; Earnings Quality</span>
+      <span class="sys-pill sp3">System 3 &middot; Sector Rotation</span>
+    </div>
+    <div class="guide-text">Three integrated systems analyze the market multiple times per trading day. System 1 aggregates news, momentum, and fundamentals into a composite confidence score. System 2 reads SEC filings to assess earnings trustworthiness. System 3 detects active sector rotation. All three feed the final candidate ranking.</div>
+  </div>
+
+  <div class="guide-section stagger-2">
+    <div class="guide-head">Confidence <span>Score Bands</span></div>
+    <div class="thresh" style="border-top:1px solid var(--rim)">
+      <div class="thresh-bar" style="background:var(--up)"></div>
+      <div class="thresh-label">Low Risk &middot; Research Now</div><div class="thresh-range">75 &ndash; 100</div>
+    </div>
+    <div class="thresh">
+      <div class="thresh-bar" style="background:var(--nt)"></div>
+      <div class="thresh-label">Moderate Risk &middot; Watch</div><div class="thresh-range">50 &ndash; 74</div>
+    </div>
+    <div class="thresh">
+      <div class="thresh-bar" style="background:var(--dn)"></div>
+      <div class="thresh-label">Weak &middot; Monitor only</div><div class="thresh-range">35 &ndash; 49</div>
+    </div>
+    <div class="thresh">
+      <div class="thresh-bar" style="background:var(--ghost)"></div>
+      <div class="thresh-label">Excluded &middot; Not shown</div><div class="thresh-range">&lt; 35</div>
+    </div>
+  </div>
+
+  <div class="guide-section stagger-3">
+    <div class="guide-head">Key <span>Terms</span></div>
+    <div class="guide-grid">
+      <div class="guide-card"><div class="guide-term">Composite Confidence</div><div class="guide-desc">Risk 35% + Opportunity 35% + Signal Agreement 20% + Sector Momentum 10%.</div></div>
+      <div class="guide-card"><div class="guide-term">Signal Agreement</div><div class="guide-desc">Multiplicative: momentum &times; sector &times; event &times; volume. All four must align.</div></div>
+      <div class="guide-card"><div class="guide-term">EQ Verdict</div><div class="guide-desc">Supportive / Neutral / Weak / Risky / Unavailable. Mapped from SEC filing analysis.</div></div>
+      <div class="guide-card"><div class="guide-term">Rotation Signal</div><div class="guide-desc">Support / Wait / Weaken. Backward-looking &mdash; confirms rotation in progress, not a prediction.</div></div>
+      <div class="guide-card"><div class="guide-term">EQ Alignment</div><div class="guide-desc">ALIGNED / PARTIAL / CONFLICT. How well EQ verdict agrees with the market signal.</div></div>
+      <div class="guide-card"><div class="guide-term">VIX Regime</div><div class="guide-desc">Low / Normal / Elevated / Crisis. Crisis reduces confidence in all signals.</div></div>
+      <div class="guide-card"><div class="guide-term">Unusual Volume</div><div class="guide-desc">Flagged at 2&times; the 30-day average. Adds weight to signal agreement score.</div></div>
+      <div class="guide-card"><div class="guide-term">OCF Filter</div><div class="guide-desc">Positive operating cash flow required. Negative OCF = excluded always.</div></div>
+      <div class="guide-card"><div class="guide-term">Rank Board</div><div class="guide-desc">Resets each Monday. Best confidence score for each ticker during the week is retained.</div></div>
+      <div class="guide-card"><div class="guide-term">Free-tier Delay</div><div class="guide-desc">yFinance data has up to 15-minute delays for price and up to 1-day delay for filing data.</div></div>
+      <div class="guide-card"><div class="guide-term">Breadth Label</div><div class="guide-desc">Derived from the ratio of advancing to declining issues. Weak breadth = broad market pressure.</div></div>
+    </div>
+  </div>
+
+  <div class="guide-section stagger-4">
+    <div class="guide-head">System <span>Limitations</span></div>
+    <div class="guide-text">Does not execute trades, recommend sizes, set stop-losses, provide targets, track positions, or access any brokerage. All outputs are research signals for human review only. Free-tier data has 15-minute delays. Always verify independently before making any investment decision.</div>
   </div>
 </div>
+</div><!-- /.pages -->
 
-<div class="wrap">
-  <h1>RESEARCH GUIDE</h1>
-  <p style="color:#555577;font-size:12px;margin-bottom:4px;">
-    How this system works, what every signal means, and how to use the AI prompt to make decisions.
-  </p>
-
-  <div class="toc">
-    <div class="toc-title">Contents</div>
-    <a href="#how-it-works"><span>01</span> How the system works</a>
-    <a href="#system1"><span>02</span> System 1 — Market Signal Analysis</a>
-    <a href="#system2"><span>03</span> System 2 — Earnings Quality Analysis</a>
-    <a href="#system3"><span>04</span> System 3 — Sector Rotation Analysis</a>
-    <a href="#combined"><span>05</span> Combined Reading</a>
-    <a href="#ai-prompt"><span>06</span> The AI Research Prompt</a>
-    <a href="#archive"><span>07</span> The Archive</a>
-    <a href="#limits"><span>08</span> What this system cannot do</a>
-  </div>
-
-
-  <!-- 01 -->
-  <h2 id="how-it-works">01 — How the System Works</h2>
-
-  <p>This is a zero-cost automated stock research engine. It runs four times per trading day — 9:45, 11:45, 13:45, and 16:00 ET — and can also be triggered manually for research on specific tickers. No paid APIs, no machine learning, no trading logic. It collects public data, scores it, and produces a ranked list of screening candidates for human decision-making.</p>
-
-  <p>The system has three analytical layers that run in sequence on every candidate:</p>
-
-  <div class="def-grid">
-    <div class="def-item">
-      <div class="def-term"><span class="blue">System 1</span> — Market Signal</div>
-      <div class="def-body">Scores momentum, trend quality, volume, risk, and financial health. Produces a confidence score and a verdict.</div>
-    </div>
-    <div class="def-item">
-      <div class="def-term"><span class="green">System 2</span> — Earnings Quality</div>
-      <div class="def-body">Pulls SEC EDGAR filings to measure whether earnings are cash-backed and sustainable across 7 financial modules.</div>
-    </div>
-    <div class="def-item">
-      <div class="def-term"><span class="yellow">System 3</span> — Sector Rotation</div>
-      <div class="def-body">Measures sector-level momentum and timing to determine whether capital flow supports or opposes entering now.</div>
-    </div>
-  </div>
-
-  <p>After all three systems score a candidate, a Combined Reading synthesises the three signals into an alignment verdict and a conclusion. The final output is a full report with an AI Research Prompt — a pre-built block you paste into any AI assistant for entry and exit analysis.</p>
-
-  <div class="info-box">
-    <strong>Who makes the final decision?</strong>
-    The system never tells you to buy or sell. It identifies candidates that pass screening thresholds and organises all relevant data so you can make an informed decision, assisted by the AI prompt layer.
-  </div>
-
-
-  <!-- 02 -->
-  <h2 id="system1">02 — System 1: Market Signal Analysis</h2>
-  <div class="sys-badge sys1">System 1</div>
-
-  <p>System 1 is the primary screening layer. It evaluates each candidate across momentum, trend stability, volume behaviour, financial health, and risk. The output is a confidence score (0–100) and a market verdict.</p>
-
-  <h3>Verdict Labels</h3>
-  <div class="verdict-row">
-    <span class="verdict-badge green">RESEARCH NOW</span>
-    <span class="signal-desc">Confidence ≥ 70 and risk ≤ 35. Strong multi-signal alignment. Highest priority for further research.</span>
-  </div>
-  <div class="verdict-row">
-    <span class="verdict-badge yellow">WATCH</span>
-    <span class="signal-desc">Confidence ≥ 55, or low risk with confidence ≥ 45. Partial signals. Worth monitoring for improvement.</span>
-  </div>
-  <div class="verdict-row">
-    <span class="verdict-badge muted">SKIP</span>
-    <span class="signal-desc">Signals too weak or conflicting. Not worth research time at this stage.</span>
-  </div>
-
-  <h3>Confidence Score</h3>
-  <p>A composite 0–100 metric. Not a probability of profit. Measures how many independent signals align and how strongly. Three sub-components:</p>
-  <div class="def-grid">
-    <div class="def-item">
-      <div class="def-term">Risk (0–100)</div>
-      <div class="def-body">Lower is safer. Composite of debt, volatility, liquidity, EPS stability, drawdown, and margin.</div>
-    </div>
-    <div class="def-item">
-      <div class="def-term">Opportunity (0–100)</div>
-      <div class="def-body">Higher is better. Measures trend strength, momentum, and relative opportunity vs. current market regime.</div>
-    </div>
-    <div class="def-item">
-      <div class="def-term">Signal Agreement (0–100)</div>
-      <div class="def-body">How many of the 20 analysis modules agree on direction. Multiplicative — one contradiction significantly reduces the score.</div>
-    </div>
-  </div>
-  <div class="def-grid">
-    <div class="def-item"><div class="def-term green">85–100</div><div class="def-body">Strong alignment. Highest priority.</div></div>
-    <div class="def-item"><div class="def-term green">70–84</div><div class="def-body">Most signals favorable. Verify before acting.</div></div>
-    <div class="def-item"><div class="def-term yellow">60–69</div><div class="def-body">Passes screening. Needs additional research.</div></div>
-    <div class="def-item"><div class="def-term muted">Below 60</div><div class="def-body">Weak signal. Approach with significant caution.</div></div>
-  </div>
-
-  <h3>Trend (1M / 3M / 6M)</h3>
-  <p>Price return over 1, 3, and 6 months. All three positive = confirmed momentum across timeframes.</p>
-  <div class="signal-row"><span class="signal-key green">▲ all three</span><span class="signal-desc">Sustained uptrend across all timeframes. Strongest trend signal.</span></div>
-  <div class="signal-row"><span class="signal-key yellow">▲ 1M only</span><span class="signal-desc">Recent move only. Could be news reaction — not a confirmed trend.</span></div>
-  <div class="signal-row"><span class="signal-key red">▼ all three</span><span class="signal-desc">Sustained downtrend. Risk of continued decline even with good fundamentals.</span></div>
-
-  <h3>Timing Quality</h3>
-  <p>Trend stage is classified from the 3-month return. This is critical — a stock in a late-stage trend is a worse entry than a weaker stock in an early-stage trend, even if all other signals look good.</p>
-  <div class="signal-row"><span class="signal-key green">EARLY TREND</span><span class="signal-desc">3M return &lt; 15%. Momentum building. Best entry window.</span></div>
-  <div class="signal-row"><span class="signal-key yellow">MID TREND</span><span class="signal-desc">3M return 15–30%. Trend established and intact. Acceptable entry.</span></div>
-  <div class="signal-row"><span class="signal-key red">LATE TREND</span><span class="signal-desc">3M return &gt; 30%. Elevated pullback risk. Requires strong justification from all other signals to enter.</span></div>
-
-  <h3>Volume</h3>
-  <div class="signal-row"><span class="signal-key green">Elevated bullish</span><span class="signal-desc">High volume on up days — institutional buying signal.</span></div>
-  <div class="signal-row"><span class="signal-key red">Elevated bearish</span><span class="signal-desc">High volume on down days — distribution or panic signal.</span></div>
-  <div class="signal-row"><span class="signal-key yellow">Unusually high</span><span class="signal-desc">Volume ≥ 2× average. Something is drawing attention — investigate why.</span></div>
-  <div class="signal-row"><span class="signal-key muted">Low activity</span><span class="signal-desc">Volume &lt; 0.8× average. Less conviction behind any price move.</span></div>
-
-  <h3>Financial Health</h3>
-  <div class="def-grid">
-    <div class="def-item">
-      <div class="def-term">Profit Margin</div>
-      <div class="def-body">Cents kept per $1 of revenue. Compare within the same sector only.</div>
-    </div>
-    <div class="def-item">
-      <div class="def-term">ROIC</div>
-      <div class="def-body">Return on Invested Capital. Above 15% = excellent. 8–15% = solid. Below 8% = weak business economics.</div>
-    </div>
-    <div class="def-item">
-      <div class="def-term">Debt-to-Equity</div>
-      <div class="def-body">Below 0.3 = very little debt. Above 1.5 = elevated. Above 2.5 = high leverage risk.</div>
-    </div>
-    <div class="def-item">
-      <div class="def-term">Operating Cash Flow</div>
-      <div class="def-body">Positive = business generates real cash. Negative = burning cash regardless of reported earnings.</div>
-    </div>
-    <div class="def-item">
-      <div class="def-term">Drawdown</div>
-      <div class="def-body">Distance from 90-day high. Above 20% flagged as warning — price has already fallen significantly.</div>
-    </div>
-  </div>
-
-  <h3>Risk Score</h3>
-  <p>Composite 0–100. Lower is safer. Combines debt, volatility (beta), liquidity, EPS stability, drawdown, and margin. Risk ≤ 40 = LOW RISK section. Above 40 = MODERATE RISK section.</p>
-
-
-  <!-- 03 -->
-  <h2 id="system2">03 — System 2: Earnings Quality Analysis</h2>
-  <div class="sys-badge sys2">System 2</div>
-
-  <p>System 2 pulls raw financial data directly from SEC EDGAR filings and measures whether a company's earnings are reliable, cash-backed, and sustainable. It does not use estimated or screened data — only filed quarterly reports. A minimum of 6 quarters is required to run.</p>
-
-  <h3>EQ Score</h3>
-  <p>A composite 0–100 score across 7 modules. Higher = more reliable earnings. Accompanied by a pass tier and a data reliability score reflecting how many SEC quarters were available.</p>
-
-  <h3>Pass Tier</h3>
-  <div class="verdict-row">
-    <span class="verdict-badge green">PASS — SUPPORTIVE</span>
-    <span class="signal-desc">Earnings are reliable and cash-backed. Fundamentals support the market signal.</span>
-  </div>
-  <div class="verdict-row">
-    <span class="verdict-badge yellow">WATCH — NEUTRAL</span>
-    <span class="signal-desc">Earnings are acceptable but have concerns. Not a blocker, but worth monitoring.</span>
-  </div>
-  <div class="verdict-row">
-    <span class="verdict-badge red">FAIL — WEAK</span>
-    <span class="signal-desc">Earnings are unreliable. Reduces conviction significantly regardless of market signal.</span>
-  </div>
-  <div class="verdict-row">
-    <span class="verdict-badge red">FATAL FLAW — RISKY</span>
-    <span class="signal-desc">Critical structural problem detected. Overrides all other tiers. Avoid.</span>
-  </div>
-  <div class="verdict-row">
-    <span class="verdict-badge muted">UNAVAILABLE</span>
-    <span class="signal-desc">No SEC data found. Treat as unvalidated — do not assume positive or negative.</span>
-  </div>
-
-  <h3>The 7 Modules</h3>
-  <div class="def-grid">
-    <div class="def-item">
-      <div class="def-term">Accruals</div>
-      <div class="def-body">Gap between reported earnings and actual cash flow. Large positive accruals = earnings may not represent real cash.</div>
-    </div>
-    <div class="def-item">
-      <div class="def-term">Cash Conversion</div>
-      <div class="def-body">How consistently earnings convert to operating cash. Low conversion = earnings quality concern.</div>
-    </div>
-    <div class="def-item">
-      <div class="def-term">Revenue Quality</div>
-      <div class="def-body">Revenue growth consistency and relationship to receivables. Receivables growing faster than revenue = warning.</div>
-    </div>
-    <div class="def-item">
-      <div class="def-term">FCF Sustainability</div>
-      <div class="def-body">Free cash flow vs. capex and investment phase. Measures whether cash generation is sustainable.</div>
-    </div>
-    <div class="def-item">
-      <div class="def-term">Earnings Consistency</div>
-      <div class="def-body">EPS stability across quarters. High variance = unreliable earnings base for valuation.</div>
-    </div>
-    <div class="def-item">
-      <div class="def-term">Long-Term Trends</div>
-      <div class="def-body">Multi-year momentum in operating cash flow, margins, and capex. Detects structural improvement or deterioration.</div>
-    </div>
-    <div class="def-item">
-      <div class="def-term">Dividend Stability</div>
-      <div class="def-body">For dividend-paying stocks: consistency and coverage ratio. A dividend cut triggers the RISKY fatal flaw override.</div>
-    </div>
-  </div>
-
-  <div class="info-box">
-    <strong>Why UNAVAILABLE is common</strong>
-    EDGAR requires matching ticker to CIK, then finding correct XBRL tags across multiple filing types. Some tickers have incomplete filings, non-standard tags, or insufficient quarterly history. When data is unavailable, System 2 is skipped entirely — it does not penalise the candidate, but it also cannot validate it.
-  </div>
-
-
-  <!-- 04 -->
-  <h2 id="system3">04 — System 3: Sector Rotation Analysis</h2>
-  <div class="sys-badge sys3">System 3</div>
-
-  <p>System 3 measures whether a candidate's sector is currently receiving capital inflows or outflows. A strong stock in a deteriorating sector faces a headwind. A strong stock in an accelerating sector has a tailwind. Timing matters as much as stock quality.</p>
-
-  <h3>Rotation Score</h3>
-  <p>A 0–100 score for the candidate's sector ETF. Built from three sub-signals: momentum (price trend of the ETF), relative strength (sector vs. broader market), and volume (capital flow intensity into the sector).</p>
-
-  <h3>Timing Signal</h3>
-  <div class="signal-row"><span class="signal-key green">SUPPORT</span><span class="signal-desc">Sector flow supports acting now. Capital is rotating in. Timing is favorable.</span></div>
-  <div class="signal-row"><span class="signal-key yellow">WAIT</span><span class="signal-desc">Neutral timing. Not yet attracting strong inflows. A better entry may come.</span></div>
-  <div class="signal-row"><span class="signal-key red">WEAKEN</span><span class="signal-desc">Sector flow is deteriorating. Capital is rotating out. Timing risk is elevated.</span></div>
-  <div class="signal-row"><span class="signal-key muted">UNKNOWN</span><span class="signal-desc">Insufficient data to determine sector timing.</span></div>
-
-  <h3>Commodity Relationship</h3>
-  <p>For commodity-sensitive sectors (energy, materials), the system also tracks 5-day commodity price moves. If the sector is rising while the underlying commodity (crude oil, natural gas) is falling, this is a negative divergence — sector strength may not be sustainable. This is shown in the market narrative block and flagged in the AI prompt.</p>
-
-
-  <!-- 05 -->
-  <h2 id="combined">05 — Combined Reading</h2>
-  <div class="sys-badge sys4">Synthesis Layer</div>
-
-  <p>After all three systems score a candidate, the Combined Reading synthesises them into a single alignment verdict and a deterministic conclusion sentence.</p>
-
-  <h3>Alignment</h3>
-  <div class="signal-row"><span class="signal-key green">ALIGNED</span><span class="signal-desc">All three systems agree. Highest conviction setup.</span></div>
-  <div class="signal-row"><span class="signal-key yellow">PARTIAL</span><span class="signal-desc">Mixed signals — two systems agree, one does not. Proceed with caution.</span></div>
-  <div class="signal-row"><span class="signal-key red">CONFLICT</span><span class="signal-desc">Systems disagree. The conflict must be understood before any action.</span></div>
-
-  <h3>Earnings Contribution to Combined Reading</h3>
-  <div class="signal-row"><span class="signal-key green">SUPPORTIVE</span><span class="signal-desc">EQ PASS — earnings validate the market signal.</span></div>
-  <div class="signal-row"><span class="signal-key yellow">NEUTRAL</span><span class="signal-desc">EQ WATCH — earnings are acceptable, not a blocker.</span></div>
-  <div class="signal-row"><span class="signal-key red">WEAK</span><span class="signal-desc">EQ FAIL — earnings undermine the market signal.</span></div>
-  <div class="signal-row"><span class="signal-key red">RISKY</span><span class="signal-desc">EQ fatal flaw — overrides everything. Avoid.</span></div>
-  <div class="signal-row"><span class="signal-key muted">UNAVAILABLE</span><span class="signal-desc">No SEC data. Cannot validate — treat as unconfirmed.</span></div>
-
-  <h3>Decision Priority Order</h3>
-  <p>When signals conflict, the system and the AI prompt follow this hierarchy:</p>
-  <div class="rule-block">1. Timing quality (trend stage)    — highest priority
-2. Market verdict (System 1)        — primary directional signal
-3. Sector rotation (System 3)       — confirms or weakens timing
-4. Earnings quality (System 2)      — validates or blocks conviction</div>
-
-  <div class="info-box">
-    <strong>Why timing outranks everything</strong>
-    A stock can have perfect earnings and strong sector rotation but still be a poor entry if the trend is already extended. LATE TREND (3M &gt; 30%) cannot result in a BUY NOW recommendation regardless of other signals. The maximum allowed entry when timing is late is WAIT.
-  </div>
-
-
-  <!-- 06 -->
-  <h2 id="ai-prompt">06 — The AI Research Prompt</h2>
-  <div class="sys-badge sys4">AI Layer</div>
-
-  <p>Every run generates an AI Research Prompt — a structured block of text containing all automated research data for every candidate in that run. You copy it and paste it into any AI assistant (Claude, ChatGPT, Gemini) to get entry analysis, exit logic, risk assessment, and a final verdict. No additional instructions are needed — the prompt is self-contained.</p>
-
-  <p>This is the last 5% of the process. The system handles data collection, scoring, and structuring. The AI assistant handles interpretation and plain-English reasoning. You make the final call.</p>
-
-  <h3>How to Access It</h3>
-  <p>Open any run entry on the Archive page. Click the blue <strong style="color:#00aaff;">⊙ Copy Prompt</strong> button to copy the full prompt to clipboard. Or click <strong style="color:#00aaff;">↗ View Full Report</strong> to open the complete report page — it includes all candidate cards and the same copy button at the bottom.</p>
-
-  <h3>What the Prompt Contains</h3>
-  <div class="def-grid">
-    <div class="def-item">
-      <div class="def-term">Rules block</div>
-      <div class="def-body">Timing rules, decision hierarchy, BUY NOW gate, conflict definitions, confidence scale — pre-loaded so the AI reasons consistently every time.</div>
-    </div>
-    <div class="def-item">
-      <div class="def-term">System vocabulary</div>
-      <div class="def-body">All signal labels and their exact meanings so the AI interprets RESEARCH NOW, SUPPORT, ALIGNED, LATE TREND etc. correctly.</div>
-    </div>
-    <div class="def-item">
-      <div class="def-term">Global context</div>
-      <div class="def-body">Date, slot, market regime, breadth, index values (Dow, S&amp;P 500, Nasdaq), and 5-day commodity moves.</div>
-    </div>
-    <div class="def-item">
-      <div class="def-term">Per-candidate data</div>
-      <div class="def-body">Price, confidence, trend (1M/3M/6M), volume, EQ score and tier, rotation score and signal, combined reading, strengths, and warnings.</div>
-    </div>
-  </div>
-
-  <h3>What the AI Produces Per Candidate</h3>
-  <div class="signal-row"><span class="signal-key blue">1. Quick Decision</span><span class="signal-desc">BUY NOW / WAIT / AVOID, timing quality classification, confidence in timing (2 sentences).</span></div>
-  <div class="signal-row"><span class="signal-key blue">2. Why (Plain English)</span><span class="signal-desc">Trend condition, sector confirmation or contradiction, signal conflicts — no jargon.</span></div>
-  <div class="signal-row"><span class="signal-key blue">3. Entry Logic</span><span class="signal-desc">Ideal scenario, bad scenario, what to wait for.</span></div>
-  <div class="signal-row"><span class="signal-key blue">4. Exit Logic</span><span class="signal-desc">Take profit condition, cut loss condition — both in plain English.</span></div>
-  <div class="signal-row"><span class="signal-key blue">5. Top Risks</span><span class="signal-desc">2–3 biggest risks specific to this candidate's data — no generic risks.</span></div>
-  <div class="signal-row"><span class="signal-key blue">6. Verdict</span><span class="signal-desc">Worth researching further / Watch closely / Avoid for now.</span></div>
-  <div class="signal-row"><span class="signal-key blue">7. Entry Urgency</span><span class="signal-desc">Immediate / Near-term / Wait for confirmation, with a specific condition.</span></div>
-  <p style="margin-top:12px;">After all candidates, the AI adds a cross-candidate summary: best entry opportunity, worst timing, and overall market read.</p>
-
-  <h3>Hard Rules Enforced in the Prompt</h3>
-  <div class="rule-block">BUY NOW is only allowed if ALL of the following are true:
-  - Timing = EARLY TREND or MID TREND
-  - Market verdict = RESEARCH NOW
-  - Rotation = SUPPORT
-  - No major signal conflicts
-
-LATE TREND override requires ALL of:
-  - Market verdict = RESEARCH NOW
-  - Rotation = SUPPORT with score 80+
-  - No major contradictions
-  Even then, maximum entry is WAIT — never BUY NOW.
-
-UNAVAILABLE earnings = reduced conviction.
-  BUY NOW blocked unless all other signals are strong
-  and timing is EARLY or MID TREND.
-
-Major conflict = any of:
-  - Market verdict SKIP vs Rotation SUPPORT
-  - Commodity trend contradicts sector direction
-  - Earnings FAIL or RISKY with strong price trend</div>
-
-
-  <!-- 07 -->
-  <h2 id="archive">07 — The Archive</h2>
-
-  <p>The Archive page stores every run the system has produced, organised by week. Each week is a collapsible section. Each run shows the timestamp, slot, candidate count, verdict counts (RESEARCH NOW / WATCH / SKIP), and market regime.</p>
-
-  <p>Expanding a run shows the candidate table with ticker, sector, confidence, and all three system verdicts, followed by the AI prompt copy button and a link to the full report.</p>
-
-  <h3>Run Types</h3>
-  <div class="signal-row">
-    <span class="signal-key blue">SCHEDULED</span>
-    <span class="signal-desc">Automatic run at one of the four daily slots.</span>
-  </div>
-  <div class="signal-row">
-    <span class="signal-key purple">MANUAL RUN</span>
-    <span class="signal-desc">User-triggered run on specific tickers for research. Tagged with a purple badge. Useful for investigating stocks outside the normal pipeline.</span>
-  </div>
-
-  <h3>Retention</h3>
-  <p>Up to 10 runs per week, 12 weeks of history. Full report files in <code style="color:#00aaff;font-size:11px;">docs/reports/</code> are pruned after 90 days by the weekly cleanup script every Sunday at 23:00 UTC.</p>
-
-
-  <!-- 08 -->
-  <h2 id="limits">08 — What This System Cannot Do</h2>
-
-  <div class="warn-box">
-    <strong>Free-tier data ceiling</strong>
-    Free-tier APIs provide delayed, sampled, or limited-depth data. This system cannot access real-time tick data, institutional order flow, insider filings, earnings call transcripts, Level 2 order books, or premium fundamental databases. All values are best-effort approximations that may be stale by minutes to hours.
-  </div>
-
-  <div class="warn-box">
-    <strong>No predictions</strong>
-    This system cannot predict whether a stock will go up or down. It identifies candidates that pass quantitative thresholds and organises available data for human review. Past signals do not indicate future performance.
-  </div>
-
-  <div class="warn-box">
-    <strong>EDGAR coverage gaps</strong>
-    System 2 requires a minimum of 6 quarters of filed XBRL data from SEC EDGAR. Many tickers — especially smaller companies, recent IPOs, or foreign-listed stocks — will show UNAVAILABLE. This is a data availability issue, not a signal about the company's quality.
-  </div>
-
-  <div class="warn-box">
-    <strong>Sector rotation history depth</strong>
-    System 3 accuracy improves with more historical runs. Early in the system's life, sector momentum history may have only 1–2 data points, limiting rotation speed calculations. Signals become more reliable as the system accumulates weeks of data.
-  </div>
-
-  <div class="disclaimer">
-    Not investment advice. Free-tier data only. No trades are executed by this system. Always verify findings through independent sources before making any financial decision.
-  </div>
-</div>
+<footer><span>MRE</span> &middot; Free-tier data only &middot; Not investment advice &middot; Always verify before acting</footer>
 </body>
 </html>

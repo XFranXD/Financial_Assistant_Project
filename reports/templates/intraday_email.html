@@ -7,9 +7,9 @@
   <title>{{ subject }}</title>
   <style>
     body {
-      background: #0a0a0f;
-      color: #e8e8f0;
-      font-family: 'Courier New', Courier, monospace;
+      background: #0a0610;
+      color: #f0eaff;
+      font-family: 'Share Tech Mono', 'Courier New', monospace;
       font-size: 14px;
       line-height: 1.6;
       margin: 0;
@@ -23,8 +23,8 @@
     }
 
     .header {
-      background: #0f0f1a;
-      border: 1px solid #1e1e3a;
+      background: #130f22;
+      border: 1px solid #2c224e;
       border-radius: 6px;
       padding: 12px 16px;
       margin-bottom: 12px
@@ -33,19 +33,19 @@
     .header h1 {
       margin: 0;
       font-size: 16px;
-      color: #00aaff;
+      color: #00e5ff;
       font-weight: bold
     }
 
     .header .sub {
-      color: #8888aa;
+      color: #8878b8;
       font-size: 12px;
       margin-top: 4px
     }
 
     .pulse {
-      background: #141428;
-      border: 1px solid #1e1e3a;
+      background: #1a1430;
+      border: 1px solid #2c224e;
       border-radius: 6px;
       padding: 12px 16px;
       margin-bottom: 12px
@@ -54,26 +54,26 @@
     .pulse h2 {
       margin: 0 0 8px;
       font-size: 12px;
-      color: #8888aa;
+      color: #8878b8;
       text-transform: uppercase;
       letter-spacing: .05em
     }
 
     .pulse-line {
-      font-family: 'Courier New', Courier, monospace;
+      font-family: 'Share Tech Mono', 'Courier New', monospace;
       white-space: pre;
       padding: 2px 0;
-      color: #e8e8f0
+      color: #f0eaff
     }
 
     .story {
-      background: #0f0f1a;
-      border: 1px solid #1e1e3a;
+      background: #130f22;
+      border: 1px solid #2c224e;
       border-radius: 6px;
       padding: 12px 16px;
       margin-bottom: 12px;
       font-size: 13px;
-      color: #8888aa
+      color: #8878b8
     }
 
     .story p {
@@ -86,43 +86,43 @@
       text-transform: uppercase;
       letter-spacing: .08em;
       padding: 6px 0 4px;
-      border-bottom: 1px solid #1e1e3a;
+      border-bottom: 1px solid #2c224e;
       margin-bottom: 8px
     }
 
     .section-low .section-label {
-      color: #00ff88
+      color: #39e8a0
     }
 
     .section-mod .section-label {
-      color: #ffcc00
+      color: #ff9a3c
     }
 
     .card {
-      border: 1px solid #1e1e3a;
+      border: 1px solid #2c224e;
       border-radius: 6px;
       margin-bottom: 10px;
-      background: #0f0f1a;
+      background: #130f22;
       overflow: hidden
     }
 
     .card-name {
       font-weight: bold;
-      color: #00aaff;
+      color: #00e5ff;
       padding: 10px 12px 8px;
-      border-bottom: 1px solid #1e1e3a;
+      border-bottom: 1px solid #2c224e;
       font-size: 14px
     }
 
     .card-name .tk {
-      color: #8888aa;
+      color: #8878b8;
       font-size: 12px
     }
 
     /* ── Three-section layout ─────────────────────────────── */
     .analysis-section {
       padding: 8px 12px;
-      border-bottom: 1px solid #1e1e3a;
+      border-bottom: 1px solid #2c224e;
       font-size: 13px
     }
 
@@ -137,11 +137,11 @@
       letter-spacing: .1em;
       margin-bottom: 6px;
       padding-bottom: 3px;
-      border-bottom: 1px solid #1e1e3a
+      border-bottom: 1px solid #2c224e
     }
 
     .sec-market .section-label-inner {
-      color: #00aaff
+      color: #00e5ff
     }
 
     .sec-eq .section-label-inner {
@@ -149,7 +149,7 @@
     }
 
     .sec-combined .section-label-inner {
-      color: #ffcc00
+      color: #ff9a3c
     }
 
     .line {
@@ -158,115 +158,115 @@
     }
 
     .lbl {
-      color: #8888aa
+      color: #8878b8
     }
 
     /* Market verdict */
     .mv-now {
-      color: #00ff88;
+      color: #39e8a0;
       font-weight: bold
     }
 
     .mv-watch {
-      color: #ffcc00;
+      color: #ff9a3c;
       font-weight: bold
     }
 
     .mv-skip {
-      color: #8888aa;
+      color: #8878b8;
       font-weight: bold
     }
 
     /* EQ verdict controlled vocabulary */
     .eq-v-supportive {
-      color: #00ff88;
+      color: #39e8a0;
       font-weight: bold
     }
 
     .eq-v-weak {
-      color: #ffcc00;
+      color: #ff9a3c;
       font-weight: bold
     }
 
     .eq-v-risky {
-      color: #ff3355;
+      color: #ff4d6d;
       font-weight: bold
     }
 
     .eq-v-unavailable {
-      color: #8888aa;
+      color: #8878b8;
       font-weight: bold
     }
 
     /* Combined reading */
     .combined-text {
-      color: #e8e8f0;
+      color: #f0eaff;
       font-size: 12px;
       line-height: 1.6
     }
 
     .eq-strength {
-      color: #00ff88;
+      color: #39e8a0;
       font-size: 12px;
       margin: 1px 0
     }
 
     .eq-risk {
-      color: #ff3355;
+      color: #ff4d6d;
       font-size: 12px;
       margin: 1px 0
     }
 
     .warn {
       background: #1a1104;
-      border-left: 3px solid #ffcc00;
+      border-left: 3px solid #ff9a3c;
       padding: 5px 8px;
       margin-top: 5px;
       font-size: 12px;
-      color: #ffcc00;
+      color: #ff9a3c;
       border-radius: 3px
     }
 
     .note {
-      background: #141428;
-      border-left: 3px solid #00aaff;
+      background: #1a1430;
+      border-left: 3px solid #00e5ff;
       padding: 5px 8px;
       margin-top: 5px;
       font-size: 12px;
-      color: #8888aa;
+      color: #8878b8;
       border-radius: 3px
     }
 
     .conf-strong {
-      color: #00ff88;
+      color: #39e8a0;
       font-weight: bold
     }
 
     .conf-mod {
-      color: #ffcc00;
+      color: #ff9a3c;
       font-weight: bold
     }
 
     .conf-weak {
-      color: #8888aa;
+      color: #8878b8;
       font-weight: bold
     }
 
     .overflow {
-      background: #0f0f1a;
-      border: 1px solid #1e1e3a;
+      background: #130f22;
+      border: 1px solid #2c224e;
       border-radius: 6px;
       padding: 10px 16px;
       margin-top: 8px;
       font-size: 13px;
-      color: #8888aa
+      color: #8878b8
     }
 
     .disclaimer {
       margin-top: 16px;
       font-size: 11px;
-      color: #444466;
-      border-top: 1px solid #1e1e3a;
+      color: #4a3d72;
+      border-top: 1px solid #2c224e;
       padding-top: 8px
     }
   </style>
@@ -336,12 +336,12 @@
       {% if c.eq_warnings_display %}
       <div style="margin-top:2px">
         {% for w in c.eq_warnings_display %}
-        <div class="eq-risk" style="color:#ffcc00">[w] {{ w }}</div>
+        <div class="eq-risk" style="color:#ff9a3c">[w] {{ w }}</div>
         {% endfor %}
       </div>
       {% endif %}
       {% else %}
-      <div class="line" style="color:#8888aa">EQ Score: UNAVAILABLE · Pass tier: UNAVAILABLE</div>
+      <div class="line" style="color:#8878b8">EQ Score: UNAVAILABLE · Pass tier: UNAVAILABLE</div>
       {% endif %}
 
     </div>
@@ -370,7 +370,7 @@
         </span>
       </div>
       {% else %}
-      <div class="line" style="color:#8888aa">Rotation: UNAVAILABLE</div>
+      <div class="line" style="color:#8878b8">Rotation: UNAVAILABLE</div>
       {% endif %}
     </div>
 
@@ -419,7 +419,7 @@
       <p>{{ s }}</p>
       {% endfor %}
       {% if commodity_summary %}
-      <p style="color:#8888aa;font-style:italic">{{ commodity_summary }}</p>
+      <p style="color:#8878b8;font-style:italic">{{ commodity_summary }}</p>
       {% endif %}
     </div>
 
@@ -452,11 +452,11 @@
     {% endif %}
 
     <!-- Dashboard link notice -->
-    <div style="font-family:monospace;font-size:12px;color:#555577;
-                text-align:center;padding:16px 0 8px;border-top:1px solid #1e1e3a;
+    <div style="font-family:monospace;font-size:12px;color:#4a3d72;
+                text-align:center;padding:16px 0 8px;border-top:1px solid #2c224e;
                 margin-top:20px;">
       Full report + AI research prompt:
-      <a href="{{ dashboard_url }}" style="color:#00aaff;text-decoration:none;">
+      <a href="{{ dashboard_url }}" style="color:#00e5ff;text-decoration:none;">
         {{ dashboard_url }}
       </a>
     </div>

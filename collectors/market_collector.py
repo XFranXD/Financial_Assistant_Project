@@ -75,3 +75,35 @@ def format_index_for_email(snapshot: dict) -> str:
         lines.append(f'{display}: {val:>10}  {arrow} {sign}{chg:.1f}%  {d["label"]}')
 
     return '\n'.join(lines)
+
+
+def get_index_history() -> dict:
+    """
+    Fetch ~30 trading days of daily close prices for DJI, S&P 500, Nasdaq.
+
+    Returns
+    -------
+    dict with keys 'dow', 'sp500', 'nasdaq', each a list[float] of closing
+    prices ordered oldest → newest. On failure for any index, value is [].
+    Never raises — failures are logged as warnings.
+    """
+    indices = {
+        'dow':    '^DJI',
+        'sp500':  '^GSPC',
+        'nasdaq': '^IXIC',
+    }
+    result = {}
+    for name, ticker in indices.items():
+        try:
+            data = yf.Ticker(ticker).history(period='35d')
+            if data is None or len(data) < 2:
+                log.warning(f'get_index_history {name}: insufficient data')
+                result[name] = []
+                continue
+            closes = [round(float(v), 2) for v in data['Close'].dropna().tolist()]
+            result[name] = closes[-30:] if len(closes) >= 30 else closes
+            log.info(f'get_index_history {name}: {len(result[name])} points')
+        except Exception as e:
+            log.warning(f'get_index_history {name}: {e}')
+            result[name] = []
+    return result

@@ -1,0 +1,1719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MRE // Market Research Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --void:    #0a0610;
+  --l1:      #130f22;
+  --l2:      #1a1430;
+  --l3:      #221a3e;
+  --l4:      #2c224e;
+
+  --pu:      #9b59ff;
+  --pu-lt:   #c084ff;
+  --pu-dk:   #5e2ba8;
+  --pu-bg:   rgba(155,89,255,0.09);
+  --pu-glow: rgba(155,89,255,0.30);
+
+  --mg:      #ff6eb4;
+  --mg-bg:   rgba(255,110,180,0.09);
+  --sun:     #ff9a3c;
+  --cyan:    #00e5ff;
+
+  --up:      #39e8a0;
+  --up-bg:   rgba(57,232,160,0.09);
+  --dn:      #ff4d6d;
+  --dn-bg:   rgba(255,77,109,0.09);
+  --nt:      #ff9a3c;
+
+  --snow:    #f0eaff;
+  --slate:   #8878b8;
+  --mist:    #4a3d72;
+  --ghost:   #2a2248;
+
+  --rim:     rgba(155,89,255,0.12);
+  --rim2:    rgba(155,89,255,0.25);
+  --rim3:    rgba(155,89,255,0.45);
+
+  --ff-head: 'Orbitron', sans-serif;
+  --ff-mono: 'Share Tech Mono', monospace;
+
+  --apple:    cubic-bezier(0.16, 1, 0.3, 1);
+  --soft-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease:     cubic-bezier(0.4, 0, 0.2, 1);
+  --spring:   cubic-bezier(0.34, 1.56, 0.64, 1);
+  --genie:    cubic-bezier(0.55, 0, 1, 0.45);
+}
+
+
+
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--void);
+  color: var(--snow);
+  font-family: var(--ff-mono);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 280px;
+  background: linear-gradient(to top, rgba(255,110,180,0.07) 0%, rgba(155,89,255,0.05) 40%, transparent 100%);
+  pointer-events: none; z-index: 0;
+  animation: gradient-drift 12s ease infinite alternate;
+}
+body::after {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 200px;
+  background: linear-gradient(to bottom, rgba(155,89,255,0.06) 0%, transparent 100%);
+  pointer-events: none; z-index: 0;
+}
+@keyframes gradient-drift {
+  0%   { transform: translateX(-3%) translateY(0); opacity: 0.8; }
+  100% { transform: translateX(3%) translateY(-8px); opacity: 1; }
+}
+
+.scanlines {
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.07) 2px, rgba(0,0,0,0.07) 4px);
+  pointer-events: none; z-index: 998;
+}
+
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: var(--void); }
+::-webkit-scrollbar-thumb { background: var(--pu-dk); }
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 200;
+  background: rgba(10,6,16,0.90);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--rim);
+  padding: 0 28px; height: 58px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+nav::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--pu), var(--mg), var(--sun), transparent);
+  opacity: 0.7;
+}
+.brand {
+  font-family: var(--ff-head);
+  font-size: 13px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--snow);
+  display: flex; align-items: center; gap: 12px;
+}
+
+.brand-pulse {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--pu-lt);
+  box-shadow: 0 0 8px var(--pu-glow);
+  position: relative;
+}
+.brand-pulse::before, .brand-pulse::after {
+  content: '';
+  position: absolute; inset: 0; border-radius: 50%;
+  background: var(--pu-lt);
+  animation: radar-ring-slow 3s var(--soft-out) infinite;
+}
+.brand-pulse::after { animation-delay: 1.5s; }
+@keyframes radar-ring-slow {
+  0%   { transform: scale(1); opacity: 0; }
+  5%   { opacity: 0; }
+  60%  { opacity: 0; }
+  65%  { transform: scale(1); opacity: 0.55; }
+  100% { transform: scale(3.4); opacity: 0; }
+}
+
+.nav-tabs { display: flex; gap: 2px; }
+.tab {
+  font-family: var(--ff-mono);
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--mist); background: none; border: none;
+  padding: 7px 16px; cursor: pointer; outline: none;
+  position: relative;
+  transition: color 0.28s var(--ease);
+}
+.tab::after {
+  content: '';
+  position: absolute; bottom: -1px; left: 50%; right: 50%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--pu), var(--mg));
+  transition: left 0.36s var(--apple), right 0.36s var(--apple);
+}
+.tab:hover { color: var(--slate); }
+.tab.on { color: var(--pu-lt); text-shadow: 0 0 12px rgba(192,132,255,0.5); }
+.tab.on::after { left: 0; right: 0; }
+
+/* ── PAGES ── */
+.pages { position: relative; z-index: 1; }
+.page { display: none; max-width: 1080px; margin: 0 auto; padding: 44px 28px 100px; }
+.page.on { display: block; animation: page-in 0.5s var(--apple) both; }
+@keyframes page-in {
+  0%   { opacity: 0; transform: scale(0.98) translateY(6px); filter: blur(3px); }
+  50%  { filter: blur(0); }
+  100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+}
+
+/* ── PAGE HEADER ── */
+.pg-eyebrow {
+  font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase;
+  color: var(--pu); margin-bottom: 8px;
+}
+.pg-eyebrow::before { content: '// '; }
+.pg-title {
+  font-family: var(--ff-head);
+  font-size: 28px; font-weight: 900;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--snow); line-height: 1.1; margin-bottom: 6px;
+}
+.pg-title .hi {
+  color: transparent;
+  background: linear-gradient(90deg, var(--pu-lt), var(--mg));
+  -webkit-background-clip: text; background-clip: text;
+}
+.pg-sub {
+  font-size: 11px; color: var(--mist); margin-bottom: 36px;
+  letter-spacing: 0.06em;
+}
+.pg-sub::before { content: '> '; }
+
+/* ── SECTION LABEL ── */
+.sl {
+  font-size: 9px; letter-spacing: 0.24em; text-transform: uppercase;
+  color: var(--pu); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 10px;
+}
+.sl::before { content: '▸'; }
+.sl::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--rim2), transparent); }
+
+/* ── STATUS STRIP ── */
+.status-strip {
+  background: var(--l1);
+  border: 1px solid var(--rim);
+  padding: 10px 20px;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  font-family: var(--ff-mono);
+  font-size: 12px;
+  overflow: hidden;
+  position: relative;
+}
+.status-strip::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, var(--pu), var(--mg));
+}
+.ss-label { color: var(--mist); font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; margin-right: 8px; }
+.ss-val { font-size: 12px; margin-right: 28px; }
+.ss-val.up  { color: var(--up); }
+.ss-val.dn  { color: var(--dn); }
+.ss-val.nt  { color: var(--nt); }
+.ss-divider { color: var(--mist); margin-right: 28px; font-size: 10px; }
+
+/* ── INDEX TASKBAR ── */
+.idx-section { margin-bottom: 28px; }
+.idx-taskbar {
+  display: flex;
+  gap: 8px;
+}
+.idx-pill {
+  flex: 1;
+  background: var(--l1);
+  border: 1px solid var(--rim);
+  padding: 14px 18px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  transition:
+    border-color 0.38s var(--apple),
+    background 0.38s var(--apple),
+    box-shadow 0.38s var(--apple);
+  user-select: none;
+}
+
+.idx-pill::before {
+  content: '';
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 2px;
+  background: linear-gradient(90deg, var(--pu), var(--mg));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.42s var(--spring);
+}
+
+.idx-pill.active {
+  border-color: var(--rim3);
+  background: var(--l2);
+  box-shadow:
+    0 0 0 1px rgba(155,89,255,0.08),
+    0 0 24px rgba(155,89,255,0.12),
+    inset 0 0 20px rgba(155,89,255,0.04);
+}
+.idx-pill.active::before { transform: scaleX(1); }
+
+.idx-pill:hover:not(.active) {
+  border-color: var(--rim2);
+  box-shadow: 0 4px 16px rgba(155,89,255,0.08);
+}
+
+.pill-left { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.pill-label { font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mist); }
+.pill-val {
+  font-family: var(--ff-head);
+  font-size: 18px; font-weight: 700;
+  color: var(--snow); letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.pill-change { font-size: 10px; letter-spacing: 0.06em; }
+.pill-change.up { color: var(--up); }
+.pill-change.dn { color: var(--dn); }
+.pill-change.nt { color: var(--nt); }
+.pill-chevron {
+  font-size: 10px; color: var(--mist);
+  transition: transform 0.42s var(--spring), color 0.28s var(--ease);
+  flex-shrink: 0;
+}
+.idx-pill.active .pill-chevron { transform: rotate(180deg); color: var(--pu-lt); }
+
+/* ══════════════════════════════════════════════════════════
+   GENIE EXPAND PANEL
+   ══════════════════════════════════════════════════════════ */
+.idx-expand {
+  overflow: hidden;
+  height: 0;
+  opacity: 0;
+  margin-top: 0;
+  clip-path: polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%);
+  will-change: height, opacity, clip-path, transform;
+  transform-origin: top center;
+}
+
+.idx-slide-viewport {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.idx-slide-track {
+  position: relative;
+  width: 100%;
+}
+
+.idx-panel {
+  background: var(--l2);
+  border: 1px solid var(--rim2);
+  padding: 16px 20px 14px;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+.idx-panel::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--pu), var(--mg), transparent);
+  opacity: 0.5;
+}
+
+.idx-panel-header,
+.idx-panel .idx-chart-wrap {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+.idx-expand.content-visible .idx-panel-header {
+  opacity: 1; transform: translateY(0);
+  transition: opacity 0.28s ease, transform 0.36s cubic-bezier(0.34,1.56,0.64,1);
+}
+.idx-expand.content-visible .idx-panel .idx-chart-wrap {
+  opacity: 1; transform: translateY(0);
+  transition: opacity 0.28s ease 0.06s, transform 0.36s cubic-bezier(0.34,1.56,0.64,1) 0.06s;
+}
+.idx-expand.slide-reveal .idx-panel-header {
+  opacity: 1; transform: translateY(0);
+  transition: opacity 0.30s ease, transform 0.38s cubic-bezier(0.34,1.56,0.64,1);
+}
+.idx-expand.slide-reveal .idx-panel .idx-chart-wrap {
+  opacity: 1; transform: translateY(0);
+  transition: opacity 0.30s ease 0.32s, transform 0.38s cubic-bezier(0.34,1.56,0.64,1) 0.32s;
+}
+.idx-expand.sliding .idx-panel-header,
+.idx-expand.sliding .idx-panel .idx-chart-wrap {
+  opacity: 1; transform: translateY(0); transition: none;
+}
+
+.idx-panel-header {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 10px;
+}
+.idx-expand-name {
+  font-family: var(--ff-head);
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--pu-lt);
+}
+.idx-expand-stats { display: flex; gap: 20px; font-size: 10px; color: var(--mist); }
+.idx-expand-stats span { display: flex; gap: 5px; align-items: center; }
+.idx-expand-stats .val { color: var(--snow); }
+.idx-chart-wrap { height: 96px; }
+
+/* ── RANK PREVIEW ── */
+.rank-preview {
+  background: var(--l1);
+  border: 1px solid var(--rim);
+  margin-bottom: 28px;
+  overflow: hidden;
+}
+.rank-preview-head {
+  padding: 11px 18px;
+  border-bottom: 1px solid var(--rim);
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--l2);
+}
+.rank-preview-title { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--pu); }
+.rp-link {
+  font-size: 9px; color: var(--mg);
+  background: none; border: none; cursor: pointer;
+  letter-spacing: 0.08em; text-decoration: none;
+  transition: opacity 0.2s;
+}
+.rp-link:hover { opacity: 0.7; }
+.rp-cols {
+  display: grid;
+  grid-template-columns: 32px 72px 1fr 80px 70px 80px 80px;
+  gap: 8px; padding: 7px 18px;
+  background: rgba(155,89,255,0.04);
+  border-bottom: 1px solid var(--rim);
+}
+.rp-col-h { font-size: 8px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mist); }
+.rp-row {
+  display: grid;
+  grid-template-columns: 32px 72px 1fr 80px 70px 80px 80px;
+  gap: 8px; padding: 10px 18px;
+  border-bottom: 1px solid var(--rim);
+  cursor: pointer; align-items: center;
+  transition: background 0.28s var(--apple);
+}
+.rp-row:last-of-type { border-bottom: none; }
+.rp-row:hover { background: var(--l2); }
+.rp-n   { font-size: 10px; color: var(--mist); }
+.rp-tick { font-family: var(--ff-head); font-size: 11px; font-weight: 700; color: var(--snow); letter-spacing: 0.06em; }
+.rp-sect { font-size: 10px; color: var(--mist); }
+.rp-conf { font-size: 13px; font-weight: 500; }
+.rp-conf.up { color: var(--up); }
+.rp-conf.nt { color: var(--nt); }
+.rp-conf.dn { color: var(--dn); }
+.ntag {
+  font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 2px 7px; border: 1px solid; display: inline-block;
+}
+.ntag.up  { color: var(--up);    border-color: rgba(57,232,160,.3);  }
+.ntag.nt  { color: var(--nt);    border-color: rgba(255,154,60,.3);  }
+.ntag.dn  { color: var(--dn);    border-color: rgba(255,77,109,.3);  }
+.ntag.pu  { color: var(--pu-lt); border-color: rgba(192,132,255,.3); }
+.rp-exp {
+  display: none;
+  border-bottom: 1px solid var(--rim);
+  background: var(--l2);
+  overflow: hidden;
+}
+.rp-exp.open {
+  display: block;
+  animation: prv-snap 0.30s cubic-bezier(0,1,0.4,1) both;
+}
+@keyframes prv-snap {
+  0%   { opacity: 0; transform: scaleY(0.7) translateY(-4px); }
+  60%  { opacity: 1; }
+  100% { opacity: 1; transform: scaleY(1) translateY(0); }
+}
+.rp-exp-inner {
+  padding: 10px 18px 12px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+@keyframes pex-spark {
+  0%   { opacity: 0; transform: translateY(4px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.pex-item { display: flex; flex-direction: column; gap: 3px; }
+.pex-k { font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mist); }
+.pex-v { font-size: 11px; color: var(--snow); }
+.pex-v.up { color: var(--up); }
+.pex-v.dn { color: var(--dn); }
+.pex-v.nt { color: var(--nt); }
+
+/* ── RECENT REPORTS ── */
+.rcard {
+  background: var(--l1);
+  border: 1px solid var(--rim);
+  margin-bottom: 8px; cursor: pointer;
+  position: relative; overflow: hidden;
+  transition: border-color 0.28s var(--ease);
+}
+.rcard::before {
+  content: '';
+  position: absolute; top: 0; left: 0;
+  width: 2px; height: 100%;
+  background: linear-gradient(180deg, var(--pu), var(--mg));
+  opacity: 0;
+  transition: opacity 0.4s var(--apple);
+}
+.rcard:hover { border-color: var(--rim2); }
+.rcard.open  { border-color: var(--rim2); }
+.rcard.open::before { opacity: 1; }
+.rcard-head {
+  padding: 13px 18px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.rcard-date { font-family: var(--ff-head); font-size: 11px; font-weight: 600; color: var(--snow); letter-spacing: 0.04em; margin-bottom: 3px; }
+.rcard-slot { font-size: 10px; color: var(--mist); letter-spacing: 0.06em; }
+.rcard-badge { font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; padding: 3px 9px; border: 1px solid; }
+.rcard-badge.up { color: var(--up); border-color: rgba(57,232,160,.3); }
+.rcard-badge.dn { color: var(--dn); border-color: rgba(255,77,109,.3); }
+.rcard-badge.nt { color: var(--nt); border-color: rgba(255,154,60,.3); }
+.rcard-body { max-height: 0; overflow: hidden; opacity: 0; transition: max-height 0.52s var(--apple), opacity 0.32s var(--soft-out) 0.06s; }
+.rcard.open .rcard-body { max-height: 400px; opacity: 1; }
+.rcard-inner { padding: 14px 18px; border-top: 1px solid var(--rim); }
+.rcard.open .rcard-inner { animation: content-drop 0.38s var(--apple) both 0.1s; }
+@keyframes content-drop {
+  0%   { opacity: 0; transform: translateY(-5px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.rcard-cols { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 14px; }
+.rcc-k { font-size: 8px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--pu); margin-bottom: 5px; }
+.rcc-v { font-size: 11px; color: var(--snow); line-height: 1.65; }
+.rcard-btns { display: flex; gap: 8px; }
+.btn {
+  font-family: var(--ff-mono); font-size: 10px;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 7px 16px; border: 1px solid var(--rim2);
+  background: transparent; color: var(--pu-lt);
+  cursor: pointer; text-decoration: none;
+  transition: background 0.28s var(--apple), border-color 0.28s var(--apple), box-shadow 0.28s var(--apple), transform 0.28s var(--apple);
+  outline: none; display: inline-block;
+}
+.btn:hover { background: var(--pu-bg); border-color: var(--rim3); box-shadow: 0 0 14px var(--pu-glow); transform: translateY(-1px); }
+.btn:active { transform: scale(0.97) translateY(0); }
+.btn.mg { color: var(--mg); border-color: rgba(255,110,180,.3); }
+.btn.mg:hover { background: var(--mg-bg); border-color: rgba(255,110,180,.5); box-shadow: 0 0 12px rgba(255,110,180,.25); }
+
+/* ── SIGNAL HEADLINES ── */
+.npc-group { margin-top: 4px; }
+.npc-group:hover .npc:not(:hover) { opacity: 0.5; }
+.npc {
+  background: var(--l1); border: 1px solid var(--rim);
+  padding: 12px 16px; margin-bottom: 6px;
+  display: flex; gap: 12px; align-items: flex-start;
+  transition: border-color 0.3s var(--apple), transform 0.3s var(--apple), opacity 0.3s var(--apple);
+}
+.npc:hover { border-color: var(--rim2); transform: translateX(5px); opacity: 1 !important; }
+.npc-stripe { width: 3px; border-radius: 2px; flex-shrink: 0; align-self: stretch; min-height: 36px; }
+.npc-title { font-size: 12px; font-weight: 500; color: var(--snow); line-height: 1.35; margin-bottom: 4px; }
+.npc-meta  { font-size: 9px; color: var(--mist); letter-spacing: 0.06em; }
+
+/* ── RANK PAGE ── */
+.rank-wrap { border: 1px solid var(--rim); background: var(--l1); overflow: hidden; }
+.rank-head {
+  display: grid;
+  grid-template-columns: 36px 76px 1fr 84px 72px 60px 90px 90px;
+  gap: 8px; padding: 9px 16px;
+  background: var(--l2); border-bottom: 1px solid var(--rim);
+}
+.rth { font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--mist); }
+.rank-row {
+  display: grid;
+  grid-template-columns: 36px 76px 1fr 84px 72px 60px 90px 90px;
+  gap: 8px; padding: 12px 16px;
+  border-bottom: 1px solid var(--rim);
+  cursor: pointer; align-items: center;
+  transition: background 0.28s var(--apple);
+}
+.rank-row:last-of-type { border-bottom: none; }
+.rank-row:hover { background: var(--l2); }
+.td-n  { font-size: 10px; color: var(--mist); }
+.td-t  { font-family: var(--ff-head); font-size: 12px; font-weight: 700; color: var(--snow); letter-spacing: 0.06em; }
+.td-s  { font-size: 10px; color: var(--mist); }
+.td-p  { font-size: 11px; color: var(--slate); font-family: var(--ff-mono); }
+.td-c  { font-size: 13px; font-weight: 500; }
+.td-c.up { color: var(--up); }
+.td-c.nt { color: var(--nt); }
+.td-c.dn { color: var(--dn); }
+.td-r  { font-size: 11px; color: var(--mist); }
+.exp-row { display: none; border-bottom: 1px solid var(--rim); background: var(--l2); overflow: hidden; }
+.exp-row.open { display: block; animation: snap-expand 0.32s cubic-bezier(0,1,0.4,1) both; }
+@keyframes snap-expand {
+  0%   { transform: scaleY(0); transform-origin: top; opacity: 0; filter: brightness(2); }
+  40%  { filter: brightness(1.3); opacity: 1; }
+  100% { transform: scaleY(1); transform-origin: top; opacity: 1; filter: brightness(1); }
+}
+.exp-row.open .est { animation: tile-spark 0.25s ease both; }
+.exp-row.open .est:nth-child(1) { animation-delay: 0.05s; }
+.exp-row.open .est:nth-child(2) { animation-delay: 0.10s; }
+.exp-row.open .est:nth-child(3) { animation-delay: 0.15s; }
+.exp-row.open .est:nth-child(4) { animation-delay: 0.20s; }
+.exp-row.open .est:nth-child(5) { animation-delay: 0.25s; }
+.exp-row.open .est:nth-child(6) { animation-delay: 0.30s; }
+@keyframes tile-spark {
+  0%   { opacity: 0; transform: translateY(6px) scale(0.96); filter: brightness(2); }
+  50%  { opacity: 1; filter: brightness(1.2); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: brightness(1); }
+}
+.exp-inner { padding: 18px 16px; display: grid; grid-template-columns: 1fr 240px; gap: 16px; }
+.exp-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+.est { background: var(--l3); border: 1px solid var(--rim); padding: 10px 12px; }
+.est-k { font-size: 8px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mist); margin-bottom: 5px; }
+.est-v { font-size: 14px; font-weight: 500; color: var(--snow); }
+.est-v.up { color: var(--up); }
+.est-v.nt { color: var(--nt); }
+.est-v.dn { color: var(--dn); }
+.exp-chart { background: var(--l3); border: 1px solid var(--rim); padding: 12px; height: 116px; }
+
+/* ── NEWS PAGE ── */
+.news-section { margin-bottom: 36px; }
+.news-sec-head { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+.nsh-stripe { width: 4px; height: 26px; border-radius: 2px; flex-shrink: 0; }
+.nsh-name { font-family: var(--ff-head); font-size: 15px; font-weight: 700; color: var(--snow); letter-spacing: 0.06em; text-transform: uppercase; }
+.nsh-count { font-size: 10px; color: var(--mist); }
+.news-card-full {
+  background: var(--l1); border: 1px solid var(--rim);
+  padding: 16px; margin-bottom: 8px;
+  transition: border-color 0.3s var(--apple), transform 0.3s var(--apple);
+}
+.news-card-full:hover { border-color: var(--rim2); transform: translateX(4px); }
+.ncf-title { font-size: 14px; font-weight: 500; color: var(--snow); line-height: 1.4; margin-bottom: 7px; }
+.ncf-summary { font-size: 11px; color: var(--slate); line-height: 1.75; margin-bottom: 10px; }
+.ncf-foot { display: flex; justify-content: space-between; align-items: center; }
+.ncf-source { font-size: 9px; color: var(--mist); letter-spacing: 0.08em; }
+.ncf-link { font-size: 9px; color: var(--mg); text-decoration: none; letter-spacing: 0.08em; }
+.ncf-link:hover { text-decoration: underline; }
+
+/* ── ARCHIVE PAGE ── */
+.week-block { margin-bottom: 30px; }
+.week-head {
+  font-family: var(--ff-head);
+  font-size: 13px; font-weight: 700; color: var(--snow);
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding-bottom: 9px; border-bottom: 1px solid var(--rim2); margin-bottom: 10px;
+  display: flex; justify-content: space-between; align-items: baseline;
+}
+.week-count { font-family: var(--ff-mono); font-size: 10px; color: var(--mist); }
+
+/* ── GUIDE PAGE ── */
+.guide-section { margin-bottom: 36px; }
+.guide-head {
+  font-family: var(--ff-head);
+  font-size: 16px; font-weight: 700; color: var(--snow);
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding-bottom: 9px; border-bottom: 1px solid var(--rim2); margin-bottom: 16px;
+}
+.guide-head span { color: transparent; background: linear-gradient(90deg, var(--pu-lt), var(--mg)); -webkit-background-clip: text; background-clip: text; }
+.guide-text { font-size: 11px; color: var(--slate); line-height: 1.9; margin-bottom: 14px; letter-spacing: 0.03em; }
+.guide-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px,1fr)); gap: 8px; margin-bottom: 14px; }
+.guide-card {
+  background: var(--l1); border: 1px solid var(--rim);
+  padding: 13px 15px; position: relative; overflow: hidden;
+  transition: border-color 0.28s var(--ease), transform 0.3s var(--apple), box-shadow 0.3s var(--apple);
+}
+.guide-card::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, var(--pu), var(--mg));
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.38s var(--apple);
+}
+.guide-card:hover { border-color: var(--rim2); transform: translateY(-2px); box-shadow: 0 6px 24px rgba(155,89,255,0.1); }
+.guide-card:hover::after { transform: scaleX(1); }
+.guide-term { font-family: var(--ff-head); font-size: 10px; font-weight: 700; color: var(--pu-lt); letter-spacing: 0.06em; margin-bottom: 5px; text-transform: uppercase; }
+.guide-desc { font-size: 11px; color: var(--mist); line-height: 1.65; }
+.thresh {
+  display: flex; align-items: center; gap: 14px;
+  padding: 10px 16px; background: var(--l1);
+  border: 1px solid var(--rim); border-top: none;
+  transition: background 0.22s var(--ease);
+}
+.thresh:first-child { border-top: 1px solid var(--rim); }
+.thresh:hover { background: var(--l2); }
+.thresh-bar { height: 2px; width: 44px; border-radius: 1px; flex-shrink: 0; }
+.thresh-label { font-size: 12px; color: var(--snow); flex: 1; }
+.thresh-range { font-size: 10px; color: var(--mist); }
+.sys-pill {
+  display: inline-block; font-family: var(--ff-mono);
+  font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+  padding: 3px 10px; border: 1px solid;
+  margin-right: 8px; margin-bottom: 10px;
+  transition: transform 0.28s var(--apple), box-shadow 0.28s var(--apple);
+}
+.sys-pill:hover { transform: translateY(-2px); }
+.sp1 { color: var(--cyan);  border-color: rgba(0,229,255,.3);   }
+.sp1:hover { box-shadow: 0 0 12px rgba(0,229,255,.2); }
+.sp2 { color: var(--up);    border-color: rgba(57,232,160,.3);  }
+.sp2:hover { box-shadow: 0 0 12px rgba(57,232,160,.2); }
+.sp3 { color: var(--nt);    border-color: rgba(255,154,60,.3);  }
+.sp3:hover { box-shadow: 0 0 12px rgba(255,154,60,.2); }
+
+/* ── FOOTER ── */
+footer {
+  text-align: center; padding: 22px;
+  font-size: 9px; letter-spacing: 0.16em;
+  color: var(--ghost); border-top: 1px solid var(--rim);
+  position: relative; z-index: 1;
+}
+footer span { color: var(--pu); }
+
+/* ── STAGGER ── */
+.page.on .stagger-1 { animation: stagger-up 0.52s var(--apple) both 0.05s; }
+.page.on .stagger-2 { animation: stagger-up 0.52s var(--apple) both 0.12s; }
+.page.on .stagger-3 { animation: stagger-up 0.52s var(--apple) both 0.19s; }
+.page.on .stagger-4 { animation: stagger-up 0.52s var(--apple) both 0.26s; }
+.page.on .stagger-5 { animation: stagger-up 0.52s var(--apple) both 0.33s; }
+@keyframes stagger-up {
+  0%   { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 760px) {
+  nav { padding: 0 14px; }
+  .brand span { display: none; }
+  .page { padding: 28px 14px 80px; }
+  .rp-cols, .rp-row { grid-template-columns: 28px 60px 1fr 60px 64px; }
+  .rp-cols > *:nth-child(n+6), .rp-row > *:nth-child(n+6) { display: none; }
+  .rank-head, .rank-row { grid-template-columns: 30px 64px 1fr 60px 54px; }
+  .rth:nth-child(n+6), .rank-row > *:nth-child(n+6) { display: none; }
+  .exp-inner { grid-template-columns: 1fr; }
+  .rcard-cols { grid-template-columns: 1fr; }
+  .rp-exp-inner { grid-template-columns: repeat(2,1fr); }
+}
+</style>
+</head>
+<body>
+<div class="scanlines"></div>
+
+<nav>
+  <div class="brand">
+    <div class="brand-pulse"></div>
+    <span>MRE // System</span>
+  </div>
+  <div class="nav-tabs">
+    <button class="tab on"  onclick="go('home',this)">Home</button>
+    <button class="tab"     onclick="go('rank',this)">Rank</button>
+    <button class="tab"     onclick="go('news',this)">News</button>
+    <button class="tab"     onclick="go('archive',this)">Archive</button>
+    <button class="tab"     onclick="go('guide',this)">Guide</button>
+  </div>
+</nav>
+
+<div class="pages">
+
+<!-- ══════════════════════ HOME ══════════════════════ -->
+<div id="p-home" class="page on">
+  <div class="pg-eyebrow stagger-1">Dashboard · Active</div>
+  <div class="pg-title stagger-1">Market <span class="hi">Overview</span></div>
+  <div class="pg-sub stagger-1">Sample data · Last scan 14:30 ET · 4 candidates detected</div>
+
+  <div class="idx-section stagger-2">
+    <div class="sl">Market Indices · 30-day</div>
+    <div class="idx-taskbar">
+      <div class="idx-pill" id="pill-dow" onclick="toggleIdx('dow')">
+        <div class="pill-left">
+          <div class="pill-label">// Dow Jones</div>
+          <div class="pill-val">44,210</div>
+          <div class="pill-change up">▲ 0.82% RISING</div>
+        </div>
+        <div class="pill-chevron">▼</div>
+      </div>
+      <div class="idx-pill" id="pill-sp" onclick="toggleIdx('sp')">
+        <div class="pill-left">
+          <div class="pill-label">// S&amp;P 500</div>
+          <div class="pill-val">5,840</div>
+          <div class="pill-change dn">▼ 0.44% FALLING</div>
+        </div>
+        <div class="pill-chevron">▼</div>
+      </div>
+      <div class="idx-pill" id="pill-nq" onclick="toggleIdx('nq')">
+        <div class="pill-left">
+          <div class="pill-label">// Nasdaq</div>
+          <div class="pill-val">19,330</div>
+          <div class="pill-change nt">— 0.01% FLAT</div>
+        </div>
+        <div class="pill-chevron">▼</div>
+      </div>
+    </div>
+    <div class="idx-expand" id="idx-expand">
+      <div class="idx-slide-viewport" id="idx-slide-viewport">
+        <div class="idx-slide-track" id="idx-slide-track">
+          <div class="idx-panel" id="idx-panel-active">
+            <div class="idx-panel-header">
+              <div class="idx-expand-name" id="idx-expand-name">—</div>
+              <div class="idx-expand-stats">
+                <span>1M <span class="val" id="idx-stat-1m">—</span></span>
+                <span>3M <span class="val" id="idx-stat-3m">—</span></span>
+                <span>6M <span class="val" id="idx-stat-6m">—</span></span>
+              </div>
+            </div>
+            <div class="idx-chart-wrap">
+              <canvas id="idx-chart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="home-below" id="home-below">
+
+  <div class="status-strip stagger-3">
+    <span class="ss-label">Breadth</span>
+    <span class="ss-val dn">WEAK BREADTH — MOST STOCKS DECLINING</span>
+    <span class="ss-divider">·</span>
+    <span class="ss-label">Market</span>
+    <span class="ss-val nt">Elevated uncertainty</span>
+  </div>
+
+  <div class="stagger-4">
+    <div class="sl">This Week's Best <button class="rp-link" onclick="go('rank',document.querySelectorAll('.tab')[1])" style="margin-left:8px">Full board →</button></div>
+    <div class="rank-preview">
+      <div class="rank-preview-head">
+        <span class="rank-preview-title">Top 5 Candidates · Week Rank</span>
+        <button class="rp-link" onclick="go('rank',document.querySelectorAll('.tab')[1])">Full →</button>
+      </div>
+      <div class="rp-cols">
+        <span class="rp-col-h">#</span>
+        <span class="rp-col-h">Ticker</span>
+        <span class="rp-col-h">Sector</span>
+        <span class="rp-col-h">Conf</span>
+        <span class="rp-col-h">Risk</span>
+        <span class="rp-col-h">EQ</span>
+        <span class="rp-col-h">Rotation</span>
+      </div>
+      <div class="rp-row" onclick="rpT('rp1')">
+        <div class="rp-n">#1</div><div class="rp-tick">LOREMX</div><div class="rp-sect">Energy</div>
+        <div class="rp-conf up">78</div><div style="font-size:11px;color:var(--mist);">6</div>
+        <div><span class="ntag up">Supportive</span></div><div><span class="ntag up">Support</span></div>
+      </div>
+      <div class="rp-exp" id="rp1"><div class="rp-exp-inner">
+        <div class="pex-item"><div class="pex-k">1M Return</div><div class="pex-v up">▲11.2%</div></div>
+        <div class="pex-item"><div class="pex-k">3M Return</div><div class="pex-v up">▲18.4%</div></div>
+        <div class="pex-item"><div class="pex-k">6M Return</div><div class="pex-v up">▲24.1%</div></div>
+        <div class="pex-item"><div class="pex-k">Verdict</div><div class="pex-v up">RESEARCH NOW</div></div>
+      </div></div>
+      <div class="rp-row" onclick="rpT('rp2')">
+        <div class="rp-n">#2</div><div class="rp-tick">IPSUM</div><div class="rp-sect">Industrials</div>
+        <div class="rp-conf nt">71</div><div style="font-size:11px;color:var(--mist);">14</div>
+        <div><span class="ntag nt">Neutral</span></div><div><span class="ntag nt">Wait</span></div>
+      </div>
+      <div class="rp-exp" id="rp2"><div class="rp-exp-inner">
+        <div class="pex-item"><div class="pex-k">1M Return</div><div class="pex-v up">▲6.4%</div></div>
+        <div class="pex-item"><div class="pex-k">3M Return</div><div class="pex-v up">▲9.1%</div></div>
+        <div class="pex-item"><div class="pex-k">6M Return</div><div class="pex-v nt">▲1.2%</div></div>
+        <div class="pex-item"><div class="pex-k">Verdict</div><div class="pex-v nt">WATCH</div></div>
+      </div></div>
+      <div class="rp-row" onclick="rpT('rp3')">
+        <div class="rp-n">#3</div><div class="rp-tick">DOLRX</div><div class="rp-sect">Energy</div>
+        <div class="rp-conf nt">65</div><div style="font-size:11px;color:var(--mist);">18</div>
+        <div><span class="ntag nt">Neutral</span></div><div><span class="ntag up">Support</span></div>
+      </div>
+      <div class="rp-exp" id="rp3"><div class="rp-exp-inner">
+        <div class="pex-item"><div class="pex-k">1M Return</div><div class="pex-v dn">▼2.1%</div></div>
+        <div class="pex-item"><div class="pex-k">3M Return</div><div class="pex-v up">▲7.3%</div></div>
+        <div class="pex-item"><div class="pex-k">6M Return</div><div class="pex-v up">▲14.8%</div></div>
+        <div class="pex-item"><div class="pex-k">Verdict</div><div class="pex-v nt">WATCH</div></div>
+      </div></div>
+      <div class="rp-row" onclick="rpT('rp4')">
+        <div class="rp-n">#4</div><div class="rp-tick">AMETX</div><div class="rp-sect">Materials</div>
+        <div class="rp-conf nt">60</div><div style="font-size:11px;color:var(--mist);">22</div>
+        <div><span class="ntag dn">Weak</span></div><div><span class="ntag nt">Wait</span></div>
+      </div>
+      <div class="rp-exp" id="rp4"><div class="rp-exp-inner">
+        <div class="pex-item"><div class="pex-k">1M Return</div><div class="pex-v up">▲3.8%</div></div>
+        <div class="pex-item"><div class="pex-k">3M Return</div><div class="pex-v nt">▲0.9%</div></div>
+        <div class="pex-item"><div class="pex-k">6M Return</div><div class="pex-v dn">▼4.2%</div></div>
+        <div class="pex-item"><div class="pex-k">Verdict</div><div class="pex-v nt">WATCH</div></div>
+      </div></div>
+      <div class="rp-row" onclick="rpT('rp5')" style="border-bottom:none">
+        <div class="rp-n">#5</div><div class="rp-tick">SITEX</div><div class="rp-sect">Utilities</div>
+        <div class="rp-conf dn">54</div><div style="font-size:11px;color:var(--mist);">27</div>
+        <div><span class="ntag dn">Weak</span></div><div><span class="ntag dn">Weaken</span></div>
+      </div>
+      <div class="rp-exp" id="rp5" style="border-bottom:none"><div class="rp-exp-inner">
+        <div class="pex-item"><div class="pex-k">1M Return</div><div class="pex-v dn">▼5.3%</div></div>
+        <div class="pex-item"><div class="pex-k">3M Return</div><div class="pex-v dn">▼9.8%</div></div>
+        <div class="pex-item"><div class="pex-k">6M Return</div><div class="pex-v dn">▼14.1%</div></div>
+        <div class="pex-item"><div class="pex-k">Verdict</div><div class="pex-v dn">SKIP</div></div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="stagger-5">
+    <div class="sl" style="margin-top:28px">Recent Reports</div>
+    <div class="rcard open" onclick="rcT(this)">
+      <div class="rcard-head">
+        <div>
+          <div class="rcard-date">Today · Slot 13:45–15:15 · 4 stocks</div>
+          <div class="rcard-slot">14:30 ET · Sample data</div>
+        </div>
+        <span class="rcard-badge up">Strong Breadth</span>
+      </div>
+      <div class="rcard-body"><div class="rcard-inner">
+        <div class="rcard-cols">
+          <div><div class="rcc-k">Sys 1 · Research</div><div class="rcc-v">LOREMX · IPSUM · DOLRX<br><span style="color:var(--mist);font-size:10px">Top conf: 78/100</span></div></div>
+          <div><div class="rcc-k">Sys 2 · EQ</div><div class="rcc-v"><span style="color:var(--up)">LOREMX Supportive</span><br><span style="color:var(--mist);font-size:10px">IPSUM Neutral</span></div></div>
+          <div><div class="rcc-k">Sys 3 · Rotation</div><div class="rcc-v"><span style="color:var(--up)">Energy: Support</span><br><span style="color:var(--mist);font-size:10px">Industrials: Wait</span></div></div>
+        </div>
+        <div class="rcard-btns">
+          <a href="#" class="btn">↗ Full Report</a>
+          <a href="#" class="btn mg">⧉ AI Prompt</a>
+        </div>
+      </div></div>
+    </div>
+    <div class="rcard" onclick="rcT(this)">
+      <div class="rcard-head">
+        <div>
+          <div class="rcard-date">Yesterday · Closing · 16:00–17:20 · 3 stocks</div>
+          <div class="rcard-slot">16:51 ET · Sample data</div>
+        </div>
+        <span class="rcard-badge dn">Weak Breadth</span>
+      </div>
+      <div class="rcard-body"><div class="rcard-inner">
+        <div class="rcard-cols">
+          <div><div class="rcc-k">Sys 1</div><div class="rcc-v">LOREMX · IPSUM · DOLRX</div></div>
+          <div><div class="rcc-k">Sys 2 EQ</div><div class="rcc-v" style="color:var(--nt)">IPSUM Neutral</div></div>
+          <div><div class="rcc-k">Sys 3</div><div class="rcc-v" style="color:var(--dn)">Industrials: Weaken</div></div>
+        </div>
+        <div class="rcard-btns">
+          <a href="#" class="btn">↗ Full Report</a>
+          <a href="#" class="btn mg">⧉ AI Prompt</a>
+        </div>
+      </div></div>
+    </div>
+  </div>
+
+  <div class="stagger-5">
+    <div class="sl" style="margin-top:28px">Signal Headlines
+      <button class="rp-link" onclick="go('news',document.querySelectorAll('.tab')[2])" style="margin-left:8px">All →</button>
+    </div>
+    <div class="npc-group">
+      <div class="npc">
+        <div class="npc-stripe" style="background:linear-gradient(180deg,var(--up),transparent)"></div>
+        <div>
+          <div class="npc-title">Lorem ipsum sector rally as demand outpaces supply estimates</div>
+          <div class="npc-meta"><span class="ntag up">Energy · Bullish</span> Reuters · 09:14 ET</div>
+        </div>
+      </div>
+      <div class="npc">
+        <div class="npc-stripe" style="background:linear-gradient(180deg,var(--nt),transparent)"></div>
+        <div>
+          <div class="npc-title">Dolor sit amet production cut signals extended through Q3</div>
+          <div class="npc-meta"><span class="ntag nt">Industrials · Neutral</span> FT · 08:02 ET</div>
+        </div>
+      </div>
+      <div class="npc">
+        <div class="npc-stripe" style="background:linear-gradient(180deg,var(--pu-lt),transparent)"></div>
+        <div>
+          <div class="npc-title">Consectetur adipiscing momentum accelerates on export approval</div>
+          <div class="npc-meta"><span class="ntag pu">Materials · Signal</span> Finnhub · 10:31 ET</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- /.home-below -->
+</div>
+
+<!-- ══════════════════════ RANK ══════════════════════ -->
+<div id="p-rank" class="page">
+  <div class="pg-eyebrow">Rank Board · Active</div>
+  <div class="pg-title">Weekly <span class="hi">Rankings</span></div>
+  <div class="pg-sub">Sample week · Resets Monday · Click row to expand · returns + price chart</div>
+  <div class="rank-wrap">
+    <div class="rank-head">
+      <span class="rth">#</span><span class="rth">Ticker</span><span class="rth">Sector</span>
+      <span class="rth">Price</span><span class="rth">Conf</span><span class="rth">Risk</span>
+      <span class="rth">EQ</span><span class="rth">Rotation</span>
+    </div>
+    <div class="rank-row" onclick="expT('e1','ec1',gf(130,15))">
+      <div class="td-n">#1</div><div class="td-t">LOREMX</div><div class="td-s">Energy</div>
+      <div class="td-p">$142.30</div><div class="td-c up">78</div><div class="td-r">6</div>
+      <div><span class="ntag up" style="font-size:8px">Supportive</span></div>
+      <div><span class="ntag up" style="font-size:8px">Support</span></div>
+    </div>
+    <div class="exp-row" id="e1"><div class="exp-inner">
+      <div class="exp-stats">
+        <div class="est"><div class="est-k">1M Return</div><div class="est-v up">▲11.2%</div></div>
+        <div class="est"><div class="est-k">3M Return</div><div class="est-v up">▲18.4%</div></div>
+        <div class="est"><div class="est-k">6M Return</div><div class="est-v up">▲24.1%</div></div>
+        <div class="est"><div class="est-k">Opportunity</div><div class="est-v">80/100</div></div>
+        <div class="est"><div class="est-k">Signal Agree</div><div class="est-v">0.74</div></div>
+        <div class="est"><div class="est-k">Verdict</div><div class="est-v up">RESEARCH NOW</div></div>
+      </div>
+      <div class="exp-chart"><canvas id="ec1" height="92"></canvas></div>
+    </div></div>
+    <div class="rank-row" onclick="expT('e2','ec2',gf(80,8))">
+      <div class="td-n">#2</div><div class="td-t">IPSUM</div><div class="td-s">Industrials</div>
+      <div class="td-p">$88.50</div><div class="td-c nt">71</div><div class="td-r">14</div>
+      <div><span class="ntag nt" style="font-size:8px">Neutral</span></div>
+      <div><span class="ntag nt" style="font-size:8px">Wait</span></div>
+    </div>
+    <div class="exp-row" id="e2"><div class="exp-inner">
+      <div class="exp-stats">
+        <div class="est"><div class="est-k">1M Return</div><div class="est-v up">▲6.4%</div></div>
+        <div class="est"><div class="est-k">3M Return</div><div class="est-v up">▲9.1%</div></div>
+        <div class="est"><div class="est-k">6M Return</div><div class="est-v nt">▲1.2%</div></div>
+        <div class="est"><div class="est-k">Opportunity</div><div class="est-v">68/100</div></div>
+        <div class="est"><div class="est-k">Signal Agree</div><div class="est-v">0.58</div></div>
+        <div class="est"><div class="est-k">Verdict</div><div class="est-v nt">WATCH</div></div>
+      </div>
+      <div class="exp-chart"><canvas id="ec2" height="92"></canvas></div>
+    </div></div>
+    <div class="rank-row" onclick="expT('e3','ec3',gf(210,-10))">
+      <div class="td-n">#3</div><div class="td-t">DOLRX</div><div class="td-s">Energy</div>
+      <div class="td-p">$214.10</div><div class="td-c nt">65</div><div class="td-r">18</div>
+      <div><span class="ntag nt" style="font-size:8px">Neutral</span></div>
+      <div><span class="ntag up" style="font-size:8px">Support</span></div>
+    </div>
+    <div class="exp-row" id="e3"><div class="exp-inner">
+      <div class="exp-stats">
+        <div class="est"><div class="est-k">1M Return</div><div class="est-v dn">▼2.1%</div></div>
+        <div class="est"><div class="est-k">3M Return</div><div class="est-v up">▲7.3%</div></div>
+        <div class="est"><div class="est-k">6M Return</div><div class="est-v up">▲14.8%</div></div>
+        <div class="est"><div class="est-k">Opportunity</div><div class="est-v">63/100</div></div>
+        <div class="est"><div class="est-k">Signal Agree</div><div class="est-v">0.52</div></div>
+        <div class="est"><div class="est-k">Verdict</div><div class="est-v nt">WATCH</div></div>
+      </div>
+      <div class="exp-chart"><canvas id="ec3" height="92"></canvas></div>
+    </div></div>
+    <div class="rank-row" onclick="expT('e4','ec4',gf(52,4))">
+      <div class="td-n">#4</div><div class="td-t">AMETX</div><div class="td-s">Materials</div>
+      <div class="td-p">$56.70</div><div class="td-c nt">60</div><div class="td-r">22</div>
+      <div><span class="ntag dn" style="font-size:8px">Weak</span></div>
+      <div><span class="ntag nt" style="font-size:8px">Wait</span></div>
+    </div>
+    <div class="exp-row" id="e4"><div class="exp-inner">
+      <div class="exp-stats">
+        <div class="est"><div class="est-k">1M Return</div><div class="est-v up">▲3.8%</div></div>
+        <div class="est"><div class="est-k">3M Return</div><div class="est-v nt">▲0.9%</div></div>
+        <div class="est"><div class="est-k">6M Return</div><div class="est-v dn">▼4.2%</div></div>
+        <div class="est"><div class="est-k">Opportunity</div><div class="est-v">55/100</div></div>
+        <div class="est"><div class="est-k">Signal Agree</div><div class="est-v">0.44</div></div>
+        <div class="est"><div class="est-k">Verdict</div><div class="est-v nt">WATCH</div></div>
+      </div>
+      <div class="exp-chart"><canvas id="ec4" height="92"></canvas></div>
+    </div></div>
+    <div class="rank-row" onclick="expT('e5','ec5',gf(38,-8))" style="border-bottom:none">
+      <div class="td-n">#5</div><div class="td-t">SITEX</div><div class="td-s">Utilities</div>
+      <div class="td-p">$33.20</div><div class="td-c dn">54</div><div class="td-r">27</div>
+      <div><span class="ntag dn" style="font-size:8px">Weak</span></div>
+      <div><span class="ntag dn" style="font-size:8px">Weaken</span></div>
+    </div>
+    <div class="exp-row" id="e5"><div class="exp-inner">
+      <div class="exp-stats">
+        <div class="est"><div class="est-k">1M Return</div><div class="est-v dn">▼5.3%</div></div>
+        <div class="est"><div class="est-k">3M Return</div><div class="est-v dn">▼9.8%</div></div>
+        <div class="est"><div class="est-k">6M Return</div><div class="est-v dn">▼14.1%</div></div>
+        <div class="est"><div class="est-k">Opportunity</div><div class="est-v">42/100</div></div>
+        <div class="est"><div class="est-k">Signal Agree</div><div class="est-v">0.31</div></div>
+        <div class="est"><div class="est-k">Verdict</div><div class="est-v dn">SKIP</div></div>
+      </div>
+      <div class="exp-chart"><canvas id="ec5" height="92"></canvas></div>
+    </div></div>
+  </div>
+</div>
+
+<!-- ══════════════════════ NEWS ══════════════════════ -->
+<div id="p-news" class="page">
+  <div class="pg-eyebrow">Signal Feed · Live</div>
+  <div class="pg-title">Today's <span class="hi">News</span></div>
+  <div class="pg-sub">Engine-filtered headlines · Sample data</div>
+  <div class="news-section">
+    <div class="news-sec-head">
+      <div class="nsh-stripe" style="background:linear-gradient(180deg,var(--up),transparent)"></div>
+      <span class="nsh-name">Energy</span><span class="nsh-count">// 5 signals</span>
+    </div>
+    <div class="news-card-full">
+      <div class="ncf-title">Lorem ipsum sector rally as demand outpaces supply estimates for third consecutive quarter</div>
+      <div class="ncf-summary">Lorem ipsum dolor sit amet, consectetur adipiscing elit. This signal contributed to the Energy accumulator exceeding the threshold in the morning slot, triggering candidate evaluation for LOREMX and DOLRX.</div>
+      <div class="ncf-foot"><span class="ncf-source">Reuters · Today 09:14 ET</span><a href="#" class="ncf-link">Read more ↗</a></div>
+    </div>
+    <div class="news-card-full">
+      <div class="ncf-title">Dolor sit amet pipeline approval clears regulatory review, expansion begins Q3</div>
+      <div class="ncf-summary">Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Company-specific signal elevated DOLRX event score in the afternoon slot.</div>
+      <div class="ncf-foot"><span class="ncf-source">Finnhub · Today 10:31 ET</span><a href="#" class="ncf-link">Read more ↗</a></div>
+    </div>
+  </div>
+  <div class="news-section">
+    <div class="news-sec-head">
+      <div class="nsh-stripe" style="background:linear-gradient(180deg,var(--nt),transparent)"></div>
+      <span class="nsh-name">Industrials</span><span class="nsh-count">// 3 signals</span>
+    </div>
+    <div class="news-card-full">
+      <div class="ncf-title">Consectetur adipiscing production discipline confirmed through mid-year review period</div>
+      <div class="ncf-summary">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris. Signal reinforced the neutral Industrials rotation thesis for IPSUM.</div>
+      <div class="ncf-foot"><span class="ncf-source">Financial Times · Today 08:02 ET</span><a href="#" class="ncf-link">Read more ↗</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ ARCHIVE ══════════════════════ -->
+<div id="p-archive" class="page">
+  <div class="pg-eyebrow">History · Stored</div>
+  <div class="pg-title">Report <span class="hi">Archive</span></div>
+  <div class="pg-sub">12 weeks retained · 10 runs per week max · Sample data</div>
+  <div class="week-block">
+    <div class="week-head">2026 — Week 13 <span class="week-count">6 reports</span></div>
+    <div class="rcard open" onclick="rcT(this)">
+      <div class="rcard-head">
+        <div><div class="rcard-date">2026-03-27 · 16:51 ET · Closing · 3 stocks</div><div class="rcard-slot">Elevated uncertainty</div></div>
+        <span class="rcard-badge dn">Weak Breadth</span>
+      </div>
+      <div class="rcard-body"><div class="rcard-inner">
+        <div class="rcard-cols">
+          <div><div class="rcc-k">Sys 1</div><div class="rcc-v">LOREMX · IPSUM · DOLRX · Conf 78</div></div>
+          <div><div class="rcc-k">Sys 2 EQ</div><div class="rcc-v" style="color:var(--up)">LOREMX Supportive</div></div>
+          <div><div class="rcc-k">Rotation</div><div class="rcc-v" style="color:var(--nt)">Energy: Wait</div></div>
+        </div>
+        <div class="rcard-btns"><a href="#" class="btn">↗ Full Report</a><a href="#" class="btn mg">⧉ AI Prompt</a></div>
+      </div></div>
+    </div>
+    <div class="rcard" onclick="rcT(this)">
+      <div class="rcard-head">
+        <div><div class="rcard-date">2026-03-27 · 14:40 ET · Midday · 2 stocks</div><div class="rcard-slot">Normal conditions</div></div>
+        <span class="rcard-badge nt">Neutral Breadth</span>
+      </div>
+      <div class="rcard-body"><div class="rcard-inner">
+        <div class="rcard-cols">
+          <div><div class="rcc-k">Sys 1</div><div class="rcc-v">AMETX · SITEX · Conf 60</div></div>
+          <div><div class="rcc-k">Sys 2 EQ</div><div class="rcc-v" style="color:var(--mist)">—</div></div>
+          <div><div class="rcc-k">Rotation</div><div class="rcc-v" style="color:var(--mist)">—</div></div>
+        </div>
+        <div class="rcard-btns"><a href="#" class="btn">↗ Full Report</a><a href="#" class="btn mg">⧉ AI Prompt</a></div>
+      </div></div>
+    </div>
+  </div>
+  <div class="week-block">
+    <div class="week-head">2026 — Week 12 <span class="week-count">8 reports</span></div>
+    <div class="rcard" onclick="rcT(this)">
+      <div class="rcard-head">
+        <div><div class="rcard-date">2026-03-20 · 20:50 ET · Closing · 2 stocks</div><div class="rcard-slot">Strong conditions</div></div>
+        <span class="rcard-badge up">Strong Breadth</span>
+      </div>
+      <div class="rcard-body"><div class="rcard-inner">
+        <div class="rcard-cols">
+          <div><div class="rcc-k">Sys 1</div><div class="rcc-v">LOREMX · DOLRX · Conf 72</div></div>
+          <div><div class="rcc-k">Sys 2 EQ</div><div class="rcc-v" style="color:var(--up)">LOREMX Supportive</div></div>
+          <div><div class="rcc-k">Rotation</div><div class="rcc-v" style="color:var(--up)">Energy: Support</div></div>
+        </div>
+        <div class="rcard-btns"><a href="#" class="btn">↗ Full Report</a><a href="#" class="btn mg">⧉ AI Prompt</a></div>
+      </div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════ GUIDE ══════════════════════ -->
+<div id="p-guide" class="page">
+  <div class="pg-eyebrow">Documentation · v2</div>
+  <div class="pg-title">Research <span class="hi">Guide</span></div>
+  <div class="pg-sub">How to read scores and act on signals</div>
+  <div class="guide-section">
+    <div class="guide-head"><span>System</span> Architecture</div>
+    <div style="margin-bottom:14px">
+      <span class="sys-pill sp1">System 1 · Research Engine</span>
+      <span class="sys-pill sp2">System 2 · Earnings Quality</span>
+      <span class="sys-pill sp3">System 3 · Sector Rotation</span>
+    </div>
+    <div class="guide-text">Three integrated systems analyze the market four times per trading day. System 1 aggregates news, momentum, and fundamentals into a composite confidence score. System 2 reads SEC filings to assess earnings trustworthiness. System 3 detects active sector rotation. All three feed the final candidate ranking.</div>
+  </div>
+  <div class="guide-section">
+    <div class="guide-head">Confidence <span>Score Bands</span></div>
+    <div class="thresh" style="border-top:1px solid var(--rim)">
+      <div class="thresh-bar" style="background:var(--up)"></div>
+      <div class="thresh-label">Low Risk · Research Now</div><div class="thresh-range">75 – 100</div>
+    </div>
+    <div class="thresh">
+      <div class="thresh-bar" style="background:var(--nt)"></div>
+      <div class="thresh-label">Moderate Risk · Watch</div><div class="thresh-range">50 – 74</div>
+    </div>
+    <div class="thresh">
+      <div class="thresh-bar" style="background:var(--dn)"></div>
+      <div class="thresh-label">Weak · Monitor only</div><div class="thresh-range">35 – 49</div>
+    </div>
+    <div class="thresh">
+      <div class="thresh-bar" style="background:var(--ghost)"></div>
+      <div class="thresh-label">Excluded · Not shown</div><div class="thresh-range">&lt; 35</div>
+    </div>
+  </div>
+  <div class="guide-section">
+    <div class="guide-head">Key <span>Terms</span></div>
+    <div class="guide-grid">
+      <div class="guide-card"><div class="guide-term">Composite Confidence</div><div class="guide-desc">Risk 35% + Opportunity 35% + Signal Agreement 20% + Sector Momentum 10%.</div></div>
+      <div class="guide-card"><div class="guide-term">Signal Agreement</div><div class="guide-desc">Multiplicative: momentum × sector × event × volume. All four must align.</div></div>
+      <div class="guide-card"><div class="guide-term">EQ Verdict</div><div class="guide-desc">Supportive / Neutral / Weak / Risky / Unavailable. Mapped from SEC filing analysis.</div></div>
+      <div class="guide-card"><div class="guide-term">Rotation Signal</div><div class="guide-desc">Support / Wait / Weaken. Backward-looking — confirms rotation in progress, not a prediction.</div></div>
+      <div class="guide-card"><div class="guide-term">EQ Alignment</div><div class="guide-desc">ALIGNED / PARTIAL / CONFLICT. How well EQ verdict agrees with the market signal.</div></div>
+      <div class="guide-card"><div class="guide-term">VIX Regime</div><div class="guide-desc">Low / Normal / Elevated / Crisis. Crisis reduces confidence in all signals.</div></div>
+      <div class="guide-card"><div class="guide-term">Unusual Volume</div><div class="guide-desc">Flagged at 2× the 30-day average. Adds weight to signal agreement score.</div></div>
+      <div class="guide-card"><div class="guide-term">OCF Filter</div><div class="guide-desc">Positive operating cash flow required. Negative OCF = excluded always.</div></div>
+    </div>
+  </div>
+  <div class="guide-section">
+    <div class="guide-head">System <span>Limitations</span></div>
+    <div class="guide-text">Does not execute trades, recommend sizes, set stop-losses, provide targets, track positions, or access any brokerage. All outputs are research signals for human review only. Free-tier data has 15-minute delays. Always verify independently before making any investment decision.</div>
+  </div>
+</div>
+
+</div><!-- /.pages -->
+
+<footer>Template D v2.1 · <span>MRE // Market Research Engine</span> · Placeholder data only · Not connected to live system</footer>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   DISPLACED PUSH ENGINE  —  home-below smooth displacement
+
+   The #home-below element sits in normal flow beneath the index
+   expand panel. Rather than letting layout reflow snap it, we:
+
+   OPEN:
+     • Start with a fast initial push (ease-out-expo feel) then
+       smoothly decelerate to rest — implemented as a custom
+       deceleration curve derived from the panel's actual height
+       progress each rAF frame.
+
+   CLOSE:
+     • Mirror: fast start (matching the genie close's ease-in),
+       then glide to rest at translateY(0).
+
+   Technique: we read expandHeight (set by the genie rAF loop)
+   each frame and set translateY to match. This is fully
+   synchronised — no separate timer, no guessing durations.
+   The below div always moves *with* the panel.
+   ═══════════════════════════════════════════════════════════════════ */
+
+function go(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('on'));
+  document.getElementById('p-' + id).classList.add('on');
+  if (btn) btn.classList.add('on');
+}
+function rcT(el) { el.classList.toggle('open'); }
+
+/* ── rAF collapse: drives height→0 each frame in sync with visual ── */
+function rafCollapseRow(el, innerSel, duration, onDone) {
+  const fromH = el.offsetHeight;
+  if (fromH === 0) { el.style.display = 'none'; if (onDone) onDone(); return; }
+  const inner = el.querySelector(innerSel);
+  el.style.height   = fromH + 'px';
+  el.style.overflow = 'hidden';
+  const start = performance.now();
+  function frame(now) {
+    const raw  = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - raw, 3); // easeOutCubic
+    el.style.height = (fromH * (1 - ease)).toFixed(1) + 'px';
+    if (inner) {
+      inner.style.opacity         = (1 - Math.min(raw * 1.8, 1)).toFixed(3);
+      inner.style.transform       = `scaleY(${(1 - ease * 0.28).toFixed(4)}) translateY(${(-5 * ease).toFixed(2)}px)`;
+      inner.style.transformOrigin = 'top';
+    }
+    if (raw < 1) {
+      requestAnimationFrame(frame);
+    } else {
+      el.classList.remove('open');
+      el.style.display  = 'none';
+      el.style.height   = '';
+      el.style.overflow = '';
+      if (inner) { inner.style.opacity = ''; inner.style.transform = ''; inner.style.transformOrigin = ''; }
+      if (onDone) onDone();
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+function closeRpExp(el) {
+  if (!el.classList.contains('open')) return;
+  rafCollapseRow(el, '.rp-exp-inner', 260, null);
+}
+
+function closeRpExpInstant(el) {
+  if (!el.classList.contains('open')) return;
+  el.classList.remove('open');
+  el.style.display = 'none';
+  el.style.height  = '';
+  const inner = el.querySelector('.rp-exp-inner');
+  if (inner) { inner.style.opacity = ''; inner.style.transform = ''; inner.style.transformOrigin = ''; }
+}
+
+function rpT(id) {
+  const el  = document.getElementById(id);
+  const was = el.classList.contains('open');
+  document.querySelectorAll('.rp-exp').forEach(e => {
+    if (e !== el) closeRpExpInstant(e);
+  });
+  if (!was) {
+    el.style.display = '';
+    el.style.height  = '';
+    const inner = el.querySelector('.rp-exp-inner');
+    if (inner) { inner.style.opacity = ''; inner.style.transform = ''; }
+    el.classList.add('open');
+    el.querySelectorAll('.pex-item').forEach((item, i) => {
+      item.style.animation = 'none';
+      item.offsetHeight;
+      item.style.animation = `pex-spark 0.22s ease both ${0.04 + i * 0.06}s`;
+    });
+  } else {
+    closeRpExp(el);
+  }
+}
+
+/* ── Index data + pill order ── */
+const IDX_ORDER = ['dow', 'sp', 'nq'];
+const IDX_DATA  = {
+  dow: { name: 'Dow Jones', data: gf(43500,  710), stat1m: '+5.2%', stat3m: '+8.4%',  stat6m: '+11.1%', color: '#39e8a0' },
+  sp:  { name: 'S&P 500',  data: gf(5900,   -60), stat1m: '-1.1%', stat3m: '+3.2%',  stat6m: '+6.8%',  color: '#ff4d6d' },
+  nq:  { name: 'Nasdaq',   data: gf(19400,  -70), stat1m: '-0.8%', stat3m: '+2.1%',  stat6m: '+5.3%',  color: '#ff9a3c' },
+};
+let currentIdx        = null;
+let idxChart          = null;
+let isAnimating       = false;
+let pendingChartTimer = null;
+const DAYS = Array.from({ length: 30 }, (_, i) => {
+  const d = new Date(); d.setDate(d.getDate() - (29 - i));
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+});
+
+/* ── Easing ── */
+function easeSpring(t) {
+  if (t >= 1) return 1;
+  const c4 = (2 * Math.PI) / 2.8;
+  return Math.pow(2, -9 * t) * Math.sin((t * 10 - 0.75) * c4) + 1;
+}
+function easeInQuart(t)  { return t * t * t * t; }
+function easeOutExpo(t)  { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }
+function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+/* ── Genie clip-path generators ── */
+function genieClipOpen(t) {
+  const ease = easeOutExpo(t);
+  const x1   = 46 * (1 - ease);
+  const x2   = 54 + 46 * ease;
+  const tx1  = 3  * (1 - ease);
+  const tx2  = 97 + 3  * ease;
+  return `polygon(${tx1.toFixed(1)}% 0%, ${tx2.toFixed(1)}% 0%, ${x2.toFixed(1)}% 100%, ${x1.toFixed(1)}% 100%)`;
+}
+function genieClipClose(t) {
+  const tBot = Math.min(t * 1.6, 1);
+  const tTop = Math.max((t - 0.4) / 0.6, 0);
+  const bx1  = easeOutCubic(tBot) * 46;
+  const bx2  = 100 - easeOutCubic(tBot) * 46;
+  const tx1  = easeOutCubic(tTop) * 46;
+  const tx2  = 100 - easeOutCubic(tTop) * 46;
+  return `polygon(${tx1.toFixed(1)}% 0%, ${tx2.toFixed(1)}% 0%, ${bx2.toFixed(1)}% 100%, ${bx1.toFixed(1)}% 100%)`;
+}
+
+/* ── rAF state ── */
+let expandRAF    = null;
+let expandHeight = 0;
+
+function getFullHeight() {
+  const expand = document.getElementById('idx-expand');
+  const panel  = document.getElementById('idx-panel-active');
+  if (!panel) return 200;
+  const prevH = expand.style.height;
+  const prevC = expand.style.clipPath;
+  expand.style.height   = 'auto';
+  expand.style.clipPath = '';
+  const h = panel.offsetHeight + 8;
+  expand.style.height   = prevH;
+  expand.style.clipPath = prevC;
+  return h;
+}
+
+/* ── GENIE: height + clip-path animation ── */
+function animateGenie(fromH, toH, duration, onDone) {
+  if (expandRAF) { cancelAnimationFrame(expandRAF); expandRAF = null; }
+  const expand  = document.getElementById('idx-expand');
+  const start   = performance.now();
+  const opening = toH > fromH;
+
+  function frame(now) {
+    const raw    = Math.min((now - start) / duration, 1);
+    const tH     = opening ? easeOutExpo(raw) : easeOutCubic(raw);
+    const h      = fromH + (toH - fromH) * tH;
+    expandHeight = h;
+
+    const clip   = opening ? genieClipOpen(raw) : genieClipClose(raw);
+    const scaleP = opening ? easeOutExpo(raw) : easeOutCubic(raw);
+    const scaleX = opening ? 0.93 + 0.07 * scaleP : 1.0 - 0.07 * scaleP;
+    const mt     = h > 0 ? 8 * Math.min(raw * 4, 1) : 0;
+
+    expand.style.height    = h + 'px';
+    expand.style.marginTop = mt + 'px';
+    expand.style.opacity   = opening ? Math.min(raw * 3, 1) : Math.max(1 - raw, 0);
+    expand.style.clipPath  = clip;
+    expand.style.transform = `scaleX(${scaleX.toFixed(4)})`;
+
+    if (raw < 1) {
+      expandRAF = requestAnimationFrame(frame);
+    } else {
+      expandRAF = null;
+      if (toH > 0) {
+        expand.style.height    = toH + 'px';
+        expand.style.marginTop = '8px';
+        expand.style.opacity   = '1';
+        expand.style.clipPath  = 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)';
+        expand.style.transform = 'scaleX(1)';
+      } else {
+        expand.style.height    = '0';
+        expand.style.marginTop = '0';
+        expand.style.opacity   = '0';
+        expand.style.clipPath  = 'polygon(46% 0%, 54% 0%, 54% 0%, 46% 0%)';
+        expand.style.transform = 'scaleX(0.93)';
+      }
+      isAnimating = false;
+      if (onDone) onDone();
+    }
+  }
+  expandRAF = requestAnimationFrame(frame);
+}
+
+/* ── SLIDE: horizontal panel swap — height never changes ── */
+function animateSlide(prevKey, nextKey, onDone) {
+  const fromOrder = IDX_ORDER.indexOf(prevKey);
+  const toOrder   = IDX_ORDER.indexOf(nextKey);
+  const direction = toOrder > fromOrder ? 'left' : 'right';
+
+  const expand   = document.getElementById('idx-expand');
+  const viewport = document.getElementById('idx-slide-viewport');
+  const track    = document.getElementById('idx-slide-track');
+  const active   = document.getElementById('idx-panel-active');
+
+  if (idxChart) { idxChart.destroy(); idxChart = null; }
+
+  expand.classList.add('sliding');
+
+  const panelW = active.offsetWidth;
+  const panelH = active.offsetHeight;
+
+  viewport.style.height   = panelH + 'px';
+  viewport.style.overflow = 'hidden';
+
+  const clone = active.cloneNode(true);
+  clone.removeAttribute('id');
+  clone.style.cssText = `
+    position: absolute; top: 0; left: 0;
+    width: ${panelW}px; z-index: 1;
+    transform: translateX(0); opacity: 1;
+    pointer-events: none;
+  `;
+  track.appendChild(clone);
+
+  const d = IDX_DATA[nextKey];
+  active.querySelector('.idx-expand-name').textContent = d.name;
+  active.querySelector('#idx-stat-1m').textContent     = d.stat1m;
+  active.querySelector('#idx-stat-3m').textContent     = d.stat3m;
+  active.querySelector('#idx-stat-6m').textContent     = d.stat6m;
+
+  const enterX = direction === 'left' ? panelW : -panelW;
+  active.style.cssText = `
+    position: absolute; top: 0; left: 0;
+    width: ${panelW}px; z-index: 2;
+    transform: translateX(${enterX}px); opacity: 0.7;
+  `;
+
+  track.style.position = 'relative';
+  track.style.height   = panelH + 'px';
+
+  const DURATION = 520;
+  const start    = performance.now();
+  const exitX    = direction === 'left' ? -panelW : panelW;
+  let slideRAF   = null;
+
+  function frame(now) {
+    const raw  = Math.min((now - start) / DURATION, 1);
+    const ease = easeOutCubic(raw);
+
+    const fadeOut = Math.max(1 - raw / 0.6, 0);
+    const fadeIn  = raw < 0.3 ? 0 : easeOutCubic((raw - 0.3) / 0.7);
+
+    clone.style.transform  = `translateX(${exitX  * ease}px)`;
+    clone.style.opacity    = fadeOut.toFixed(3);
+    active.style.transform = `translateX(${enterX * (1 - ease)}px)`;
+    active.style.opacity   = fadeIn.toFixed(3);
+
+    if (raw < 1) {
+      slideRAF = requestAnimationFrame(frame);
+    } else {
+      clone.remove();
+      active.style.cssText   = '';
+      track.style.height     = '';
+      track.style.position   = '';
+      viewport.style.height  = '';
+      viewport.style.overflow = '';
+      expand.classList.remove('sliding');
+      active.querySelector('.idx-panel-header').style.opacity    = '0';
+      active.querySelector('.idx-panel-header').style.transform  = 'translateY(-6px)';
+      active.querySelector('.idx-chart-wrap').style.opacity      = '0';
+      active.querySelector('.idx-chart-wrap').style.transform    = 'translateY(-6px)';
+      requestAnimationFrame(() => {
+        active.querySelector('.idx-panel-header').style.opacity   = '';
+        active.querySelector('.idx-panel-header').style.transform = '';
+        active.querySelector('.idx-chart-wrap').style.opacity     = '';
+        active.querySelector('.idx-chart-wrap').style.transform   = '';
+        expand.classList.add('slide-reveal');
+      });
+      isAnimating = false;
+      if (onDone) pendingChartTimer = setTimeout(() => {
+        pendingChartTimer = null;
+        onDone();
+      }, 320);
+    }
+  }
+  slideRAF = requestAnimationFrame(frame);
+}
+
+/* ── Main toggle handler ── */
+function toggleIdx(key) {
+  if (isAnimating) return;
+
+  if (pendingChartTimer) {
+    clearTimeout(pendingChartTimer);
+    pendingChartTimer = null;
+  }
+  if (idxChart) { idxChart.destroy(); idxChart = null; }
+
+  const expand = document.getElementById('idx-expand');
+  const pill   = document.getElementById('pill-' + key);
+
+  /* ── CLOSE: same pill clicked ── */
+  if (currentIdx === key) {
+    pill.classList.remove('active');
+    expand.classList.remove('content-visible');
+    expand.classList.remove('slide-reveal');
+    currentIdx  = null;
+    isAnimating = true;
+
+    animateGenie(expandHeight, 0, 340, null);
+    return;
+  }
+
+  const prevIdx   = currentIdx;
+  const panelOpen = expandHeight > 20;
+
+  document.querySelectorAll('.idx-pill').forEach(p => p.classList.remove('active'));
+  pill.classList.add('active');
+  currentIdx  = key;
+  isAnimating = true;
+
+  if (panelOpen) {
+    /* ── SLIDE: panel stays open ── */
+    animateSlide(prevIdx, key, () => {
+      buildIdxChart(IDX_DATA[key]);
+    });
+
+  } else {
+    /* ── GENIE OPEN ── */
+    const d = IDX_DATA[key];
+    document.getElementById('idx-expand-name').textContent = d.name;
+    document.getElementById('idx-stat-1m').textContent     = d.stat1m;
+    document.getElementById('idx-stat-3m').textContent     = d.stat3m;
+    document.getElementById('idx-stat-6m').textContent     = d.stat6m;
+
+    const full = getFullHeight();
+
+    animateGenie(0, full, 580, () => {
+      expand.classList.add('content-visible');
+      buildIdxChart(d);
+    });
+  }
+}
+
+function buildIdxChart(d) {
+  if (idxChart) { idxChart.destroy(); idxChart = null; }
+  const cv  = document.getElementById('idx-chart');
+  const col = d.color;
+  idxChart = new Chart(cv.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: DAYS,
+      datasets: [{
+        data: d.data, borderColor: col, borderWidth: 1.8,
+        fill: true, tension: 0.38,
+        backgroundColor: ctx => {
+          const { ctx: c, chartArea: a } = ctx.chart;
+          if (!a) return 'transparent';
+          const g = c.createLinearGradient(0, a.top, 0, a.bottom);
+          g.addColorStop(0, col + '30'); g.addColorStop(1, 'transparent'); return g;
+        },
+        pointRadius: 0, pointHoverRadius: 3,
+        pointHoverBackgroundColor: col,
+        pointHoverBorderColor: '#0a0610',
+        pointHoverBorderWidth: 2, hitRadius: 20
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          mode: 'index', intersect: false,
+          backgroundColor: '#1a1430',
+          borderColor: 'rgba(155,89,255,0.25)', borderWidth: 1,
+          titleColor: '#4a3d72', bodyColor: '#f0eaff',
+          titleFont: { family: 'Share Tech Mono', size: 10 },
+          bodyFont:  { family: 'Share Tech Mono', size: 11 },
+          callbacks: {
+            title: i => DAYS[i[0].dataIndex],
+            label: i => ' $' + i.raw.toFixed(2)
+          }
+        }
+      },
+      scales: { x: { display: false }, y: { display: false } },
+      interaction: { mode: 'index', intersect: false },
+      animation: { duration: 600, easing: 'easeInOutCubic' }
+    }
+  });
+}
+
+function closeExpRow(row) {
+  if (!row.classList.contains('open')) return;
+  rafCollapseRow(row, '.exp-inner', 300, null);
+}
+
+function closeExpRowInstant(row) {
+  if (!row.classList.contains('open')) return;
+  row.classList.remove('open');
+  row.style.display = 'none';
+  row.style.height  = '';
+  const inner = row.querySelector('.exp-inner');
+  if (inner) { inner.style.opacity = ''; inner.style.transform = ''; inner.style.transformOrigin = ''; }
+}
+
+/* ── Rank page expand ── */
+const ec = {};
+function expT(rid, cid, data) {
+  const row = document.getElementById(rid);
+  const was = row.classList.contains('open');
+  document.querySelectorAll('.exp-row').forEach(r => {
+    if (r !== row) closeExpRowInstant(r);
+  });
+  if (!was) {
+    row.style.display = '';
+    row.style.height  = '';
+    const inner = row.querySelector('.exp-inner');
+    if (inner) { inner.style.opacity = ''; inner.style.transform = ''; }
+    row.classList.add('open');
+    ec[cid] = ec[cid] || data;
+    setTimeout(() => mkC(cid, ec[cid]), 40);
+    setTimeout(() => {
+      row.querySelectorAll('.est-v').forEach((el, i) => {
+        const raw = el.textContent.trim();
+        const num = parseFloat(raw.replace(/[^0-9.]/g, ''));
+        if (!isNaN(num) && num > 0 && raw.length < 12) {
+          const prefix = raw.match(/^[▲▼]/)?.[0] || '';
+          const suffix = raw.replace(/^[▲▼]?[\d.]+/, '');
+          setTimeout(() => countUp(el, num, prefix, suffix, 420), i * 50);
+        }
+      });
+    }, 80);
+  } else {
+    closeExpRow(row);
+  }
+}
+
+function countUp(el, target, prefix, suffix, duration) {
+  const start = performance.now();
+  function step(now) {
+    const p = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - p, 3);
+    el.textContent = prefix + (target * ease).toFixed(target % 1 === 0 ? 0 : 1) + suffix;
+    if (p < 1) requestAnimationFrame(step);
+    else el.textContent = prefix + (Number.isInteger(target) ? target : target.toFixed(1)) + suffix;
+  }
+  requestAnimationFrame(step);
+}
+
+function gf(s, m, d = 30) {
+  const r = []; let p = s; const st = m / d;
+  for (let i = 0; i < d; i++) {
+    p += st + (Math.random() - 0.47) * Math.abs(st) * 4;
+    r.push(+p.toFixed(2));
+  }
+  return r;
+}
+
+const CH = {};
+function mkC(id, data) {
+  const cv = document.getElementById(id); if (!cv) return;
+  if (CH[id]) CH[id].destroy();
+  const up  = data[data.length - 1] >= data[0];
+  const col = up ? '#39e8a0' : '#ff4d6d';
+  CH[id] = new Chart(cv.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: DAYS,
+      datasets: [{
+        data, borderColor: col, borderWidth: 1.8, fill: true, tension: 0.38,
+        backgroundColor: ctx => {
+          const { ctx: c, chartArea: a } = ctx.chart;
+          if (!a) return 'transparent';
+          const g = c.createLinearGradient(0, a.top, 0, a.bottom);
+          g.addColorStop(0, up ? 'rgba(57,232,160,.18)' : 'rgba(255,77,109,.18)');
+          g.addColorStop(1, 'transparent'); return g;
+        },
+        pointRadius: 0, pointHoverRadius: 3,
+        pointHoverBackgroundColor: col,
+        pointHoverBorderColor: '#0a0610',
+        pointHoverBorderWidth: 2, hitRadius: 20
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          mode: 'index', intersect: false,
+          backgroundColor: '#1a1430',
+          borderColor: 'rgba(155,89,255,0.25)', borderWidth: 1,
+          titleColor: '#4a3d72', bodyColor: '#f0eaff',
+          titleFont: { family: 'Share Tech Mono', size: 10 },
+          bodyFont:  { family: 'Share Tech Mono', size: 11 },
+          callbacks: {
+            title: i => DAYS[i[0].dataIndex],
+            label: i => ' $' + i.raw.toFixed(2)
+          }
+        }
+      },
+      scales: { x: { display: false }, y: { display: false } },
+      interaction: { mode: 'index', intersect: false },
+      animation: { duration: 800, easing: 'easeInOutCubic' }
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.btn').forEach(btn => {
+    btn.addEventListener('mousedown',  () => { btn.style.transform = 'scale(0.97)'; });
+    btn.addEventListener('mouseup',    () => { btn.style.transform = ''; });
+    btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
+  });
+});
+</script>
+</body>
+</html>

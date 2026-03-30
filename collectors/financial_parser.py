@@ -42,6 +42,7 @@ EMPTY_RESULT: dict = {
     'sector':              None,
     'data_source':         'unavailable',
     'cross_validated':     False,
+    'price_history':       [],
 }
 
 
@@ -192,6 +193,16 @@ def _fetch_from_yfinance(ticker: str) -> dict:
                     ]
         except Exception as e:
             log.warning(f'{ticker} quarterly EPS: {e}')
+
+        # ── 30-day price history ──────────────────────────────────────────
+        try:
+            hist = stock.history(period='35d')
+            if hist is not None and not hist.empty:
+                closes = [round(float(v), 2) for v in hist['Close'].dropna().tolist()]
+                out['price_history'] = closes[-30:] if len(closes) >= 30 else closes
+        except Exception as ph_e:
+            log.warning(f'{ticker} price_history: {ph_e}')
+            out['price_history'] = []
 
         out['data_source'] = 'yfinance'
         log.info(f'{ticker}: financials fetched OK (price={out["current_price"]})')

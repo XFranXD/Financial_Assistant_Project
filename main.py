@@ -185,7 +185,9 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
     sector_scores     = compute_sector_momentum()
     rotation          = compute_rotation_speed(sector_scores)
 
-    articles, _ = collect_news()
+    articles, candidate_sectors = collect_news()
+    from collectors.market_collector import get_index_history as _get_idx_hist
+    _index_history = _get_idx_hist()
     event_map   = detect_events(articles)
     e2s_data    = _load_json('data/event_to_sector.json', {})
     sector_events = summarise_sector_events(event_map, e2s_data)
@@ -416,15 +418,16 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
     try:
         from reports.dashboard_builder import build_dashboard
         build_dashboard(
-            companies   = all_candidates,
-            slot        = slot,
-            indices     = indices,
-            breadth     = breadth,
-            regime      = regime,
-            rotation    = rotation,
-            prompt_text = html_files.get('prompt', ''),
-            full_url    = html_files.get('full_url', ''),
-            is_debug    = True,
+            companies         = all_candidates,
+            slot              = slot,
+            indices           = indices,
+            breadth           = breadth,
+            regime            = regime,
+            prompt_text       = html_files.get('prompt', ''),
+            full_url          = html_files.get('full_url', ''),
+            is_debug          = True,
+            index_history     = _index_history,
+            confirmed_sectors = candidate_sectors,
         )
     except Exception as _dash_err:
         log.warning(f'[DEBUG] Dashboard build skipped: {_dash_err}')
@@ -537,6 +540,8 @@ def run():
     # ── Step 10: Collect news ─────────────────────────────────────────────
     from collectors.news_collector import collect_news
     articles, candidate_sectors = collect_news()
+    from collectors.market_collector import get_index_history as _get_idx_hist
+    index_history = _get_idx_hist()
     log.info(f'News: {len(articles)} articles, {len(candidate_sectors)} candidate sectors')
 
     # If no candidate sectors were found, write empty report and exit
@@ -927,15 +932,16 @@ def run():
     try:
         from reports.dashboard_builder import build_dashboard
         build_dashboard(
-            companies   = final_companies,
-            slot        = slot,
-            indices     = state.get('indices_today', {}),
-            breadth     = breadth,
-            regime      = regime,
-            rotation    = rotation,
-            prompt_text = html_files.get('prompt', ''),
-            full_url    = html_files.get('full_url', ''),
-            is_debug    = False,
+            companies         = final_companies,
+            slot              = slot,
+            indices           = state.get('indices_today', {}),
+            breadth           = breadth,
+            regime            = regime,
+            prompt_text       = html_files.get('prompt', ''),
+            full_url          = html_files.get('full_url', ''),
+            is_debug          = False,
+            index_history     = index_history,
+            confirmed_sectors = candidate_sectors,
         )
     except Exception as _dash_err:
         log.warning(f'Dashboard build skipped: {_dash_err}')

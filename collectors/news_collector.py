@@ -173,9 +173,10 @@ class SectorSignalAccumulator:
     def __init__(self, keywords: dict, event_to_sector: dict):
         self._keywords        = keywords
         self._event_to_sector = event_to_sector
-        self._sector_scores:  dict[str, float] = {}
-        self._sector_counts:  dict[str, int]   = {}
-        self._sector_events:  dict[str, list]  = {}
+        self._sector_scores:   dict[str, float] = {}
+        self._sector_counts:   dict[str, int]   = {}
+        self._sector_events:   dict[str, list]  = {}
+        self._sector_articles: dict[str, list]  = {}
 
     def process(self, article: dict) -> None:
         text  = article['text']
@@ -214,6 +215,22 @@ class SectorSignalAccumulator:
                         'days_old':  0,  # event_decay.py will update based on timestamp
                         'published': article.get('published'),
                     })
+                    # Collect article metadata for news page (max 10 per sector, dedup by title)
+                    if sector not in self._sector_articles:
+                        self._sector_articles[sector] = []
+                    existing_titles = {a['title'] for a in self._sector_articles[sector]}
+                    if article.get('title') and article['title'] not in existing_titles:
+                        pub = article.get('published')
+                        pub_str = pub.strftime('%H:%M ET') if pub else ''
+                        self._sector_articles[sector].append({
+                            'title':     article.get('title', '')[:200],
+                            'body':      article.get('body', '')[:300],
+                            'source':    article.get('source', ''),
+                            'published': pub_str,
+                            'score':     round(weighted, 2),
+                        })
+                        if len(self._sector_articles[sector]) > 10:
+                            self._sector_articles[sector] = self._sector_articles[sector][:10]
 
     def confirmed(self) -> dict:
         """
@@ -225,9 +242,10 @@ class SectorSignalAccumulator:
             count = self._sector_counts.get(sector, 0)
             if count >= SECTOR_ACCUMULATOR_MIN_HEADLINES and score >= SECTOR_ACCUMULATOR_MIN_SCORE:
                 result[sector] = {
-                    'score':  round(score, 2),
-                    'count':  count,
-                    'events': self._sector_events.get(sector, []),
+                    'score':    round(score, 2),
+                    'count':    count,
+                    'events':   self._sector_events.get(sector, []),
+                    'articles': self._sector_articles.get(sector, []),
                 }
                 log.info(f'Sector confirmed: {sector} score={score:.1f} headlines={count}')
             else:
