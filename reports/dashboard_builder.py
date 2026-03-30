@@ -274,7 +274,7 @@ function animateSlide(prevKey,nextKey,onDone){
         ex.classList.add('slide-reveal');
       });
       isAnimating=false;
-      if(onDone) setTimeout(()=>onDone(),320);
+      if(onDone) pendingChartTimer=setTimeout(()=>{pendingChartTimer=null;onDone();},320);
     }
   }
   slideRAF=requestAnimationFrame(frame);
@@ -282,10 +282,11 @@ function animateSlide(prevKey,nextKey,onDone){
 """
 
 _TOGGLE_IDX_JS = """
-let currentIdx=null, isAnimating=false;
+let currentIdx=null, isAnimating=false, pendingChartTimer=null;
 const IDX_ORDER=['dow','sp','nq'];
 function toggleIdx(key){
   if(isAnimating)return;
+  if(pendingChartTimer){clearTimeout(pendingChartTimer);pendingChartTimer=null;}
   if(window._mreCharts&&window._mreCharts['idx-chart']){
     window._mreCharts['idx-chart'].destroy();delete window._mreCharts['idx-chart'];
   }

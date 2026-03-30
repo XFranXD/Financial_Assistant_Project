@@ -1,3 +1,100 @@
+# MRE — FIX PROMPT: CHART RACE CONDITION + GUIDE CONTENT
+# Two targeted fixes. Read everything before touching anything.
+# Do not touch any file not listed below.
+
+---
+
+## FIX 1 — dashboard_builder.py: rapid-click chart race condition
+
+File: `reports/dashboard_builder.py`
+
+### What is broken and why
+
+When the user clicks an index pill while a slide animation is completing, the
+following race occurs:
+
+1. Slide animation finishes → `isAnimating = false` → a naked `setTimeout(onDone, 320)` is queued
+2. User clicks another pill during that 320ms window
+3. `isAnimating` is false so `toggleIdx` proceeds → starts a new slide/genie
+4. The original 320ms timer fires → `buildIdxChart` runs for the OLD index
+5. The new animation also calls `buildIdxChart` → two chart builds fire in sequence
+
+The fix is a `pendingChartTimer` variable that tracks the 320ms delay and
+cancels it when a new click arrives. This is the exact pattern used in the
+reference template (`mre_updated.html`).
+
+### Step 1 — Fix `_SLIDE_JS`
+
+Find this exact line inside `_SLIDE_JS` (near the end of the function):
+
+```python
+      if(onDone) setTimeout(()=>onDone(),320);
+```
+
+Replace it with:
+
+```python
+      if(onDone) pendingChartTimer=setTimeout(()=>{pendingChartTimer=null;onDone();},320);
+```
+
+This stores the timer handle so it can be cancelled.
+
+### Step 2 — Fix `_TOGGLE_IDX_JS`
+
+Find this exact line inside `_TOGGLE_IDX_JS`:
+
+```python
+let currentIdx=null, isAnimating=false;
+```
+
+Replace it with:
+
+```python
+let currentIdx=null, isAnimating=false, pendingChartTimer=null;
+```
+
+Then find these two lines that appear at the top of the `toggleIdx` function
+body (right after `if(isAnimating)return;`):
+
+```python
+  if(window._mreCharts&&window._mreCharts['idx-chart']){
+    window._mreCharts['idx-chart'].destroy();delete window._mreCharts['idx-chart'];
+  }
+```
+
+Replace them with:
+
+```python
+  if(pendingChartTimer){clearTimeout(pendingChartTimer);pendingChartTimer=null;}
+  if(window._mreCharts&&window._mreCharts['idx-chart']){
+    window._mreCharts['idx-chart'].destroy();delete window._mreCharts['idx-chart'];
+  }
+```
+
+### Step 3 — Verify
+
+After making changes, confirm both strings are present in the file:
+
+```bash
+grep -n "pendingChartTimer" reports/dashboard_builder.py
+```
+
+Must show at least 4 lines: the declaration, the clear in toggleIdx, the
+assignment in animateSlide's completion, and the null-reset inside the timer.
+
+---
+
+## FIX 2 — docs/guide.html: replace content with full operational guide
+
+File: `docs/guide.html`
+
+The current guide has 4 abbreviated sections. Replace it with the full
+8-section operational guide below. The HTML structure (nav, page wrapper,
+CSS classes, footer) is preserved exactly — only the page content changes.
+
+Replace the entire file contents with:
+
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -305,3 +402,18 @@
 </footer>
 </body>
 </html>
+```
+
+---
+
+## VERIFICATION
+
+After both fixes:
+
+- [ ] `grep -n "pendingChartTimer" reports/dashboard_builder.py` shows at least 4 lines
+- [ ] The declaration line reads: `let currentIdx=null, isAnimating=false, pendingChartTimer=null;`
+- [ ] The clear block in `toggleIdx` reads: `if(pendingChartTimer){clearTimeout(pendingChartTimer);pendingChartTimer=null;}`
+- [ ] The timer assignment in `_SLIDE_JS` reads: `pendingChartTimer=setTimeout(()=>{pendingChartTimer=null;onDone();},320);`
+- [ ] `docs/guide.html` contains all 8 numbered sections (01 through 08)
+- [ ] `docs/guide.html` nav matches `_nav_html('guide')` structure exactly (Guide tab has `class="tab on"`)
+- [ ] No other files were touched
