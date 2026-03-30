@@ -341,38 +341,6 @@ function buildIdxChart(d){
 }
 """
 
-_HOME_BELOW_JS = """
-(function(){
-  var rafID=null,lastH=-1,stableFrames=0;
-  function syncBelow(){
-    var el=document.getElementById('home-below');
-    if(!el){rafID=null;return;}
-    var h=expandHeight+(expandHeight>0?8:0);
-    el.style.transform='translateY('+h+'px)';
-    if(!isAnimating&&Math.abs(h-lastH)<0.5){
-      stableFrames++;
-      if(stableFrames>=2){
-        el.style.transform=h<1?'':'translateY('+h+'px)';
-        rafID=null;lastH=-1;stableFrames=0;return;
-      }
-    } else {
-      stableFrames=0;
-    }
-    lastH=h;
-    rafID=requestAnimationFrame(syncBelow);
-  }
-  function ensureRunning(){
-    stableFrames=0;
-    if(!rafID) rafID=requestAnimationFrame(syncBelow);
-  }
-  var _origToggle=window.toggleIdx;
-  window.toggleIdx=function(key){
-    ensureRunning();
-    _origToggle(key);
-  };
-})();
-"""
-
 _RAF_COLLAPSE_JS = """
 function rafCollapseRow(el,innerSel,duration,onDone){
   const fromH=el.offsetHeight;
@@ -1052,7 +1020,7 @@ def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, ind
 
         js_block = (
             f'<script>{_DAYS_JS}{_EASING_JS}{_GENIE_JS}{_SLIDE_JS}'
-            f'{_TOGGLE_IDX_JS}{_BUILD_IDX_CHART_JS}{_HOME_BELOW_JS}'
+            f'{_TOGGLE_IDX_JS}{_BUILD_IDX_CHART_JS}'
             f'{_RAF_COLLAPSE_JS}{_RCT_JS}</script>'
             f'{idx_script}'
             f'<script>{_COPY_PROMPT_JS}</script>'
