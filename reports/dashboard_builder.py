@@ -113,21 +113,33 @@ def _sanitize_price_history(raw: list) -> list:
 
 def _build_idx_data(index_history: dict, indices: dict) -> dict:
     """Build IDX_DATA dict for index page Chart.js injection (Pattern B)."""
-    configs = {
-        'dow': ('Dow Jones', '#9b59ff', 'dow'),
-        'sp':  ('S&P 500',   '#ff6eb4', 'sp500'),
-        'nq':  ('Nasdaq',    '#00e5ff', 'nasdaq'),
+    def _dir_color(chg):
+        if isinstance(chg, (int, float)) and chg > 0:
+            return '#39e8a0', 'rgba(57,232,160,0.12)'
+        if isinstance(chg, (int, float)) and chg < 0:
+            return '#ff4d6d', 'rgba(255,77,109,0.12)'
+        return '#ff9a3c', 'rgba(255,154,60,0.12)'
+
+    idx_map = {
+        'dow': ('Dow Jones', 'dow',    'dow'),
+        'sp':  ('S&P 500',   'sp500',  'sp500'),
+        'nq':  ('Nasdaq',    'nasdaq', 'nasdaq'),
     }
     result = {}
-    for key, (name, color, hist_key) in configs.items():
-        data = _sanitize_price_history(index_history.get(hist_key) or [])
+    for key, (name, idx_key, hist_key) in idx_map.items():
+        chg     = (indices.get(idx_key) or {}).get('change_pct')
+        col, bg = _dir_color(chg)
+        data    = _sanitize_price_history(
+            index_history.get(hist_key) or []
+        )
         result[key] = {
-            'name':   name,
-            'color':  color,
-            'data':   data,
-            'stat1m': _calc_return_from_history(data, 21),
-            'stat3m': '\u2014',
-            'stat6m': '\u2014',
+            'name':     name,
+            'color':    col,
+            'bg_color': bg,
+            'data':     data,
+            'stat1m':   _calc_return_from_history(data, 21),
+            'stat3m':   _EM,
+            'stat6m':   _EM,
         }
     return result
 
@@ -163,6 +175,13 @@ def _rot_cls(signal: str) -> str:
     if s == 'WEAKEN':  return 'dn'
     if s == 'WAIT':    return 'nt'
     return 'pu'
+
+
+def _align_cls(val: str) -> str:
+    v = (val or '').strip().upper()
+    if v == 'ALIGNED':  return 'sig-up'
+    if v == 'CONFLICT': return 'sig-dn'
+    return 'sig-nt'
 
 
 # ── Module-level JS string constants ────────────────────────────────────────
@@ -331,7 +350,7 @@ function buildIdxChart(d){
       pointHoverBorderColor:'#0a0610',pointHoverBorderWidth:2,hitRadius:20}]},
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,
-        backgroundColor:'#1a1430',borderColor:'rgba(155,89,255,0.25)',borderWidth:1,
+        backgroundColor:d.bg_color,borderColor:'rgba(155,89,255,0.25)',borderWidth:1,
         titleColor:'#4a3d72',bodyColor:'#f0eaff',
         titleFont:{family:'Share Tech Mono',size:10},bodyFont:{family:'Share Tech Mono',size:11},
         callbacks:{title:i=>DAYS[i[0].dataIndex],label:i=>' $'+i.raw.toFixed(2)}}},
@@ -465,7 +484,8 @@ _RCT_JS = "function rcT(el){el.classList.toggle('open');}"
 _COPY_PROMPT_JS = """
 document.addEventListener('DOMContentLoaded',function(){
   document.querySelectorAll('.copy-prompt-btn').forEach(function(btn){
-    btn.addEventListener('click',function(){
+    btn.addEventListener('click',function(e){
+      e.stopPropagation();
       var el=document.getElementById(this.dataset.ref);if(!el)return;
       var text;
       try{text=JSON.parse(el.textContent);}catch(e){
@@ -656,6 +676,7 @@ def _update_rank_board(companies):
                 'market_verdict_display':  c.get('market_verdict_display', c.get('summary_verdict', '')),
                 'market_verdict':          c.get('summary_verdict', ''),
                 'price_history':           _sanitize_price_history(raw_ph),
+                'alignment':               c.get('alignment', 'PARTIAL'),
             }
     try:
         tmp = rank_path + '.tmp'
@@ -831,7 +852,7 @@ def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, ind
             return (
                 f'<div class="idx-pill" id="pill-{pill_id}" onclick="toggleIdx(\'{pill_id}\')">'
                 f'<div class="pill-left">'
-                f'<div class="pill-label">// {label_text}</div>'
+                f'<div class="pill-label" style="font-size:13px;color:var(--pu-lt);font-family:var(--ff-mono);letter-spacing:0.04em;">// {label_text}</div>'
                 f'<div class="pill-val">{val}</div>'
                 f'<div class="pill-change {cls}">{chg_s}</div>'
                 f'</div><div class="pill-chevron">\u25bc</div></div>'
@@ -853,10 +874,10 @@ def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, ind
         b_cls     = _breadth_cls(b_label)
         strip = (
             '<div class="status-strip stagger-3">'
-            '<span class="ss-label">Breadth</span>'
+            '<span class="ss-label" style="font-size:11px;color:var(--mist);">Breadth</span>'
             f'<span class="ss-val {b_cls}">{_esc(b_label)}</span>'
             '<span class="ss-divider">&middot;</span>'
-            '<span class="ss-label">Market</span>'
+            '<span class="ss-label" style="font-size:11px;color:var(--mist);">Market</span>'
             f'<span class="ss-val nt">{_esc(r_label)}</span>'
             '</div>'
         )
@@ -934,12 +955,12 @@ def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, ind
             if prompt_text:
                 uid          = f'prompt_{report_index}'
                 script_block = f'<script type="application/json" id="{uid}">{_safe_json(prompt_text)}</script>'
-                copy_btn     = f'<button class="btn mg copy-prompt-btn" data-ref="{uid}">&#x2389; AI Prompt</button>'
+                copy_btn     = f'<button class="btn mg copy-prompt-btn" data-ref="{uid}">{_esc((r.get("tickers") or [""])[0])} Copy AI Prompt</button>'
             else:
                 script_block = ''
                 copy_btn     = ''
             report_url = r.get('report_url', '')
-            full_btn   = f'<a href="{report_url}" class="btn" target="_blank">\u2197 Full Report</a>' if report_url else ''
+            full_btn   = f'<a href="{report_url}" class="btn" target="_blank" onclick="event.stopPropagation()">{chr(0x2197)} Full Report</a>' if report_url else ''
             count      = r.get('count', 0)
             cards_html += (
                 f'{script_block}'
@@ -947,14 +968,14 @@ def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, ind
                 f'<div class="rcard-head">'
                 f'<div>'
                 f'<div class="rcard-date">{_esc(r.get("date",""))} &middot; {_esc(r.get("slot",""))} &middot; {count} stock{"s" if count!=1 else ""}</div>'
-                f'<div class="rcard-slot">{_esc(r.get("time",""))} ET &middot; {_esc(r.get("regime","").title())}</div>'
+                f'<div class="rcard-slot" style="font-size:11px;color:var(--mist);">{_esc(r.get("time",""))} ET &middot; {_esc(r.get("regime","").title())}</div>'
                 f'</div>'
                 f'<span class="rcard-badge {b_cls}">{_esc(b).title()}</span>'
                 f'</div>'
                 f'<div class="rcard-body"><div class="rcard-inner">'
                 f'<div class="rcard-cols">'
                 f'<div><div class="rcc-k">Sys 1 &middot; Tickers</div><div class="rcc-v">{tickers or _EM}'
-                f'<br><span style="color:var(--mist);font-size:10px">Top conf: {_fmt_score(top_score, 0)}/100</span></div></div>'
+                f'<br><span style="font-size:11px;color:var(--mist)">Top conf: {_fmt_score(top_score, 0)}/100</span></div></div>'
                 f'<div><div class="rcc-k">Verdicts</div><div class="rcc-v">'
                 f'<span style="color:var(--up)">RN:{rn_c}</span> '
                 f'<span style="color:var(--nt)">W:{w_c}</span> '
@@ -1116,12 +1137,11 @@ def _render_rank_html(rank_data: dict) -> str:
             exp_row = (
                 f'<div class="exp-row" id="e{i}"><div class="exp-inner">'
                 f'<div class="exp-stats">'
-                f'<div class="est"><div class="est-k">1M Return</div><div class="est-v">{_fmt_pct(stock.get("return_1m"))}</div></div>'
-                f'<div class="est"><div class="est-k">3M Return</div><div class="est-v">{_fmt_pct(stock.get("return_3m"))}</div></div>'
-                f'<div class="est"><div class="est-k">6M Return</div><div class="est-v">{_fmt_pct(stock.get("return_6m"))}</div></div>'
-                f'<div class="est"><div class="est-k">Opportunity</div><div class="est-v">{_fmt_score(stock.get("opportunity_score"),0)}/100</div></div>'
-                f'<div class="est"><div class="est-k">Signal Agree</div><div class="est-v">{_fmt_score(stock.get("signal_agreement"),2)}</div></div>'
+                f'<div class="est"><div class="est-k">1M</div><div class="est-v">{_fmt_pct(stock.get("return_1m"))}</div></div>'
+                f'<div class="est"><div class="est-k">3M</div><div class="est-v">{_fmt_pct(stock.get("return_3m"))}</div></div>'
+                f'<div class="est"><div class="est-k">6M</div><div class="est-v">{_fmt_pct(stock.get("return_6m"))}</div></div>'
                 f'<div class="est"><div class="est-k">Verdict</div><div class="est-v {_conf_cls(conf)}">{_esc(verdict) or _EM}</div></div>'
+                f'<div class="est"><div class="est-k">Align</div><div class="est-v {_align_cls(stock.get("alignment", ""))}">{_esc(stock.get("alignment", "")) or _EM}</div></div>'
                 f'</div>'
                 f'<div class="exp-chart">{chart_el}</div>'
                 f'</div></div>'
@@ -1213,12 +1233,12 @@ def _render_archive_html(archive_data: dict) -> str:
                 if prompt_text:
                     uid          = f'arc_{wk}_{run_idx}'
                     script_block = f'<script type="application/json" id="{uid}">{_safe_json(prompt_text)}</script>'
-                    copy_btn     = f'<button class="btn mg copy-prompt-btn" data-ref="{uid}">&#x2389; AI Prompt</button>'
+                    copy_btn     = f'<button class="btn mg copy-prompt-btn" data-ref="{uid}">{_esc((run.get("tickers") or [""])[0])} Copy AI Prompt</button>'
                 else:
                     script_block = ''
                     copy_btn     = ''
                 report_url = run.get('report_url', '')
-                full_btn   = f'<a href="{report_url}" class="btn" target="_blank">\u2197 Full Report</a>' if report_url else ''
+                full_btn   = f'<a href="{report_url}" class="btn" target="_blank" onclick="event.stopPropagation()">{chr(0x2197)} Full Report</a>' if report_url else ''
                 rtype_badge = f'<span style="font-size:8px;color:var(--sun);margin-left:8px">{_esc(run_type)}</span>' if run_type == 'MANUAL' else ''
                 cards_html += (
                     f'{script_block}'

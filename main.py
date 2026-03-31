@@ -415,6 +415,90 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
         rotation      = rotation,
     )
 
+    # ── Pre-dashboard candidate enrichment ───────────────────────────────────
+    # Populates display fields so _update_rank_board() receives complete data.
+    # _enrich_company_for_template() does this internally inside
+    # build_intraday_report() but does not mutate the shared list.
+    for _c in all_candidates:
+        try:
+            _mtf = _c.get('mtf') or {}
+            _c['return_1m'] = _mtf.get('r1m')
+            _c['return_3m'] = _mtf.get('r3m')
+            _c['return_6m'] = _mtf.get('r6m')
+
+            _fin = _c.get('financials') or {}
+            _c['price_history'] = _fin.get('price_history') or []
+
+            # EQ_AVAILABLE, PASS_TIER, FATAL_FLAW_REASON
+            # imported from contracts.eq_schema at top of file
+            if not _c.get(EQ_AVAILABLE):
+                _eq_vd = 'UNAVAILABLE'
+            elif _c.get(FATAL_FLAW_REASON):
+                _eq_vd = 'RISKY'
+            else:
+                _tier = (_c.get(PASS_TIER) or '').strip().upper()
+                _eq_vd = {
+                    'PASS':  'SUPPORTIVE',
+                    'WATCH': 'NEUTRAL',
+                    'FAIL':  'WEAK',
+                }.get(_tier, 'UNAVAILABLE')
+            _c['eq_verdict_display'] = _eq_vd
+
+            # ROTATION_SIGNAL imported from
+            # contracts.sector_schema at top of file
+            _c['rotation_signal_display'] = (
+                (_c.get(ROTATION_SIGNAL) or 'UNKNOWN')
+                .strip().upper()
+            )
+
+            # Thresholds match summary_verdict() exactly:
+            # conf >= 70 AND risk <= 35 → RESEARCH NOW
+            # conf >= 55                → WATCH
+            # else                      → SKIP
+            _conf_v = _c.get('composite_confidence') or 0
+            _risk_v = _c.get('risk_score') or 100
+            if _conf_v >= 70 and _risk_v <= 35:
+                _mvd = 'RESEARCH NOW'
+            elif _conf_v >= 55:
+                _mvd = 'WATCH'
+            else:
+                _mvd = 'SKIP'
+            _c['market_verdict_display'] = _mvd
+
+            # Alignment — all three source fields are now set above.
+            _al = 0
+            _mvd_n = (_c.get('market_verdict_display') or '').strip().upper()
+            _rot_n = (_c.get('rotation_signal_display') or '').strip().upper()
+            _eq_n  = (_c.get('eq_verdict_display') or '').strip().upper()
+
+            if _mvd_n == 'RESEARCH NOW': _al += 1
+            elif _mvd_n == 'SKIP':       _al -= 1
+            if _rot_n == 'SUPPORT':      _al += 1
+            elif _rot_n == 'WEAKEN':     _al -= 1
+            if _eq_n == 'SUPPORTIVE':           _al += 1
+            elif _eq_n in ('WEAK', 'RISKY'):    _al -= 1
+
+            if _al >= 2:   _c['alignment'] = 'ALIGNED'
+            elif _al >= 0: _c['alignment'] = 'PARTIAL'
+            else:          _c['alignment'] = 'CONFLICT'
+
+        except Exception as _enrich_err:
+            log.warning(
+                f'Pre-dashboard enrichment failed for '
+                f'{_c.get("ticker", "?")}: {_enrich_err} '
+                f'— fields: return_1m/3m/6m price_history '
+                f'eq_verdict_display rotation_signal_display '
+                f'market_verdict_display alignment'
+            )
+            _c.setdefault('return_1m', None)
+            _c.setdefault('return_3m', None)
+            _c.setdefault('return_6m', None)
+            _c.setdefault('price_history', [])
+            _c.setdefault('eq_verdict_display', 'UNAVAILABLE')
+            _c.setdefault('rotation_signal_display', 'UNKNOWN')
+            _c.setdefault('market_verdict_display', 'WATCH')
+            _c.setdefault('alignment', 'PARTIAL')
+
     try:
         from reports.dashboard_builder import build_dashboard
         build_dashboard(
@@ -927,6 +1011,90 @@ def run():
         sector_scores = sector_scores,
         rotation      = rotation,
     )
+
+    # ── Pre-dashboard candidate enrichment ───────────────────────────────────
+    # Populates display fields so _update_rank_board() receives complete data.
+    # _enrich_company_for_template() does this internally inside
+    # build_intraday_report() but does not mutate the shared list.
+    for _c in final_companies:
+        try:
+            _mtf = _c.get('mtf') or {}
+            _c['return_1m'] = _mtf.get('r1m')
+            _c['return_3m'] = _mtf.get('r3m')
+            _c['return_6m'] = _mtf.get('r6m')
+
+            _fin = _c.get('financials') or {}
+            _c['price_history'] = _fin.get('price_history') or []
+
+            # EQ_AVAILABLE, PASS_TIER, FATAL_FLAW_REASON
+            # imported from contracts.eq_schema at top of file
+            if not _c.get(EQ_AVAILABLE):
+                _eq_vd = 'UNAVAILABLE'
+            elif _c.get(FATAL_FLAW_REASON):
+                _eq_vd = 'RISKY'
+            else:
+                _tier = (_c.get(PASS_TIER) or '').strip().upper()
+                _eq_vd = {
+                    'PASS':  'SUPPORTIVE',
+                    'WATCH': 'NEUTRAL',
+                    'FAIL':  'WEAK',
+                }.get(_tier, 'UNAVAILABLE')
+            _c['eq_verdict_display'] = _eq_vd
+
+            # ROTATION_SIGNAL imported from
+            # contracts.sector_schema at top of file
+            _c['rotation_signal_display'] = (
+                (_c.get(ROTATION_SIGNAL) or 'UNKNOWN')
+                .strip().upper()
+            )
+
+            # Thresholds match summary_verdict() exactly:
+            # conf >= 70 AND risk <= 35 → RESEARCH NOW
+            # conf >= 55                → WATCH
+            # else                      → SKIP
+            _conf_v = _c.get('composite_confidence') or 0
+            _risk_v = _c.get('risk_score') or 100
+            if _conf_v >= 70 and _risk_v <= 35:
+                _mvd = 'RESEARCH NOW'
+            elif _conf_v >= 55:
+                _mvd = 'WATCH'
+            else:
+                _mvd = 'SKIP'
+            _c['market_verdict_display'] = _mvd
+
+            # Alignment — all three source fields are now set above.
+            _al = 0
+            _mvd_n = (_c.get('market_verdict_display') or '').strip().upper()
+            _rot_n = (_c.get('rotation_signal_display') or '').strip().upper()
+            _eq_n  = (_c.get('eq_verdict_display') or '').strip().upper()
+
+            if _mvd_n == 'RESEARCH NOW': _al += 1
+            elif _mvd_n == 'SKIP':       _al -= 1
+            if _rot_n == 'SUPPORT':      _al += 1
+            elif _rot_n == 'WEAKEN':     _al -= 1
+            if _eq_n == 'SUPPORTIVE':           _al += 1
+            elif _eq_n in ('WEAK', 'RISKY'):    _al -= 1
+
+            if _al >= 2:   _c['alignment'] = 'ALIGNED'
+            elif _al >= 0: _c['alignment'] = 'PARTIAL'
+            else:          _c['alignment'] = 'CONFLICT'
+
+        except Exception as _enrich_err:
+            log.warning(
+                f'Pre-dashboard enrichment failed for '
+                f'{_c.get("ticker", "?")}: {_enrich_err} '
+                f'— fields: return_1m/3m/6m price_history '
+                f'eq_verdict_display rotation_signal_display '
+                f'market_verdict_display alignment'
+            )
+            _c.setdefault('return_1m', None)
+            _c.setdefault('return_3m', None)
+            _c.setdefault('return_6m', None)
+            _c.setdefault('price_history', [])
+            _c.setdefault('eq_verdict_display', 'UNAVAILABLE')
+            _c.setdefault('rotation_signal_display', 'UNKNOWN')
+            _c.setdefault('market_verdict_display', 'WATCH')
+            _c.setdefault('alignment', 'PARTIAL')
 
     # ── Step 28b — Dashboard update (non-fatal) ───────────────────────────
     try:
