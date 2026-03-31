@@ -1,12 +1,17 @@
 {
   "date": "2026-03-31",
   "reported_companies": [
+    "CTRA",
+    "EQT",
+    "PPG",
+    "AA",
     "CF",
+    "FCX",
+    "COP",
     "KMI",
     "LIN",
-    "CTRA",
-    "NEM",
-    "EQT"
+    "DVN",
+    "NEM"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -22,8 +27,14 @@
       "status": "complete"
     },
     "11:45-13:15": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "DVN",
+        "COP",
+        "AA",
+        "FCX",
+        "PPG"
+      ],
+      "status": "complete"
     },
     "13:45-15:15": {
       "companies": [],
@@ -139,11 +150,10 @@
     }
   },
   "today_scores": {
-    "CTRA": 67.8,
-    "EQT": 64.7,
-    "KMI": 61.6,
-    "NEM": 56.5,
-    "CF": 55.5,
-    "LIN": 49.6
+    "DVN": 62.5,
+    "COP": 60.3,
+    "AA": 47.7,
+    "FCX": 47.4,
+    "PPG": 40.6
   }
 }
