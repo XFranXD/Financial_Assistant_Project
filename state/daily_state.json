@@ -1,20 +1,26 @@
 {
   "date": "2026-03-31",
   "reported_companies": [
-    "KMI",
-    "CB",
-    "PPG",
-    "CTRA",
-    "CF",
-    "EQT",
     "NEM",
-    "TFC",
-    "AA",
-    "LIN",
+    "MFC",
+    "WBS",
+    "ECL",
+    "KMI",
+    "VMC",
     "COP",
-    "FCX",
     "SCHW",
-    "DVN"
+    "EQT",
+    "FITB",
+    "CF",
+    "CB",
+    "AA",
+    "STLD",
+    "FCX",
+    "LIN",
+    "CTRA",
+    "PPG",
+    "DVN",
+    "TFC"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -48,8 +54,15 @@
       "status": "complete"
     },
     "16:00-17:20": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "FITB",
+        "MFC",
+        "WBS",
+        "STLD",
+        "ECL",
+        "VMC"
+      ],
+      "status": "complete"
     }
   },
   "failed_tickers": [],
@@ -157,8 +170,11 @@
     }
   },
   "today_scores": {
-    "TFC": 49.8,
-    "SCHW": 49.7,
-    "CB": 47.8
+    "FITB": 49.4,
+    "MFC": 47.1,
+    "WBS": 46.7,
+    "STLD": 45.2,
+    "ECL": 43.9,
+    "VMC": 43.0
   }
 }
