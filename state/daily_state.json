@@ -1,20 +1,25 @@
 {
   "date": "2026-04-01",
   "reported_companies": [
-    "CF",
-    "WBS",
-    "ECL",
-    "AA",
-    "FITB",
-    "CB",
-    "PPG",
-    "STLD",
     "TFC",
+    "STLD",
     "NUE",
     "FCX",
+    "AA",
+    "HCC",
+    "CFG",
+    "CF",
+    "PPG",
+    "FITB",
+    "MOS",
+    "WBS",
     "NEM",
-    "SCHW",
     "LIN",
+    "CB",
+    "SCHW",
+    "VMC",
+    "USB",
+    "ECL",
     "MFC"
   ],
   "alpha_vantage_calls_today": 20,
@@ -50,8 +55,14 @@
       "status": "complete"
     },
     "16:00-17:20": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "USB",
+        "CFG",
+        "VMC",
+        "MOS",
+        "HCC"
+      ],
+      "status": "complete"
     }
   },
   "failed_tickers": [],
@@ -159,8 +170,10 @@
     }
   },
   "today_scores": {
-    "STLD": 48.5,
-    "NUE": 47.9,
-    "ECL": 47.8
+    "USB": 52.3,
+    "CFG": 51.3,
+    "VMC": 49.8,
+    "MOS": 48.8,
+    "HCC": 45.1
   }
 }
