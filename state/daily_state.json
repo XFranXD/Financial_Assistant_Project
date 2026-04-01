@@ -1,180 +1,32 @@
 {
-  "date": "2026-03-31",
-  "reported_companies": [
-    "NEM",
-    "MFC",
-    "WBS",
-    "ECL",
-    "KMI",
-    "VMC",
-    "COP",
-    "SCHW",
-    "EQT",
-    "FITB",
-    "CF",
-    "CB",
-    "AA",
-    "STLD",
-    "FCX",
-    "LIN",
-    "CTRA",
-    "PPG",
-    "DVN",
-    "TFC"
-  ],
+  "date": "2026-04-01",
+  "reported_companies": [],
   "alpha_vantage_calls_today": 20,
   "runs": {
     "9:45-11:15": {
-      "companies": [
-        "CTRA",
-        "EQT",
-        "KMI",
-        "NEM",
-        "CF",
-        "LIN"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     },
     "11:45-13:15": {
-      "companies": [
-        "DVN",
-        "COP",
-        "AA",
-        "FCX",
-        "PPG"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     },
     "13:45-15:15": {
-      "companies": [
-        "TFC",
-        "SCHW",
-        "CB"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     },
     "16:00-17:20": {
-      "companies": [
-        "FITB",
-        "MFC",
-        "WBS",
-        "STLD",
-        "ECL",
-        "VMC"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     }
   },
   "failed_tickers": [],
   "api_failures": {},
-  "sector_scores_today": {
-    "technology": -2.976,
-    "healthcare": 0.48,
-    "financials": 0.253,
-    "consumer_discretionary": -1.415,
-    "consumer_staples": 0.038,
-    "industrials": -1.66,
-    "materials": 2.69,
-    "energy": 2.185,
-    "utilities": 0.744,
-    "real_estate": -0.109,
-    "communication_services": -1.164,
-    "semiconductors": -3.472,
-    "defense": -2.959
-  },
-  "breadth_score_today": 0.762,
-  "sector_breadth_ma_today": {
-    "technology": {
-      "breadth_ma_score": 0.0,
-      "pct": 0.0,
-      "label": "sector is structurally weak"
-    },
-    "semiconductors": {
-      "breadth_ma_score": 0.1,
-      "pct": 10.0,
-      "label": "sector is structurally weak"
-    },
-    "healthcare": {
-      "breadth_ma_score": 0.3,
-      "pct": 30.0,
-      "label": "mixed signals"
-    },
-    "financials": {
-      "breadth_ma_score": 0.1,
-      "pct": 10.0,
-      "label": "sector is structurally weak"
-    },
-    "consumer_discretionary": {
-      "breadth_ma_score": 0.1,
-      "pct": 10.0,
-      "label": "sector is structurally weak"
-    },
-    "consumer_staples": {
-      "breadth_ma_score": 0.3,
-      "pct": 30.0,
-      "label": "mixed signals"
-    },
-    "industrials": {
-      "breadth_ma_score": 0.3,
-      "pct": 30.0,
-      "label": "mixed signals"
-    },
-    "defense": {
-      "breadth_ma_score": 0.0,
-      "pct": 0.0,
-      "label": "sector is structurally weak"
-    },
-    "energy": {
-      "breadth_ma_score": 1.0,
-      "pct": 100.0,
-      "label": "sector is genuinely strong"
-    },
-    "materials": {
-      "breadth_ma_score": 0.3,
-      "pct": 30.0,
-      "label": "mixed signals"
-    },
-    "utilities": {
-      "breadth_ma_score": 0.8,
-      "pct": 80.0,
-      "label": "sector is genuinely strong"
-    },
-    "real_estate": {
-      "breadth_ma_score": 0.2,
-      "pct": 20.0,
-      "label": "sector is structurally weak"
-    },
-    "communication_services": {
-      "breadth_ma_score": 0.4,
-      "pct": 40.0,
-      "label": "mixed signals"
-    }
-  },
+  "sector_scores_today": {},
+  "breadth_score_today": null,
+  "sector_breadth_ma_today": {},
   "unusual_volume_flags": [],
   "event_scores_today": {},
-  "indices_today": {
-    "dow": {
-      "value": 46341.51,
-      "change_pct": 2.49,
-      "label": "Rising"
-    },
-    "sp500": {
-      "value": 6528.52,
-      "change_pct": 2.91,
-      "label": "Rising"
-    },
-    "nasdaq": {
-      "value": 21590.63,
-      "change_pct": 3.83,
-      "label": "Rising"
-    }
-  },
-  "today_scores": {
-    "FITB": 49.4,
-    "MFC": 47.1,
-    "WBS": 46.7,
-    "STLD": 45.2,
-    "ECL": 43.9,
-    "VMC": 43.0
-  }
+  "indices_today": {},
+  "today_scores": {}
 }
