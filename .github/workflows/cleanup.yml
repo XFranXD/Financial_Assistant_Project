@@ -4,6 +4,25 @@ on:
   schedule:
     - cron: '0 23 * * 0'   # Every Sunday at 23:00 UTC
   workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Run mode: scheduled (90-day policy) or force_delete (targeted)'
+        required: true
+        default: 'scheduled'
+        type: choice
+        options:
+          - scheduled
+          - force_delete
+      target:
+        description: |
+          TARGET (force_delete only):
+          2026             → all reports from 2026
+          2026-03          → all reports from March 2026
+          2026-03-31       → all reports from that day
+          2026-03-31 2     → slot 2 on that day (11:45-13:15)
+          Slots: 1=9:45  2=11:45  3=13:45  4=16:00
+        required: false
+        default: ''
 
 jobs:
   cleanup:
@@ -21,15 +40,37 @@ jobs:
       - name: Install dependencies
         run: pip install pytz
 
-      - name: Run cleanup
+      - name: Run scheduled cleanup
+        if: >
+          github.event_name == 'schedule' ||
+          (github.event_name == 'workflow_dispatch' &&
+           github.event.inputs.mode == 'scheduled')
         run: python scripts/cleanup_reports.py --force
 
-      - name: Commit cleanup
+      - name: Run force delete
+        if: >
+          github.event_name == 'workflow_dispatch' &&
+          github.event.inputs.mode == 'force_delete' &&
+          github.event.inputs.target != ''
+        run: |
+          python scripts/cleanup_reports.py --delete "${{ github.event.inputs.target }}"
+
+      - name: Validate target provided for force_delete
+        if: >
+          github.event_name == 'workflow_dispatch' &&
+          github.event.inputs.mode == 'force_delete' &&
+          github.event.inputs.target == ''
+        run: |
+          echo "ERROR: force_delete mode requires a TARGET value."
+          echo "Examples: '2026-03-31' or '2026-03-31 2'"
+          exit 1
+
+      - name: Commit changes
         run: |
           git config user.name  'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git add --force reports/output/ docs/ || true
           git diff --staged --quiet || \
-            git commit -m 'Auto: weekly cleanup $(date -u +%Y-%m-%dT%H:%M:%SZ)'
+            git commit -m 'Auto: cleanup $(date -u +%Y-%m-%dT%H:%M:%SZ) [${{ github.event.inputs.mode || "scheduled" }}]'
           git pull --rebase origin main
           git push
