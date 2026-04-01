@@ -1,18 +1,21 @@
 {
   "date": "2026-04-01",
   "reported_companies": [
-    "LIN",
-    "MFC",
-    "TFC",
-    "WBS",
-    "FCX",
-    "AA",
-    "PPG",
-    "NEM",
     "CF",
+    "WBS",
+    "ECL",
+    "AA",
+    "FITB",
     "CB",
+    "PPG",
+    "STLD",
+    "TFC",
+    "NUE",
+    "FCX",
+    "NEM",
     "SCHW",
-    "FITB"
+    "LIN",
+    "MFC"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -39,8 +42,12 @@
       "status": "complete"
     },
     "13:45-15:15": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "STLD",
+        "NUE",
+        "ECL"
+      ],
+      "status": "complete"
     },
     "16:00-17:20": {
       "companies": [],
@@ -152,11 +159,8 @@
     }
   },
   "today_scores": {
-    "AA": 56.5,
-    "FCX": 55.7,
-    "FITB": 54.2,
-    "CB": 53.3,
-    "MFC": 53.1,
-    "PPG": 49.2
+    "STLD": 48.5,
+    "NUE": 47.9,
+    "ECL": 47.8
   }
 }
