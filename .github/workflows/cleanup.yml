@@ -66,11 +66,13 @@ jobs:
           exit 1
 
       - name: Commit changes
+        env:
+          RUN_MODE: ${{ github.event.inputs.mode || 'scheduled' }}
         run: |
           git config user.name  'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git add --force reports/output/ docs/ || true
           git diff --staged --quiet || \
-            git commit -m 'Auto: cleanup $(date -u +%Y-%m-%dT%H:%M:%SZ) [${{ github.event.inputs.mode || "scheduled" }}]'
+            git commit -m "Auto: cleanup $(date -u +%Y-%m-%dT%H:%M:%SZ) [$RUN_MODE]"
           git pull --rebase origin main
           git push
