@@ -27,6 +27,385 @@ _FONTS_LINK = (
 _CHARTJS = '<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>'
 _EM = '\u2014'  # em dash — safe to use inside f-string expressions
 
+_LOADER_CSS = (
+    '<style>'
+    '#mre-loader{'
+        'position:fixed;inset:0;z-index:9999;'
+        'background:#0a0a12;'
+        'display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;'
+        'transition:opacity 0.4s ease;'
+    '}'
+    '#mre-loader.done{opacity:0;pointer-events:none;}'
+    '.mre-bar-shell{'
+        'position:relative;width:280px;height:40px;'
+        'border:2px solid #c850c0;border-radius:6px;padding:5px;'
+        'box-shadow:0 0 8px #c850c080,0 0 20px #c850c040,inset 0 0 6px #c850c020;'
+        'overflow:hidden;'
+    '}'
+    '.mre-bar-shell::after{'
+        'content:\'\';position:absolute;inset:0;'
+        'background:repeating-linear-gradient('
+            '90deg,'
+            'transparent,'
+            'transparent calc(100% / 10 - 3px),'
+            '#0a0a12 calc(100% / 10 - 3px),'
+            '#0a0a12 calc(100% / 10)'
+        ');'
+        'pointer-events:none;z-index:2;'
+    '}'
+    '.mre-bar-fill{'
+        'height:100%;width:0%;border-radius:2px;'
+        'background:linear-gradient(90deg,#5c6fff,#9b59ff,#c850c0);'
+        'box-shadow:0 0 12px #9b59ff80;'
+        'position:relative;z-index:1;'
+        'transition:width 0.05s linear;'
+    '}'
+    '#mre-loader-text{'
+        'font-family:\'Orbitron\',sans-serif;font-size:13px;'
+        'letter-spacing:0.25em;color:#9b59ff;'
+        'text-shadow:0 0 10px #9b59ff80;'
+        'min-width:130px;text-align:center;'
+    '}'
+    '</style>'
+)
+
+_LOADER_HTML = (
+    '<div id="mre-loader">'
+    '<div class="mre-bar-shell"><div class="mre-bar-fill" id="mre-bar-fill"></div></div>'
+    '<div id="mre-loader-text">LOADING</div>'
+    '</div>'
+)
+
+_LOADER_JS = (
+    '<script>'
+    '(function(){'
+    'var _li=0,_ls=["LOADING","LOADING.","LOADING..","LOADING..."];'
+    'var _lt=document.getElementById("mre-loader-text");'
+    'var _lp=setInterval(function(){_li=(_li+1)%4;if(_lt)_lt.textContent=_ls[_li];},420);'
+    'var _bf=document.getElementById("mre-bar-fill");'
+    'var _bt=null;'
+    'function _bStep(ts){'
+    'if(!_bt)_bt=ts;'
+    'var prog=Math.min((ts-_bt)/1800,1);'
+    'var ease=1-Math.pow(1-prog,3);'
+    'if(_bf)_bf.style.width=(ease*100)+"%";'
+    'if(prog<1)requestAnimationFrame(_bStep);'
+    '}'
+    'requestAnimationFrame(_bStep);'
+    'window.dismissLoader=function(){'
+    'clearInterval(_lp);'
+    'if(_bf)_bf.style.width="100%";'
+    'setTimeout(function(){'
+    'var el=document.getElementById("mre-loader");'
+    'if(el){el.classList.add("done");setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},450);}'
+    '},120);'
+    '};'
+    '})();'
+    '</script>'
+)
+
+_INDEX_FETCH_JS = (
+    "// ── Rank preview fetch ───────────────────────────────────────────────────\n"
+    "fetch('assets/data/rank.json')\n"
+    "  .then(function(r){ return r.ok ? r.json() : Promise.reject(r.status); })\n"
+    "  .then(function(rankData) {\n"
+    "    var stocks = rankData.stocks || {};\n"
+    "    var arr = Array.isArray(stocks) ? stocks : Object.values(stocks);\n"
+    "    arr = arr.filter(function(s){ return s && typeof s === 'object'; });\n"
+    "    arr.sort(function(a,b){\n"
+    "      var ca = typeof a.confidence === 'number' ? a.confidence : -1;\n"
+    "      var cb = typeof b.confidence === 'number' ? b.confidence : -1;\n"
+    "      return cb - ca;\n"
+    "    });\n"
+    "    var top5 = arr.slice(0, 5);\n"
+    "    var rows = '';\n"
+    "    top5.forEach(function(s, idx) {\n"
+    "      var i    = idx + 1;\n"
+    "      var conf = typeof s.confidence === 'number' ? s.confidence : null;\n"
+    "      var cCls = conf === null ? 'nt' : conf >= 70 ? 'up' : conf >= 50 ? 'nt' : 'dn';\n"
+    "      var eqV  = s.eq_verdict_display  || '';\n"
+    "      var eqCls  = eqV  === 'STRONG'  ? 'up' : eqV  === 'WEAK'    ? 'dn' : 'nt';\n"
+    "      var rotS = s.rotation_signal_display || '';\n"
+    "      var rotCls = rotS === 'LEADING' ? 'up' : rotS === 'LAGGING' ? 'dn' : 'nt';\n"
+    "      var verdict  = s.market_verdict_display || s.market_verdict || '\\u2014';\n"
+    "      var confStr  = conf !== null ? Math.round(conf) : '\\u2014';\n"
+    "      var riskStr  = typeof s.risk_score === 'number' ? Math.round(s.risk_score) : '\\u2014';\n"
+    "      var ret1m = typeof s.return_1m === 'number' ? (s.return_1m >= 0 ? '\\u25b2' : '\\u25bc') + ' ' + Math.abs(s.return_1m).toFixed(1) + '%' : '\\u2014';\n"
+    "      var ret3m = typeof s.return_3m === 'number' ? (s.return_3m >= 0 ? '\\u25b2' : '\\u25bc') + ' ' + Math.abs(s.return_3m).toFixed(1) + '%' : '\\u2014';\n"
+    "      var ret6m = typeof s.return_6m === 'number' ? (s.return_6m >= 0 ? '\\u25b2' : '\\u25bc') + ' ' + Math.abs(s.return_6m).toFixed(1) + '%' : '\\u2014';\n"
+    "      var sector = (s.sector || '').replace(/_/g,' ').replace(/\\b\\w/g, function(c){ return c.toUpperCase(); });\n"
+    "      rows += '<div class=\"rp-row\" onclick=\"rpT(\\'rp' + i + '\\')\">'\n"
+    "            + '<div class=\"rp-n\">#' + i + '</div>'\n"
+    "            + '<div class=\"rp-tick\">' + (s.ticker || '\\u2014') + '</div>'\n"
+    "            + '<div class=\"rp-sect\">' + sector + '</div>'\n"
+    "            + '<div class=\"rp-conf ' + cCls + '\">' + confStr + '</div>'\n"
+    "            + '<div style=\"font-size:11px;color:var(--mist);\">' + riskStr + '</div>'\n"
+    "            + '<div><span class=\"ntag ' + eqCls + '\">' + (eqV || '\\u2014') + '</span></div>'\n"
+    "            + '<div><span class=\"ntag ' + rotCls + '\">' + (rotS || '\\u2014') + '</span></div>'\n"
+    "            + '</div>'\n"
+    "            + '<div class=\"rp-exp\" id=\"rp' + i + '\"><div class=\"rp-exp-inner\">'\n"
+    "            + '<div class=\"pex-item\"><div class=\"pex-k\">1M Return</div><div class=\"pex-v\">' + ret1m + '</div></div>'\n"
+    "            + '<div class=\"pex-item\"><div class=\"pex-k\">3M Return</div><div class=\"pex-v\">' + ret3m + '</div></div>'\n"
+    "            + '<div class=\"pex-item\"><div class=\"pex-k\">6M Return</div><div class=\"pex-v\">' + ret6m + '</div></div>'\n"
+    "            + '<div class=\"pex-item\"><div class=\"pex-k\">Verdict</div><div class=\"pex-v ' + cCls + '\">' + verdict + '</div></div>'\n"
+    "            + '</div></div>';\n"
+    "    });\n"
+    "    if (!rows) rows = '<div style=\"padding:14px 18px;color:var(--mist);font-size:11px;\">No candidates this week.</div>';\n"
+    "    document.getElementById('rank-preview-mount').innerHTML =\n"
+    "        '<div class=\"rank-preview\">'\n"
+    "      + '<div class=\"rank-preview-head\">'\n"
+    "      + '<span class=\"rank-preview-title\">Top 5 Candidates \\u00b7 Week Rank</span>'\n"
+    "      + '<a href=\"rank.html\" class=\"rp-link\">Full \\u2192</a>'\n"
+    "      + '</div>'\n"
+    "      + '<div class=\"rp-cols\">'\n"
+    "      + '<span class=\"rp-col-h\">#</span><span class=\"rp-col-h\">Ticker</span>'\n"
+    "      + '<span class=\"rp-col-h\">Sector</span><span class=\"rp-col-h\">Conf</span>'\n"
+    "      + '<span class=\"rp-col-h\">Risk</span><span class=\"rp-col-h\">EQ</span>'\n"
+    "      + '<span class=\"rp-col-h\">Rotation</span>'\n"
+    "      + '</div>'\n"
+    "      + rows\n"
+    "      + '</div>';\n"
+    "  })\n"
+    "  .catch(function() {\n"
+    "    document.getElementById('rank-preview-mount').innerHTML =\n"
+    "      '<div style=\"color:var(--dn);font-family:var(--ff-mono);font-size:11px;padding:14px;\">Error loading rank data.</div>';\n"
+    "  });\n"
+    "\n"
+    "// ── Report cards fetch ───────────────────────────────────────────────────\n"
+    "// NOTE: dismissLoader() is called here (reports fetch), not in rank fetch,\n"
+    "// because this is the last fetch to resolve. Both .then and .catch call it.\n"
+    "fetch('assets/data/reports.json')\n"
+    "  .then(function(r){ return r.ok ? r.json() : Promise.reject(r.status); })\n"
+    "  .then(function(data) {\n"
+    "    var reports = Array.isArray(data.reports) ? data.reports.slice(0, 14) : [];\n"
+    "    var html = '';\n"
+    "    reports.forEach(function(r, idx) {\n"
+    "      var vc = r.verdicts || {};\n"
+    "      var rnC, wC, sC;\n"
+    "      if (Array.isArray(vc)) {\n"
+    "        rnC = vc.filter(function(v){ return v === 'RESEARCH NOW'; }).length;\n"
+    "        wC  = vc.filter(function(v){ return v === 'WATCH'; }).length;\n"
+    "        sC  = vc.filter(function(v){ return v === 'SKIP'; }).length;\n"
+    "      } else {\n"
+    "        rnC = (typeof vc['RESEARCH NOW'] === 'number') ? vc['RESEARCH NOW'] : 0;\n"
+    "        wC  = (typeof vc['WATCH']        === 'number') ? vc['WATCH']        : 0;\n"
+    "        sC  = (typeof vc['SKIP']         === 'number') ? vc['SKIP']         : 0;\n"
+    "      }\n"
+    "      var tickers  = Array.isArray(r.tickers) ? r.tickers.join(', ') : '\\u2014';\n"
+    "      var topScore = typeof r.top_score === 'number' ? Math.round(r.top_score) : '\\u2014';\n"
+    "      var b        = r.breadth || '';\n"
+    "      var bCls     = b === 'BULLISH' ? 'up' : b === 'BEARISH' ? 'dn' : 'nt';\n"
+    "      var bTitle   = b.charAt(0).toUpperCase() + b.slice(1).toLowerCase();\n"
+    "      var count    = r.count || 0;\n"
+    "      var regime   = (r.regime || '').replace(/\\b\\w/g, function(c){ return c.toUpperCase(); });\n"
+    "      var uid      = 'prompt_' + (idx + 1);\n"
+    "      var promptText  = r.prompt || '';\n"
+    "      var scriptBlock = '';\n"
+    "      var copyBtn     = '';\n"
+    "      if (promptText) {\n"
+    "        var safePrompt = JSON.stringify(promptText).replace(/<\\/script>/gi, '<\\\\/script>');\n"
+    "        scriptBlock = '<script type=\"application/json\" id=\"' + uid + '\">' + safePrompt + '<\\/script>';\n"
+    "        copyBtn = '<button class=\"btn mg copy-prompt-btn\" data-ref=\"' + uid + '\">\\u29c9 Copy AI Prompt</button>';\n"
+    "      }\n"
+    "      var reportUrl = r.report_url || '';\n"
+    "      var fullBtn = reportUrl\n"
+    "        ? '<a href=\"' + reportUrl + '\" class=\"btn\" target=\"_blank\" onclick=\"event.stopPropagation()\">\\u2197 Full Report</a>'\n"
+    "        : '';\n"
+    "      html += scriptBlock\n"
+    "           + '<div class=\"rcard\" onclick=\"rcT(this)\">'\n"
+    "           + '<div class=\"rcard-head\"><div>'\n"
+    "           + '<div class=\"rcard-date\">' + (r.date || '') + ' \\u00b7 ' + (r.slot || '') + ' \\u00b7 ' + count + ' stock' + (count !== 1 ? 's' : '') + '</div>'\n"
+    "           + '<div class=\"rcard-slot\" style=\"font-size:11px;color:var(--mist);\">' + (r.time || '') + ' ET \\u00b7 ' + regime + '</div>'\n"
+    "           + '</div>'\n"
+    "           + '<span class=\"rcard-badge ' + bCls + '\">' + bTitle + '</span>'\n"
+    "           + '</div>'\n"
+    "           + '<div class=\"rcard-body\"><div class=\"rcard-inner\">'\n"
+    "           + '<div class=\"rcard-cols\">'\n"
+    "           + '<div><div class=\"rcc-k\">Sys 1 \\u00b7 Tickers</div><div class=\"rcc-v\">' + tickers\n"
+    "           + '<br><span style=\"font-size:11px;color:var(--mist)\">Top conf: ' + topScore + '/100</span></div></div>'\n"
+    "           + '<div><div class=\"rcc-k\">Verdicts</div><div class=\"rcc-v\">'\n"
+    "           + '<span style=\"color:var(--up)\">RN:' + rnC + '</span> '\n"
+    "           + '<span style=\"color:var(--nt)\">W:' + wC + '</span> '\n"
+    "           + '<span style=\"color:var(--dn)\">S:' + sC + '</span></div></div>'\n"
+    "           + '<div><div class=\"rcc-k\">Breadth</div><div class=\"rcc-v\" style=\"color:var(--' + bCls + ')\">' + bTitle + '</div></div>'\n"
+    "           + '</div>'\n"
+    "           + '<div class=\"rcard-btns\">' + fullBtn + copyBtn + '</div>'\n"
+    "           + '</div></div></div>';\n"
+    "    });\n"
+    "    if (!html) html = '<div style=\"color:var(--mist);font-family:var(--ff-mono);font-size:11px;\">No reports yet.</div>';\n"
+    "    document.getElementById('report-cards-mount').innerHTML = html;\n"
+    "    // ── Dismiss loader after final data is in the DOM ──\n"
+    "    if (window.dismissLoader) window.dismissLoader();\n"
+    "  })\n"
+    "  .catch(function() {\n"
+    "    document.getElementById('report-cards-mount').innerHTML =\n"
+    "      '<div style=\"color:var(--dn);font-family:var(--ff-mono);font-size:11px;padding:14px;\">Error loading reports. Try refreshing.</div>';\n"
+    "    if (window.dismissLoader) window.dismissLoader();\n"
+    "  });\n"
+)
+
+_RANK_FETCH_JS = (
+    "fetch('assets/data/rank.json')\n"
+    "  .then(function(r){ return r.ok ? r.json() : Promise.reject(r.status); })\n"
+    "  .then(function(rankData) {\n"
+    "    var stocks = rankData.stocks || {};\n"
+    "    var arr = Array.isArray(stocks) ? stocks : Object.values(stocks);\n"
+    "    arr = arr.filter(function(s){ return s && typeof s === 'object'; });\n"
+    "    arr.sort(function(a,b){\n"
+    "      var ca = typeof a.confidence === 'number' ? a.confidence : -1;\n"
+    "      var cb = typeof b.confidence === 'number' ? b.confidence : -1;\n"
+    "      return cb - ca;\n"
+    "    });\n"
+    "    var html    = '';\n"
+    "    var scripts = '';\n"
+    "    arr.forEach(function(stock, idx) {\n"
+    "      var i    = idx + 1;\n"
+    "      var conf = typeof stock.confidence === 'number' ? stock.confidence : null;\n"
+    "      var risk = typeof stock.risk_score  === 'number' ? stock.risk_score  : null;\n"
+    "      var cCls   = conf === null ? 'nt' : conf >= 70 ? 'up' : conf >= 50 ? 'nt' : 'dn';\n"
+    "      var eqV    = stock.eq_verdict_display  || '';\n"
+    "      var eqCls  = eqV  === 'STRONG'  ? 'up' : eqV  === 'WEAK'    ? 'dn' : 'nt';\n"
+    "      var rotS   = stock.rotation_signal_display || '';\n"
+    "      var rotCls = rotS === 'LEADING' ? 'up' : rotS === 'LAGGING' ? 'dn' : 'nt';\n"
+    "      var verdict  = stock.market_verdict_display || stock.market_verdict || '\\u2014';\n"
+    "      var confStr  = conf !== null ? Math.round(conf) : '\\u2014';\n"
+    "      var riskStr  = risk !== null ? Math.round(risk)  : '\\u2014';\n"
+    "      var price    = typeof stock.price === 'number' ? '$' + stock.price.toFixed(2) : '\\u2014';\n"
+    "      var alignVal = stock.alignment || '';\n"
+    "      var aCls     = alignVal === 'ALIGNED' ? 'up' : alignVal === 'MIXED' ? 'nt' : 'dn';\n"
+    "      var sector   = (stock.sector || '').replace(/_/g,' ').replace(/\\b\\w/g, function(c){ return c.toUpperCase(); });\n"
+    "      var ret1m = typeof stock.return_1m === 'number' ? (stock.return_1m >= 0 ? '\\u25b2' : '\\u25bc') + ' ' + Math.abs(stock.return_1m).toFixed(1) + '%' : '\\u2014';\n"
+    "      var ret3m = typeof stock.return_3m === 'number' ? (stock.return_3m >= 0 ? '\\u25b2' : '\\u25bc') + ' ' + Math.abs(stock.return_3m).toFixed(1) + '%' : '\\u2014';\n"
+    "      var ret6m = typeof stock.return_6m === 'number' ? (stock.return_6m >= 0 ? '\\u25b2' : '\\u25bc') + ' ' + Math.abs(stock.return_6m).toFixed(1) + '%' : '\\u2014';\n"
+    "      var phUid  = 'ph-' + i;\n"
+    "      var rawPh  = Array.isArray(stock.price_history) ? stock.price_history : [];\n"
+    "      var phList = rawPh.filter(function(v){ return typeof v === 'number' && isFinite(v); });\n"
+    "      var hasCh  = phList.length > 1;\n"
+    "      var chartEl = hasCh\n"
+    "        ? '<canvas id=\"ec' + i + '\" height=\"92\"></canvas>'\n"
+    "        : '<div style=\"color:var(--mist);font-size:11px;padding:8px 0;\">Price history unavailable</div>';\n"
+    "      scripts += '<script type=\"application/json\" id=\"' + phUid + '\">'\n"
+    "              + JSON.stringify(phList).replace(/<\\/script>/gi,'<\\\\/script>')\n"
+    "              + '<\\/script>';\n"
+    "      html += '<div class=\"rank-row\" data-ref=\"' + phUid + '\" data-eid=\"e' + i + '\" data-cid=\"ec' + i + '\" onclick=\"expT(this)\">'\n"
+    "           + '<div class=\"td-n\">#' + i + '</div>'\n"
+    "           + '<div class=\"td-t\">' + (stock.ticker || '\\u2014') + '</div>'\n"
+    "           + '<div class=\"td-s\">' + sector + '</div>'\n"
+    "           + '<div class=\"td-p\">' + price + '</div>'\n"
+    "           + '<div class=\"td-c ' + cCls + '\">' + confStr + '</div>'\n"
+    "           + '<div class=\"td-r\">' + riskStr + '</div>'\n"
+    "           + '<div><span class=\"ntag ' + eqCls + '\" style=\"font-size:8px\">' + (eqV || '\\u2014') + '</span></div>'\n"
+    "           + '<div><span class=\"ntag ' + rotCls + '\" style=\"font-size:8px\">' + (rotS || '\\u2014') + '</span></div>'\n"
+    "           + '</div>'\n"
+    "           + '<div class=\"exp-row\" id=\"e' + i + '\"><div class=\"exp-inner\">'\n"
+    "           + '<div class=\"exp-stats\">'\n"
+    "           + '<div class=\"est\"><div class=\"est-k\">1M</div><div class=\"est-v\">' + ret1m + '</div></div>'\n"
+    "           + '<div class=\"est\"><div class=\"est-k\">3M</div><div class=\"est-v\">' + ret3m + '</div></div>'\n"
+    "           + '<div class=\"est\"><div class=\"est-k\">6M</div><div class=\"est-v\">' + ret6m + '</div></div>'\n"
+    "           + '<div class=\"est\"><div class=\"est-k\">Verdict</div><div class=\"est-v ' + cCls + '\">' + verdict + '</div></div>'\n"
+    "           + '<div class=\"est\"><div class=\"est-k\">Align</div><div class=\"est-v ' + aCls + '\">' + (alignVal || '\\u2014') + '</div></div>'\n"
+    "           + '</div>'\n"
+    "           + '<div class=\"exp-chart\">' + chartEl + '</div>'\n"
+    "           + '</div></div>';\n"
+    "    });\n"
+    "    if (!html) html = '<div style=\"color:var(--mist);font-family:var(--ff-mono);padding:28px;\">No candidates this week.</div>';\n"
+    "    // Inject script blocks first (before HTML) so they exist when onclick handlers fire\n"
+    "    document.getElementById('rank-board-mount').innerHTML = scripts + html;\n"
+    "    if (window.dismissLoader) window.dismissLoader();\n"
+    "  })\n"
+    "  .catch(function() {\n"
+    "    document.getElementById('rank-board-mount').innerHTML =\n"
+    "      '<div style=\"color:var(--dn);font-family:var(--ff-mono);font-size:11px;padding:28px;\">Error loading rank data. Try refreshing.</div>';\n"
+    "    if (window.dismissLoader) window.dismissLoader();\n"
+    "  });\n"
+)
+
+_ARCHIVE_FETCH_JS = (
+    "fetch('assets/data/weekly_archive.json')\n"
+    "  .then(function(r){ return r.ok ? r.json() : Promise.reject(r.status); })\n"
+    "  .then(function(archiveData) {\n"
+    "    var weeksRaw = archiveData.weeks || {};\n"
+    "    if (typeof weeksRaw !== 'object' || Array.isArray(weeksRaw)) weeksRaw = {};\n"
+    "    var weekKeys = Object.keys(weeksRaw).sort().reverse();\n"
+    "    var html = '';\n"
+    "    weekKeys.forEach(function(wk) {\n"
+    "      var weekInfo = weeksRaw[wk];\n"
+    "      var runs     = (weekInfo && Array.isArray(weekInfo.runs)) ? weekInfo.runs : [];\n"
+    "      var label    = wk.replace('W', ' \\u2014 Week ');\n"
+    "      var cardsHtml = '';\n"
+    "      runs.forEach(function(run, runIdx) {\n"
+    "        var slot      = run.slot      || '';\n"
+    "        var ts        = run.timestamp || '';\n"
+    "        var breadth   = run.breadth   || '';\n"
+    "        var regime    = run.regime    || '';\n"
+    "        var count     = run.count     || 0;\n"
+    "        var runType   = run.run_type  || '';\n"
+    "        var bCls      = breadth === 'BULLISH' ? 'up' : breadth === 'BEARISH' ? 'dn' : 'nt';\n"
+    "        var bTitle    = breadth.charAt(0).toUpperCase() + breadth.slice(1).toLowerCase();\n"
+    "        var regTitle  = regime.charAt(0).toUpperCase()  + regime.slice(1).toLowerCase();\n"
+    "        var cands     = Array.isArray(run.candidates) ? run.candidates : [];\n"
+    "        var tickers   = cands.slice(0,5).map(function(c){ return c.ticker||''; }).filter(Boolean).join(', ') || '\\u2014';\n"
+    "        var topConf   = cands.length\n"
+    "          ? Math.max.apply(null, cands.map(function(c){ return typeof c.confidence === 'number' ? c.confidence : 0; }))\n"
+    "          : 0;\n"
+    "        var topConfStr = topConf > 0 ? Math.round(topConf) : '\\u2014';\n"
+    "        var vc  = run.verdict_counts || {};\n"
+    "        var rnC = typeof vc['RESEARCH NOW'] === 'number' ? vc['RESEARCH NOW'] : 0;\n"
+    "        var wC  = typeof vc['WATCH']        === 'number' ? vc['WATCH']        : 0;\n"
+    "        var sC  = typeof vc['SKIP']         === 'number' ? vc['SKIP']         : 0;\n"
+    "        var promptText  = run.prompt || '';\n"
+    "        var scriptBlock = '';\n"
+    "        var copyBtn     = '';\n"
+    "        if (promptText) {\n"
+    "          var uid = 'arc_' + wk + '_' + runIdx;\n"
+    "          scriptBlock = '<script type=\"application/json\" id=\"' + uid + '\">'\n"
+    "                      + JSON.stringify(promptText).replace(/<\\/script>/gi,'<\\\\/script>')\n"
+    "                      + '<\\/script>';\n"
+    "          copyBtn = '<button class=\"btn mg copy-prompt-btn\" data-ref=\"' + uid + '\">\\u29c9 Copy AI Prompt</button>';\n"
+    "        }\n"
+    "        var reportUrl = run.report_url || '';\n"
+    "        var fullBtn = reportUrl\n"
+    "          ? '<a href=\"' + reportUrl + '\" class=\"btn\" target=\"_blank\" onclick=\"event.stopPropagation()\">\\u2197 Full Report</a>'\n"
+    "          : '';\n"
+    "        var rtypeBadge = runType === 'MANUAL'\n"
+    "          ? '<span style=\"font-size:8px;color:var(--sun);margin-left:8px\">MANUAL</span>'\n"
+    "          : '';\n"
+    "        cardsHtml += scriptBlock\n"
+    "          + '<div class=\"rcard\" onclick=\"rcT(this)\">'\n"
+    "          + '<div class=\"rcard-head\"><div>'\n"
+    "          + '<div class=\"rcard-date\">' + ts + ' \\u00b7 ' + slot + ' \\u00b7 ' + count + ' stock' + (count !== 1 ? 's' : '') + rtypeBadge + '</div>'\n"
+    "          + '<div class=\"rcard-slot\">' + regTitle + '</div>'\n"
+    "          + '</div><span class=\"rcard-badge ' + bCls + '\">' + bTitle + '</span></div>'\n"
+    "          + '<div class=\"rcard-body\"><div class=\"rcard-inner\">'\n"
+    "          + '<div class=\"rcard-cols\">'\n"
+    "          + '<div><div class=\"rcc-k\">Sys 1</div><div class=\"rcc-v\">' + tickers\n"
+    "          + '<br><span style=\"color:var(--mist);font-size:10px\">Top conf: ' + topConfStr + '/100</span></div></div>'\n"
+    "          + '<div><div class=\"rcc-k\">Verdicts</div><div class=\"rcc-v\">'\n"
+    "          + '<span style=\"color:var(--up)\">RN:' + rnC + '</span> '\n"
+    "          + '<span style=\"color:var(--nt)\">W:' + wC  + '</span> '\n"
+    "          + '<span style=\"color:var(--dn)\">S:'  + sC  + '</span>'\n"
+    "          + '</div></div>'\n"
+    "          + '<div><div class=\"rcc-k\">Breadth</div><div class=\"rcc-v\" style=\"color:var(--' + bCls + ')\">' + bTitle + '</div></div>'\n"
+    "          + '</div>'\n"
+    "          + '<div class=\"rcard-btns\">' + fullBtn + copyBtn + '</div>'\n"
+    "          + '</div></div></div>';\n"
+    "      });\n"
+    "      html += '<div class=\"week-block\">'\n"
+    "            + '<div class=\"week-head\">' + label + ' <span class=\"week-count\">' + runs.length + ' report' + (runs.length !== 1 ? 's' : '') + '</span></div>'\n"
+    "            + cardsHtml\n"
+    "            + '</div>';\n"
+    "    });\n"
+    "    if (!html) html = '<div style=\"color:var(--mist);font-family:var(--ff-mono);font-size:11px;padding:28px;\">No archive data yet.</div>';\n"
+    "    document.getElementById('archive-mount').innerHTML = html;\n"
+    "    if (window.dismissLoader) window.dismissLoader();\n"
+    "  })\n"
+    "  .catch(function() {\n"
+    "    document.getElementById('archive-mount').innerHTML =\n"
+    "      '<div style=\"color:var(--dn);font-family:var(--ff-mono);font-size:11px;padding:28px;\">Error loading archive. Try refreshing.</div>';\n"
+    "    if (window.dismissLoader) window.dismissLoader();\n"
+    "  });\n"
+)
+
 
 # ── Safe helpers ────────────────────────────────────────────────────────────
 
@@ -549,13 +928,17 @@ def _err_page(nav_key: str, msg: str) -> str:
         '<meta charset="UTF-8">'
         f'{_FONTS_LINK}'
         '<link rel="stylesheet" href="assets/style.css">'
+        f'{_LOADER_CSS}'
         '</head><body>'
+        f'{_LOADER_HTML}'
+        f'{_LOADER_JS}'
         '<div class="scanlines"></div>'
         f'{_nav_html(nav_key)}'
         '<div class="pages"><div class="page on">'
         f'<div style="color:var(--dn);font-family:var(--ff-mono);padding:44px 28px;">{msg}</div>'
         '</div></div>'
         '<footer><span>MRE</span> &middot; Not investment advice</footer>'
+        '<script>document.addEventListener("DOMContentLoaded",function(){if(window.dismissLoader)window.dismissLoader();});</script>'
         '</body></html>'
     )
 
@@ -883,110 +1266,10 @@ def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, ind
         )
 
         # ── Rank preview ─────────────────────────────────────────────────────
-        stocks_raw = rank_data.get('stocks', {})
-        all_stocks = list(stocks_raw.values()) if isinstance(stocks_raw, dict) else (stocks_raw or [])
-        all_stocks = [s for s in all_stocks if isinstance(s, dict)]
-        top_stocks = sorted(
-            all_stocks,
-            key=lambda x: x.get('confidence') if isinstance(x.get('confidence'), (int, float)) else -1,
-            reverse=True
-        )[:5]
-
-        rp_rows = ''
-        for i, s in enumerate(top_stocks, 1):
-            conf    = s.get('confidence')
-            eq_v    = s.get('eq_verdict_display', '')
-            rot_s   = s.get('rotation_signal_display', '')
-            verdict = s.get('market_verdict_display') or s.get('market_verdict', '')
-            c_cls   = _conf_cls(conf)
-            rp_rows += (
-                f'<div class="rp-row" onclick="rpT(\'rp{i}\')">'
-                f'<div class="rp-n">#{i}</div>'
-                f'<div class="rp-tick">{_esc(s.get("ticker", ""))}</div>'
-                f'<div class="rp-sect">{_esc(s.get("sector","").replace("_"," ").title())}</div>'
-                f'<div class="rp-conf {c_cls}">{_fmt_score(conf, 0)}</div>'
-                f'<div style="font-size:11px;color:var(--mist);">{_fmt_score(s.get("risk_score"), 0)}</div>'
-                f'<div><span class="ntag {_eq_cls(eq_v)}">{_esc(eq_v) or _EM}</span></div>'
-                f'<div><span class="ntag {_rot_cls(rot_s)}">{_esc(rot_s) or _EM}</span></div>'
-                f'</div>'
-                f'<div class="rp-exp" id="rp{i}"><div class="rp-exp-inner">'
-                f'<div class="pex-item"><div class="pex-k">1M Return</div><div class="pex-v">{_fmt_pct(s.get("return_1m"))}</div></div>'
-                f'<div class="pex-item"><div class="pex-k">3M Return</div><div class="pex-v">{_fmt_pct(s.get("return_3m"))}</div></div>'
-                f'<div class="pex-item"><div class="pex-k">6M Return</div><div class="pex-v">{_fmt_pct(s.get("return_6m"))}</div></div>'
-                f'<div class="pex-item"><div class="pex-k">Verdict</div><div class="pex-v {_conf_cls(conf)}">{_esc(verdict)}</div></div>'
-                f'</div></div>'
-            )
-        if not rp_rows:
-            rp_rows = '<div style="padding:14px 18px;color:var(--mist);font-size:11px;">No candidates this week.</div>'
-        rank_preview = (
-            '<div class="rank-preview">'
-            '<div class="rank-preview-head">'
-            '<span class="rank-preview-title">Top 5 Candidates &middot; Week Rank</span>'
-            '<a href="rank.html" class="rp-link">Full &rarr;</a>'
-            '</div>'
-            '<div class="rp-cols">'
-            '<span class="rp-col-h">#</span><span class="rp-col-h">Ticker</span>'
-            '<span class="rp-col-h">Sector</span><span class="rp-col-h">Conf</span>'
-            '<span class="rp-col-h">Risk</span><span class="rp-col-h">EQ</span>'
-            '<span class="rp-col-h">Rotation</span>'
-            '</div>'
-            f'{rp_rows}'
-            '</div>'
-        )
+        rank_preview = '<div id="rank-preview-mount"></div>'
 
         # ── Report cards ─────────────────────────────────────────────────────
-        cards_html = ''
-        for report_index, r in enumerate(reports, 1):
-            vc        = r.get('verdicts', {})
-            if isinstance(vc, dict):
-                rn_c = vc.get('RESEARCH NOW', 0)
-                w_c  = vc.get('WATCH', 0)
-                s_c  = vc.get('SKIP', 0)
-            else:
-                vlist = vc if isinstance(vc, list) else []
-                rn_c  = vlist.count('RESEARCH NOW')
-                w_c   = vlist.count('WATCH')
-                s_c   = vlist.count('SKIP')
-            tickers    = ', '.join(_esc(t) for t in (r.get('tickers') or []))
-            top_score  = r.get('top_score', 0)
-            b          = r.get('breadth', '')
-            b_cls      = _breadth_cls(b)
-            prompt_text = r.get('prompt', '')
-            if prompt_text:
-                uid          = f'prompt_{report_index}'
-                script_block = f'<script type="application/json" id="{uid}">{_safe_json(prompt_text)}</script>'
-                copy_btn     = f'<button class="btn mg copy-prompt-btn" data-ref="{uid}">⧉ Copy AI Prompt</button>'
-            else:
-                script_block = ''
-                copy_btn     = ''
-            report_url = r.get('report_url', '')
-            full_btn   = f'<a href="{report_url}" class="btn" target="_blank" onclick="event.stopPropagation()">{chr(0x2197)} Full Report</a>' if report_url else ''
-            count      = r.get('count', 0)
-            cards_html += (
-                f'{script_block}'
-                f'<div class="rcard" onclick="rcT(this)">'
-                f'<div class="rcard-head">'
-                f'<div>'
-                f'<div class="rcard-date">{_esc(r.get("date",""))} &middot; {_esc(r.get("slot",""))} &middot; {count} stock{"s" if count!=1 else ""}</div>'
-                f'<div class="rcard-slot" style="font-size:11px;color:var(--mist);">{_esc(r.get("time",""))} ET &middot; {_esc(r.get("regime","").title())}</div>'
-                f'</div>'
-                f'<span class="rcard-badge {b_cls}">{_esc(b).title()}</span>'
-                f'</div>'
-                f'<div class="rcard-body"><div class="rcard-inner">'
-                f'<div class="rcard-cols">'
-                f'<div><div class="rcc-k">Sys 1 &middot; Tickers</div><div class="rcc-v">{tickers or _EM}'
-                f'<br><span style="font-size:11px;color:var(--mist)">Top conf: {_fmt_score(top_score, 0)}/100</span></div></div>'
-                f'<div><div class="rcc-k">Verdicts</div><div class="rcc-v">'
-                f'<span style="color:var(--up)">RN:{rn_c}</span> '
-                f'<span style="color:var(--nt)">W:{w_c}</span> '
-                f'<span style="color:var(--dn)">S:{s_c}</span></div></div>'
-                f'<div><div class="rcc-k">Breadth</div><div class="rcc-v" style="color:var(--{b_cls})">{_esc(b).title()}</div></div>'
-                f'</div>'
-                f'<div class="rcard-btns">{full_btn}{copy_btn}</div>'
-                f'</div></div></div>'
-            )
-        if not cards_html:
-            cards_html = '<div style="color:var(--mist);font-family:var(--ff-mono);font-size:11px;">No reports yet.</div>'
+        cards_html = '<div id="report-cards-mount" class="rcard-grid"></div>'
 
         # ── Signal Headlines ──────────────────────────────────────────────────
         try:
@@ -1057,7 +1340,10 @@ def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, ind
             f'{_CHARTJS}'
             '<link rel="stylesheet" href="assets/style.css">'
             f'{page_css}'
+            f'{_LOADER_CSS}'
             '</head><body>'
+            f'{_LOADER_HTML}'
+            f'{_LOADER_JS}'
             '<div class="scanlines"></div>'
             f'{_nav_html("home")}'
             '<div class="pages"><div id="p-home" class="page on">'
@@ -1100,6 +1386,7 @@ def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, ind
             '</div></div>'
             '<footer><span>MRE</span> &middot; Free-tier data only &middot; Not investment advice &middot; Always verify before acting</footer>'
             f'{js_block}'
+            f'<script>' + _INDEX_FETCH_JS + '</script>'
             '</body></html>'
         )
     except Exception as e:
@@ -1109,62 +1396,8 @@ def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, ind
 
 def _render_rank_html(rank_data: dict) -> str:
     try:
-        stocks_raw = rank_data.get('stocks', {})
-        stocks     = list(stocks_raw.values()) if isinstance(stocks_raw, dict) else (stocks_raw or [])
-        stocks     = [s for s in stocks if isinstance(s, dict)]
-        stocks     = sorted(
-            stocks,
-            key=lambda x: x.get('confidence') if isinstance(x.get('confidence'), (int, float)) else -1,
-            reverse=True
-        )
         week = rank_data.get('week', '')
-
-        rows_html  = ''
-        ph_scripts = ''
-        for i, stock in enumerate(stocks, 1):
-            conf    = stock.get('confidence')
-            risk    = stock.get('risk_score')
-            eq_v    = stock.get('eq_verdict_display', '')
-            rot_s   = stock.get('rotation_signal_display', '')
-            verdict = stock.get('market_verdict_display') or stock.get('market_verdict', '')
-            raw_ph  = stock.get('price_history') or []
-            ph_list = _sanitize_price_history(raw_ph)
-            has_ch  = len(ph_list) > 1
-            ph_uid  = f'ph-{i}'
-            ph_scripts += f'<script type="application/json" id="{ph_uid}">{_safe_json(ph_list)}</script>'
-
-            chart_el = f'<canvas id="ec{i}" height="92"></canvas>' if has_ch else '<div style="color:var(--mist);font-size:11px;padding:8px 0;">Price history unavailable</div>'
-            exp_row = (
-                f'<div class="exp-row" id="e{i}"><div class="exp-inner">'
-                f'<div class="exp-stats">'
-                f'<div class="est"><div class="est-k">1M</div><div class="est-v">{_fmt_pct(stock.get("return_1m"))}</div></div>'
-                f'<div class="est"><div class="est-k">3M</div><div class="est-v">{_fmt_pct(stock.get("return_3m"))}</div></div>'
-                f'<div class="est"><div class="est-k">6M</div><div class="est-v">{_fmt_pct(stock.get("return_6m"))}</div></div>'
-                f'<div class="est"><div class="est-k">Verdict</div><div class="est-v {_conf_cls(conf)}">{_esc(verdict) or _EM}</div></div>'
-                f'<div class="est"><div class="est-k">Align</div><div class="est-v {_align_cls(stock.get("alignment", ""))}">{_esc(stock.get("alignment", "")) or _EM}</div></div>'
-                f'</div>'
-                f'<div class="exp-chart">{chart_el}</div>'
-                f'</div></div>'
-            )
-            rows_html += (
-                f'<div class="rank-row" data-ref="{ph_uid}" data-eid="e{i}" data-cid="ec{i}" onclick="expT(this)">'
-                f'<div class="td-n">#{i}</div>'
-                f'<div class="td-t">{_esc(stock.get("ticker",""))}</div>'
-                f'<div class="td-s">{_esc(stock.get("sector","").replace("_"," ").title())}</div>'
-                f'<div class="td-p">{_fmt_price(stock.get("price"))}</div>'
-                f'<div class="td-c {_conf_cls(conf)}">{_fmt_score(conf,0)}</div>'
-                f'<div class="td-r">{_fmt_score(risk,0)}</div>'
-                f'<div><span class="ntag {_eq_cls(eq_v)}" style="font-size:8px">{_esc(eq_v) or _EM}</span></div>'
-                f'<div><span class="ntag {_rot_cls(rot_s)}" style="font-size:8px">{_esc(rot_s) or _EM}</span></div>'
-                f'</div>'
-                f'{exp_row}'
-            )
-
-        if not rows_html:
-            rows_html = '<div style="color:var(--mist);font-family:var(--ff-mono);padding:28px;">No candidates this week.</div>'
-
         week_display = week.replace('W', ' \u2014 week ') if week else 'current week'
-
 
         return (
             '<!DOCTYPE html><html lang="en"><head>'
@@ -1175,8 +1408,11 @@ def _render_rank_html(rank_data: dict) -> str:
             f'{_FONTS_LINK}'
             f'{_CHARTJS}'
             '<link rel="stylesheet" href="assets/style.css">'
+            f'{_LOADER_CSS}'
             '<style>.exp-chart canvas{width:100%!important;height:100%!important;}</style>'
             '</head><body>'
+            f'{_LOADER_HTML}'
+            f'{_LOADER_JS}'
             '<div class="scanlines"></div>'
             f'{_nav_html("rank")}'
             '<div class="pages"><div id="p-rank" class="page on">'
@@ -1189,85 +1425,21 @@ def _render_rank_html(rank_data: dict) -> str:
             '<span class="rth">Price</span><span class="rth">Conf</span><span class="rth">Risk</span>'
             '<span class="rth">EQ</span><span class="rth">Rotation</span>'
             '</div>'
-            f'{rows_html}'
+            '<div id="rank-board-mount"></div>'
             '</div>'
             '</div></div>'
             '<footer><span>MRE</span> &middot; Free-tier data only &middot; Not investment advice</footer>'
-            f'{ph_scripts}'
             f'<script>{_DAYS_JS}{_EXP_T_JS}{_RAF_COLLAPSE_JS}{_COPY_PROMPT_JS}</script>'
+            '<script>' + _RANK_FETCH_JS + '</script>'
             '</body></html>'
         )
     except Exception as e:
         log.error(f'Rank page render failed: {e}')
         return _err_page('rank', 'Rank render error. Check logs.')
 
+
 def _render_archive_html(archive_data: dict) -> str:
     try:
-        weeks_raw = archive_data.get('weeks', {})
-        if not isinstance(weeks_raw, dict):
-            weeks_raw = {}
-        week_keys = sorted(weeks_raw.keys(), reverse=True)
-
-        blocks_html = ''
-        for wk in week_keys:
-            week_info = weeks_raw[wk]
-            runs      = week_info.get('runs', []) if isinstance(week_info, dict) else []
-            label     = wk.replace('W', ' \u2014 Week ')
-            cards_html = ''
-            for run_idx, run in enumerate(runs):
-                slot    = run.get('slot', '')
-                ts      = run.get('timestamp', '')
-                breadth = run.get('breadth', '')
-                regime  = run.get('regime', '')
-                count   = run.get('count', 0)
-                run_type = run.get('run_type', '')
-                b_cls   = _breadth_cls(breadth)
-                cands   = run.get('candidates', [])
-                tickers = ', '.join(_esc(c.get('ticker', '')) for c in cands[:5])
-                top_conf = max((c.get('confidence', 0) for c in cands), default=0) if cands else 0
-                vc      = run.get('verdict_counts', {})
-                rn_c    = vc.get('RESEARCH NOW', 0) if isinstance(vc, dict) else 0
-                w_c     = vc.get('WATCH', 0)        if isinstance(vc, dict) else 0
-                s_c     = vc.get('SKIP', 0)         if isinstance(vc, dict) else 0
-                prompt_text = run.get('prompt', '')
-                if prompt_text:
-                    uid          = f'arc_{wk}_{run_idx}'
-                    script_block = f'<script type="application/json" id="{uid}">{_safe_json(prompt_text)}</script>'
-                    copy_btn     = f'<button class="btn mg copy-prompt-btn" data-ref="{uid}">⧉ Copy AI Prompt</button>'
-                else:
-                    script_block = ''
-                    copy_btn     = ''
-                report_url = run.get('report_url', '')
-                full_btn   = f'<a href="{report_url}" class="btn" target="_blank" onclick="event.stopPropagation()">{chr(0x2197)} Full Report</a>' if report_url else ''
-                rtype_badge = f'<span style="font-size:8px;color:var(--sun);margin-left:8px">{_esc(run_type)}</span>' if run_type == 'MANUAL' else ''
-                cards_html += (
-                    f'{script_block}'
-                    f'<div class="rcard" onclick="rcT(this)">'
-                    f'<div class="rcard-head"><div>'
-                    f'<div class="rcard-date">{_esc(ts)} &middot; {_esc(slot)} &middot; {count} stock{"s" if count!=1 else ""}{rtype_badge}</div>'
-                    f'<div class="rcard-slot">{_esc(regime).title()}</div>'
-                    f'</div><span class="rcard-badge {b_cls}">{_esc(breadth).title()}</span></div>'
-                    f'<div class="rcard-body"><div class="rcard-inner">'
-                    f'<div class="rcard-cols">'
-                    f'<div><div class="rcc-k">Sys 1</div><div class="rcc-v">{tickers or _EM}'
-                    f'<br><span style="color:var(--mist);font-size:10px">Top conf: {_fmt_score(top_conf, 0)}/100</span></div></div>'
-                    f'<div><div class="rcc-k">Verdicts</div><div class="rcc-v">'
-                    f'<span style="color:var(--up)">RN:{rn_c}</span> <span style="color:var(--nt)">W:{w_c}</span> <span style="color:var(--dn)">S:{s_c}</span>'
-                    f'</div></div>'
-                    f'<div><div class="rcc-k">Breadth</div><div class="rcc-v" style="color:var(--{b_cls})">{_esc(breadth).title()}</div></div>'
-                    f'</div>'
-                    f'<div class="rcard-btns">{full_btn}{copy_btn}</div>'
-                    f'</div></div></div>'
-                )
-            blocks_html += (
-                f'<div class="week-block">'
-                f'<div class="week-head">{_esc(label)} <span class="week-count">{len(runs)} report{"s" if len(runs)!=1 else ""}</span></div>'
-                f'{cards_html}'
-                f'</div>'
-            )
-        if not blocks_html:
-            blocks_html = '<div style="color:var(--mist);font-family:var(--ff-mono);font-size:11px;padding:28px;">No archive data yet.</div>'
-
         return (
             '<!DOCTYPE html><html lang="en"><head>'
             '<meta charset="UTF-8">'
@@ -1276,17 +1448,21 @@ def _render_archive_html(archive_data: dict) -> str:
             '<title>MRE // Report Archive</title>'
             f'{_FONTS_LINK}'
             '<link rel="stylesheet" href="assets/style.css">'
+            f'{_LOADER_CSS}'
             '</head><body>'
+            f'{_LOADER_HTML}'
+            f'{_LOADER_JS}'
             '<div class="scanlines"></div>'
             f'{_nav_html("archive")}'
             '<div class="pages"><div id="p-archive" class="page on">'
             '<div class="pg-eyebrow">History &middot; Stored</div>'
             '<div class="pg-title">Report <span class="hi">Archive</span></div>'
             '<div class="pg-sub">12 weeks retained &middot; 10 runs per week max</div>'
-            f'{blocks_html}'
+            '<div id="archive-mount"></div>'
             '</div></div>'
             '<footer><span>MRE</span> &middot; Free-tier data only &middot; Not investment advice</footer>'
             f'<script>{_RCT_JS}{_COPY_PROMPT_JS}</script>'
+            '<script>' + _ARCHIVE_FETCH_JS + '</script>'
             '</body></html>'
         )
     except Exception as e:
@@ -1348,7 +1524,10 @@ def _render_news_html(sectors: list, generated: str) -> str:
             '<title>MRE // Signal Feed</title>'
             f'{_FONTS_LINK}'
             '<link rel="stylesheet" href="assets/style.css">'
+            f'{_LOADER_CSS}'
             '</head><body>'
+            f'{_LOADER_HTML}'
+            f'{_LOADER_JS}'
             '<div class="scanlines"></div>'
             f'{_nav_html("news")}'
             '<div class="pages"><div id="p-news" class="page on">'
@@ -1358,6 +1537,7 @@ def _render_news_html(sectors: list, generated: str) -> str:
             f'{body}'
             '</div></div>'
             '<footer><span>MRE</span> &middot; Free-tier data only &middot; Not investment advice</footer>'
+            '<script>document.addEventListener("DOMContentLoaded",function(){if(window.dismissLoader)window.dismissLoader();});</script>'
             '</body></html>'
         )
     except Exception as e:

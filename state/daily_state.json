@@ -2,25 +2,22 @@
   "date": "2026-04-01",
   "reported_companies": [
     "TFC",
-    "STLD",
-    "NUE",
-    "FCX",
-    "AA",
-    "HCC",
-    "CFG",
-    "CF",
-    "PPG",
     "FITB",
-    "MOS",
-    "WBS",
     "NEM",
-    "LIN",
-    "CB",
+    "WBS",
+    "RF",
     "SCHW",
-    "VMC",
-    "USB",
+    "AA",
+    "NUE",
+    "PPG",
+    "STLD",
+    "FCX",
+    "LIN",
     "ECL",
-    "MFC"
+    "MFC",
+    "CB",
+    "USB",
+    "CF"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -57,10 +54,7 @@
     "16:00-17:20": {
       "companies": [
         "USB",
-        "CFG",
-        "VMC",
-        "MOS",
-        "HCC"
+        "RF"
       ],
       "status": "complete"
     }
@@ -82,7 +76,7 @@
     "semiconductors": -1.29,
     "defense": -1.65
   },
-  "breadth_score_today": 0.631,
+  "breadth_score_today": 0.636,
   "sector_breadth_ma_today": {
     "technology": {
       "breadth_ma_score": 0.0,
@@ -171,9 +165,6 @@
   },
   "today_scores": {
     "USB": 52.3,
-    "CFG": 51.3,
-    "VMC": 49.8,
-    "MOS": 48.8,
-    "HCC": 45.1
+    "RF": 52.3
   }
 }
