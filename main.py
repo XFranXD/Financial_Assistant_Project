@@ -1172,7 +1172,7 @@ def _commit_outputs() -> None:
     try:
         import git
         repo = git.Repo(search_parent_directories=True)
-        repo.git.add('reports/output/', 'state/', 'data/fundamentals_cache/', 'logs/', '--')
+        repo.git.add('reports/output/', 'docs/', 'state/', 'data/fundamentals_cache/', 'logs/', '--')
         if repo.index.diff('HEAD') or repo.untracked_files:
             ts  = datetime.now(pytz.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
             repo.index.commit(f'Auto: market scan {ts}')
