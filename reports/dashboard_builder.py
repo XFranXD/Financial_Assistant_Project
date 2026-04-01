@@ -955,7 +955,7 @@ def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, ind
             if prompt_text:
                 uid          = f'prompt_{report_index}'
                 script_block = f'<script type="application/json" id="{uid}">{_safe_json(prompt_text)}</script>'
-                copy_btn     = f'<button class="btn mg copy-prompt-btn" data-ref="{uid}">{_esc((r.get("tickers") or [""])[0])} ⧉ Copy AI Prompt</button>'
+                copy_btn     = f'<button class="btn mg copy-prompt-btn" data-ref="{uid}">⧉ Copy AI Prompt</button>'
             else:
                 script_block = ''
                 copy_btn     = ''
@@ -1233,7 +1233,7 @@ def _render_archive_html(archive_data: dict) -> str:
                 if prompt_text:
                     uid          = f'arc_{wk}_{run_idx}'
                     script_block = f'<script type="application/json" id="{uid}">{_safe_json(prompt_text)}</script>'
-                    copy_btn     = f'<button class="btn mg copy-prompt-btn" data-ref="{uid}">{_esc((run.get("tickers") or [""])[0])} ⧉ Copy AI Prompt</button>'
+                    copy_btn     = f'<button class="btn mg copy-prompt-btn" data-ref="{uid}">⧉ Copy AI Prompt</button>'
                 else:
                     script_block = ''
                     copy_btn     = ''
