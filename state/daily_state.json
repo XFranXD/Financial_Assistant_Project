@@ -1,11 +1,25 @@
 {
   "date": "2026-04-01",
-  "reported_companies": [],
+  "reported_companies": [
+    "SCHW",
+    "NEM",
+    "LIN",
+    "CF",
+    "TFC",
+    "WBS"
+  ],
   "alpha_vantage_calls_today": 20,
   "runs": {
     "9:45-11:15": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "NEM",
+        "CF",
+        "LIN",
+        "TFC",
+        "SCHW",
+        "WBS"
+      ],
+      "status": "complete"
     },
     "11:45-13:15": {
       "companies": [],
@@ -124,5 +138,12 @@
       "label": "Rising"
     }
   },
-  "today_scores": {}
+  "today_scores": {
+    "NEM": 64.3,
+    "CF": 62.3,
+    "LIN": 56.1,
+    "TFC": 55.4,
+    "SCHW": 54.6,
+    "WBS": 52.9
+  }
 }
