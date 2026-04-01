@@ -571,7 +571,7 @@ nav::before {
 .exp-inner { padding: 18px 16px; display: grid; grid-template-columns: 1fr 240px; gap: 16px; }
 .exp-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
 .est { background: var(--l3); border: 1px solid var(--rim); padding: 10px 12px; }
-.est-k { font-size: 8px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mist); margin-bottom: 5px; }
+.est-k { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--mist); margin-bottom: 5px; }
 .est-v { font-size: 14px; font-weight: 500; color: var(--snow); }
 .est-v.up { color: var(--up); }
 .est-v.nt { color: var(--nt); }
@@ -683,9 +683,4 @@ a:hover { text-decoration: underline; }
   .exp-inner { grid-template-columns: 1fr; }
   .rcard-cols { grid-template-columns: 1fr; }
   .rp-exp-inner { grid-template-columns: repeat(2,1fr); }
-}
-
-.est-k {
-    font-size: 11px;
-    color: var(--mist);
 }
