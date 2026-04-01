@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded',function(){
       var text;
       try{text=JSON.parse(el.textContent);}catch(e){
         var s2=this;s2.textContent='Error';s2.style.color='var(--dn)';
-        setTimeout(function(){s2.textContent='⎉ AI Prompt';s2.style.color='';},1800);return;
+        setTimeout(function(){s2.textContent='⧉ Copy AI Prompt';s2.style.color='';},1800);return;
       }
       var self=this;
       function onCopied(){
@@ -168,15 +168,15 @@ document.addEventListener('DOMContentLoaded',function(){
       var risk = typeof stock.risk_score  === 'number' ? stock.risk_score  : null;
       var cCls   = conf === null ? 'nt' : conf >= 70 ? 'up' : conf >= 50 ? 'nt' : 'dn';
       var eqV    = stock.eq_verdict_display  || '';
-      var eqCls  = eqV  === 'STRONG'  ? 'up' : eqV  === 'WEAK'    ? 'dn' : 'nt';
+      var eqCls  = eqV  === 'SUPPORTIVE' ? 'up' : (eqV === 'WEAK' || eqV === 'RISKY') ? 'dn' : 'nt';
       var rotS   = stock.rotation_signal_display || '';
-      var rotCls = rotS === 'LEADING' ? 'up' : rotS === 'LAGGING' ? 'dn' : 'nt';
+      var rotCls = rotS === 'SUPPORT'    ? 'up' : rotS === 'WEAKEN' ? 'dn' : 'nt';
       var verdict  = stock.market_verdict_display || stock.market_verdict || '\u2014';
       var confStr  = conf !== null ? Math.round(conf) : '\u2014';
       var riskStr  = risk !== null ? Math.round(risk)  : '\u2014';
       var price    = typeof stock.price === 'number' ? '$' + stock.price.toFixed(2) : '\u2014';
       var alignVal = stock.alignment || '';
-      var aCls     = alignVal === 'ALIGNED' ? 'up' : alignVal === 'MIXED' ? 'nt' : 'dn';
+      var aCls     = alignVal === 'ALIGNED' ? 'up' : alignVal === 'CONFLICT' ? 'dn' : 'nt';
       var sector   = (stock.sector || '').replace(/_/g,' ').replace(/\b\w/g, function(c){ return c.toUpperCase(); });
       var ret1m = typeof stock.return_1m === 'number' ? (stock.return_1m >= 0 ? '\u25b2' : '\u25bc') + ' ' + Math.abs(stock.return_1m).toFixed(1) + '%' : '\u2014';
       var ret3m = typeof stock.return_3m === 'number' ? (stock.return_3m >= 0 ? '\u25b2' : '\u25bc') + ' ' + Math.abs(stock.return_3m).toFixed(1) + '%' : '\u2014';
