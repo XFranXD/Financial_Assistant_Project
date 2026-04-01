@@ -124,9 +124,9 @@ _INDEX_FETCH_JS = (
     "      var conf = typeof s.confidence === 'number' ? s.confidence : null;\n"
     "      var cCls = conf === null ? 'nt' : conf >= 70 ? 'up' : conf >= 50 ? 'nt' : 'dn';\n"
     "      var eqV  = s.eq_verdict_display  || '';\n"
-    "      var eqCls  = eqV  === 'STRONG'  ? 'up' : eqV  === 'WEAK'    ? 'dn' : 'nt';\n"
+    "      var eqCls  = eqV  === 'SUPPORTIVE' ? 'up' : (eqV === 'WEAK' || eqV === 'RISKY') ? 'dn' : 'nt';\n"
     "      var rotS = s.rotation_signal_display || '';\n"
-    "      var rotCls = rotS === 'LEADING' ? 'up' : rotS === 'LAGGING' ? 'dn' : 'nt';\n"
+    "      var rotCls = rotS === 'SUPPORT'    ? 'up' : rotS === 'WEAKEN' ? 'dn' : 'nt';\n"
     "      var verdict  = s.market_verdict_display || s.market_verdict || '\\u2014';\n"
     "      var confStr  = conf !== null ? Math.round(conf) : '\\u2014';\n"
     "      var riskStr  = typeof s.risk_score === 'number' ? Math.round(s.risk_score) : '\\u2014';\n"
@@ -264,15 +264,15 @@ _RANK_FETCH_JS = (
     "      var risk = typeof stock.risk_score  === 'number' ? stock.risk_score  : null;\n"
     "      var cCls   = conf === null ? 'nt' : conf >= 70 ? 'up' : conf >= 50 ? 'nt' : 'dn';\n"
     "      var eqV    = stock.eq_verdict_display  || '';\n"
-    "      var eqCls  = eqV  === 'STRONG'  ? 'up' : eqV  === 'WEAK'    ? 'dn' : 'nt';\n"
+    "      var eqCls  = eqV  === 'SUPPORTIVE' ? 'up' : (eqV === 'WEAK' || eqV === 'RISKY') ? 'dn' : 'nt';\n"
     "      var rotS   = stock.rotation_signal_display || '';\n"
-    "      var rotCls = rotS === 'LEADING' ? 'up' : rotS === 'LAGGING' ? 'dn' : 'nt';\n"
+    "      var rotCls = rotS === 'SUPPORT'    ? 'up' : rotS === 'WEAKEN' ? 'dn' : 'nt';\n"
     "      var verdict  = stock.market_verdict_display || stock.market_verdict || '\\u2014';\n"
     "      var confStr  = conf !== null ? Math.round(conf) : '\\u2014';\n"
     "      var riskStr  = risk !== null ? Math.round(risk)  : '\\u2014';\n"
     "      var price    = typeof stock.price === 'number' ? '$' + stock.price.toFixed(2) : '\\u2014';\n"
     "      var alignVal = stock.alignment || '';\n"
-    "      var aCls     = alignVal === 'ALIGNED' ? 'up' : alignVal === 'MIXED' ? 'nt' : 'dn';\n"
+    "      var aCls     = alignVal === 'ALIGNED' ? 'up' : alignVal === 'CONFLICT' ? 'dn' : 'nt';\n"
     "      var sector   = (stock.sector || '').replace(/_/g,' ').replace(/\\b\\w/g, function(c){ return c.toUpperCase(); });\n"
     "      var ret1m = typeof stock.return_1m === 'number' ? (stock.return_1m >= 0 ? '\\u25b2' : '\\u25bc') + ' ' + Math.abs(stock.return_1m).toFixed(1) + '%' : '\\u2014';\n"
     "      var ret3m = typeof stock.return_3m === 'number' ? (stock.return_3m >= 0 ? '\\u25b2' : '\\u25bc') + ' ' + Math.abs(stock.return_3m).toFixed(1) + '%' : '\\u2014';\n"
@@ -869,7 +869,7 @@ document.addEventListener('DOMContentLoaded',function(){
       var text;
       try{text=JSON.parse(el.textContent);}catch(e){
         var s2=this;s2.textContent='Error';s2.style.color='var(--dn)';
-        setTimeout(function(){s2.textContent='\u2389 AI Prompt';s2.style.color='';},1800);return;
+        setTimeout(function(){s2.textContent='\u29c9 Copy AI Prompt';s2.style.color='';},1800);return;
       }
       var self=this;
       function onCopied(){
