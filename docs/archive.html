@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded',function(){
         var bTitle    = breadth.charAt(0).toUpperCase() + breadth.slice(1).toLowerCase();
         var regRaw    = regime.toLowerCase();
         var regTitle  = regime.charAt(0).toUpperCase()  + regime.slice(1).toLowerCase();
-        var regimeCls = regRaw === 'low_vol' ? 'regime-calm' : regRaw === 'normal' ? 'regime-normal' : regRaw === 'elevated' ? 'regime-elevated' : regRaw === 'crisis' ? 'regime-crisis' : 'regime-normal';
+        var regimeCls = regRaw.indexOf('calm') !== -1 ? 'regime-calm' : regRaw.indexOf('normal') !== -1 ? 'regime-normal' : regRaw.indexOf('elevated') !== -1 ? 'regime-elevated' : regRaw.indexOf('stress') !== -1 ? 'regime-crisis' : 'regime-normal';
         var regimeBadge = '<span class="regime-badge ' + regimeCls + '">' + regTitle + '</span>';
         var cands     = Array.isArray(run.candidates) ? run.candidates : [];
         var tickers   = cands.slice(0,5).map(function(c){ return c.ticker||''; }).filter(Boolean).join(', ') || '\u2014';
