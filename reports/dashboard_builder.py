@@ -225,7 +225,7 @@ _INDEX_FETCH_JS = (
     "           + '<div class=\"rcard-body\"><div class=\"rcard-inner\">'\n"
     "           + '<div class=\"rcard-cols\">'\n"
     "           + '<div><div class=\"rcc-k\">Sys 1 \\u00b7 Tickers</div><div class=\"rcc-v\">' + tickers\n"
-    "           + '<br><span style=\"font-size:11px;color:var(--mist)\">Top conf: <span style=\"color:var(--pu-lt);font-weight:600\">' + topScore + '</span>/100</span></div></div>'\n"
+    "           + '<br><span style=\"font-size:11px;color:var(--mist)\">Top conf: <span class=\"top-conf-val\">' + topScore + '</span>/100</span></div></div>'\n"
     "           + '<div><div class=\"rcc-k\">Verdicts</div><div class=\"rcc-v\">'\n"
     "           + '<span style=\"color:var(--up)\">RN:' + rnC + '</span> '\n"
     "           + '<span style=\"color:var(--nt)\">W:' + wC + '</span> '\n"
@@ -388,7 +388,7 @@ _ARCHIVE_FETCH_JS = (
     "          + '<div class=\"rcard-body\"><div class=\"rcard-inner\">'\n"
     "          + '<div class=\"rcard-cols\">'\n"
     "          + '<div><div class=\"rcc-k\">Sys 1</div><div class=\"rcc-v\">' + tickers\n"
-    "          + '<br><span style=\"color:var(--mist);font-size:10px\">Top conf: <span style=\"color:var(--pu-lt);font-weight:600\">' + topConfStr + '</span>/100</span></div></div>'\n"
+    "          + '<br><span style=\"color:var(--mist);font-size:10px\">Top conf: <span class=\"top-conf-val\">' + topConfStr + '</span>/100</span></div></div>'\n"
     "          + '<div><div class=\"rcc-k\">Verdicts</div><div class=\"rcc-v\">'\n"
     "          + '<span style=\"color:var(--up)\">RN:' + rnC + '</span> '\n"
     "          + '<span style=\"color:var(--nt)\">W:' + wC  + '</span> '\n"
@@ -1655,4 +1655,3 @@ def build_dashboard(
         log.error(f'news.html write failed: {e}')
 
     log.info('build_dashboard complete')
-    

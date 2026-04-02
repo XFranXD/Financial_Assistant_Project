@@ -1026,6 +1026,14 @@ nav::before {
   line-height: 1.65;
 }
 
+.top-conf-val {
+  background: linear-gradient(90deg, rgba(155, 89, 255, 0.35), rgba(192, 132, 255, 0.35));
+  color: #3d1f6e;
+  padding: 1px 5px;
+  border-radius: 2px;
+  font-weight: 700;
+}
+
 .rcard-btns {
   display: flex;
   gap: 8px;
@@ -1045,27 +1053,27 @@ nav::before {
 }
 
 .regime-calm {
-  color: #0a1f14;
-  background: var(--up);
-  border-color: var(--up);
+  color: var(--up);
+  background: rgba(57, 232, 160, 0.18);
+  border-color: rgba(57, 232, 160, 0.5);
 }
 
 .regime-normal {
-  color: #1a0f2e;
-  background: var(--pu-lt);
-  border-color: var(--pu-lt);
+  color: var(--pu-lt);
+  background: rgba(192, 132, 255, 0.18);
+  border-color: rgba(192, 132, 255, 0.5);
 }
 
 .regime-elevated {
-  color: #1f1000;
-  background: var(--sun);
-  border-color: var(--sun);
+  color: var(--sun);
+  background: rgba(255, 154, 60, 0.18);
+  border-color: rgba(255, 154, 60, 0.5);
 }
 
 .regime-crisis {
-  color: #1f0008;
-  background: var(--dn);
-  border-color: var(--dn);
+  color: var(--dn);
+  background: rgba(255, 77, 109, 0.18);
+  border-color: rgba(255, 77, 109, 0.5);
 }
 
 /* ── BUTTONS ── */
