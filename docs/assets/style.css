@@ -1027,9 +1027,10 @@ nav::before {
 }
 
 .top-conf-val {
+  display: inline-block;
   background: linear-gradient(90deg, rgba(155, 89, 255, 0.35), rgba(192, 132, 255, 0.35));
-  color: #3d1f6e;
-  padding: 1px 5px;
+  color: #1a0a3a;
+  padding: 2px 7px;
   border-radius: 2px;
   font-weight: 700;
 }
