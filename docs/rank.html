@@ -55,9 +55,12 @@ function expT(btn){
     row.classList.add('open');
     setTimeout(function(){
       row.querySelectorAll('.est-v').forEach(function(ev,i){
-        var raw=ev.textContent.trim(),num=parseFloat(raw.replace(/[^0-9.]/g,''));
-        if(!isNaN(num)&&num>0&&raw.length<12){
-          var prefix=raw.match(/^[▲▼]/)?.[0]||'',suffix=raw.replace(/^[▲▼]?[\d.]+/,'');
+        var stored=ev.dataset.raw||'';
+        if(!stored)return;
+        var parts=stored.split('|');
+        if(parts.length!==3)return;
+        var prefix=parts[0],num=parseFloat(parts[1]),suffix=parts[2];
+        if(!isNaN(num)&&num>0){
           setTimeout(function(){countUp(ev,num,prefix,suffix,420);},i*50);
         }
       });
@@ -181,6 +184,9 @@ document.addEventListener('DOMContentLoaded',function(){
       var ret1m = typeof stock.return_1m === 'number' ? (stock.return_1m >= 0 ? '\u25b2' : '\u25bc') + ' ' + Math.abs(stock.return_1m).toFixed(1) + '%' : '\u2014';
       var ret3m = typeof stock.return_3m === 'number' ? (stock.return_3m >= 0 ? '\u25b2' : '\u25bc') + ' ' + Math.abs(stock.return_3m).toFixed(1) + '%' : '\u2014';
       var ret6m = typeof stock.return_6m === 'number' ? (stock.return_6m >= 0 ? '\u25b2' : '\u25bc') + ' ' + Math.abs(stock.return_6m).toFixed(1) + '%' : '\u2014';
+      var raw1m = typeof stock.return_1m === 'number' ? (stock.return_1m >= 0 ? '\u25b2' : '\u25bc') + '|' + Math.abs(stock.return_1m).toFixed(1) + '|%' : '';
+      var raw3m = typeof stock.return_3m === 'number' ? (stock.return_3m >= 0 ? '\u25b2' : '\u25bc') + '|' + Math.abs(stock.return_3m).toFixed(1) + '|%' : '';
+      var raw6m = typeof stock.return_6m === 'number' ? (stock.return_6m >= 0 ? '\u25b2' : '\u25bc') + '|' + Math.abs(stock.return_6m).toFixed(1) + '|%' : '';
       var phUid  = 'ph-' + i;
       var rawPh  = Array.isArray(stock.price_history) ? stock.price_history : [];
       var phList = rawPh.filter(function(v){ return typeof v === 'number' && isFinite(v); });
@@ -203,9 +209,9 @@ document.addEventListener('DOMContentLoaded',function(){
            + '</div>'
            + '<div class="exp-row" id="e' + i + '"><div class="exp-inner">'
            + '<div class="exp-stats">'
-           + '<div class="est"><div class="est-k">1M</div><div class="est-v">' + ret1m + '</div></div>'
-           + '<div class="est"><div class="est-k">3M</div><div class="est-v">' + ret3m + '</div></div>'
-           + '<div class="est"><div class="est-k">6M</div><div class="est-v">' + ret6m + '</div></div>'
+           + '<div class="est"><div class="est-k">1M</div><div class="est-v" data-raw="' + raw1m + '">' + ret1m + '</div></div>'
+           + '<div class="est"><div class="est-k">3M</div><div class="est-v" data-raw="' + raw3m + '">' + ret3m + '</div></div>'
+           + '<div class="est"><div class="est-k">6M</div><div class="est-v" data-raw="' + raw6m + '">' + ret6m + '</div></div>'
            + '<div class="est"><div class="est-k">Verdict</div><div class="est-v ' + cCls + '">' + verdict + '</div></div>'
            + '<div class="est"><div class="est-k">Align</div><div class="est-v ' + aCls + '">' + (alignVal || '\u2014') + '</div></div>'
            + '</div>'
