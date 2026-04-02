@@ -50,7 +50,10 @@ document.addEventListener('DOMContentLoaded',function(){
         var runType   = run.run_type  || '';
         var bCls      = breadth === 'BULLISH' ? 'up' : breadth === 'BEARISH' ? 'dn' : 'nt';
         var bTitle    = breadth.charAt(0).toUpperCase() + breadth.slice(1).toLowerCase();
+        var regRaw    = regime.toLowerCase();
         var regTitle  = regime.charAt(0).toUpperCase()  + regime.slice(1).toLowerCase();
+        var regimeCls = regRaw === 'low_vol' ? 'regime-calm' : regRaw === 'normal' ? 'regime-normal' : regRaw === 'elevated' ? 'regime-elevated' : regRaw === 'crisis' ? 'regime-crisis' : 'regime-normal';
+        var regimeBadge = '<span class="regime-badge ' + regimeCls + '">' + regTitle + '</span>';
         var cands     = Array.isArray(run.candidates) ? run.candidates : [];
         var tickers   = cands.slice(0,5).map(function(c){ return c.ticker||''; }).filter(Boolean).join(', ') || '\u2014';
         var topConf   = cands.length
@@ -82,12 +85,12 @@ document.addEventListener('DOMContentLoaded',function(){
           + '<div class="rcard" onclick="rcT(this)">'
           + '<div class="rcard-head"><div>'
           + '<div class="rcard-date">' + ts + ' \u00b7 ' + slot + ' \u00b7 ' + count + ' stock' + (count !== 1 ? 's' : '') + rtypeBadge + '</div>'
-          + '<div class="rcard-slot">' + regTitle + '</div>'
+          + '<div class="rcard-slot">' + regimeBadge + '</div>'
           + '</div><span class="rcard-badge ' + bCls + '">' + bTitle + '</span></div>'
           + '<div class="rcard-body"><div class="rcard-inner">'
           + '<div class="rcard-cols">'
           + '<div><div class="rcc-k">Sys 1</div><div class="rcc-v">' + tickers
-          + '<br><span style="color:var(--mist);font-size:10px">Top conf: ' + topConfStr + '/100</span></div></div>'
+          + '<br><span style="color:var(--mist);font-size:10px">Top conf: <span style="color:var(--pu-lt);font-weight:600">' + topConfStr + '</span>/100</span></div></div>'
           + '<div><div class="rcc-k">Verdicts</div><div class="rcc-v">'
           + '<span style="color:var(--up)">RN:' + rnC + '</span> '
           + '<span style="color:var(--nt)">W:' + wC  + '</span> '
