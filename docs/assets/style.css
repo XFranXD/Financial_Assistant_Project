@@ -1045,27 +1045,27 @@ nav::before {
 }
 
 .regime-calm {
-  color: var(--up);
-  background: rgba(57, 232, 160, .12);
-  border-color: rgba(57, 232, 160, .3);
+  color: #0a1f14;
+  background: var(--up);
+  border-color: var(--up);
 }
 
 .regime-normal {
-  color: var(--mist);
-  background: rgba(74, 61, 114, .25);
-  border-color: rgba(74, 61, 114, .5);
+  color: #1a0f2e;
+  background: var(--pu-lt);
+  border-color: var(--pu-lt);
 }
 
 .regime-elevated {
-  color: var(--sun);
-  background: rgba(255, 154, 60, .12);
-  border-color: rgba(255, 154, 60, .3);
+  color: #1f1000;
+  background: var(--sun);
+  border-color: var(--sun);
 }
 
 .regime-crisis {
-  color: var(--dn);
-  background: rgba(255, 77, 109, .12);
-  border-color: rgba(255, 77, 109, .3);
+  color: #1f0008;
+  background: var(--dn);
+  border-color: var(--dn);
 }
 
 /* ── BUTTONS ── */
