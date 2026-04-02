@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded',function(){
       var text;
       try{text=JSON.parse(el.textContent);}catch(e){
         var s2=this;s2.textContent='Error';s2.style.color='var(--dn)';
-        setTimeout(function(){s2.textContent='⧉ Copy AI Prompt';s2.style.color='';},1800);return;
+        setTimeout(function(){s2.textContent='⎉ AI Prompt';s2.style.color='';},1800);return;
       }
       var self=this;
       function onCopied(){
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded',function(){
     });
   });
 });
-</script><script>fetch('assets/data/weekly_archive.json')
+</script><script>fetch('assets/data/weekly_archive.json?v='+Date.now())
   .then(function(r){ return r.ok ? r.json() : Promise.reject(r.status); })
   .then(function(archiveData) {
     var weeksRaw = archiveData.weeks || {};
