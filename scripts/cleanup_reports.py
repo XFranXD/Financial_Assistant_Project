@@ -249,20 +249,36 @@ def _update_rank_json(deleted_tickers: set, date_prefix: str, slot_str):
             print(f'  Error reading weekly_archive.json for rank fallback: {e}')
 
     stocks = rank_data.get('stocks', {})
-    for ticker in deleted_tickers:
+
+    # Build full set of tickers to evaluate — union of:
+    # 1. Tickers from the deleted reports.json entries (passed in)
+    # 2. Every ticker currently in rank.json (catches tickers whose
+    #    reports.json entry was already pruned but rank entry survived)
+    all_rank_tickers = set(stocks.keys())
+    tickers_to_check = deleted_tickers | all_rank_tickers
+
+    # Build set of tickers that still have surviving archive entries
+    # (already built above in prior_best — any ticker with a prior_best
+    # entry has at least one surviving run)
+    surviving_tickers = set(prior_best.keys())
+
+    for ticker in tickers_to_check:
         if ticker not in stocks:
             continue
         if ticker in prior_best:
             prior = prior_best[ticker]
-            # Update confidence and core display fields from prior best
-            stocks[ticker]['confidence']     = prior.get('confidence', 0)
-            stocks[ticker]['market_verdict'] = prior.get('market_verdict', '')
-            stocks[ticker]['market_verdict_display'] = prior.get(
-                'market_verdict', stocks[ticker].get('market_verdict_display', ''))
-            print(f'  rank.json: {ticker} rolled back to conf={prior.get("confidence")}')
+            # Only update if this ticker was in a deleted run —
+            # surviving tickers not in deleted_tickers keep current score
+            if ticker in deleted_tickers:
+                stocks[ticker]['confidence']     = prior.get('confidence', 0)
+                stocks[ticker]['market_verdict'] = prior.get('market_verdict', '')
+                stocks[ticker]['market_verdict_display'] = prior.get(
+                    'market_verdict', stocks[ticker].get('market_verdict_display', ''))
+                print(f'  rank.json: {ticker} rolled back to conf={prior.get("confidence")}')
         else:
+            # No surviving archive entry — remove from rank board
             del stocks[ticker]
-            print(f'  rank.json: {ticker} removed (no prior entry found)')
+            print(f'  rank.json: {ticker} removed (no surviving archive entry)')
 
     rank_data['stocks'] = stocks
     try:
@@ -582,3 +598,4 @@ if __name__ == '__main__':
             _dry_run()
         else:
             print('Aborted.')
+            
