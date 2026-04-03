@@ -181,16 +181,6 @@ document.addEventListener('DOMContentLoaded',function(){
     });
     var html    = '';
     var scripts = '';
-    if (!document.getElementById('rankBorderGrad')) {
-      scripts += '<svg width="0" height="0" style="position:absolute"><defs>'
-        + '<linearGradient id="rankBorderGrad" x1="0%" y1="0%" x2="100%" y2="100%">'
-        + '<stop offset="0%" stop-color="#1A0A2E"/>'
-        + '<stop offset="25%" stop-color="#3D0A4F"/>'
-        + '<stop offset="50%" stop-color="#6B0F6B"/>'
-        + '<stop offset="75%" stop-color="#8B2BE8"/>'
-        + '<stop offset="100%" stop-color="#9b59ff"/>'
-        + '</linearGradient></defs></svg>';
-    }
     arr.forEach(function(stock, idx) {
       var i    = idx + 1;
       var conf = typeof stock.confidence === 'number' ? stock.confidence : null;
@@ -242,9 +232,6 @@ document.addEventListener('DOMContentLoaded',function(){
       var priceDisp  = typeof stock.price === 'number' ? '$' + stock.price.toFixed(2) : '\u2014';
       html += '<div class="rank-card" data-ref="' + phUid + '" data-eid="e' + i + '" data-cid="ec' + i + '" onclick="expT(this)">'
            + '<div class="rank-card-main">'
-           + '<svg class="rank-card-border-svg" viewBox="0 0 100 100" preserveAspectRatio="none">'
-           + '<rect class="rank-card-border-path" x="1" y="1" width="98" height="98" rx="13" ry="13"/>'
-           + '</svg>'
            + '<div class="rck-n">#' + i + '</div>'
            + '<div class="rck-t">' + (stock.ticker || '\u2014') + '</div>'
            + '<div class="rck-s" style="color:' + sectorColor + '">' + sector + '</div>'
