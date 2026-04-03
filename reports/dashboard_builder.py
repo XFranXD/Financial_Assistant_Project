@@ -1275,11 +1275,18 @@ def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, ind
     try:
         indices = indices or {}
         # ── Index pills ──────────────────────────────────────────────────────
+        _pill_colors = {
+            'dow': ('#ffb347', 'rgba(255,179,71,0.12)'),
+            'sp':  ('#ff7c2a', 'rgba(255,124,42,0.12)'),
+            'nq':  ('#ff4466', 'rgba(255,68,102,0.12)'),
+        }
+
         def _pill(key, pill_id, label_text):
             d     = indices.get(key, {})
             val   = _fmt_index_val(d.get('value'))
             chg   = d.get('change_pct')
             lbl   = (d.get('label') or '').upper()
+            col, bg = _pill_colors.get(pill_id, ('#9b59ff', 'rgba(155,89,255,0.12)'))
             if isinstance(chg, (int, float)):
                 arrow = '\u25b2' if chg > 0 else '\u25bc' if chg < 0 else '\u2014'
                 cls   = 'up' if chg > 0 else 'dn' if chg < 0 else 'nt'
@@ -1288,9 +1295,10 @@ def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, ind
                 cls   = 'nt'
                 chg_s = '\u2014'
             return (
-                f'<div class="idx-pill" id="pill-{pill_id}" onclick="toggleIdx(\'{pill_id}\')">'
+                f'<div class="idx-pill" id="pill-{pill_id}" onclick="toggleIdx(\'{pill_id}\')" '
+                f'style="background:{bg};border:1px solid {col};border-radius:8px;">'
                 f'<div class="pill-left">'
-                f'<div class="pill-label" style="font-size:13px;color:var(--pu-lt);font-family:var(--ff-mono);letter-spacing:0.04em;">// {label_text}</div>'
+                f'<div class="pill-label" style="font-size:11px;color:{col};font-family:var(--ff-mono);letter-spacing:0.08em;text-transform:uppercase;">{label_text}</div>'
                 f'<div class="pill-val">{val}</div>'
                 f'<div class="pill-change {cls}">{chg_s}</div>'
                 f'</div><div class="pill-chevron">\u25bc</div></div>'
@@ -1312,10 +1320,10 @@ def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, ind
         b_cls     = _breadth_cls(b_label)
         strip = (
             '<div class="status-strip stagger-3">'
-            '<span class="ss-label" style="font-size:11px;color:#9b59ff;">Breadth</span>'
+            '<span class="ss-label" style="font-size:11px;color:var(--mist);">Breadth</span>'
             f'<span class="ss-val {b_cls}">{_esc(b_label)}</span>'
             '<span class="ss-divider">&middot;</span>'
-            '<span class="ss-label" style="font-size:11px;color:#9b59ff;">Market</span>'
+            '<span class="ss-label" style="font-size:11px;color:var(--mist);">Market</span>'
             f'<span class="ss-val nt">{_esc(r_label)}</span>'
             '</div>'
         )
@@ -1693,3 +1701,4 @@ def build_dashboard(
         log.error(f'news.html write failed: {e}')
 
     log.info('build_dashboard complete')
+    
