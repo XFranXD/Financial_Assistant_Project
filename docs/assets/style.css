@@ -1199,7 +1199,7 @@ nav::before {
   pointer-events: none; overflow: visible;
 }
 .rank-card-border-path {
-  fill: none; stroke-width: 2.5; stroke: url(#rankBorderGrad);
+  fill: none; stroke-width: 1.2; stroke: url(#rankBorderGrad);
   stroke-dasharray: 900; stroke-dashoffset: 900;
 }
 .rank-card.selected .rank-card-border-path {
@@ -1213,10 +1213,11 @@ nav::before {
 .rank-card-main {
   display: flex; flex-wrap: wrap; align-items: center;
   gap: 8px; padding: 14px 16px; position: relative;
+  overflow: hidden;
 }
 .rck-n { font-size: 11px; color: var(--pu-lt); font-family: var(--ff-head); font-weight: 700; min-width: 28px; }
 .rck-t { font-family: var(--ff-head); font-size: 14px; font-weight: 700; color: var(--snow); letter-spacing: 0.06em; min-width: 52px; }
-.rck-s { font-size: 9px; color: var(--mist); flex: 1; min-width: 80px; }
+.rck-s { font-size: 11px; flex: 1; min-width: 80px; }
 .rck-pills { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .rpill {
   display: inline-flex; align-items: center; gap: 5px;

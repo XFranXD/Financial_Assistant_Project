@@ -138,11 +138,17 @@ _INDEX_FETCH_JS = (
     "      var rpConfCls = rpConfVal !== null ? (rpConfVal >= 70 ? 'rpill-cup' : rpConfVal >= 50 ? 'rpill-cnt' : 'rpill-cdn') : 'rpill-cnt';\n"
     "      var rpPrice   = typeof s.price === 'number' ? '$' + s.price.toFixed(2) : '\\u2014';\n"
     "      var sector    = (s.sector || '').replace(/_/g,' ').replace(/\\b\\w/g, function(c){ return c.toUpperCase(); });\n"
+    "      var _sMap={'Energy':'#f4a44a','Technology':'#7dd8ff','Healthcare':'#7be8b0','Financials':'#c9b8ff',\n"
+    "        'Consumer Discretionary':'#ff9ec4','Consumer Staples':'#b8e8c8','Industrials':'#ffd27a',\n"
+    "        'Materials':'#a8e6cf','Real Estate':'#ffb8a0','Utilities':'#9ecfff',\n"
+    "        'Communication Services':'#d4b8ff'};\n"
+    "      var _sKey=_sMap[sector]?sector:Object.keys(_sMap).find(function(k){return sector.toLowerCase().indexOf(k.toLowerCase())!==-1;})||'';\n"
+    "      var sectorColor=_sMap[_sKey]||'#a89bc2';\n"
     "      rows += '<div class=\"rank-card\" onclick=\"rpT(\\'rp' + i + '\\')\">'\n"
     "            + '<div class=\"rank-card-main\">'\n"
     "            + '<div class=\"rck-n\">#' + i + '</div>'\n"
     "            + '<div class=\"rck-t\">' + (s.ticker || '\\u2014') + '</div>'\n"
-    "            + '<div class=\"rck-s\">' + sector + '</div>'\n"
+    "            + '<div class=\"rck-s\" style=\"color:' + sectorColor + '\">' + sector + '</div>'\n"
     "            + '<div class=\"rck-pills\">'\n"
     "            + '<span class=\"rpill rpill-price\"><span class=\"rpill-lbl\">Price</span>' + rpPrice + '</span>'\n"
     "            + '<span class=\"rpill ' + rpConfCls + '\"><span class=\"rpill-lbl\">Conf</span>' + rpConf + '/100</span>'\n"
@@ -162,11 +168,6 @@ _INDEX_FETCH_JS = (
     "      + '<div class=\"rank-preview-head\">'\n"
     "      + '<span class=\"rank-preview-title\">Top 5 Candidates \\u00b7 Week Rank</span>'\n"
     "      + '<a href=\"rank.html\" class=\"rp-link\">Full \\u2192</a>'\n"
-    "      + '</div>'\n"
-    "      + '<div class=\"rp-cols\">'\n"
-    "      + '<span class=\"rp-col-h\">#</span><span class=\"rp-col-h\">Ticker</span>'\n"
-    "      + '<span class=\"rp-col-h\">Sector</span><span class=\"rp-col-h\">Price</span>'\n"
-    "      + '<span class=\"rp-col-h\">Conf</span>'\n"
     "      + '</div>'\n"
     "      + rows\n"
     "      + '</div>';\n"
@@ -291,7 +292,13 @@ _RANK_FETCH_JS = (
     "      var price    = typeof stock.price === 'number' ? '$' + stock.price.toFixed(2) : '\\u2014';\n"
     "      var alignVal = stock.alignment || '';\n"
     "      var aCls     = alignVal === 'ALIGNED' ? 'up' : alignVal === 'MIXED' ? 'nt' : 'dn';\n"
-    "      var sector   = (stock.sector || '').replace(/_/g,' ').replace(/\\b\\w/g, function(c){ return c.toUpperCase(); });\n"
+    "      var sector    = (stock.sector || '').replace(/_/g,' ').replace(/\\b\\w/g, function(c){ return c.toUpperCase(); });\n"
+    "      var _sMap={'Energy':'#f4a44a','Technology':'#7dd8ff','Healthcare':'#7be8b0','Financials':'#c9b8ff',\n"
+    "        'Consumer Discretionary':'#ff9ec4','Consumer Staples':'#b8e8c8','Industrials':'#ffd27a',\n"
+    "        'Materials':'#a8e6cf','Real Estate':'#ffb8a0','Utilities':'#9ecfff',\n"
+    "        'Communication Services':'#d4b8ff'};\n"
+    "      var _sKey=_sMap[sector]?sector:Object.keys(_sMap).find(function(k){return sector.toLowerCase().indexOf(k.toLowerCase())!==-1;})||'';\n"
+    "      var sectorColor=_sMap[_sKey]||'#a89bc2';\n"
     "      var ret1m = typeof stock.return_1m === 'number' ? (stock.return_1m >= 0 ? '\\u25b2' : '\\u25bc') + ' ' + Math.abs(stock.return_1m).toFixed(1) + '%' : '\\u2014';\n"
     "      var ret3m = typeof stock.return_3m === 'number' ? (stock.return_3m >= 0 ? '\\u25b2' : '\\u25bc') + ' ' + Math.abs(stock.return_3m).toFixed(1) + '%' : '\\u2014';\n"
     "      var ret6m = typeof stock.return_6m === 'number' ? (stock.return_6m >= 0 ? '\\u25b2' : '\\u25bc') + ' ' + Math.abs(stock.return_6m).toFixed(1) + '%' : '\\u2014';\n"
@@ -320,13 +327,13 @@ _RANK_FETCH_JS = (
     "      var riskDisp   = riskVal !== null ? Math.round(riskVal) : '\\u2014';\n"
     "      var priceDisp  = typeof stock.price === 'number' ? '$' + stock.price.toFixed(2) : '\\u2014';\n"
     "      html += '<div class=\"rank-card\" data-ref=\"' + phUid + '\" data-eid=\"e' + i + '\" data-cid=\"ec' + i + '\" onclick=\"expT(this)\">'\n"
+    "           + '<div class=\"rank-card-main\">'\n"
     "           + '<svg class=\"rank-card-border-svg\" viewBox=\"0 0 100 100\" preserveAspectRatio=\"none\">'\n"
     "           + '<rect class=\"rank-card-border-path\" x=\"1\" y=\"1\" width=\"98\" height=\"98\" rx=\"13\" ry=\"13\"/>'\n"
     "           + '</svg>'\n"
-    "           + '<div class=\"rank-card-main\">'\n"
     "           + '<div class=\"rck-n\">#' + i + '</div>'\n"
     "           + '<div class=\"rck-t\">' + (stock.ticker || '\\u2014') + '</div>'\n"
-    "           + '<div class=\"rck-s\">' + sector + '</div>'\n"
+    "           + '<div class=\"rck-s\" style=\"color:' + sectorColor + '\">' + sector + '</div>'\n"
     "           + '<div class=\"rck-pills\">'\n"
     "           + '<span class=\"rpill rpill-price\"><span class=\"rpill-lbl\">Price</span>' + priceDisp + '</span>'\n"
     "           + '<span class=\"rpill ' + confCls + '\"><span class=\"rpill-lbl\">Conf</span>' + confDisp + '/100</span>'\n"
@@ -881,11 +888,14 @@ function expT(btn){
   var row=document.getElementById(eid);if(!row)return;
   var card=btn.closest('.rank-card');
   var was=row.classList.contains('open');
-  document.querySelectorAll('.exp-row').forEach(r=>{if(r!==row)closeExpRowInstant(r);});
   document.querySelectorAll('.rank-card').forEach(function(c){
-    if(c!==card){c.classList.remove('selected');c.classList.add('dimmed');}
+    c.classList.remove('selected','dimmed','closing');
   });
+  document.querySelectorAll('.exp-row').forEach(r=>{if(r!==row)closeExpRowInstant(r);});
   if(!was){
+    document.querySelectorAll('.rank-card').forEach(function(c){
+      if(c!==card){c.classList.add('dimmed');}
+    });
     row.style.display=''; row.style.height='';
     var inner=row.querySelector('.exp-inner');
     if(inner){inner.style.opacity='';inner.style.transform='';}
@@ -1478,11 +1488,6 @@ def _render_rank_html(rank_data: dict) -> str:
             '<div class="pg-title">Weekly <span class="hi">Rankings</span></div>'
             f'<div class="pg-sub">{_esc(week_display)} &middot; Resets Monday &middot; Click row to expand</div>'
             '<div class="rank-wrap">'
-            '<div class="rank-head">'
-            '<span class="rth">#</span><span class="rth">Ticker</span><span class="rth">Sector</span>'
-            '<span class="rth">Price</span><span class="rth">Conf</span><span class="rth">Risk</span>'
-            '<span class="rth">EQ</span><span class="rth">Rotation</span>'
-            '</div>'
             '<div id="rank-board-mount"></div>'
             '</div>'
             '</div></div>'
