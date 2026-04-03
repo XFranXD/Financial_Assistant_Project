@@ -46,13 +46,18 @@ function expT(btn){
   try{data=JSON.parse(el.textContent);}catch(e){data=[];}
   var cid=btn.dataset.cid,eid=btn.dataset.eid;
   var row=document.getElementById(eid);if(!row)return;
+  var card=btn.closest('.rank-card');
   var was=row.classList.contains('open');
   document.querySelectorAll('.exp-row').forEach(r=>{if(r!==row)closeExpRowInstant(r);});
+  document.querySelectorAll('.rank-card').forEach(function(c){
+    if(c!==card){c.classList.remove('selected');c.classList.add('dimmed');}
+  });
   if(!was){
     row.style.display=''; row.style.height='';
     var inner=row.querySelector('.exp-inner');
     if(inner){inner.style.opacity='';inner.style.transform='';}
     row.classList.add('open');
+    if(card){card.classList.add('selected');}
     setTimeout(function(){
       row.querySelectorAll('.est-v').forEach(function(ev,i){
         var stored=ev.dataset.raw||'';
@@ -66,7 +71,15 @@ function expT(btn){
       });
     },80);
     if(data&&data.length>=2){mkC(cid,data);}
-  } else { closeExpRow(row); }
+  } else {
+    if(card){
+      card.classList.remove('selected');
+      card.classList.add('closing');
+      setTimeout(function(){card.classList.remove('closing');},450);
+    }
+    document.querySelectorAll('.rank-card').forEach(function(c){c.classList.remove('dimmed');});
+    closeExpRow(row);
+  }
 }
 
 function rafCollapseRow(el,innerSel,duration,onDone){
@@ -165,6 +178,16 @@ document.addEventListener('DOMContentLoaded',function(){
     });
     var html    = '';
     var scripts = '';
+    if (!document.getElementById('rankBorderGrad')) {
+      scripts += '<svg width="0" height="0" style="position:absolute"><defs>'
+        + '<linearGradient id="rankBorderGrad" x1="0%" y1="0%" x2="100%" y2="100%">'
+        + '<stop offset="0%" stop-color="#1A0A2E"/>'
+        + '<stop offset="25%" stop-color="#3D0A4F"/>'
+        + '<stop offset="50%" stop-color="#6B0F6B"/>'
+        + '<stop offset="75%" stop-color="#8B2BE8"/>'
+        + '<stop offset="100%" stop-color="#9b59ff"/>'
+        + '</linearGradient></defs></svg>';
+    }
     arr.forEach(function(stock, idx) {
       var i    = idx + 1;
       var conf = typeof stock.confidence === 'number' ? stock.confidence : null;
@@ -197,15 +220,32 @@ document.addEventListener('DOMContentLoaded',function(){
       scripts += '<script type="application/json" id="' + phUid + '">'
               + JSON.stringify(phList).replace(/<\/script>/gi,'<\\/script>')
               + '<\/script>';
-      html += '<div class="rank-row" data-ref="' + phUid + '" data-eid="e' + i + '" data-cid="ec' + i + '" onclick="expT(this)">'
-           + '<div class="td-n">#' + i + '</div>'
-           + '<div class="td-t">' + (stock.ticker || '\u2014') + '</div>'
-           + '<div class="td-s">' + sector + '</div>'
-           + '<div class="td-p">' + price + '</div>'
-           + '<div class="td-c ' + cCls + '">' + confStr + '</div>'
-           + '<div class="td-r">' + riskStr + '</div>'
-           + '<div><span class="ntag ' + eqCls + '" style="font-size:8px">' + (eqV || '\u2014') + '</span></div>'
-           + '<div><span class="ntag ' + rotCls + '" style="font-size:8px">' + (rotS || '\u2014') + '</span></div>'
+      var confVal    = typeof stock.composite_confidence === 'number' ? stock.composite_confidence : null;
+      var riskVal    = typeof stock.risk_score === 'number' ? stock.risk_score : null;
+      var confCls    = confVal !== null ? (confVal >= 70 ? 'rpill-cup' : confVal >= 50 ? 'rpill-cnt' : 'rpill-cdn') : 'rpill-cnt';
+      var riskCls    = riskVal !== null ? (riskVal <= 30 ? 'rpill-rlo' : riskVal <= 55 ? 'rpill-rmd' : 'rpill-rhi') : 'rpill-rmd';
+      var eqMap      = {'SUPPORTIVE':'rpill-eq-sup','NEUTRAL':'rpill-eq-neu','WEAK':'rpill-eq-wk','RISKY':'rpill-eq-rsk','UNAVAILABLE':'rpill-eq-una'};
+      var rotMap     = {'SUPPORT':'rpill-rt-sup','WAIT':'rpill-rt-wt','WEAKEN':'rpill-rt-wk','UNKNOWN':'rpill-rt-unk'};
+      var eqPillCls  = eqMap[eqV]  || 'rpill-eq-neu';
+      var rotPillCls = rotMap[rotS] || 'rpill-rt-wt';
+      var confDisp   = confVal !== null ? Math.round(confVal) : '\u2014';
+      var riskDisp   = riskVal !== null ? Math.round(riskVal) : '\u2014';
+      var priceDisp  = typeof stock.price === 'number' ? '$' + stock.price.toFixed(2) : '\u2014';
+      html += '<div class="rank-card" data-ref="' + phUid + '" data-eid="e' + i + '" data-cid="ec' + i + '" onclick="expT(this)">'
+           + '<svg class="rank-card-border-svg" viewBox="0 0 100 100" preserveAspectRatio="none">'
+           + '<rect class="rank-card-border-path" x="1" y="1" width="98" height="98" rx="13" ry="13"/>'
+           + '</svg>'
+           + '<div class="rank-card-main">'
+           + '<div class="rck-n">#' + i + '</div>'
+           + '<div class="rck-t">' + (stock.ticker || '\u2014') + '</div>'
+           + '<div class="rck-s">' + sector + '</div>'
+           + '<div class="rck-pills">'
+           + '<span class="rpill rpill-price"><span class="rpill-lbl">Price</span>' + priceDisp + '</span>'
+           + '<span class="rpill ' + confCls + '"><span class="rpill-lbl">Conf</span>' + confDisp + '/100</span>'
+           + '<span class="rpill ' + riskCls + '"><span class="rpill-lbl">Risk</span>' + riskDisp + '</span>'
+           + '<span class="rpill ' + eqPillCls + '"><span class="rpill-lbl">EQ</span>' + (eqV || '\u2014') + '</span>'
+           + '<span class="rpill ' + rotPillCls + '"><span class="rpill-lbl">Rotation</span>' + (rotS || '\u2014') + '</span>'
+           + '</div>'
            + '</div>'
            + '<div class="exp-row" id="e' + i + '"><div class="exp-inner">'
            + '<div class="exp-stats">'
@@ -216,7 +256,8 @@ document.addEventListener('DOMContentLoaded',function(){
            + '<div class="est"><div class="est-k">Align</div><div class="est-v ' + aCls + '">' + (alignVal || '\u2014') + '</div></div>'
            + '</div>'
            + '<div class="exp-chart">' + chartEl + '</div>'
-           + '</div></div>';
+           + '</div></div>'
+           + '</div>';
     });
     if (!html) html = '<div style="color:var(--mist);font-family:var(--ff-mono);padding:28px;">No candidates this week.</div>';
     // Inject script blocks first (before HTML) so they exist when onclick handlers fire
