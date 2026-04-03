@@ -267,16 +267,6 @@ _RANK_FETCH_JS = (
     "    });\n"
     "    var html    = '';\n"
     "    var scripts = '';\n"
-    "    if (!document.getElementById('rankBorderGrad')) {\n"
-    "      scripts += '<svg width=\"0\" height=\"0\" style=\"position:absolute\"><defs>'\n"
-    "        + '<linearGradient id=\"rankBorderGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">'\n"
-    "        + '<stop offset=\"0%\" stop-color=\"#1A0A2E\"/>'\n"
-    "        + '<stop offset=\"25%\" stop-color=\"#3D0A4F\"/>'\n"
-    "        + '<stop offset=\"50%\" stop-color=\"#6B0F6B\"/>'\n"
-    "        + '<stop offset=\"75%\" stop-color=\"#8B2BE8\"/>'\n"
-    "        + '<stop offset=\"100%\" stop-color=\"#9b59ff\"/>'\n"
-    "        + '</linearGradient></defs></svg>';\n"
-    "    }\n"
     "    arr.forEach(function(stock, idx) {\n"
     "      var i    = idx + 1;\n"
     "      var conf = typeof stock.confidence === 'number' ? stock.confidence : null;\n"
@@ -328,9 +318,6 @@ _RANK_FETCH_JS = (
     "      var priceDisp  = typeof stock.price === 'number' ? '$' + stock.price.toFixed(2) : '\\u2014';\n"
     "      html += '<div class=\"rank-card\" data-ref=\"' + phUid + '\" data-eid=\"e' + i + '\" data-cid=\"ec' + i + '\" onclick=\"expT(this)\">'\n"
     "           + '<div class=\"rank-card-main\">'\n"
-    "           + '<svg class=\"rank-card-border-svg\" viewBox=\"0 0 100 100\" preserveAspectRatio=\"none\">'\n"
-    "           + '<rect class=\"rank-card-border-path\" x=\"1\" y=\"1\" width=\"98\" height=\"98\" rx=\"13\" ry=\"13\"/>'\n"
-    "           + '</svg>'\n"
     "           + '<div class=\"rck-n\">#' + i + '</div>'\n"
     "           + '<div class=\"rck-t\">' + (stock.ticker || '\\u2014') + '</div>'\n"
     "           + '<div class=\"rck-s\" style=\"color:' + sectorColor + '\">' + sector + '</div>'\n"
@@ -1706,3 +1693,4 @@ def build_dashboard(
         log.error(f'news.html write failed: {e}')
 
     log.info('build_dashboard complete')
+    
