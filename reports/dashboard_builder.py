@@ -553,8 +553,8 @@ def _build_idx_data(index_history: dict, indices: dict) -> dict:
             'bg_color': bg,
             'data':     data,
             'stat1m':   _calc_return_from_history(data, 21),
-            'stat3m':   _EM,
-            'stat6m':   _EM,
+            'stat3m':   _calc_return_from_history(data, 63),
+            'stat6m':   _calc_return_from_history(data, 126),
         }
     return result
 
