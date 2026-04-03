@@ -1170,14 +1170,14 @@ nav::before {
 .rank-wrap {
   border: 1px solid var(--rim);
   background: var(--l1);
-  overflow: hidden;
+  overflow: visible;
 }
 
 .rank-card {
   background: linear-gradient(135deg, #130f22 0%, #1a1035 30%, #1f1040 55%, #180d30 75%, #0f0820 100%);
   border: 1px solid var(--rim);
   border-radius: 14px;
-  overflow: hidden;
+  overflow: visible;
   cursor: pointer;
   transition: border-color 0.3s var(--apple), opacity 0.3s var(--apple);
   position: relative;
@@ -1224,20 +1224,14 @@ nav::before {
   padding: 14px 16px;
   position: relative;
   overflow: visible;
+  outline: 2px solid transparent;
+  outline-offset: 0;
+  border-radius: 8px;
+  transition: outline-color 0.35s ease;
 }
 
 .rank-card.selected .rank-card-main {
   outline-color: #c84bff;
-}
-
-.rank-card-main {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  padding: 14px 16px;
-  position: relative;
-  overflow: hidden;
 }
 
 .rck-n {
