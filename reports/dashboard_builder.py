@@ -133,22 +133,28 @@ _INDEX_FETCH_JS = (
     "      var ret1m = typeof s.return_1m === 'number' ? (s.return_1m >= 0 ? '\\u25b2' : '\\u25bc') + ' ' + Math.abs(s.return_1m).toFixed(1) + '%' : '\\u2014';\n"
     "      var ret3m = typeof s.return_3m === 'number' ? (s.return_3m >= 0 ? '\\u25b2' : '\\u25bc') + ' ' + Math.abs(s.return_3m).toFixed(1) + '%' : '\\u2014';\n"
     "      var ret6m = typeof s.return_6m === 'number' ? (s.return_6m >= 0 ? '\\u25b2' : '\\u25bc') + ' ' + Math.abs(s.return_6m).toFixed(1) + '%' : '\\u2014';\n"
-    "      var sector = (s.sector || '').replace(/_/g,' ').replace(/\\b\\w/g, function(c){ return c.toUpperCase(); });\n"
-    "      rows += '<div class=\"rp-row\" onclick=\"rpT(\\'rp' + i + '\\')\">'\n"
-    "            + '<div class=\"rp-n\">#' + i + '</div>'\n"
-    "            + '<div class=\"rp-tick\">' + (s.ticker || '\\u2014') + '</div>'\n"
-    "            + '<div class=\"rp-sect\">' + sector + '</div>'\n"
-    "            + '<div class=\"rp-conf ' + cCls + '\">' + confStr + '</div>'\n"
-    "            + '<div style=\"font-size:11px;color:var(--mist);\">' + riskStr + '</div>'\n"
-    "            + '<div><span class=\"ntag ' + eqCls + '\">' + (eqV || '\\u2014') + '</span></div>'\n"
-    "            + '<div><span class=\"ntag ' + rotCls + '\">' + (rotS || '\\u2014') + '</span></div>'\n"
+    "      var rpConfVal = typeof s.composite_confidence === 'number' ? s.composite_confidence : null;\n"
+    "      var rpConf    = rpConfVal !== null ? Math.round(rpConfVal) : '\\u2014';\n"
+    "      var rpConfCls = rpConfVal !== null ? (rpConfVal >= 70 ? 'rpill-cup' : rpConfVal >= 50 ? 'rpill-cnt' : 'rpill-cdn') : 'rpill-cnt';\n"
+    "      var rpPrice   = typeof s.price === 'number' ? '$' + s.price.toFixed(2) : '\\u2014';\n"
+    "      var sector    = (s.sector || '').replace(/_/g,' ').replace(/\\b\\w/g, function(c){ return c.toUpperCase(); });\n"
+    "      rows += '<div class=\"rank-card\" onclick=\"rpT(\\'rp' + i + '\\')\">'\n"
+    "            + '<div class=\"rank-card-main\">'\n"
+    "            + '<div class=\"rck-n\">#' + i + '</div>'\n"
+    "            + '<div class=\"rck-t\">' + (s.ticker || '\\u2014') + '</div>'\n"
+    "            + '<div class=\"rck-s\">' + sector + '</div>'\n"
+    "            + '<div class=\"rck-pills\">'\n"
+    "            + '<span class=\"rpill rpill-price\"><span class=\"rpill-lbl\">Price</span>' + rpPrice + '</span>'\n"
+    "            + '<span class=\"rpill ' + rpConfCls + '\"><span class=\"rpill-lbl\">Conf</span>' + rpConf + '/100</span>'\n"
+    "            + '</div>'\n"
     "            + '</div>'\n"
     "            + '<div class=\"rp-exp\" id=\"rp' + i + '\"><div class=\"rp-exp-inner\">'\n"
     "            + '<div class=\"pex-item\"><div class=\"pex-k\">1M Return</div><div class=\"pex-v\">' + ret1m + '</div></div>'\n"
     "            + '<div class=\"pex-item\"><div class=\"pex-k\">3M Return</div><div class=\"pex-v\">' + ret3m + '</div></div>'\n"
     "            + '<div class=\"pex-item\"><div class=\"pex-k\">6M Return</div><div class=\"pex-v\">' + ret6m + '</div></div>'\n"
     "            + '<div class=\"pex-item\"><div class=\"pex-k\">Verdict</div><div class=\"pex-v ' + cCls + '\">' + verdict + '</div></div>'\n"
-    "            + '</div></div>';\n"
+    "            + '</div></div>'\n"
+    "            + '</div>';\n"
     "    });\n"
     "    if (!rows) rows = '<div style=\"padding:14px 18px;color:var(--mist);font-size:11px;\">No candidates this week.</div>';\n"
     "    document.getElementById('rank-preview-mount').innerHTML =\n"
@@ -159,9 +165,8 @@ _INDEX_FETCH_JS = (
     "      + '</div>'\n"
     "      + '<div class=\"rp-cols\">'\n"
     "      + '<span class=\"rp-col-h\">#</span><span class=\"rp-col-h\">Ticker</span>'\n"
-    "      + '<span class=\"rp-col-h\">Sector</span><span class=\"rp-col-h\">Conf</span>'\n"
-    "      + '<span class=\"rp-col-h\">Risk</span><span class=\"rp-col-h\">EQ</span>'\n"
-    "      + '<span class=\"rp-col-h\">Rotation</span>'\n"
+    "      + '<span class=\"rp-col-h\">Sector</span><span class=\"rp-col-h\">Price</span>'\n"
+    "      + '<span class=\"rp-col-h\">Conf</span>'\n"
     "      + '</div>'\n"
     "      + rows\n"
     "      + '</div>';\n"
@@ -261,6 +266,16 @@ _RANK_FETCH_JS = (
     "    });\n"
     "    var html    = '';\n"
     "    var scripts = '';\n"
+    "    if (!document.getElementById('rankBorderGrad')) {\n"
+    "      scripts += '<svg width=\"0\" height=\"0\" style=\"position:absolute\"><defs>'\n"
+    "        + '<linearGradient id=\"rankBorderGrad\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"100%\">'\n"
+    "        + '<stop offset=\"0%\" stop-color=\"#1A0A2E\"/>'\n"
+    "        + '<stop offset=\"25%\" stop-color=\"#3D0A4F\"/>'\n"
+    "        + '<stop offset=\"50%\" stop-color=\"#6B0F6B\"/>'\n"
+    "        + '<stop offset=\"75%\" stop-color=\"#8B2BE8\"/>'\n"
+    "        + '<stop offset=\"100%\" stop-color=\"#9b59ff\"/>'\n"
+    "        + '</linearGradient></defs></svg>';\n"
+    "    }\n"
     "    arr.forEach(function(stock, idx) {\n"
     "      var i    = idx + 1;\n"
     "      var conf = typeof stock.confidence === 'number' ? stock.confidence : null;\n"
@@ -293,15 +308,32 @@ _RANK_FETCH_JS = (
     "      scripts += '<script type=\"application/json\" id=\"' + phUid + '\">'\n"
     "              + JSON.stringify(phList).replace(/<\\/script>/gi,'<\\\\/script>')\n"
     "              + '<\\/script>';\n"
-    "      html += '<div class=\"rank-row\" data-ref=\"' + phUid + '\" data-eid=\"e' + i + '\" data-cid=\"ec' + i + '\" onclick=\"expT(this)\">'\n"
-    "           + '<div class=\"td-n\">#' + i + '</div>'\n"
-    "           + '<div class=\"td-t\">' + (stock.ticker || '\\u2014') + '</div>'\n"
-    "           + '<div class=\"td-s\">' + sector + '</div>'\n"
-    "           + '<div class=\"td-p\">' + price + '</div>'\n"
-    "           + '<div class=\"td-c ' + cCls + '\">' + confStr + '</div>'\n"
-    "           + '<div class=\"td-r\">' + riskStr + '</div>'\n"
-    "           + '<div><span class=\"ntag ' + eqCls + '\" style=\"font-size:8px\">' + (eqV || '\\u2014') + '</span></div>'\n"
-    "           + '<div><span class=\"ntag ' + rotCls + '\" style=\"font-size:8px\">' + (rotS || '\\u2014') + '</span></div>'\n"
+    "      var confVal    = typeof stock.composite_confidence === 'number' ? stock.composite_confidence : null;\n"
+    "      var riskVal    = typeof stock.risk_score === 'number' ? stock.risk_score : null;\n"
+    "      var confCls    = confVal !== null ? (confVal >= 70 ? 'rpill-cup' : confVal >= 50 ? 'rpill-cnt' : 'rpill-cdn') : 'rpill-cnt';\n"
+    "      var riskCls    = riskVal !== null ? (riskVal <= 30 ? 'rpill-rlo' : riskVal <= 55 ? 'rpill-rmd' : 'rpill-rhi') : 'rpill-rmd';\n"
+    "      var eqMap      = {'SUPPORTIVE':'rpill-eq-sup','NEUTRAL':'rpill-eq-neu','WEAK':'rpill-eq-wk','RISKY':'rpill-eq-rsk','UNAVAILABLE':'rpill-eq-una'};\n"
+    "      var rotMap     = {'SUPPORT':'rpill-rt-sup','WAIT':'rpill-rt-wt','WEAKEN':'rpill-rt-wk','UNKNOWN':'rpill-rt-unk'};\n"
+    "      var eqPillCls  = eqMap[eqV]  || 'rpill-eq-neu';\n"
+    "      var rotPillCls = rotMap[rotS] || 'rpill-rt-wt';\n"
+    "      var confDisp   = confVal !== null ? Math.round(confVal) : '\\u2014';\n"
+    "      var riskDisp   = riskVal !== null ? Math.round(riskVal) : '\\u2014';\n"
+    "      var priceDisp  = typeof stock.price === 'number' ? '$' + stock.price.toFixed(2) : '\\u2014';\n"
+    "      html += '<div class=\"rank-card\" data-ref=\"' + phUid + '\" data-eid=\"e' + i + '\" data-cid=\"ec' + i + '\" onclick=\"expT(this)\">'\n"
+    "           + '<svg class=\"rank-card-border-svg\" viewBox=\"0 0 100 100\" preserveAspectRatio=\"none\">'\n"
+    "           + '<rect class=\"rank-card-border-path\" x=\"1\" y=\"1\" width=\"98\" height=\"98\" rx=\"13\" ry=\"13\"/>'\n"
+    "           + '</svg>'\n"
+    "           + '<div class=\"rank-card-main\">'\n"
+    "           + '<div class=\"rck-n\">#' + i + '</div>'\n"
+    "           + '<div class=\"rck-t\">' + (stock.ticker || '\\u2014') + '</div>'\n"
+    "           + '<div class=\"rck-s\">' + sector + '</div>'\n"
+    "           + '<div class=\"rck-pills\">'\n"
+    "           + '<span class=\"rpill rpill-price\"><span class=\"rpill-lbl\">Price</span>' + priceDisp + '</span>'\n"
+    "           + '<span class=\"rpill ' + confCls + '\"><span class=\"rpill-lbl\">Conf</span>' + confDisp + '/100</span>'\n"
+    "           + '<span class=\"rpill ' + riskCls + '\"><span class=\"rpill-lbl\">Risk</span>' + riskDisp + '</span>'\n"
+    "           + '<span class=\"rpill ' + eqPillCls + '\"><span class=\"rpill-lbl\">EQ</span>' + (eqV || '\\u2014') + '</span>'\n"
+    "           + '<span class=\"rpill ' + rotPillCls + '\"><span class=\"rpill-lbl\">Rotation</span>' + (rotS || '\\u2014') + '</span>'\n"
+    "           + '</div>'\n"
     "           + '</div>'\n"
     "           + '<div class=\"exp-row\" id=\"e' + i + '\"><div class=\"exp-inner\">'\n"
     "           + '<div class=\"exp-stats\">'\n"
@@ -312,7 +344,8 @@ _RANK_FETCH_JS = (
     "           + '<div class=\"est\"><div class=\"est-k\">Align</div><div class=\"est-v ' + aCls + '\">' + (alignVal || '\\u2014') + '</div></div>'\n"
     "           + '</div>'\n"
     "           + '<div class=\"exp-chart\">' + chartEl + '</div>'\n"
-    "           + '</div></div>';\n"
+    "           + '</div></div>'\n"
+    "           + '</div>';\n"
     "    });\n"
     "    if (!html) html = '<div style=\"color:var(--mist);font-family:var(--ff-mono);padding:28px;\">No candidates this week.</div>';\n"
     "    // Inject script blocks first (before HTML) so they exist when onclick handlers fire\n"
@@ -846,13 +879,18 @@ function expT(btn){
   try{data=JSON.parse(el.textContent);}catch(e){data=[];}
   var cid=btn.dataset.cid,eid=btn.dataset.eid;
   var row=document.getElementById(eid);if(!row)return;
+  var card=btn.closest('.rank-card');
   var was=row.classList.contains('open');
   document.querySelectorAll('.exp-row').forEach(r=>{if(r!==row)closeExpRowInstant(r);});
+  document.querySelectorAll('.rank-card').forEach(function(c){
+    if(c!==card){c.classList.remove('selected');c.classList.add('dimmed');}
+  });
   if(!was){
     row.style.display=''; row.style.height='';
     var inner=row.querySelector('.exp-inner');
     if(inner){inner.style.opacity='';inner.style.transform='';}
     row.classList.add('open');
+    if(card){card.classList.add('selected');}
     setTimeout(function(){
       row.querySelectorAll('.est-v').forEach(function(ev,i){
         var stored=ev.dataset.raw||'';
@@ -866,7 +904,15 @@ function expT(btn){
       });
     },80);
     if(data&&data.length>=2){mkC(cid,data);}
-  } else { closeExpRow(row); }
+  } else {
+    if(card){
+      card.classList.remove('selected');
+      card.classList.add('closing');
+      setTimeout(function(){card.classList.remove('closing');},450);
+    }
+    document.querySelectorAll('.rank-card').forEach(function(c){c.classList.remove('dimmed');});
+    closeExpRow(row);
+  }
 }
 """
 
