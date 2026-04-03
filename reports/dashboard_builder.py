@@ -1276,9 +1276,9 @@ def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, ind
         indices = indices or {}
         # ── Index pills ──────────────────────────────────────────────────────
         _pill_colors = {
-            'dow': '#ffb347',
-            'sp':  '#ff7c2a',
-            'nq':  '#ff4466',
+            'dow': ('#ffb347', 'rgba(255,179,71,0.10)'),
+            'sp':  ('#ff7c2a', 'rgba(255,124,42,0.10)'),
+            'nq':  ('#ff4466', 'rgba(255,68,102,0.10)'),
         }
 
         def _pill(key, pill_id, label_text):
@@ -1286,7 +1286,7 @@ def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, ind
             val   = _fmt_index_val(d.get('value'))
             chg   = d.get('change_pct')
             lbl   = (d.get('label') or '').upper()
-            col   = _pill_colors.get(pill_id, '#9b59ff')
+            col, bg = _pill_colors.get(pill_id, ('#9b59ff', 'rgba(155,89,255,0.10)'))
             if isinstance(chg, (int, float)):
                 arrow = '\u25b2' if chg > 0 else '\u25bc' if chg < 0 else '\u2014'
                 cls   = 'up' if chg > 0 else 'dn' if chg < 0 else 'nt'
@@ -1294,10 +1294,16 @@ def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, ind
             else:
                 cls   = 'nt'
                 chg_s = '\u2014'
+            label_badge = (
+                f'<span style="'
+                f'font-size:10px;color:{col};font-family:var(--ff-mono);letter-spacing:0.1em;'
+                f'text-transform:uppercase;background:{bg};border:1px solid {col};'
+                f'border-radius:4px;padding:2px 7px;">{label_text}</span>'
+            )
             return (
                 f'<div class="idx-pill" id="pill-{pill_id}" onclick="toggleIdx(\'{pill_id}\')">'
                 f'<div class="pill-left">'
-                f'<div class="pill-label" style="font-size:13px;color:{col};font-family:var(--ff-mono);letter-spacing:0.04em;">{label_text}</div>'
+                f'<div class="pill-label">{label_badge}</div>'
                 f'<div class="pill-val">{val}</div>'
                 f'<div class="pill-change {cls}">{chg_s}</div>'
                 f'</div><div class="pill-chevron">\u25bc</div></div>'
