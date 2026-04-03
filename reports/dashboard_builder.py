@@ -1312,10 +1312,10 @@ def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, ind
         b_cls     = _breadth_cls(b_label)
         strip = (
             '<div class="status-strip stagger-3">'
-            '<span class="ss-label" style="font-size:11px;color:var(--mist);">Breadth</span>'
+            '<span class="ss-label" style="font-size:11px;color:#9b59ff;">Breadth</span>'
             f'<span class="ss-val {b_cls}">{_esc(b_label)}</span>'
             '<span class="ss-divider">&middot;</span>'
-            '<span class="ss-label" style="font-size:11px;color:var(--mist);">Market</span>'
+            '<span class="ss-label" style="font-size:11px;color:#9b59ff;">Market</span>'
             f'<span class="ss-val nt">{_esc(r_label)}</span>'
             '</div>'
         )
@@ -1693,4 +1693,3 @@ def build_dashboard(
         log.error(f'news.html write failed: {e}')
 
     log.info('build_dashboard complete')
-    
