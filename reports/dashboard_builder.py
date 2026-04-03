@@ -1297,7 +1297,9 @@ def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, ind
             label_badge = (
                 f'<span style="'
                 f'font-size:10px;color:{col};font-family:var(--ff-mono);letter-spacing:0.1em;'
-                f'text-transform:uppercase;white-space:nowrap;background:{bg};border:1px solid {col};'
+                f'text-transform:uppercase;white-space:nowrap;'
+                f'background:linear-gradient(90deg,#0f0820 0%,#1a1035 40%,{bg} 100%);'
+                f'border:1px solid {col};'
                 f'border-radius:4px;padding:2px 7px;">{label_text}</span>'
             )
             return (
