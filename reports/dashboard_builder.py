@@ -881,9 +881,11 @@ function mkC(cid,data){
   const cv=document.getElementById(cid);if(!cv)return;
   if(window._mreCharts[cid]){window._mreCharts[cid].destroy();delete window._mreCharts[cid];}
   const up=data[data.length-1]>=data[0],col=up?'#39e8a0':'#ff4d6d';
+  const avg=data.reduce(function(s,v){return s+v;},0)/data.length;
+  const flatData=data.map(function(){return avg;});
   window._mreCharts[cid]=new Chart(cv.getContext('2d'),{
     type:'line',
-    data:{labels:DAYS,datasets:[{data,borderColor:col,borderWidth:1.8,fill:true,tension:0.38,
+    data:{labels:DAYS,datasets:[{data:flatData.slice(),borderColor:col,borderWidth:1.8,fill:true,tension:0.38,
       backgroundColor:ctx=>{const{ctx:c,chartArea:a}=ctx.chart;if(!a)return 'transparent';
         const g=c.createLinearGradient(0,a.top,0,a.bottom);
         g.addColorStop(0,up?'rgba(57,232,160,.18)':'rgba(255,77,109,.18)');
@@ -898,34 +900,18 @@ function mkC(cid,data){
         callbacks:{title:i=>DAYS[i[0].dataIndex],label:i=>' $'+i.raw.toFixed(2)}}},
       scales:{x:{display:false},y:{display:false}},
       interaction:{mode:'index',intersect:false},
-      animation:false,
-      animations:{
-        x:{duration:0},
-        y:{duration:0}
-      }
-    }
+      animation:{duration:0}}
   });
-  const cv2=document.getElementById(cid);
-  if(cv2&&window._mreCharts[cid]){
-    const chart=window._mreCharts[cid];
-    const total=chart.data.datasets[0].data.length;
-    const mid=Math.floor(total/2);
-    let step=0;
-    const DUR=700,startT=performance.now();
-    function drawStep(now){
-      const raw=Math.min((now-startT)/DUR,1);
-      const ease=raw===1?1:1-Math.pow(2,-10*raw);
-      const spread=Math.round(ease*mid);
-      const lo=Math.max(0,mid-spread),hi=Math.min(total-1,mid+spread);
-      chart.data.datasets[0].data.forEach(function(_,i){
-        chart.getDatasetMeta(0).data[i].hidden=(i<lo||i>hi);
-      });
-      chart.update('none');
-      if(raw<1)requestAnimationFrame(drawStep);
-      else{chart.data.datasets[0].data.forEach(function(_,i){chart.getDatasetMeta(0).data[i].hidden=false;});chart.update('none');}
-    }
-    requestAnimationFrame(drawStep);
+  const chart=window._mreCharts[cid];
+  const DUR=750,startT=performance.now();
+  function drawStep(now){
+    const raw=Math.min((now-startT)/DUR,1);
+    const ease=raw===1?1:1-Math.pow(2,-10*raw);
+    chart.data.datasets[0].data=data.map(function(v){return avg+(v-avg)*ease;});
+    chart.update('none');
+    if(raw<1)requestAnimationFrame(drawStep);
   }
+  requestAnimationFrame(drawStep);
 }
 function countUp(el,target,prefix,suffix,duration){
   const start=performance.now();
