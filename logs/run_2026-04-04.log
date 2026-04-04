@@ -111,3 +111,115 @@
 2026-04-04T00:09:30 UTC | INFO     | email_sender | Email sent to francisco.ale.caballero01+stocks@gmail.com: ■ Stock Research — 9:45-11:15 Update — 3 opportunities found
 2026-04-04T00:09:31 UTC | INFO     | main | Git: committed and pushed
 2026-04-04T00:09:31 UTC | INFO     | main | [DEBUG] Force-ticker run complete. Tickers: ['XOM', 'CVX', 'COP']
+2026-04-04T00:16:54 UTC | INFO     | main | ============================================================
+2026-04-04T00:16:54 UTC | INFO     | main | AUTOMATED STOCK RESEARCH SYSTEM — starting run
+2026-04-04T00:16:54 UTC | INFO     | main | DISCLAIMER: This system does NOT perform trading, does NOT give investment advice, and does NOT make price predictions. It is a research data aggregation and scoring tool only.
+2026-04-04T00:16:54 UTC | INFO     | main | ============================================================
+2026-04-04T00:16:54 UTC | INFO     | main | [DEBUG] FORCE_TICKERS detected — entering debug mode
+2026-04-04T00:16:54 UTC | INFO     | main | [DEBUG] Using slot: 9:45-11:15
+2026-04-04T00:16:54 UTC | INFO     | main | [DEBUG] Force-ticker mode active — tickers: ['XOM', 'CVX', 'COP']
+2026-04-04T00:16:54 UTC | INFO     | main | [DEBUG] Skipping all sector/news gates
+2026-04-04T00:16:54 UTC | INFO     | market_collector | Index dow: 46504.67 Falling (-0.13%)
+2026-04-04T00:16:54 UTC | INFO     | market_collector | Index sp500: 6582.69 Rising (+0.11%)
+2026-04-04T00:16:55 UTC | INFO     | market_collector | Index nasdaq: 21879.18 Rising (+0.18%)
+2026-04-04T00:16:55 UTC | INFO     | market_regime | VIX fetched: 23.87
+2026-04-04T00:16:55 UTC | INFO     | market_regime | Regime: normal vix=23.87 risk_mult=1.0 opp_mult=1.0
+2026-04-04T00:17:23 UTC | INFO     | market_breadth | Market breadth: 78/130 advancing (0.60) — neutral breadth — mixed market movement
+2026-04-04T00:17:24 UTC | INFO     | sector_breadth_ma | Sector breadth MA technology: 1/10 = 0.10 (sector is structurally weak)
+2026-04-04T00:17:25 UTC | INFO     | sector_breadth_ma | Sector breadth MA semiconductors: 4/10 = 0.40 (mixed signals)
+2026-04-04T00:17:26 UTC | INFO     | sector_breadth_ma | Sector breadth MA healthcare: 3/10 = 0.30 (mixed signals)
+2026-04-04T00:17:27 UTC | INFO     | sector_breadth_ma | Sector breadth MA financials: 1/10 = 0.10 (sector is structurally weak)
+2026-04-04T00:17:28 UTC | INFO     | sector_breadth_ma | Sector breadth MA consumer_discretionary: 2/10 = 0.20 (sector is structurally weak)
+2026-04-04T00:17:30 UTC | INFO     | sector_breadth_ma | Sector breadth MA consumer_staples: 4/10 = 0.40 (mixed signals)
+2026-04-04T00:17:31 UTC | INFO     | sector_breadth_ma | Sector breadth MA industrials: 3/10 = 0.30 (mixed signals)
+2026-04-04T00:17:32 UTC | INFO     | sector_breadth_ma | Sector breadth MA defense: 0/10 = 0.00 (sector is structurally weak)
+2026-04-04T00:17:33 UTC | INFO     | sector_breadth_ma | Sector breadth MA energy: 10/10 = 1.00 (sector is genuinely strong)
+2026-04-04T00:17:34 UTC | INFO     | sector_breadth_ma | Sector breadth MA materials: 4/10 = 0.40 (mixed signals)
+2026-04-04T00:17:36 UTC | INFO     | sector_breadth_ma | Sector breadth MA utilities: 9/10 = 0.90 (sector is genuinely strong)
+2026-04-04T00:17:37 UTC | INFO     | sector_breadth_ma | Sector breadth MA real_estate: 5/10 = 0.50 (mixed signals)
+2026-04-04T00:17:38 UTC | INFO     | sector_breadth_ma | Sector breadth MA communication_services: 3/10 = 0.30 (mixed signals)
+2026-04-04T00:17:41 UTC | INFO     | sector_momentum | Top 5 sectors: ['materials', 'real_estate', 'semiconductors', 'utilities', 'communication_services']
+2026-04-04T00:17:41 UTC | INFO     | sector_momentum | Sector momentum history updated (3 entries)
+2026-04-04T00:17:41 UTC | INFO     | sector_rotation_speed | Rotation technology: rank 4 -> 6 speed=-2 (losing momentum)
+2026-04-04T00:17:41 UTC | INFO     | sector_rotation_speed | Rotation healthcare: rank 7 -> 10 speed=-3 (losing momentum)
+2026-04-04T00:17:41 UTC | INFO     | sector_rotation_speed | Rotation financials: rank 3 -> 7 speed=-4 (rapidly losing strength)
+2026-04-04T00:17:41 UTC | INFO     | sector_rotation_speed | Rotation consumer_discretionary: rank 8 -> 12 speed=-4 (rapidly losing strength)
+2026-04-04T00:17:41 UTC | INFO     | sector_rotation_speed | Rotation consumer_staples: rank 10 -> 9 speed=1 (stable)
+2026-04-04T00:17:41 UTC | INFO     | sector_rotation_speed | Rotation industrials: rank 6 -> 8 speed=-2 (losing momentum)
+2026-04-04T00:17:41 UTC | INFO     | sector_rotation_speed | Rotation materials: rank 13 -> 1 speed=12 (rapidly gaining strength)
+2026-04-04T00:17:41 UTC | INFO     | sector_rotation_speed | Rotation energy: rank 1 -> 13 speed=-12 (rapidly losing strength)
+2026-04-04T00:17:41 UTC | INFO     | sector_rotation_speed | Rotation utilities: rank 12 -> 4 speed=8 (rapidly gaining strength)
+2026-04-04T00:17:41 UTC | INFO     | sector_rotation_speed | Rotation real_estate: rank 9 -> 2 speed=7 (rapidly gaining strength)
+2026-04-04T00:17:41 UTC | INFO     | sector_rotation_speed | Rotation communication_services: rank 5 -> 5 speed=0 (stable)
+2026-04-04T00:17:41 UTC | INFO     | sector_rotation_speed | Rotation semiconductors: rank 2 -> 3 speed=-1 (stable)
+2026-04-04T00:17:41 UTC | INFO     | sector_rotation_speed | Rotation defense: rank 11 -> 11 speed=0 (stable)
+2026-04-04T00:17:41 UTC | INFO     | news_collector | reuters RSS: fetched 0 articles
+2026-04-04T00:17:41 UTC | INFO     | news_collector | ft RSS: fetched 11 articles
+2026-04-04T00:17:42 UTC | INFO     | news_collector | Finnhub: fetched 100 articles
+2026-04-04T00:17:42 UTC | INFO     | news_collector | Filter: 111 raw → 34 passed
+2026-04-04T00:17:42 UTC | INFO     | news_collector | Dedup: 34 → 34 articles
+2026-04-04T00:17:42 UTC | INFO     | news_collector | Sector confirmed: financials score=7.5 headlines=5
+2026-04-04T00:17:42 UTC | INFO     | news_collector | Sector gated: real_estate score=3.8 headlines=3 (need score>=4, headlines>=2)
+2026-04-04T00:17:42 UTC | INFO     | news_collector | Sector confirmed: consumer_discretionary score=7.8 headlines=5
+2026-04-04T00:17:42 UTC | INFO     | news_collector | Sector gated: utilities score=3.6 headlines=3 (need score>=4, headlines>=2)
+2026-04-04T00:17:42 UTC | INFO     | news_collector | Sector gated: consumer_staples score=3.9 headlines=3 (need score>=4, headlines>=2)
+2026-04-04T00:17:42 UTC | INFO     | news_collector | Sector gated: industrials score=2.6 headlines=2 (need score>=4, headlines>=2)
+2026-04-04T00:17:42 UTC | INFO     | news_collector | Confirmed sectors: ['financials', 'consumer_discretionary']
+2026-04-04T00:17:42 UTC | INFO     | market_collector | get_index_history dow: 30 points
+2026-04-04T00:17:42 UTC | INFO     | market_collector | get_index_history sp500: 30 points
+2026-04-04T00:17:42 UTC | INFO     | market_collector | get_index_history nasdaq: 30 points
+2026-04-04T00:17:42 UTC | INFO     | main | [DEBUG] Processing forced ticker: XOM
+2026-04-04T00:17:42 UTC | INFO     | financial_parser | XOM: using cached financials (1d old)
+2026-04-04T00:17:42 UTC | INFO     | main | AV budget exhausted — skipping AV for XOM
+2026-04-04T00:17:42 UTC | INFO     | volume_confirmation | XOM volume ratio=1.05 score=0.35 label=normal trading activity
+2026-04-04T00:17:42 UTC | INFO     | risk_adjusted_momentum | XOM RAM raw=17.38 score=1.00
+2026-04-04T00:17:43 UTC | INFO     | multi_timeframe_momentum | XOM MTF 1m=7.255369500592956 3m=34.420030269135424 6m=45.70580073728853 score=1.00
+2026-04-04T00:17:43 UTC | INFO     | trend_stability | XOM trend stability: dev=0.1117 score=0.00
+2026-04-04T00:17:43 UTC | INFO     | drawdown_risk | XOM drawdown=6.3% score=0.84
+2026-04-04T00:17:43 UTC | INFO     | risk_model | Risk score: raw=8.8 penalty=0 mult=1.0 final=8.8
+2026-04-04T00:17:43 UTC | INFO     | opportunity_model | Opp score: b1=31.3 b2=77.2 b3=44.0 raw=52.2 x1.0 x1.0 = 52.2
+2026-04-04T00:17:43 UTC | INFO     | signal_agreement | Signal agreement: m=1.00 s=0.50 e=0.50 v=0.35 -> 0.087
+2026-04-04T00:17:43 UTC | INFO     | opportunity_model | Composite confidence: 61.9 (Moderate confidence)
+2026-04-04T00:17:43 UTC | INFO     | main | [DEBUG] XOM: conf=61.9 risk=8.8 opp=52.2
+2026-04-04T00:17:43 UTC | INFO     | main | [DEBUG] Processing forced ticker: CVX
+2026-04-04T00:17:43 UTC | INFO     | financial_parser | CVX: using cached financials (1d old)
+2026-04-04T00:17:43 UTC | INFO     | main | AV budget exhausted — skipping AV for CVX
+2026-04-04T00:17:43 UTC | INFO     | volume_confirmation | CVX volume ratio=0.82 score=0.27 label=normal trading activity
+2026-04-04T00:17:43 UTC | INFO     | risk_adjusted_momentum | CVX RAM raw=17.89 score=1.00
+2026-04-04T00:17:43 UTC | INFO     | multi_timeframe_momentum | CVX MTF 1m=6.955868691241604 3m=31.82625342222915 6m=31.427304352471197 score=0.95
+2026-04-04T00:17:44 UTC | INFO     | trend_stability | CVX trend stability: dev=0.1166 score=0.00
+2026-04-04T00:17:44 UTC | INFO     | drawdown_risk | CVX drawdown=5.8% score=0.86
+2026-04-04T00:17:44 UTC | INFO     | risk_model | Risk score: raw=11.3 penalty=0 mult=1.0 final=11.3
+2026-04-04T00:17:44 UTC | INFO     | opportunity_model | Opp score: b1=22.8 b2=75.9 b3=41.0 raw=47.7 x1.0 x1.0 = 47.7
+2026-04-04T00:17:44 UTC | INFO     | signal_agreement | Signal agreement: m=1.00 s=0.50 e=0.50 v=0.27 -> 0.069
+2026-04-04T00:17:44 UTC | INFO     | opportunity_model | Composite confidence: 59.1 (Moderate confidence)
+2026-04-04T00:17:44 UTC | INFO     | main | [DEBUG] CVX: conf=59.1 risk=11.3 opp=47.7
+2026-04-04T00:17:44 UTC | INFO     | main | [DEBUG] Processing forced ticker: COP
+2026-04-04T00:17:44 UTC | INFO     | financial_parser | COP: using cached financials (1d old)
+2026-04-04T00:17:44 UTC | INFO     | main | AV budget exhausted — skipping AV for COP
+2026-04-04T00:17:44 UTC | INFO     | volume_confirmation | COP volume ratio=0.67 score=0.22 label=lower activity than usual
+2026-04-04T00:17:44 UTC | INFO     | risk_adjusted_momentum | COP RAM raw=18.58 score=1.00
+2026-04-04T00:17:44 UTC | INFO     | multi_timeframe_momentum | COP MTF 1m=12.85776268948391 3m=40.51460282561571 6m=39.06998836633927 score=1.00
+2026-04-04T00:17:44 UTC | INFO     | trend_stability | COP trend stability: dev=0.1655 score=0.00
+2026-04-04T00:17:45 UTC | INFO     | drawdown_risk | COP drawdown=2.5% score=0.94
+2026-04-04T00:17:45 UTC | INFO     | risk_model | Risk score: raw=12.3 penalty=0 mult=1.0 final=12.3
+2026-04-04T00:17:45 UTC | INFO     | opportunity_model | Opp score: b1=43.6 b2=77.2 b3=39.0 raw=56.2 x1.0 x1.0 = 56.2
+2026-04-04T00:17:45 UTC | INFO     | signal_agreement | Signal agreement: m=1.00 s=0.50 e=0.50 v=0.23 -> 0.056
+2026-04-04T00:17:45 UTC | INFO     | opportunity_model | Composite confidence: 61.5 (Moderate confidence)
+2026-04-04T00:17:45 UTC | INFO     | main | [DEBUG] COP: conf=61.5 risk=12.3 opp=56.2
+2026-04-04T00:17:45 UTC | INFO     | main | [DEBUG][EQ] Running EQ analysis on 3 forced tickers
+2026-04-04T00:17:47 UTC | INFO     | main | [DEBUG][EQ] XOM: no EQ data — skipped or error
+2026-04-04T00:17:47 UTC | INFO     | main | [DEBUG][EQ] CVX: no EQ data — skipped or error
+2026-04-04T00:17:47 UTC | INFO     | main | [ROT] Running rotation analysis on 3 candidates
+2026-04-04T00:17:51 UTC | INFO     | main | [ROT] Enrichment complete. 3 enriched / 3 total
+2026-04-04T00:17:51 UTC | INFO     | report_builder | Email report written: /home/runner/work/Financial_Assistant_Project/Financial_Assistant_Project/reports/output/intraday_email_945_1115_20260404T001751Z.html
+2026-04-04T00:17:51 UTC | INFO     | report_builder | Full report written: /home/runner/work/Financial_Assistant_Project/Financial_Assistant_Project/reports/output/intraday_full_945_1115_20260404T001751Z.html
+2026-04-04T00:17:51 UTC | INFO     | report_builder | Full report served at docs/reports/intraday_full_945_1115_20260404T001751Z.html
+2026-04-04T00:17:51 UTC | INFO     | dashboard_builder | News JSON written: 2 sectors
+2026-04-04T00:17:51 UTC | INFO     | dashboard_builder | index.html written
+2026-04-04T00:17:51 UTC | INFO     | dashboard_builder | rank.html written
+2026-04-04T00:17:51 UTC | INFO     | dashboard_builder | archive.html written
+2026-04-04T00:17:51 UTC | INFO     | dashboard_builder | news.html written
+2026-04-04T00:17:51 UTC | INFO     | dashboard_builder | build_dashboard complete
+2026-04-04T00:17:51 UTC | INFO     | email_sender | Using pre-built HTML: /home/runner/work/Financial_Assistant_Project/Financial_Assistant_Project/reports/output/intraday_email_945_1115_20260404T001751Z.html
+2026-04-04T00:17:53 UTC | INFO     | email_sender | Email sent to francisco.ale.caballero01+stocks@gmail.com: ■ Stock Research — 9:45-11:15 Update — 3 opportunities found
