@@ -133,9 +133,9 @@ _INDEX_FETCH_JS = (
     "      var ret1m = typeof s.return_1m === 'number' ? (s.return_1m >= 0 ? '\\u25b2' : '\\u25bc') + ' ' + Math.abs(s.return_1m).toFixed(1) + '%' : '\\u2014';\n"
     "      var ret3m = typeof s.return_3m === 'number' ? (s.return_3m >= 0 ? '\\u25b2' : '\\u25bc') + ' ' + Math.abs(s.return_3m).toFixed(1) + '%' : '\\u2014';\n"
     "      var ret6m = typeof s.return_6m === 'number' ? (s.return_6m >= 0 ? '\\u25b2' : '\\u25bc') + ' ' + Math.abs(s.return_6m).toFixed(1) + '%' : '\\u2014';\n"
-    "      var rpConfVal = typeof s.composite_confidence === 'number' ? s.composite_confidence : null;\n"
+    "      var rpConfVal = typeof s.confidence === 'number' ? s.confidence : null;\n"
     "      var rpConf    = rpConfVal !== null ? Math.round(rpConfVal) : '\\u2014';\n"
-    "      var rpConfCls = rpConfVal !== null ? (rpConfVal >= 70 ? 'rpill-cup' : rpConfVal >= 50 ? 'rpill-cnt' : 'rpill-cdn') : 'rpill-cnt';\n"
+    "      var rpConfCls = rpConfVal !== null ? (rpConfVal >= 70 ? 'rpill-cup' : rpConfVal >= 50 ? 'rpill-cnt' : 'rpill-cdn') : 'rpill-una';\n"
     "      var rpPrice   = typeof s.price === 'number' ? '$' + s.price.toFixed(2) : '\\u2014';\n"
     "      var sector    = (s.sector || '').replace(/_/g,' ').replace(/\\b\\w/g, function(c){ return c.toUpperCase(); });\n"
     "      var _sMap={'Energy':'#f4a44a','Technology':'#7dd8ff','Healthcare':'#7be8b0','Financials':'#c9b8ff',\n"
@@ -171,6 +171,11 @@ _INDEX_FETCH_JS = (
     "      + '</div>'\n"
     "      + rows\n"
     "      + '</div>';\n"
+    "    document.querySelectorAll('#rank-preview-mount .rank-card').forEach(function(card, i) {\n"
+    "      card.style.animation = 'none';\n"
+    "      card.offsetHeight;\n"
+    "      card.style.animation = 'stagger-up 0.52s cubic-bezier(0.16,1,0.3,1) both ' + (0.05 + i * 0.07) + 's';\n"
+    "    });\n"
     "  })\n"
     "  .catch(function() {\n"
     "    document.getElementById('rank-preview-mount').innerHTML =\n"
@@ -305,14 +310,14 @@ _RANK_FETCH_JS = (
     "      scripts += '<script type=\"application/json\" id=\"' + phUid + '\">'\n"
     "              + JSON.stringify(phList).replace(/<\\/script>/gi,'<\\\\/script>')\n"
     "              + '<\\/script>';\n"
-    "      var confVal    = typeof stock.composite_confidence === 'number' ? stock.composite_confidence : null;\n"
+    "      var confVal    = typeof stock.confidence === 'number' ? stock.confidence : null;\n"
     "      var riskVal    = typeof stock.risk_score === 'number' ? stock.risk_score : null;\n"
-    "      var confCls    = confVal !== null ? (confVal >= 70 ? 'rpill-cup' : confVal >= 50 ? 'rpill-cnt' : 'rpill-cdn') : 'rpill-cnt';\n"
-    "      var riskCls    = riskVal !== null ? (riskVal <= 30 ? 'rpill-rlo' : riskVal <= 55 ? 'rpill-rmd' : 'rpill-rhi') : 'rpill-rmd';\n"
+    "      var confCls    = confVal !== null ? (confVal >= 70 ? 'rpill-cup' : confVal >= 50 ? 'rpill-cnt' : 'rpill-cdn') : 'rpill-una';\n"
+    "      var riskCls    = riskVal !== null ? (riskVal <= 30 ? 'rpill-rlo' : riskVal <= 55 ? 'rpill-rmd' : 'rpill-rhi') : 'rpill-una';\n"
     "      var eqMap      = {'SUPPORTIVE':'rpill-eq-sup','NEUTRAL':'rpill-eq-neu','WEAK':'rpill-eq-wk','RISKY':'rpill-eq-rsk','UNAVAILABLE':'rpill-eq-una'};\n"
     "      var rotMap     = {'SUPPORT':'rpill-rt-sup','WAIT':'rpill-rt-wt','WEAKEN':'rpill-rt-wk','UNKNOWN':'rpill-rt-unk'};\n"
-    "      var eqPillCls  = eqMap[eqV]  || 'rpill-eq-neu';\n"
-    "      var rotPillCls = rotMap[rotS] || 'rpill-rt-wt';\n"
+    "      var eqPillCls  = eqMap[eqV]  || 'rpill-una';\n"
+    "      var rotPillCls = rotMap[rotS] || 'rpill-una';\n"
     "      var confDisp   = confVal !== null ? Math.round(confVal) : '\\u2014';\n"
     "      var riskDisp   = riskVal !== null ? Math.round(riskVal) : '\\u2014';\n"
     "      var priceDisp  = typeof stock.price === 'number' ? '$' + stock.price.toFixed(2) : '\\u2014';\n"
@@ -879,7 +884,7 @@ window._mreCharts=window._mreCharts||{};
 function mkC(cid,data){
   if(typeof Chart==='undefined')return;
   const cv=document.getElementById(cid);if(!cv)return;
-  if(window._mreCharts[cid]){window._mreCharts[cid].destroy();delete window._mreCharts[cid];}
+  if(window._mreCharts[cid]){window._mreCharts[cid].destroy();delete window._mreCharts[cid];const _oc=document.getElementById(cid);if(_oc){const _octx=_oc.getContext('2d');_octx.clearRect(0,0,_oc.width,_oc.height);}}
   const up=data[data.length-1]>=data[0],col=up?'#39e8a0':'#ff4d6d';
   const labels=DAYS.slice(-data.length);
   window._mreCharts[cid]=new Chart(cv.getContext('2d'),{
