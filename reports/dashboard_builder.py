@@ -864,15 +864,32 @@ function rpT(id){
     const inner=el.querySelector('.rp-exp-inner');
     if(inner){inner.style.opacity='';inner.style.transform='';}
     el.classList.add('open');
-    el.querySelectorAll('.pex-item').forEach((item,i)=>{
-      item.style.animation='none'; item.offsetHeight;
-      item.style.animation=`pex-spark 0.22s ease both ${0.04+i*0.06}s`;
+    requestAnimationFrame(function(){
+      el.querySelectorAll('.pex-item').forEach(function(item,i){
+        item.style.animation='none'; item.offsetHeight;
+        item.style.animation='pex-spark 0.22s ease both '+(0.04+i*0.06)+'s';
+      });
     });
   } else { closeRpExp(el); }
 }
-function closeExpRow(row){if(!row.classList.contains('open'))return;rafCollapseRow(row,'.exp-inner',380,null);}
+function closeExpRow(row){
+  if(!row.classList.contains('open'))return;
+  const card=row.closest('.rank-card'),cid=card?card.dataset.cid:null;
+  if(cid&&window._mreCharts&&window._mreCharts[cid]){
+    window._mreCharts[cid].destroy();delete window._mreCharts[cid];
+    const _oc=document.getElementById(cid);
+    if(_oc){const _octx=_oc.getContext('2d');_octx.clearRect(0,0,_oc.width,_oc.height);}
+  }
+  rafCollapseRow(row,'.exp-inner',380,null);
+}
 function closeExpRowInstant(row){
   if(!row.classList.contains('open'))return;
+  const card=row.closest('.rank-card'),cid=card?card.dataset.cid:null;
+  if(cid&&window._mreCharts&&window._mreCharts[cid]){
+    window._mreCharts[cid].destroy();delete window._mreCharts[cid];
+    const _oc=document.getElementById(cid);
+    if(_oc){const _octx=_oc.getContext('2d');_octx.clearRect(0,0,_oc.width,_oc.height);}
+  }
   row.classList.remove('open'); row.style.display='none'; row.style.height='';
   const inner=row.querySelector('.exp-inner');
   if(inner){inner.style.opacity='';inner.style.transform='';inner.style.transformOrigin='';}
