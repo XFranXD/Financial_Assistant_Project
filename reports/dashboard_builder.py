@@ -1561,7 +1561,7 @@ def _render_rank_html(rank_data: dict) -> str:
             '</div>'
             '</div></div>'
             '<footer><span>MRE</span> &middot; Free-tier data only &middot; Not investment advice</footer>'
-            f'<script>{_DAYS_JS}{_EXP_T_JS}{_RAF_COLLAPSE_JS}{_COPY_PROMPT_JS}</script>'
+            f'<script>{_DAYS_JS}{_EASING_JS}{_RAF_COLLAPSE_JS}{_EXP_T_JS}{_COPY_PROMPT_JS}</script>'
             '<script>' + _RANK_FETCH_JS + '</script>'
             '</body></html>'
         )
@@ -1775,3 +1775,4 @@ def build_dashboard(
         log.error(f'news.html write failed: {e}')
 
     log.info('build_dashboard complete')
+    
