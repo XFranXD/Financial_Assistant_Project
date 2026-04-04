@@ -246,7 +246,18 @@ function rpT(id){
     if(anyOpen){
       el.classList.add('open'); el.style.display='block';
       const inner=el.querySelector('.rp-exp-inner');
-      if(inner){inner.style.opacity='';inner.style.transform='';}
+      if(inner){
+        inner.style.opacity='';inner.style.transform='';
+        inner.querySelectorAll('.est').forEach(function(t,i){
+          t.style.opacity='0'; t.style.transform='translateY(8px) scale(0.96)';
+          t.style.transition='none';
+          setTimeout(function(){
+            t.style.transition='opacity 0.22s ease, transform 0.22s ease';
+            t.style.opacity='1'; t.style.transform='translateY(0) scale(1)';
+            setTimeout(function(){ t.style.transition=''; },240);
+          }, 30+i*45);
+        });
+      }
     } else {
       el._rpAnimating=true;
       rafExpandRow(el,'.rp-exp-inner',420,function(){ el._rpAnimating=false; });
