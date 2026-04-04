@@ -111,7 +111,7 @@
     <div id="p-home" class="page on">
       <div class="pg-eyebrow stagger-1">Dashboard &middot; Active</div>
       <div class="pg-title stagger-1">Market <span class="hi">Overview</span></div>
-      <div class="pg-sub stagger-1">2026-04-04 13:01 ET &middot; Last scan</div>
+      <div class="pg-sub stagger-1">2026-04-03 23:52 ET &middot; Last scan</div>
       <div class="idx-section stagger-2">
         <div class="sl">Market Indices &middot; 30-day</div>
         <div class="idx-taskbar">
@@ -186,39 +186,35 @@
             <div class="npc">
               <div class="npc-stripe" style="background:linear-gradient(180deg,var(--nt),transparent)"></div>
               <div>
-                <div class="npc-title">Trump’s tales are still muddling markets</div>
-                <div class="npc-meta"><span class="ntag pu">Consumer Discretionary</span> ft &middot; 04:00 ET</div>
+                <div class="npc-title">US labor market posts largest jobs gain in 15 months, but clouds brewing from
+                  Iran war - Reuters</div>
+                <div class="npc-meta"><span class="ntag pu">Consumer Discretionary</span> finnhub &middot; 18:44 ET
+                </div>
               </div>
             </div>
             <div class="npc">
               <div class="npc-stripe" style="background:linear-gradient(180deg,var(--nt),transparent)"></div>
               <div>
-                <div class="npc-title">Trump’s tales are still muddling markets</div>
-                <div class="npc-meta"><span class="ntag pu">Technology</span> ft &middot; 04:00 ET</div>
+                <div class="npc-title">US labor market posts largest jobs gain in 15 months, but clouds brewing from
+                  Iran war - Reuters</div>
+                <div class="npc-meta"><span class="ntag pu">Financials</span> finnhub &middot; 18:44 ET</div>
               </div>
             </div>
             <div class="npc">
-              <div class="npc-stripe" style="background:linear-gradient(180deg,var(--nt),transparent)"></div>
+              <div class="npc-stripe" style="background:linear-gradient(180deg,var(--pu-lt),transparent)"></div>
               <div>
-                <div class="npc-title">IMF urges BOJ to keep raising rates even as Iran war poses new risks -
-                  reuters.com</div>
-                <div class="npc-meta"><span class="ntag pu">Real Estate</span> finnhub &middot; 07:13 ET</div>
+                <div class="npc-title">Second US Air Force plane crashed in Persian Gulf region, New York Times reports
+                  - Reuters</div>
+                <div class="npc-meta"><span class="ntag pu">Consumer Discretionary</span> finnhub &middot; 18:50 ET
+                </div>
               </div>
             </div>
             <div class="npc">
-              <div class="npc-stripe" style="background:linear-gradient(180deg,var(--nt),transparent)"></div>
+              <div class="npc-stripe" style="background:linear-gradient(180deg,var(--pu-lt),transparent)"></div>
               <div>
-                <div class="npc-title">IMF urges BOJ to keep raising rates even as Iran war poses new risks -
-                  reuters.com</div>
-                <div class="npc-meta"><span class="ntag pu">Financials</span> finnhub &middot; 07:13 ET</div>
-              </div>
-            </div>
-            <div class="npc">
-              <div class="npc-stripe" style="background:linear-gradient(180deg,var(--nt),transparent)"></div>
-              <div>
-                <div class="npc-title">IMF urges BOJ to keep raising rates even as Iran war poses new risks -
-                  reuters.com</div>
-                <div class="npc-meta"><span class="ntag pu">Utilities</span> finnhub &middot; 07:13 ET</div>
+                <div class="npc-title">Second US Air Force plane crashed in Persian Gulf region, New York Times reports
+                  - Reuters</div>
+                <div class="npc-meta"><span class="ntag pu">Financials</span> finnhub &middot; 18:50 ET</div>
               </div>
             </div>
           </div>
@@ -604,10 +600,10 @@
             + '</div>'
             + '</div>'
             + '<div class="rp-exp" id="rp' + i + '"><div class="rp-exp-inner">'
-            + '<div class="pex-item"><div class="pex-k">1M Return</div><div class="pex-v">' + ret1m + '</div></div>'
-            + '<div class="pex-item"><div class="pex-k">3M Return</div><div class="pex-v">' + ret3m + '</div></div>'
-            + '<div class="pex-item"><div class="pex-k">6M Return</div><div class="pex-v">' + ret6m + '</div></div>'
-            + '<div class="pex-item"><div class="pex-k">Verdict</div><div class="pex-v ' + cCls + '">' + verdict + '</div></div>'
+            + '<div class="pex-item est"><div class="pex-k">1M Return</div><div class="pex-v">' + ret1m + '</div></div>'
+            + '<div class="pex-item est"><div class="pex-k">3M Return</div><div class="pex-v">' + ret3m + '</div></div>'
+            + '<div class="pex-item est"><div class="pex-k">6M Return</div><div class="pex-v">' + ret6m + '</div></div>'
+            + '<div class="pex-item est"><div class="pex-k">Verdict</div><div class="pex-v ' + cCls + '">' + verdict + '</div></div>'
             + '</div></div>'
             + '</div>';
         });
@@ -620,6 +616,11 @@
           + '</div>'
           + rows
           + '</div>';
+        document.querySelectorAll('#rank-preview-mount .rank-card').forEach(function (card, i) {
+          card.style.animation = 'none';
+          card.offsetHeight;
+          card.style.animation = 'stagger-up 0.52s cubic-bezier(0.16,1,0.3,1) both ' + (0.05 + i * 0.07) + 's';
+        });
       })
       .catch(function () {
         document.getElementById('rank-preview-mount').innerHTML =
