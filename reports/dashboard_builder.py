@@ -941,8 +941,8 @@ function expT(btn){
       if(c!==card){c.classList.add('dimmed');}
     });
     if(card){card.classList.add('selected');}
+    if(data&&data.length>=2){mkC(cid,data);}
     rafExpandRow(row,'.exp-inner',400,function(){
-      if(data&&data.length>=2){mkC(cid,data);}
       row.querySelectorAll('.est-v').forEach(function(ev,i){
         var stored=ev.dataset.raw||'';
         if(!stored)return;
