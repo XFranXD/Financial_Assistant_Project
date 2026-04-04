@@ -240,10 +240,17 @@ function rpT(id){
   const el=document.getElementById(id);
   if(el._rpAnimating)return;
   const was=el.classList.contains('open');
+  const anyOpen=document.querySelector('.rp-exp.open');
   document.querySelectorAll('.rp-exp').forEach(e=>{if(e!==el)closeRpExpInstant(e);});
   if(!was){
-    el._rpAnimating=true;
-    rafExpandRow(el,'.rp-exp-inner',420,function(){ el._rpAnimating=false; });
+    if(anyOpen){
+      el.classList.add('open'); el.style.display='block';
+      const inner=el.querySelector('.rp-exp-inner');
+      if(inner){inner.style.opacity='';inner.style.transform='';}
+    } else {
+      el._rpAnimating=true;
+      rafExpandRow(el,'.rp-exp-inner',420,function(){ el._rpAnimating=false; });
+    }
   } else { closeRpExp(el); }
 }
 function closeExpRow(row){if(!row.classList.contains('open'))return;rafCollapseRow(row,'.exp-inner',380,null);}
@@ -334,10 +341,10 @@ fetch('assets/data/rank.json?v='+Date.now())
             + '</div>'
             + '</div>'
             + '<div class="rp-exp" id="rp' + i + '"><div class="rp-exp-inner">'
-            + '<div class="pex-item"><div class="pex-k">1M Return</div><div class="pex-v">' + ret1m + '</div></div>'
-            + '<div class="pex-item"><div class="pex-k">3M Return</div><div class="pex-v">' + ret3m + '</div></div>'
-            + '<div class="pex-item"><div class="pex-k">6M Return</div><div class="pex-v">' + ret6m + '</div></div>'
-            + '<div class="pex-item"><div class="pex-k">Verdict</div><div class="pex-v ' + cCls + '">' + verdict + '</div></div>'
+            + '<div class="pex-item est"><div class="pex-k">1M Return</div><div class="pex-v">' + ret1m + '</div></div>'
+            + '<div class="pex-item est"><div class="pex-k">3M Return</div><div class="pex-v">' + ret3m + '</div></div>'
+            + '<div class="pex-item est"><div class="pex-k">6M Return</div><div class="pex-v">' + ret6m + '</div></div>'
+            + '<div class="pex-item est"><div class="pex-k">Verdict</div><div class="pex-v ' + cCls + '">' + verdict + '</div></div>'
             + '</div></div>'
             + '</div>';
     });
