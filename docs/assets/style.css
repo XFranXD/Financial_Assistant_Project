@@ -1287,100 +1287,130 @@ nav::before {
   font-size: 7px;
 }
 
+/* ── UNIVERSAL PILL PALETTE ──
+   blue  #7dd8ff  = high conf / low risk / supportive / support
+   white #e8e0ff  = mid conf  / mid risk / neutral    / wait
+   red   #ff4d6d  = low conf  / high risk/ weak/risky / weaken
+   mist  #4a3d72  = unavailable / unknown / no data
+   green #2dddb8  = price (static)
+────────────────────────────────── */
+
+/* SHARED: unavailable / unknown / no data — turned off */
+.rpill-una {
+  color: #4a3d72;
+  background: linear-gradient(90deg, rgba(20, 16, 40, .8), rgba(42, 34, 72, .50));
+  border-image: linear-gradient(90deg, rgba(20, 16, 40, .9), rgba(74, 61, 114, .40)) 1;
+}
+
 .rpill-price {
-  color: #ffd700;
-  background: linear-gradient(90deg, rgba(60, 40, 0, .8), rgba(180, 130, 0, .35));
-  border-image: linear-gradient(90deg, rgba(60, 40, 0, .9), rgba(255, 215, 0, .75)) 1;
-}
-
-.rpill-cup {
-  color: #39e8a0;
-  background: linear-gradient(90deg, rgba(10, 50, 30, .8), rgba(57, 232, 160, .25));
-  border-image: linear-gradient(90deg, rgba(10, 50, 30, .9), rgba(57, 232, 160, .75)) 1;
-}
-
-.rpill-cnt {
-  color: #ff9a3c;
-  background: linear-gradient(90deg, rgba(60, 30, 0, .8), rgba(255, 154, 60, .25));
-  border-image: linear-gradient(90deg, rgba(60, 30, 0, .9), rgba(255, 154, 60, .75)) 1;
-}
-
-.rpill-cdn {
-  color: #ff4d6d;
-  background: linear-gradient(90deg, rgba(60, 10, 20, .8), rgba(255, 77, 109, .25));
-  border-image: linear-gradient(90deg, rgba(60, 10, 20, .9), rgba(255, 77, 109, .75)) 1;
-}
-
-.rpill-rlo {
-  color: #7dd8ff;
-  background: linear-gradient(90deg, rgba(5, 15, 50, .8), rgba(0, 180, 255, .25));
-  border-image: linear-gradient(90deg, rgba(5, 15, 50, .9), rgba(100, 200, 255, .75)) 1;
-}
-
-.rpill-rmd {
-  color: #e07a20;
-  background: linear-gradient(90deg, rgba(50, 35, 0, .8), rgba(220, 160, 0, .25));
-  border-image: linear-gradient(90deg, rgba(50, 35, 0, .9), rgba(220, 160, 0, .75)) 1;
-}
-
-.rpill-rhi {
-  color: #c084ff;
-  background: linear-gradient(90deg, rgba(60, 5, 15, .8), rgba(180, 50, 80, .25));
-  border-image: linear-gradient(90deg, rgba(60, 5, 15, .9), rgba(200, 60, 90, .75)) 1;
-}
-
-.rpill-eq-sup {
   color: #2dddb8;
   background: linear-gradient(90deg, rgba(5, 50, 40, .8), rgba(45, 221, 184, .25));
   border-image: linear-gradient(90deg, rgba(5, 50, 40, .9), rgba(45, 221, 184, .75)) 1;
 }
 
+/* CONF: high */
+.rpill-cup {
+  color: #7dd8ff;
+  background: linear-gradient(90deg, rgba(5, 15, 50, .8), rgba(0, 180, 255, .25));
+  border-image: linear-gradient(90deg, rgba(5, 15, 50, .9), rgba(125, 216, 255, .75)) 1;
+}
+
+/* CONF: mid */
+.rpill-cnt {
+  color: #e8e0ff;
+  background: linear-gradient(90deg, rgba(40, 40, 50, .8), rgba(180, 180, 200, .25));
+  border-image: linear-gradient(90deg, rgba(40, 40, 50, .9), rgba(200, 200, 220, .75)) 1;
+}
+
+/* CONF: low */
+.rpill-cdn {
+  color: #ff4d6d;
+  background: linear-gradient(90deg, rgba(60, 5, 10, .8), rgba(255, 77, 109, .20));
+  border-image: linear-gradient(90deg, rgba(80, 5, 15, .9), rgba(255, 77, 109, .70)) 1;
+}
+
+/* RISK: low (good) */
+.rpill-rlo {
+  color: #7dd8ff;
+  background: linear-gradient(90deg, rgba(5, 15, 50, .8), rgba(0, 180, 255, .25));
+  border-image: linear-gradient(90deg, rgba(5, 15, 50, .9), rgba(125, 216, 255, .75)) 1;
+}
+
+/* RISK: mid */
+.rpill-rmd {
+  color: #e8e0ff;
+  background: linear-gradient(90deg, rgba(40, 40, 50, .8), rgba(180, 180, 200, .25));
+  border-image: linear-gradient(90deg, rgba(40, 40, 50, .9), rgba(200, 200, 220, .75)) 1;
+}
+
+/* RISK: high (bad) */
+.rpill-rhi {
+  color: #ff4d6d;
+  background: linear-gradient(90deg, rgba(60, 5, 10, .8), rgba(255, 77, 109, .20));
+  border-image: linear-gradient(90deg, rgba(80, 5, 15, .9), rgba(255, 77, 109, .70)) 1;
+}
+
+/* EQ: supportive */
+.rpill-eq-sup {
+  color: #7dd8ff;
+  background: linear-gradient(90deg, rgba(5, 15, 50, .8), rgba(0, 180, 255, .25));
+  border-image: linear-gradient(90deg, rgba(5, 15, 50, .9), rgba(125, 216, 255, .75)) 1;
+}
+
+/* EQ: neutral */
 .rpill-eq-neu {
   color: #e8e0ff;
   background: linear-gradient(90deg, rgba(40, 40, 50, .8), rgba(180, 180, 200, .25));
   border-image: linear-gradient(90deg, rgba(40, 40, 50, .9), rgba(200, 200, 220, .75)) 1;
 }
 
+/* EQ: weak */
 .rpill-eq-wk {
-  color: #e07a20;
-  background: linear-gradient(90deg, rgba(50, 25, 0, .8), rgba(200, 110, 0, .25));
-  border-image: linear-gradient(90deg, rgba(50, 25, 0, .9), rgba(200, 110, 0, .75)) 1;
+  color: #ff4d6d;
+  background: linear-gradient(90deg, rgba(60, 5, 10, .8), rgba(255, 77, 109, .20));
+  border-image: linear-gradient(90deg, rgba(80, 5, 15, .9), rgba(255, 77, 109, .70)) 1;
 }
 
+/* EQ: risky */
 .rpill-eq-rsk {
-  color: #c084ff;
-  background: linear-gradient(90deg, rgba(60, 5, 15, .8), rgba(180, 50, 80, .25));
-  border-image: linear-gradient(90deg, rgba(60, 5, 15, .9), rgba(200, 60, 90, .75)) 1;
+  color: #ff4d6d;
+  background: linear-gradient(90deg, rgba(60, 5, 10, .8), rgba(255, 77, 109, .20));
+  border-image: linear-gradient(90deg, rgba(80, 5, 15, .9), rgba(255, 77, 109, .70)) 1;
 }
 
+/* EQ: unavailable — turned off */
 .rpill-eq-una {
-  color: #1a0a00;
-  background: linear-gradient(90deg, rgba(80, 35, 0, .8), rgba(180, 80, 0, .35));
-  border-image: linear-gradient(90deg, rgba(80, 35, 0, .9), rgba(180, 80, 0, .75)) 1;
+  color: #4a3d72;
+  background: linear-gradient(90deg, rgba(20, 16, 40, .8), rgba(42, 34, 72, .50));
+  border-image: linear-gradient(90deg, rgba(20, 16, 40, .9), rgba(74, 61, 114, .40)) 1;
 }
 
+/* ROTATION: support */
 .rpill-rt-sup {
-  color: #2dddb8;
-  background: linear-gradient(90deg, rgba(5, 50, 40, .8), rgba(45, 221, 184, .25));
-  border-image: linear-gradient(90deg, rgba(5, 50, 40, .9), rgba(45, 221, 184, .75)) 1;
+  color: #7dd8ff;
+  background: linear-gradient(90deg, rgba(5, 15, 50, .8), rgba(0, 180, 255, .25));
+  border-image: linear-gradient(90deg, rgba(5, 15, 50, .9), rgba(125, 216, 255, .75)) 1;
 }
 
+/* ROTATION: wait */
 .rpill-rt-wt {
   color: #e8e0ff;
   background: linear-gradient(90deg, rgba(40, 40, 50, .8), rgba(180, 180, 200, .25));
   border-image: linear-gradient(90deg, rgba(40, 40, 50, .9), rgba(200, 200, 220, .75)) 1;
 }
 
+/* ROTATION: weaken */
 .rpill-rt-wk {
-  color: #e07a20;
-  background: linear-gradient(90deg, rgba(50, 25, 0, .8), rgba(200, 110, 0, .25));
-  border-image: linear-gradient(90deg, rgba(50, 25, 0, .9), rgba(200, 110, 0, .75)) 1;
+  color: #ff4d6d;
+  background: linear-gradient(90deg, rgba(60, 5, 10, .8), rgba(255, 77, 109, .20));
+  border-image: linear-gradient(90deg, rgba(80, 5, 15, .9), rgba(255, 77, 109, .70)) 1;
 }
 
+/* ROTATION: unknown — turned off */
 .rpill-rt-unk {
-  color: #1a0a00;
-  background: linear-gradient(90deg, rgba(80, 35, 0, .8), rgba(180, 80, 0, .35));
-  border-image: linear-gradient(90deg, rgba(80, 35, 0, .9), rgba(180, 80, 0, .75)) 1;
+  color: #4a3d72;
+  background: linear-gradient(90deg, rgba(20, 16, 40, .8), rgba(42, 34, 72, .50));
+  border-image: linear-gradient(90deg, rgba(20, 16, 40, .9), rgba(74, 61, 114, .40)) 1;
 }
 
 .rank-head {
@@ -1921,4 +1951,4 @@ a:hover {
     font-size: 7px;
     padding: 2px 6px;
   }
-  }
+}
