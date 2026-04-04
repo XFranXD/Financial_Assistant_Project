@@ -1276,9 +1276,9 @@ def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, ind
         indices = indices or {}
         # ── Index pills ──────────────────────────────────────────────────────
         _pill_colors = {
-            'dow': ('#ffb347', 'rgba(60,40,0,.8)',    'rgba(255,179,71,.25)',  'rgba(60,40,0,.9)',    'rgba(255,179,71,.75)'),
-            'sp':  ('#ff7c2a', 'rgba(60,25,0,.8)',    'rgba(255,124,42,.25)', 'rgba(60,25,0,.9)',    'rgba(255,124,42,.75)'),
-            'nq':  ('#ff4466', 'rgba(60,10,20,.8)',   'rgba(255,68,102,.25)', 'rgba(60,10,20,.9)',   'rgba(255,68,102,.75)'),
+            'dow': ('#ffb347', 'rgba(40,25,0,.85)',  'rgba(60,40,0,.90)',   'rgba(255,179,71,.75)'),
+            'sp':  ('#ff7c2a', 'rgba(40,18,0,.85)',  'rgba(60,30,0,.90)',   'rgba(255,124,42,.75)'),
+            'nq':  ('#ff4466', 'rgba(40,5,12,.85)',  'rgba(60,10,20,.90)',  'rgba(255,68,102,.75)'),
         }
 
         def _pill(key, pill_id, label_text):
@@ -1286,7 +1286,7 @@ def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, ind
             val   = _fmt_index_val(d.get('value'))
             chg   = d.get('change_pct')
             lbl   = (d.get('label') or '').upper()
-            col, bg_dark, bg_light, bd_dark, bd_light = _pill_colors.get(pill_id, ('#9b59ff', 'rgba(20,10,40,.8)', 'rgba(155,89,255,.25)', 'rgba(20,10,40,.9)', 'rgba(155,89,255,.75)'))
+            col, bg_flat, bd_dark, bd_light = _pill_colors.get(pill_id, ('#9b59ff', 'rgba(20,5,40,.85)', 'rgba(40,10,80,.90)', 'rgba(155,89,255,.75)'))
             if isinstance(chg, (int, float)):
                 arrow = '\u25b2' if chg > 0 else '\u25bc' if chg < 0 else '\u2014'
                 cls   = 'up' if chg > 0 else 'dn' if chg < 0 else 'nt'
@@ -1296,12 +1296,15 @@ def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, ind
                 chg_s = '\u2014'
             label_badge = (
                 f'<span style="'
+                f'display:inline-block;'
+                f'background:linear-gradient(90deg,{bd_dark} 0%,{bd_light} 100%);'
+                f'border-radius:5px;padding:1px;">'
+                f'<span style="'
+                f'display:inline-block;'
                 f'font-size:10px;color:{col};font-family:var(--ff-mono);letter-spacing:0.1em;'
                 f'text-transform:uppercase;white-space:nowrap;'
-                f'background:linear-gradient(90deg,{bg_dark},{bg_light});'
-                f'border:1px solid transparent;'
-                f'border-image:linear-gradient(90deg,{bd_dark},{bd_light}) 1;'
-                f'padding:2px 7px;">{label_text}</span>'
+                f'background:{bg_flat};'
+                f'border-radius:4px;padding:2px 7px;">{label_text}</span></span>'
             )
             return (
                 f'<div class="idx-pill" id="pill-{pill_id}" onclick="toggleIdx(\'{pill_id}\')">'
@@ -1709,3 +1712,4 @@ def build_dashboard(
         log.error(f'news.html write failed: {e}')
 
     log.info('build_dashboard complete')
+    
