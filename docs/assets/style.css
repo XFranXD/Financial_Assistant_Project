@@ -1189,7 +1189,6 @@ nav::before {
   border: 1px solid var(--rim);
   border-radius: 14px;
   overflow: hidden;
-  cursor: pointer;
   transition: border-color 0.3s var(--apple), opacity 0.3s var(--apple);
   position: relative;
   margin-bottom: 10px;
@@ -1236,6 +1235,7 @@ nav::before {
   padding: 14px 16px;
   position: relative;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .rck-n {
@@ -1474,7 +1474,6 @@ nav::before {
 
 .exp-row.open {
   display: block;
-  animation: snap-expand 0.32s cubic-bezier(0, 1, 0.4, 1) both;
 }
 
 @keyframes snap-expand {
