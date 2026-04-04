@@ -883,9 +883,10 @@ function mkC(cid,data){
   const up=data[data.length-1]>=data[0],col=up?'#39e8a0':'#ff4d6d';
   const avg=data.reduce(function(s,v){return s+v;},0)/data.length;
   const flatData=data.map(function(){return avg;});
+  const labels=DAYS.slice(-data.length);
   window._mreCharts[cid]=new Chart(cv.getContext('2d'),{
     type:'line',
-    data:{labels:DAYS,datasets:[{data:flatData.slice(),borderColor:col,borderWidth:1.8,fill:true,tension:0.38,
+    data:{labels:labels,datasets:[{data:flatData.slice(),borderColor:col,borderWidth:1.8,fill:true,tension:0.38,
       backgroundColor:ctx=>{const{ctx:c,chartArea:a}=ctx.chart;if(!a)return 'transparent';
         const g=c.createLinearGradient(0,a.top,0,a.bottom);
         g.addColorStop(0,up?'rgba(57,232,160,.18)':'rgba(255,77,109,.18)');
@@ -941,8 +942,8 @@ function expT(btn){
       if(c!==card){c.classList.add('dimmed');}
     });
     if(card){card.classList.add('selected');}
-    if(data&&data.length>=2){mkC(cid,data);}
     rafExpandRow(row,'.exp-inner',400,function(){
+      if(data&&data.length>=2){mkC(cid,data);}
       row.querySelectorAll('.est-v').forEach(function(ev,i){
         var stored=ev.dataset.raw||'';
         if(!stored)return;
