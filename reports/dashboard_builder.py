@@ -1276,9 +1276,9 @@ def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, ind
         indices = indices or {}
         # ── Index pills ──────────────────────────────────────────────────────
         _pill_colors = {
-            'dow': ('#ffb347', 'rgba(80,50,0,.85)',  'rgba(255,179,71,.30)', 'rgba(255,179,71,.55)'),
-            'sp':  ('#ff7c2a', 'rgba(80,35,0,.85)',  'rgba(255,124,42,.30)', 'rgba(255,124,42,.55)'),
-            'nq':  ('#ff4466', 'rgba(80,10,25,.85)', 'rgba(255,68,102,.30)', 'rgba(255,68,102,.55)'),
+            'dow': ('#ffb347', 'rgba(80,50,0,.42)',  'rgba(255,179,71,.15)', 'rgba(255,179,71,.55)'),
+            'sp':  ('#ff7c2a', 'rgba(80,35,0,.42)',  'rgba(255,124,42,.15)', 'rgba(255,124,42,.55)'),
+            'nq':  ('#ff4466', 'rgba(80,10,25,.42)', 'rgba(255,68,102,.15)', 'rgba(255,68,102,.55)'),
         }
 
         def _pill(key, pill_id, label_text):
