@@ -765,8 +765,8 @@ function buildIdxChart(d){
       pointHoverBorderColor:'#0a0610',pointHoverBorderWidth:2,hitRadius:20}]},
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,
-        backgroundColor:d.bg_color,borderColor:'rgba(155,89,255,0.25)',borderWidth:1,
-        titleColor:'#4a3d72',bodyColor:'#f0eaff',
+        backgroundColor:'#1a1430',borderColor:'rgba(155,89,255,0.25)',borderWidth:1,
+        titleColor:'#9b59ff',bodyColor:'#f0eaff',
         titleFont:{family:'Share Tech Mono',size:10},bodyFont:{family:'Share Tech Mono',size:11},
         callbacks:{title:i=>DAYS[i[0].dataIndex],label:i=>' $'+i.raw.toFixed(2)}}},
       scales:{x:{display:false},y:{display:false}},
@@ -1712,3 +1712,4 @@ def build_dashboard(
         log.error(f'news.html write failed: {e}')
 
     log.info('build_dashboard complete')
+    
