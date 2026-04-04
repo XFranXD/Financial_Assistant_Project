@@ -84,18 +84,42 @@ function closeRpExpInstant(el){
 }
 function rpT(id){
   const el=document.getElementById(id),was=el.classList.contains('open');
+  const anyOpen=!!document.querySelector('.rp-exp.open');
   document.querySelectorAll('.rp-exp').forEach(e=>{if(e!==el)closeRpExpInstant(e);});
   if(!was){
-    el.style.display=''; el.style.height='';
-    const inner=el.querySelector('.rp-exp-inner');
-    if(inner){inner.style.opacity='';inner.style.transform='';}
-    el.classList.add('open');
-    requestAnimationFrame(function(){
-      el.querySelectorAll('.pex-item').forEach(function(item,i){
-        item.style.animation='none'; item.offsetHeight;
-        item.style.animation='pex-spark 0.22s ease both '+(0.04+i*0.06)+'s';
+    function fireItems(){
+      requestAnimationFrame(function(){
+        el.querySelectorAll('.pex-item').forEach(function(item,i){
+          item.style.animation='none'; item.offsetHeight;
+          item.style.animation='pex-spark 0.22s ease both '+(0.04+i*0.06)+'s';
+        });
       });
-    });
+    }
+    if(anyOpen){
+      el.style.display='block'; el.style.height='';
+      const inner=el.querySelector('.rp-exp-inner');
+      if(inner){inner.style.opacity='1';inner.style.transform='';}
+      el.classList.add('open');
+      fireItems();
+    } else {
+      el.style.display='block'; el.style.overflow='hidden'; el.style.height='0px';
+      const inner=el.querySelector('.rp-exp-inner');
+      if(inner){inner.style.opacity='1';inner.style.transform='';}
+      const toH=el.scrollHeight;
+      const start=performance.now(),dur=380;
+      function frame(now){
+        const raw=Math.min((now-start)/dur,1);
+        const ease=1-Math.pow(1-raw,3);
+        el.style.height=(toH*ease).toFixed(1)+'px';
+        if(raw<1){requestAnimationFrame(frame);}
+        else{
+          el.classList.add('open');
+          el.style.height=''; el.style.overflow='';
+          fireItems();
+        }
+      }
+      requestAnimationFrame(frame);
+    }
   } else { closeRpExp(el); }
 }
 function closeExpRow(row){
