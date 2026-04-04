@@ -972,14 +972,13 @@ function expT(btn){
   document.querySelectorAll('.rank-card').forEach(function(c){
     c.classList.remove('selected','dimmed','closing');
   });
-  var anyOpen=!!document.querySelector('.exp-row.open');
   document.querySelectorAll('.exp-row').forEach(r=>{if(r!==row)closeExpRowInstant(r);});
   if(!was){
     document.querySelectorAll('.rank-card').forEach(function(c){
       if(c!==card){c.classList.add('dimmed');}
     });
     if(card){card.classList.add('selected');}
-    function runContent(){
+    rafExpandRow(row,'.exp-inner',400,function(){
       if(data&&data.length>=2){mkC(cid,data);}
       row.querySelectorAll('.est-v').forEach(function(ev,i){
         var stored=ev.dataset.raw||'';
@@ -991,33 +990,11 @@ function expT(btn){
           setTimeout(function(){countUp(ev,num,prefix,suffix,420);},i*50);
         }
       });
-    }
-    if(anyOpen){
-      row.style.display='block'; row.style.height='';
-      var inner=row.querySelector('.exp-inner');
-      if(inner){
-        inner.style.opacity='1'; inner.style.transform='';
-        inner.querySelectorAll('.est').forEach(function(t,i){
-          t.style.opacity='0'; t.style.transform='translateY(8px) scale(0.96)';
-          t.style.transition='none';
-          setTimeout(function(){
-            t.style.transition='opacity 0.22s ease, transform 0.22s ease';
-            t.style.opacity='1'; t.style.transform='translateY(0) scale(1)';
-            setTimeout(function(){t.style.transition='';},240);
-          },30+i*45);
-        });
-      }
-      row.classList.add('open');
-      requestAnimationFrame(runContent);
-    } else {
-      rafExpandRow(row,'.exp-inner',400,runContent);
-    }
+    });
   } else {
     if(card){card.classList.remove('selected');}
     document.querySelectorAll('.rank-card').forEach(function(c){c.classList.remove('dimmed');});
     closeExpRow(row);
-  }
-}
   }
 }
 """
