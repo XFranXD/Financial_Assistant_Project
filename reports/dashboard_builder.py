@@ -881,12 +881,10 @@ function mkC(cid,data){
   const cv=document.getElementById(cid);if(!cv)return;
   if(window._mreCharts[cid]){window._mreCharts[cid].destroy();delete window._mreCharts[cid];}
   const up=data[data.length-1]>=data[0],col=up?'#39e8a0':'#ff4d6d';
-  const avg=data.reduce(function(s,v){return s+v;},0)/data.length;
-  const flatData=data.map(function(){return avg;});
   const labels=DAYS.slice(-data.length);
   window._mreCharts[cid]=new Chart(cv.getContext('2d'),{
     type:'line',
-    data:{labels:labels,datasets:[{data:flatData.slice(),borderColor:col,borderWidth:1.8,fill:true,tension:0.38,
+    data:{labels:labels,datasets:[{data:data,borderColor:col,borderWidth:1.8,fill:true,tension:0.38,
       backgroundColor:ctx=>{const{ctx:c,chartArea:a}=ctx.chart;if(!a)return 'transparent';
         const g=c.createLinearGradient(0,a.top,0,a.bottom);
         g.addColorStop(0,up?'rgba(57,232,160,.18)':'rgba(255,77,109,.18)');
@@ -898,21 +896,11 @@ function mkC(cid,data){
         backgroundColor:'#1a1430',borderColor:'rgba(155,89,255,0.25)',borderWidth:1,
         titleColor:'#9b59ff',bodyColor:'#f0eaff',
         titleFont:{family:'Share Tech Mono',size:10},bodyFont:{family:'Share Tech Mono',size:11},
-        callbacks:{title:i=>DAYS[i[0].dataIndex],label:i=>' $'+i.raw.toFixed(2)}}},
+        callbacks:{title:i=>labels[i[0].dataIndex],label:i=>' $'+i.raw.toFixed(2)}}},
       scales:{x:{display:false},y:{display:false}},
       interaction:{mode:'index',intersect:false},
-      animation:{duration:0}}
+      animation:{duration:700,easing:'easeInOutCubic'}}
   });
-  const chart=window._mreCharts[cid];
-  const DUR=750,startT=performance.now();
-  function drawStep(now){
-    const raw=Math.min((now-startT)/DUR,1);
-    const ease=raw===1?1:1-Math.pow(2,-10*raw);
-    chart.data.datasets[0].data=data.map(function(v){return avg+(v-avg)*ease;});
-    chart.update('none');
-    if(raw<1)requestAnimationFrame(drawStep);
-  }
-  requestAnimationFrame(drawStep);
 }
 function countUp(el,target,prefix,suffix,duration){
   const start=performance.now();
