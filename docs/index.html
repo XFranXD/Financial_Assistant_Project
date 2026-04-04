@@ -482,12 +482,7 @@
       const el = document.getElementById(id), was = el.classList.contains('open');
       document.querySelectorAll('.rp-exp').forEach(e => { if (e !== el) closeRpExpInstant(e); });
       if (!was) {
-        rafExpandRow(el, '.rp-exp-inner', 420, function () {
-          el.querySelectorAll('.pex-item').forEach(function (item, i) {
-            item.style.animation = 'none'; item.offsetHeight;
-            item.style.animation = 'pex-spark 0.22s ease both ' + (0.04 + i * 0.06) + 's';
-          });
-        });
+        rafExpandRow(el, '.rp-exp-inner', 420, null);
       } else { closeRpExp(el); }
     }
     function closeExpRow(row) { if (!row.classList.contains('open')) return; rafCollapseRow(row, '.exp-inner', 380, null); }
