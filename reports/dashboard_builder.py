@@ -1276,9 +1276,9 @@ def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, ind
         indices = indices or {}
         # ── Index pills ──────────────────────────────────────────────────────
         _pill_colors = {
-            'dow': ('#ffb347', 'rgba(80,50,0,.85)',  'rgba(255,179,71,.30)'),
-            'sp':  ('#ff7c2a', 'rgba(80,35,0,.85)',  'rgba(255,124,42,.30)'),
-            'nq':  ('#ff4466', 'rgba(80,10,25,.85)', 'rgba(255,68,102,.30)'),
+            'dow': ('#ffb347', 'rgba(80,50,0,.85)',  'rgba(255,179,71,.30)', 'rgba(255,179,71,.55)'),
+            'sp':  ('#ff7c2a', 'rgba(80,35,0,.85)',  'rgba(255,124,42,.30)', 'rgba(255,124,42,.55)'),
+            'nq':  ('#ff4466', 'rgba(80,10,25,.85)', 'rgba(255,68,102,.30)', 'rgba(255,68,102,.55)'),
         }
 
         def _pill(key, pill_id, label_text):
@@ -1286,7 +1286,7 @@ def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, ind
             val   = _fmt_index_val(d.get('value'))
             chg   = d.get('change_pct')
             lbl   = (d.get('label') or '').upper()
-            col, bg_dark, bg_light = _pill_colors.get(pill_id, ('#9b59ff', 'rgba(40,10,80,.85)', 'rgba(155,89,255,.30)'))
+            col, bg_dark, bg_light, bd_light = _pill_colors.get(pill_id, ('#9b59ff', 'rgba(40,10,80,.85)', 'rgba(155,89,255,.30)', 'rgba(155,89,255,.55)'))
             if isinstance(chg, (int, float)):
                 arrow = '\u25b2' if chg > 0 else '\u25bc' if chg < 0 else '\u2014'
                 cls   = 'up' if chg > 0 else 'dn' if chg < 0 else 'nt'
@@ -1296,11 +1296,15 @@ def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, ind
                 chg_s = '\u2014'
             label_badge = (
                 f'<span style="'
+                f'display:inline-block;'
+                f'background:linear-gradient(90deg,{bg_dark} 0%,{bd_light} 100%);'
+                f'border-radius:5px;padding:1px;">'
+                f'<span style="'
+                f'display:inline-block;'
                 f'font-size:10px;color:{col};font-family:var(--ff-mono);letter-spacing:0.1em;'
                 f'text-transform:uppercase;white-space:nowrap;'
                 f'background:linear-gradient(90deg,{bg_dark} 0%,{bg_light} 100%);'
-                f'border:1px solid {col};'
-                f'border-radius:4px;padding:2px 7px;">{label_text}</span>'
+                f'border-radius:4px;padding:2px 7px;">{label_text}</span></span>'
             )
             return (
                 f'<div class="idx-pill" id="pill-{pill_id}" onclick="toggleIdx(\'{pill_id}\')">'
