@@ -240,10 +240,17 @@ function rpT(id){
   const el=document.getElementById(id);
   if(el._rpAnimating)return;
   const was=el.classList.contains('open');
+  const anyOpen=document.querySelector('.rp-exp.open');
   document.querySelectorAll('.rp-exp').forEach(e=>{if(e!==el)closeRpExpInstant(e);});
   if(!was){
-    el._rpAnimating=true;
-    rafExpandRow(el,'.rp-exp-inner',420,function(){ el._rpAnimating=false; });
+    if(anyOpen){
+      el.classList.add('open'); el.style.display='block';
+      const inner=el.querySelector('.rp-exp-inner');
+      if(inner){inner.style.opacity='';inner.style.transform='';}
+    } else {
+      el._rpAnimating=true;
+      rafExpandRow(el,'.rp-exp-inner',420,function(){ el._rpAnimating=false; });
+    }
   } else { closeRpExp(el); }
 }
 function closeExpRow(row){if(!row.classList.contains('open'))return;rafCollapseRow(row,'.exp-inner',380,null);}
