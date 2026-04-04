@@ -56,12 +56,9 @@ function expT(btn){
     document.querySelectorAll('.rank-card').forEach(function(c){
       if(c!==card){c.classList.add('dimmed');}
     });
-    row.style.display=''; row.style.height='';
-    var inner=row.querySelector('.exp-inner');
-    if(inner){inner.style.opacity='';inner.style.transform='';}
-    row.classList.add('open');
     if(card){card.classList.add('selected');}
-    setTimeout(function(){
+    if(data&&data.length>=2){mkC(cid,data);}
+    rafExpandRow(row,'.exp-inner',400,function(){
       row.querySelectorAll('.est-v').forEach(function(ev,i){
         var stored=ev.dataset.raw||'';
         if(!stored)return;
@@ -72,19 +69,38 @@ function expT(btn){
           setTimeout(function(){countUp(ev,num,prefix,suffix,420);},i*50);
         }
       });
-    },80);
-    if(data&&data.length>=2){mkC(cid,data);}
+    });
   } else {
-    if(card){
-      card.classList.remove('selected');
-      card.classList.add('closing');
-      setTimeout(function(){card.classList.remove('closing');},450);
-    }
+    if(card){card.classList.remove('selected');}
     document.querySelectorAll('.rank-card').forEach(function(c){c.classList.remove('dimmed');});
     closeExpRow(row);
   }
 }
 
+function easeOutQuart(t){return 1-Math.pow(1-t,4);}
+function rafExpandRow(el,innerSel,duration,onDone){
+  el.style.display='block'; el.style.overflow='hidden'; el.style.height='0px';
+  const inner=el.querySelector(innerSel);
+  if(inner){inner.style.opacity='0';inner.style.transform='translateY(-8px)';inner.style.transition='none';}
+  const toH=el.scrollHeight;
+  const start=performance.now();
+  function frame(now){
+    const raw=Math.min((now-start)/duration,1),ease=easeOutQuart(raw);
+    el.style.height=(toH*ease).toFixed(1)+'px';
+    if(inner){
+      inner.style.opacity=Math.min(raw*2,1).toFixed(3);
+      inner.style.transform=`translateY(${(-8*(1-ease)).toFixed(2)}px)`;
+    }
+    if(raw<1){requestAnimationFrame(frame);}
+    else{
+      el.classList.add('open');
+      el.style.height=''; el.style.overflow='';
+      if(inner){inner.style.opacity='';inner.style.transform='';inner.style.transition='';}
+      if(onDone)onDone();
+    }
+  }
+  requestAnimationFrame(frame);
+}
 function rafCollapseRow(el,innerSel,duration,onDone){
   const fromH=el.offsetHeight;
   if(fromH===0){el.style.display='none';if(onDone)onDone();return;}
@@ -92,24 +108,23 @@ function rafCollapseRow(el,innerSel,duration,onDone){
   el.style.height=fromH+'px'; el.style.overflow='hidden';
   const start=performance.now();
   function frame(now){
-    const raw=Math.min((now-start)/duration,1),ease=1-Math.pow(1-raw,3);
+    const raw=Math.min((now-start)/duration,1),ease=easeOutQuart(raw);
     el.style.height=(fromH*(1-ease)).toFixed(1)+'px';
     if(inner){
-      inner.style.opacity=(1-Math.min(raw*1.8,1)).toFixed(3);
-      inner.style.transform=`scaleY(${(1-ease*0.28).toFixed(4)}) translateY(${(-5*ease).toFixed(2)}px)`;
-      inner.style.transformOrigin='top';
+      inner.style.opacity=(1-Math.min(raw*2.5,1)).toFixed(3);
+      inner.style.transform=`translateY(${(-6*ease).toFixed(2)}px)`;
     }
     if(raw<1){requestAnimationFrame(frame);}
     else{
       el.classList.remove('open'); el.style.display='none';
       el.style.height=''; el.style.overflow='';
-      if(inner){inner.style.opacity='';inner.style.transform='';inner.style.transformOrigin='';}
+      if(inner){inner.style.opacity='';inner.style.transform='';}
       if(onDone)onDone();
     }
   }
   requestAnimationFrame(frame);
 }
-function closeRpExp(el){if(!el.classList.contains('open'))return;rafCollapseRow(el,'.rp-exp-inner',260,null);}
+function closeRpExp(el){if(!el.classList.contains('open'))return;rafCollapseRow(el,'.rp-exp-inner',380,null);}
 function closeRpExpInstant(el){
   if(!el.classList.contains('open'))return;
   el.classList.remove('open'); el.style.display='none'; el.style.height='';
@@ -130,7 +145,7 @@ function rpT(id){
     });
   } else { closeRpExp(el); }
 }
-function closeExpRow(row){if(!row.classList.contains('open'))return;rafCollapseRow(row,'.exp-inner',300,null);}
+function closeExpRow(row){if(!row.classList.contains('open'))return;rafCollapseRow(row,'.exp-inner',380,null);}
 function closeExpRowInstant(row){
   if(!row.classList.contains('open'))return;
   row.classList.remove('open'); row.style.display='none'; row.style.height='';
@@ -230,8 +245,8 @@ document.addEventListener('DOMContentLoaded',function(){
       var confDisp   = confVal !== null ? Math.round(confVal) : '\u2014';
       var riskDisp   = riskVal !== null ? Math.round(riskVal) : '\u2014';
       var priceDisp  = typeof stock.price === 'number' ? '$' + stock.price.toFixed(2) : '\u2014';
-      html += '<div class="rank-card" data-ref="' + phUid + '" data-eid="e' + i + '" data-cid="ec' + i + '" onclick="expT(this)">'
-           + '<div class="rank-card-main">'
+      html += '<div class="rank-card" data-ref="' + phUid + '" data-eid="e' + i + '" data-cid="ec' + i + '">'
+           + '<div class="rank-card-main" onclick="expT(this.closest(\'.rank-card\'))">'  
            + '<div class="rck-n">#' + i + '</div>'
            + '<div class="rck-t">' + (stock.ticker || '\u2014') + '</div>'
            + '<div class="rck-s" style="color:' + sectorColor + '">' + sector + '</div>'
@@ -243,7 +258,7 @@ document.addEventListener('DOMContentLoaded',function(){
            + '<span class="rpill ' + rotPillCls + '"><span class="rpill-lbl">Rotation</span>' + (rotS || '\u2014') + '</span>'
            + '</div>'
            + '</div>'
-           + '<div class="exp-row" id="e' + i + '"><div class="exp-inner">'
+           + '<div class="exp-row" id="e' + i + '" onclick="event.stopPropagation()"><div class="exp-inner">'
            + '<div class="exp-stats">'
            + '<div class="est"><div class="est-k">1M</div><div class="est-v" data-raw="' + raw1m + '">' + ret1m + '</div></div>'
            + '<div class="est"><div class="est-k">3M</div><div class="est-v" data-raw="' + raw3m + '">' + ret3m + '</div></div>'
