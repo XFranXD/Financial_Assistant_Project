@@ -295,6 +295,8 @@ document.addEventListener('DOMContentLoaded',function(){
       var eqCls  = eqV  === 'STRONG'  ? 'up' : eqV  === 'WEAK'    ? 'dn' : 'nt';
       var rotS   = stock.rotation_signal_display || '';
       var rotCls = rotS === 'LEADING' ? 'up' : rotS === 'LAGGING' ? 'dn' : 'nt';
+      var psV    = stock.ps_verdict_display  || '';
+      var psCls  = psV  === 'GOOD'     ? 'up' : psV  === 'EXTENDED' ? 'dn' : psV === 'WEAK' ? 'dn' : psV === 'EARLY' ? 'nt' : 'pu';
       var verdict  = stock.market_verdict_display || stock.market_verdict || '\u2014';
       var confStr  = conf !== null ? Math.round(conf) : '\u2014';
       var riskStr  = risk !== null ? Math.round(risk)  : '\u2014';
@@ -332,6 +334,8 @@ document.addEventListener('DOMContentLoaded',function(){
       var rotMap     = {'SUPPORT':'rpill-rt-sup','WAIT':'rpill-rt-wt','WEAKEN':'rpill-rt-wk','UNKNOWN':'rpill-rt-unk'};
       var eqPillCls  = eqMap[eqV]  || 'rpill-una';
       var rotPillCls = rotMap[rotS] || 'rpill-una';
+      var psMap      = {'GOOD':'rpill-ps-gd','EXTENDED':'rpill-ps-ex','EARLY':'rpill-ps-ea','WEAK':'rpill-ps-wk','UNAVAILABLE':'rpill-eq-una'};
+      var psPillCls  = psMap[psV]  || 'rpill-una';
       var confDisp   = confVal !== null ? Math.round(confVal) : '\u2014';
       var riskDisp   = riskVal !== null ? Math.round(riskVal) : '\u2014';
       var priceDisp  = typeof stock.price === 'number' ? '$' + stock.price.toFixed(2) : '\u2014';
@@ -346,6 +350,7 @@ document.addEventListener('DOMContentLoaded',function(){
            + '<span class="rpill ' + riskCls + '"><span class="rpill-lbl">Risk</span>' + riskDisp + '</span>'
            + '<span class="rpill ' + eqPillCls + '"><span class="rpill-lbl">EQ</span>' + (eqV || '\u2014') + '</span>'
            + '<span class="rpill ' + rotPillCls + '"><span class="rpill-lbl">Rotation</span>' + (rotS || '\u2014') + '</span>'
+           + '<span class="rpill ' + psPillCls + '"><span class="rpill-lbl">Entry</span>' + (psV || '\u2014') + '</span>'
            + '</div>'
            + '</div>'
            + '<div class="exp-row" id="e' + i + '" onclick="event.stopPropagation()"><div class="exp-inner">'
