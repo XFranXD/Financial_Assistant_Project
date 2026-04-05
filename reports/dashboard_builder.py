@@ -159,6 +159,7 @@ _INDEX_FETCH_JS = (
     "            + '<div class=\"pex-item\"><div class=\"pex-k\">3M Return</div><div class=\"pex-v\">' + ret3m + '</div></div>'\n"
     "            + '<div class=\"pex-item\"><div class=\"pex-k\">6M Return</div><div class=\"pex-v\">' + ret6m + '</div></div>'\n"
     "            + '<div class=\"pex-item\"><div class=\"pex-k\">Verdict</div><div class=\"pex-v ' + cCls + '\">' + verdict + '</div></div>'\n"
+    "            + '<div class=\"pex-item\"><div class=\"pex-k\">Entry</div><div class=\"pex-v\">' + (s.ps_verdict_display || '\\u2014') + '</div></div>'\n"
     "            + '</div></div>'\n"
     "            + '</div>';\n"
     "    });\n"
@@ -281,6 +282,8 @@ _RANK_FETCH_JS = (
     "      var eqCls  = eqV  === 'STRONG'  ? 'up' : eqV  === 'WEAK'    ? 'dn' : 'nt';\n"
     "      var rotS   = stock.rotation_signal_display || '';\n"
     "      var rotCls = rotS === 'LEADING' ? 'up' : rotS === 'LAGGING' ? 'dn' : 'nt';\n"
+    "      var psV    = stock.ps_verdict_display  || '';\n"
+    "      var psCls  = psV  === 'GOOD'     ? 'up' : psV  === 'EXTENDED' ? 'dn' : psV === 'WEAK' ? 'dn' : psV === 'EARLY' ? 'nt' : 'pu';\n"
     "      var verdict  = stock.market_verdict_display || stock.market_verdict || '\\u2014';\n"
     "      var confStr  = conf !== null ? Math.round(conf) : '\\u2014';\n"
     "      var riskStr  = risk !== null ? Math.round(risk)  : '\\u2014';\n"
@@ -318,6 +321,8 @@ _RANK_FETCH_JS = (
     "      var rotMap     = {'SUPPORT':'rpill-rt-sup','WAIT':'rpill-rt-wt','WEAKEN':'rpill-rt-wk','UNKNOWN':'rpill-rt-unk'};\n"
     "      var eqPillCls  = eqMap[eqV]  || 'rpill-una';\n"
     "      var rotPillCls = rotMap[rotS] || 'rpill-una';\n"
+    "      var psMap      = {'GOOD':'rpill-ps-gd','EXTENDED':'rpill-ps-ex','EARLY':'rpill-ps-ea','WEAK':'rpill-ps-wk','UNAVAILABLE':'rpill-eq-una'};\n"
+    "      var psPillCls  = psMap[psV]  || 'rpill-una';\n"
     "      var confDisp   = confVal !== null ? Math.round(confVal) : '\\u2014';\n"
     "      var riskDisp   = riskVal !== null ? Math.round(riskVal) : '\\u2014';\n"
     "      var priceDisp  = typeof stock.price === 'number' ? '$' + stock.price.toFixed(2) : '\\u2014';\n"
@@ -332,6 +337,7 @@ _RANK_FETCH_JS = (
     "           + '<span class=\"rpill ' + riskCls + '\"><span class=\"rpill-lbl\">Risk</span>' + riskDisp + '</span>'\n"
     "           + '<span class=\"rpill ' + eqPillCls + '\"><span class=\"rpill-lbl\">EQ</span>' + (eqV || '\\u2014') + '</span>'\n"
     "           + '<span class=\"rpill ' + rotPillCls + '\"><span class=\"rpill-lbl\">Rotation</span>' + (rotS || '\\u2014') + '</span>'\n"
+    "           + '<span class=\"rpill ' + psPillCls + '\"><span class=\"rpill-lbl\">Entry</span>' + (psV || '\\u2014') + '</span>'\n"
     "           + '</div>'\n"
     "           + '</div>'\n"
     "           + '<div class=\"exp-row\" id=\"e' + i + '\" onclick=\"event.stopPropagation()\"><div class=\"exp-inner\">'\n"
@@ -1218,6 +1224,7 @@ def _update_rank_board(companies):
                 'return_6m':               c.get('return_6m'),
                 'eq_verdict_display':      c.get('eq_verdict_display', ''),
                 'rotation_signal_display': c.get('rotation_signal_display', ''),
+                'ps_verdict_display':      c.get('ps_verdict_display', 'UNAVAILABLE'),
                 'market_verdict_display':  c.get('market_verdict_display', c.get('summary_verdict', '')),
                 'market_verdict':          c.get('summary_verdict', ''),
                 'price_history':           _sanitize_price_history(raw_ph),
@@ -1261,6 +1268,7 @@ def _update_weekly_archive(companies, slot, breadth, regime, prompt_text='', is_
                 'confidence':      round(c.get('composite_confidence', 0), 1),
                 'eq_verdict':      c.get('eq_verdict_display', ''),
                 'rotation_signal': c.get('rotation_signal_display', ''),
+                'ps_entry_quality': c.get('ps_verdict_display', 'UNAVAILABLE'),
                 'conclusion':      (c.get('eq_combined_reading', {}).get('conclusion', '') if c.get('eq_combined_reading') else '')[:200],
             }
             for c in companies

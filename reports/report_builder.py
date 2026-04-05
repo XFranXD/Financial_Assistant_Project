@@ -66,12 +66,23 @@ from contracts.sector_schema import (
     ROTATION_REASONING, ROTATION_SCORE_DISPLAY,
     ROTATION_SIGNAL_DISPLAY, ROTATION_ETF_DISPLAY
 )
+from contracts.price_structure_schema import (
+    PS_AVAILABLE,
+    PS_ENTRY_QUALITY, PS_TREND_STRUCTURE, PS_TREND_STRENGTH,
+    PS_KEY_LEVEL_POSITION, PS_VOLATILITY_STATE, PS_STRUCTURE_STATE,
+    PS_PRICE_ACTION_SCORE, PS_MOVE_EXTENSION_PCT,
+    PS_DISTANCE_TO_SUPPORT_PCT, PS_DISTANCE_TO_RESIST_PCT,
+    PS_DATA_CONFIDENCE, PS_REASONING,
+    PS_ENTRY_QUALITY_DISPLAY, PS_TREND_DISPLAY,
+    PS_KEY_LEVEL_DISPLAY, PS_SCORE_DISPLAY, PS_REASONING_DISPLAY,
+    PS_VERDICT_DISPLAY,
+)
 
 log = get_logger('report_builder')
 
 TEMPLATES_DIR  = os.path.join(os.path.dirname(__file__), 'templates')
 OUTPUT_DIR     = os.path.join(os.path.dirname(__file__), 'output')
-EMAIL_MAX      = 7   # max companies in email body
+EMAIL_MAX      = 7
 TIMEZONE       = 'America/New_York'
 
 DISCLAIMER = (
@@ -79,22 +90,8 @@ DISCLAIMER = (
     'and does NOT make price predictions. It is a research data aggregation and scoring tool only.'
 )
 
-# ── Signal strength thresholds ─────────────────────────────────────────────
-# Used by combined reading logic. Locked — do not change without updating
-# the combined reading rules below.
-SIGNAL_STRONG   = 70   # confidence >= 70
-SIGNAL_MODERATE = 50   # confidence 50-69
-# confidence < 50 = WEAK signal
-
-# ── EQ verdict vocabu# No lary ──────────────────────────────────────────────────
-# Controlled vocabulary only. Maps directly from pass_tier.
-# Fatal flaw overrides pass_tier and always produces RISKY.
-# No other logic overrides this mapping.
-#   PASS        → SUPPORTIVE
-#   WATCH       → NEUTRAL
-#   FAIL        → WEAK
-#   fatal flaw  → RISKY
-#   no data     → UNAVAILABLE
+SIGNAL_STRONG   = 70
+SIGNAL_MODERATE = 50
 
 
 def _get_jinja_env() -> Environment:
@@ -107,7 +104,6 @@ def _get_jinja_env() -> Environment:
 
 
 def _build_market_pulse(indices: dict) -> list[str]:
-    """Returns 3 formatted market pulse lines (Dow, S&P, Nasdaq)."""
     label_map = {
         'dow':    'Dow Jones ',
         'sp500':  'S&P 500   ',
@@ -121,10 +117,6 @@ def _build_market_pulse(indices: dict) -> list[str]:
 
 
 def _build_story_sentences(all_articles: list, sector_scores: dict, confirmed_sectors: list) -> list[str]:
-    """
-    Generates plain English sentences describing today's market story.
-    Uses signal count and sector score when no specific event type is matched.
-    """
     sentences = []
     seen_sectors = set()
 
@@ -168,10 +160,6 @@ def _build_story_sentences(all_articles: list, sector_scores: dict, confirmed_se
 
 
 def _signal_strength_label(conf_score: float) -> str:
-    """
-    Returns signal strength label based on locked thresholds.
-    STRONG >= 70 | MODERATE 50-69 | WEAK < 50
-    """
     if conf_score >= SIGNAL_STRONG:
         return 'STRONG'
     elif conf_score >= SIGNAL_MODERATE:
@@ -183,13 +171,12 @@ def _eq_verdict_from_tier(pass_tier: str, fatal: str) -> str:
     """
     Maps EQ pass tier to controlled vocabulary verdict.
     Fatal flaw always overrides pass tier → RISKY.
-    Warnings do NOT affect verdict — they belong in details only.
 
     Vocabulary:
       SUPPORTIVE  — PASS tier
       NEUTRAL     — WATCH tier
       WEAK        — FAIL tier
-      RISKY       — fatal flaw present (overrides tier)
+      RISKY       — fatal flaw present
       UNAVAILABLE — no EQ data
     """
     if fatal:
@@ -206,14 +193,16 @@ def _eq_verdict_from_tier(pass_tier: str, fatal: str) -> str:
 
 def _alignment_state(market_verdict: str, eq_verdict: str,
                      eq_available: bool,
-                     rotation_signal: str = 'UNKNOWN') -> str:
+                     rotation_signal: str = 'UNKNOWN',
+                     ps_entry_quality: str = 'UNAVAILABLE') -> str:
     """
-    Deterministic alignment state across System 1, System 2, and System 3.
+    Deterministic alignment state across System 1, 2, 3, and 4.
 
-    Three-dimensional alignment logic:
+    Four-dimensional alignment logic:
       market    → +1 if RESEARCH NOW / -1 if SKIP / 0 otherwise
       earnings  → +1 if SUPPORTIVE / -1 if WEAK or RISKY / 0 otherwise
       rotation  → +1 if SUPPORT / -1 if WEAKEN / 0 if WAIT or UNKNOWN
+      ps        → +1 if GOOD / -1 if WEAK or EXTENDED / 0 if EARLY or UNAVAILABLE
 
     Final label:
       >= 2  → ALIGNED
@@ -241,6 +230,13 @@ def _alignment_state(market_verdict: str, eq_verdict: str,
     elif rs == 'WEAKEN':
         alignment_score -= 1
 
+    ps = (ps_entry_quality or '').strip().upper()
+    if ps == 'GOOD':
+        alignment_score += 1
+    elif ps in ('WEAK', 'EXTENDED'):
+        alignment_score -= 1
+    # EARLY and UNAVAILABLE are neutral (0)
+
     if alignment_score >= 2:
         return 'ALIGNED'
     elif alignment_score >= 0:
@@ -253,38 +249,38 @@ def _build_combined_reading(conf_score: float, pass_tier: str,
                             eq_available: bool, fatal: str,
                             market_verdict: str = '',
                             rotation_signal: str = 'UNKNOWN',
-                            rotation_available: bool = False) -> dict:
+                            rotation_available: bool = False,
+                            ps_entry_quality: str = 'UNAVAILABLE') -> dict:
     """
-    Deterministic combined reading of System 1, System 2, and System 3.
+    Deterministic combined reading of System 1, 2, 3, and 4.
     Returns a structured dict for template rendering.
-    Controls AI interpretation — no inference required.
+
+    BUY NOW hard gate (System 4):
+      entry_quality must be GOOD for BUY NOW to be issued.
+      EXTENDED or WEAK entry_quality blocks BUY NOW regardless of S1/S2/S3.
+      EARLY is unconfirmed — does not block but does not enable BUY NOW.
+      UNAVAILABLE treated same as EARLY — reduce confidence, no BUY NOW.
 
     Output keys:
       market_line    — Market classification line
       earnings_line  — Earnings classification line
       rotation_line  — Rotation timing line
+      ps_line        — Price structure entry quality line
       alignment      — ALIGNED / PARTIAL / CONFLICT
       conclusion     — Final declarative conclusion sentence
-
-    Conclusion rules (market is gatekeeper, rotation is modifier only):
-      RESEARCH NOW + SUPPORT  → proactive
-      WATCH + SUPPORT         → favorable timing but needs confirmation
-      SKIP + SUPPORT          → hard block — rotation cannot override SKIP
-      WATCH + WEAKEN          → not actionable
-      WAIT always appears in conclusion — never silent
-      "requires caution" banned — replaced with explicit action status
-      Every non-actionable conclusion ends with "— not actionable"
     """
     signal     = _signal_strength_label(conf_score)
     eq_verdict = _eq_verdict_from_tier(pass_tier, fatal) if eq_available else 'UNAVAILABLE'
     rs         = rotation_signal.upper() if rotation_signal else 'UNKNOWN'
     mv         = market_verdict.upper() if market_verdict else ''
-    alignment  = _alignment_state(market_verdict, eq_verdict, eq_available, rs)
+    ps_eq      = (ps_entry_quality or '').strip().upper()
+    alignment  = _alignment_state(market_verdict, eq_verdict, eq_available, rs, ps_eq)
 
     mv_display    = market_verdict.upper() if market_verdict else signal
-    market_line   = f'Market:    {mv_display} ({int(conf_score)}/100)'
-    earnings_line = f'Earnings:  {eq_verdict}'
-    rotation_line = f'Rotation:  {rs}'
+    market_line   = f'Market:          {mv_display} ({int(conf_score)}/100)'
+    earnings_line = f'Earnings:        {eq_verdict}'
+    rotation_line = f'Rotation:        {rs}'
+    ps_line       = f'Price Structure: {ps_eq}'
 
     # ── No EQ data branch ─────────────────────────────────────────────────
     if not eq_available and not rotation_available:
@@ -292,13 +288,17 @@ def _build_combined_reading(conf_score: float, pass_tier: str,
 
     elif not eq_available and rs == 'SUPPORT':
         if mv == 'RESEARCH NOW':
-            conclusion = 'Conclusion: Sector timing supports acting. No fundamental validation available.'
+            if ps_eq == 'GOOD':
+                conclusion = 'Conclusion: Sector timing supports acting and entry quality confirmed. No fundamental validation available.'
+            elif ps_eq in ('EXTENDED', 'WEAK'):
+                conclusion = 'Conclusion: Sector timing is favorable but entry quality blocks action — not actionable.'
+            else:
+                conclusion = 'Conclusion: Sector timing supports acting. No fundamental validation available.'
         elif mv == 'SKIP':
             conclusion = 'Conclusion: Sector timing is favorable but market signal is weak — insufficient basis to act.'
         else:
-            # WATCH or unset
             conclusion = 'Conclusion: Sector timing is favorable but fundamental data is unavailable — not actionable.'
-            
+
     elif not eq_available and rs == 'WAIT':
         conclusion = 'Conclusion: No fundamental validation and sector timing is not favorable — not actionable.'
 
@@ -309,7 +309,6 @@ def _build_combined_reading(conf_score: float, pass_tier: str,
             conclusion = 'Conclusion: Sector timing weakens this setup. No fundamental validation available — not actionable.'
 
     elif not eq_available:
-        # UNKNOWN rotation
         conclusion = 'Conclusion: No fundamental validation available — not actionable.'
 
     # ── EQ data present branch ─────────────────────────────────────────────
@@ -318,7 +317,16 @@ def _build_combined_reading(conf_score: float, pass_tier: str,
 
     elif alignment == 'ALIGNED':
         if mv == 'RESEARCH NOW':
-            conclusion = 'Conclusion: Signal supported by fundamentals and sector timing. Highest priority candidate.'
+            # ── S4 BUY NOW hard gate ──────────────────────────────────────
+            if ps_eq == 'GOOD':
+                conclusion = 'Conclusion: Signal supported by fundamentals, sector timing, and entry quality confirmed. Highest priority candidate.'
+            elif ps_eq in ('EXTENDED', 'WEAK'):
+                conclusion = 'Conclusion: Signal aligned but entry quality is not GOOD — price structure blocks BUY NOW. Monitor for reset to support.'
+            elif ps_eq == 'EARLY':
+                conclusion = 'Conclusion: Signal aligned but entry pattern not yet confirmed — wait for price structure to confirm before acting.'
+            else:
+                # UNAVAILABLE — do not block but note reduced confidence
+                conclusion = 'Conclusion: Signal supported by fundamentals and sector timing. Price structure data unavailable — verify entry manually.'
         else:
             conclusion = 'Conclusion: High-quality setup — fundamentals and sector timing aligned, but market signal unconfirmed — monitor for confirmation.'
 
@@ -329,7 +337,12 @@ def _build_combined_reading(conf_score: float, pass_tier: str,
         elif rs == 'WAIT':
             conclusion = 'Conclusion: Signal not fully confirmed and sector timing is not favorable — not actionable.'
         elif rs == 'SUPPORT' and signal == 'STRONG':
-            conclusion = 'Conclusion: Strong signal with sector support. Fundamentals require monitoring.'
+            if ps_eq == 'GOOD':
+                conclusion = 'Conclusion: Strong signal with sector support and entry quality confirmed. Fundamentals require monitoring.'
+            elif ps_eq in ('EXTENDED', 'WEAK'):
+                conclusion = 'Conclusion: Strong signal with sector support but entry quality blocks action — not actionable.'
+            else:
+                conclusion = 'Conclusion: Strong signal with sector support. Fundamentals require monitoring.'
         elif rs == 'SUPPORT' and eq_available:
             conclusion = 'Conclusion: Sector timing is favorable but fundamentals fail to provide strong validation — not actionable.'
         elif rs == 'SUPPORT':
@@ -349,8 +362,55 @@ def _build_combined_reading(conf_score: float, pass_tier: str,
         'market_line':    market_line,
         'earnings_line':  earnings_line,
         'rotation_line':  rotation_line,
+        'ps_line':        ps_line,
         'alignment':      alignment,
         'conclusion':     conclusion,
+    }
+
+
+def _build_ps_display(c: dict) -> dict:
+    """
+    Builds display-ready S4 fields from raw price structure data on the candidate dict.
+    System 1 owns all S4 rendering. Returns safe fallback display values when
+    price structure data is unavailable.
+
+    entry_quality controlled vocabulary:
+      GOOD      — price near support or valid base with confirmed setup
+      EXTENDED  — price far above support, elevated pullback risk
+      EARLY     — pattern forming but not yet confirmed
+      WEAK      — no valid setup, avoid entry
+      UNAVAILABLE — ps_analyze() returned UNAVAILABLE confidence
+    """
+    ps_available = bool(c.get(PS_AVAILABLE))
+
+    if not ps_available:
+        return {
+            PS_ENTRY_QUALITY_DISPLAY: 'UNAVAILABLE',
+            PS_TREND_DISPLAY:         'UNAVAILABLE',
+            PS_KEY_LEVEL_DISPLAY:     'UNAVAILABLE',
+            PS_SCORE_DISPLAY:         'UNAVAILABLE',
+            PS_REASONING_DISPLAY:     'Price structure data unavailable.',
+            PS_VERDICT_DISPLAY:       'UNAVAILABLE',
+            'ps_available':           False,
+        }
+
+    entry_quality = (c.get(PS_ENTRY_QUALITY)     or 'WEAK').strip().upper()
+    trend         = (c.get(PS_TREND_STRUCTURE)    or 'SIDEWAYS').strip().upper()
+    key_level     = (c.get(PS_KEY_LEVEL_POSITION) or 'MID_RANGE').strip().upper()
+    score         = c.get(PS_PRICE_ACTION_SCORE,   0)
+    reasoning     = c.get(PS_REASONING,            'No reasoning available.')
+
+    score_display     = f'{int(score)}/100'
+    key_level_display = key_level.replace('_', ' ').title()
+
+    return {
+        PS_ENTRY_QUALITY_DISPLAY: entry_quality,
+        PS_TREND_DISPLAY:         trend,
+        PS_KEY_LEVEL_DISPLAY:     key_level_display,
+        PS_SCORE_DISPLAY:         score_display,
+        PS_REASONING_DISPLAY:     (reasoning[:200] if reasoning else ''),
+        PS_VERDICT_DISPLAY:       entry_quality,   # same vocabulary — pill uses this
+        'ps_available':           True,
     }
 
 
@@ -359,13 +419,6 @@ def _build_eq_display(c: dict, market_verdict: str = '') -> dict:
     Builds display-ready EQ fields from raw EQ data on the candidate dict.
     System 1 owns all EQ rendering. System 2 never produces HTML for System 1.
     Returns safe fallback display values when EQ data is unavailable.
-
-    EQ verdict controlled vocabulary (maps from pass_tier only):
-      SUPPORTIVE  — PASS
-      NEUTRAL     — WATCH
-      WEAK        — FAIL
-      RISKY       — fatal flaw present (overrides tier)
-      UNAVAILABLE — no EQ data
     """
     conf_score   = c.get('composite_confidence', 0)
     eq_available = bool(c.get(EQ_AVAILABLE))
@@ -374,11 +427,20 @@ def _build_eq_display(c: dict, market_verdict: str = '') -> dict:
 
     rotation_signal    = c.get(ROTATION_SIGNAL, 'UNKNOWN')
     rotation_available = bool(c.get(ROTATION_AVAILABLE))
-    combined_reading   = _build_combined_reading(
-        conf_score, pass_tier, eq_available, fatal, market_verdict,
-        rotation_signal, rotation_available
+
+    # S4 entry_quality for BUY NOW gate
+    ps_entry_quality = (
+        c.get(PS_ENTRY_QUALITY, 'UNAVAILABLE')
+        if c.get(PS_AVAILABLE)
+        else 'UNAVAILABLE'
     )
-    signal_strength  = _signal_strength_label(conf_score)
+
+    combined_reading = _build_combined_reading(
+        conf_score, pass_tier, eq_available, fatal, market_verdict,
+        rotation_signal, rotation_available,
+        ps_entry_quality=ps_entry_quality,
+    )
+    signal_strength = _signal_strength_label(conf_score)
 
     if not eq_available:
         return {
@@ -405,10 +467,7 @@ def _build_eq_display(c: dict, market_verdict: str = '') -> dict:
     score_display = f'{int(eq_score)}/100'
     label_display = eq_label if eq_label else 'Unknown'
 
-    # Verdict maps directly from pass tier — warnings do not affect this
     eq_verdict = _eq_verdict_from_tier(pass_tier, fatal)
-
-    # Pass tier display line
     eq_verdict_for_display = _eq_verdict_from_tier(pass_tier, fatal)
     pass_display = f'{pass_tier.upper()} ({eq_verdict_for_display})' + (f' — {percentile}th percentile' if percentile else '')
 
@@ -436,15 +495,7 @@ def _build_eq_display(c: dict, market_verdict: str = '') -> dict:
 
 def _build_rotation_display(c: dict) -> dict:
     """
-    Builds display-ready rotation fields from raw System 3 data on the
-    candidate dict. System 1 owns all rendering.
-    Returns safe fallback display values when rotation data is unavailable.
-
-    rotation_signal controlled vocabulary:
-      SUPPORT  — sector flow supports acting now
-      WAIT     — neutral timing environment
-      WEAKEN   — sector flow weakens the setup
-      UNKNOWN  — insufficient data or SKIP
+    Builds display-ready rotation fields from raw System 3 data on the candidate dict.
     """
     rotation_available = bool(c.get(ROTATION_AVAILABLE))
 
@@ -491,12 +542,10 @@ def _enrich_company_for_template(c: dict) -> dict:
 
     event_type = c.get('sector_data', {}).get('primary_event', '_unknown')
 
-    # Price line
     price      = c.get('current_price') or fin.get('current_price')
     change_pct = fin.get('price_change_pct')
     price_line = render_price_line(price, change_pct)
 
-    # Company intro
     company_name     = c.get('company_name', c.get('ticker', ''))
     sector_plain_str = render_sector_plain(sector)
     final_rank       = c.get('final_rank', 99)
@@ -525,7 +574,6 @@ def _enrich_company_for_template(c: dict) -> dict:
             DIRECTION = DIRECTION_PLAIN.get(direction, 'moving'),
         )
 
-    # Trend line
     ram_label = ram.get('label', 'no trend data')
     mtf       = c.get('mtf', {})
     r1m       = mtf.get('r1m')
@@ -555,7 +603,6 @@ def _enrich_company_for_template(c: dict) -> dict:
 
     momentum_label = mtf.get('label', 'no clear direction')
 
-    # Financial health
     margin_pct = fin.get('profit_margin')
     de_ratio   = fin.get('debt_to_equity')
     fin_health = render_financial_health(margin_pct, de_ratio)
@@ -572,7 +619,6 @@ def _enrich_company_for_template(c: dict) -> dict:
             FCF_LABEL  = fcf_direction_label(fcf_val),
         )
 
-    # Risk section
     section  = risk_section(risk_score)
     conf_lbl = confidence_label(conf_score)
 
@@ -582,11 +628,9 @@ def _enrich_company_for_template(c: dict) -> dict:
         dd_pct        = dd.get('drawdown_pct')
         mod_risk_text = render_moderate_risk_block(risk_comps, risk_score, dd_pct)
 
-    # Volume line
     vol_label   = ev.get('label', 'normal trading activity')
     volume_line = VOLUME_LINE.format(VOLUME_LABEL=vol_label.capitalize())
 
-    # Confidence breakdown
     agr_raw  = c.get('signal_agreement', {}).get('agreement_score', 0)
     agr_int  = int(agr_raw * 100)
     conf_line = CONFIDENCE_BREAKDOWN.format(
@@ -597,7 +641,6 @@ def _enrich_company_for_template(c: dict) -> dict:
         AGR_INT          = agr_int,
     )
 
-    # Notices
     notices = []
     if c.get('earnings_warning'):
         days = fin.get('earnings_days', 5)
@@ -618,7 +661,6 @@ def _enrich_company_for_template(c: dict) -> dict:
     if dd_pct is not None and dd_pct > 20:
         notices.append(DRAWDOWN_NOTE.format(DRAWDOWN_PCT=f'{dd_pct:.0f}'))
 
-    # Summary block (System 1 verdict — market signal only)
     summary_score_line = SUMMARY_SCORE_LINE.format(
         SCORE         = int(conf_score),
         SCORE_MEANING = score_meaning(int(conf_score)),
@@ -652,13 +694,16 @@ def _enrich_company_for_template(c: dict) -> dict:
     summary_verdict_val = summary_verdict(conf_score, risk_score, section)
     market_verdict      = summary_verdict_val
 
-    # EQ display enrichment — market_verdict passed explicitly so combined reading
-    # has the correct verdict before the return dict is assembled
+    # EQ display enrichment — market_verdict passed explicitly
     eq_display = _build_eq_display(c, market_verdict)
+
+    # S4 display enrichment
+    ps_display = _build_ps_display(c)
 
     return {
         **c,
         **eq_display,
+        **ps_display,
         'display_name':       company_name,
         'sector_plain':       render_sector_plain(sector),
         'industry_label':     c.get('financials', {}).get('industry', ''),
@@ -696,25 +741,20 @@ def _build_ai_prompt(
     Builds the structured AI research prompt string.
     Called once per run — same string goes to full HTML and weekly_archive.
     """
-    # Defensive guards — protect against None from failed API calls
     indices        = indices or {}
     commodity_data = commodity_data or {}
 
     def fmt_pct(x):
-        """Safe percentage formatter. Returns 'N/A' if x is None."""
         return 'N/A' if x is None else f'{x:+.1f}%'
 
     def fmt_price(x):
-        """Safe price formatter. Returns 'N/A' if x is None."""
         return 'N/A' if x is None else f'${x:,.2f}'
 
     def fmt_index(val, chg):
-        """Safe index formatter. Returns 'N/A' if either value is None."""
         if val is None or chg is None:
             return 'N/A'
         return f'{val:,.0f} ({chg:+.1f}%)'
 
-    # Index values — get_index_snapshot() returns nested dicts keyed by 'dow', 'sp500', 'nasdaq'
     dow_val = indices.get('dow',    {}).get('value')
     dow_chg = indices.get('dow',    {}).get('change_pct')
     sp_val  = indices.get('sp500',  {}).get('value')
@@ -722,11 +762,9 @@ def _build_ai_prompt(
     nas_val = indices.get('nasdaq', {}).get('value')
     nas_chg = indices.get('nasdaq', {}).get('change_pct')
 
-    # Market condition labels — guard against None regime/breadth dicts
     regime_label  = regime.get('label', 'N/A')  if regime  else 'N/A'
     breadth_label = breadth.get('label', 'N/A') if breadth else 'N/A'
 
-    # Commodity values — do NOT default to 0.0
     crude_pct = commodity_data.get('crude_pct')
     gas_pct   = commodity_data.get('gas_pct')
 
@@ -766,24 +804,31 @@ def _build_ai_prompt(
         "  Note: WATCH vs SUPPORT is a minor conflict, not a major one.\n"
         "  Only the above conditions qualify as major conflicts.\n"
         "\n"
-        "BUY NOW CRITERIA (hard gate):\n"
+        "BUY NOW CRITERIA (hard gate — all conditions must be true):\n"
         "  BUY NOW is only allowed if ALL of the following are true:\n"
         "    - Timing quality is EARLY TREND or MID TREND\n"
         "    - Market verdict = RESEARCH NOW\n"
         "    - Rotation = SUPPORT\n"
+        "    - entry_quality = GOOD (System 4 hard gate — no exceptions)\n"
         "    - No major signal conflicts\n"
-        "  If any condition is not met, default to WAIT or AVOID.\n"
+        "  If entry_quality is EXTENDED or WEAK: BUY NOW is blocked regardless of all other signals.\n"
+        "  If entry_quality is EARLY: pattern unconfirmed — do not issue BUY NOW, use WAIT.\n"
+        "  If entry_quality is UNAVAILABLE: treat same as EARLY — reduce confidence, do not issue BUY NOW.\n"
+        "  If any other condition is not met, default to WAIT or AVOID.\n"
         "\n"
         "DECISION HIERARCHY (use this when signals conflict):\n"
         "  1. Timing quality (trend stage) has the highest priority.\n"
         "  2. Market verdict (System 1) is the primary directional signal.\n"
         "  3. Sector rotation confirms or weakens the timing.\n"
         "  4. Earnings quality validates or blocks conviction.\n"
+        "  5. Price structure entry quality gates BUY NOW — cannot be overridden.\n"
         "\n"
         "UNAVAILABLE DATA RULE:\n"
         "  If earnings data is UNAVAILABLE, do not assume positive or negative.\n"
         "  Reduce confidence level. Do not issue BUY NOW unless all other signals\n"
         "  are strong and timing is EARLY or MID TREND.\n"
+        "  If price structure data is UNAVAILABLE, treat same as EARLY — reduce confidence,\n"
+        "  do not issue BUY NOW, verify entry manually.\n"
         "\n"
         "COMMODITY CONTRADICTION RULE:\n"
         "  If a candidate's sector depends on a commodity (e.g. energy stocks depend\n"
@@ -806,7 +851,7 @@ def _build_ai_prompt(
         "=============================================================\n"
         "\n"
         "This report was generated by an automated stock screening system.\n"
-        "The system has three scoring layers:\n"
+        "The system has four scoring layers:\n"
         "\n"
         "MARKET SIGNAL (System 1)\n"
         "  Confidence score 0-100. Primary ranking signal.\n"
@@ -832,9 +877,24 @@ def _build_ai_prompt(
         "    WEAKEN   — sector flow is deteriorating\n"
         "    UNKNOWN  — insufficient data\n"
         "\n"
-        "COMBINED READING (three-layer synthesis)\n"
+        "PRICE STRUCTURE (System 4)\n"
+        "  Price action score 0-100. Measures entry timing quality using OHLCV only.\n"
+        "  entry_quality vocabulary (hard gate — controls BUY NOW eligibility):\n"
+        "    GOOD      — price near support or confirmed base, valid entry window\n"
+        "    EXTENDED  — price far above support, elevated pullback risk, do not enter\n"
+        "    EARLY     — pattern forming but not yet confirmed, wait for confirmation\n"
+        "    WEAK      — no valid setup detected, avoid entry\n"
+        "    UNAVAILABLE — insufficient OHLCV data\n"
+        "  key_level_position vocabulary:\n"
+        "    NEAR_SUPPORT     — price close to a support zone\n"
+        "    MID_RANGE        — price between support and resistance\n"
+        "    NEAR_RESISTANCE  — price approaching a resistance zone\n"
+        "    BREAKOUT         — price breaking above resistance\n"
+        "  structure_state vocabulary: TRENDING / CONSOLIDATING / VOLATILE\n"
+        "\n"
+        "COMBINED READING (four-layer synthesis)\n"
         "  Alignment vocabulary:\n"
-        "    ALIGNED  — all three systems agree\n"
+        "    ALIGNED  — all four systems agree\n"
         "    PARTIAL  — mixed signals, partial agreement\n"
         "    CONFLICT — systems disagree\n"
         "\n"
@@ -895,7 +955,6 @@ def _build_ai_prompt(
         alignment  = c.get('eq_alignment', 'N/A')
         conclusion = c.get('eq_combined_reading', {}).get('conclusion', 'N/A') if c.get('eq_combined_reading') else 'N/A'
 
-        # EQ strengths and warnings — use 'or []' to handle None field values
         strengths  = c.get('eq_strengths',         []) or []
         crit_warn  = c.get('eq_warnings_critical', []) or []
         minor_warn = c.get('eq_warnings_minor',    []) or []
@@ -904,10 +963,25 @@ def _build_ai_prompt(
         crit_warn_txt  = '\n'.join(f'! {w}' for w in crit_warn[:3])  or 'N/A'
         minor_warn_txt = '\n'.join(f'w {w}' for w in minor_warn[:3]) or ''
 
-        # Combined reading lines — built from already-extracted variables
+        # ── S4 fields ─────────────────────────────────────────────────────
+        ps_available_val    = bool(c.get(PS_AVAILABLE))
+        ps_available_str    = 'YES' if ps_available_val else 'NO'
+        ps_entry_quality    = (c.get(PS_ENTRY_QUALITY)          or 'UNAVAILABLE') if ps_available_val else 'UNAVAILABLE'
+        ps_trend_structure  = (c.get(PS_TREND_STRUCTURE)        or 'UNAVAILABLE') if ps_available_val else 'UNAVAILABLE'
+        ps_trend_strength   = c.get(PS_TREND_STRENGTH,  0)      if ps_available_val else 'N/A'
+        ps_key_level        = (c.get(PS_KEY_LEVEL_POSITION)     or 'UNAVAILABLE') if ps_available_val else 'UNAVAILABLE'
+        ps_structure_state  = (c.get(PS_STRUCTURE_STATE)        or 'UNAVAILABLE') if ps_available_val else 'UNAVAILABLE'
+        ps_score            = c.get(PS_PRICE_ACTION_SCORE, 0)   if ps_available_val else 'N/A'
+        ps_move_ext         = f"{c.get(PS_MOVE_EXTENSION_PCT,  0.0):.1f}" if ps_available_val else 'N/A'
+        ps_dist_sup         = f"{c.get(PS_DISTANCE_TO_SUPPORT_PCT, 0.0):.1f}" if ps_available_val else 'N/A'
+        ps_dist_res         = f"{c.get(PS_DISTANCE_TO_RESIST_PCT,  0.0):.1f}" if ps_available_val else 'N/A'
+        ps_reasoning        = (c.get(PS_REASONING) or 'No reasoning available.')[:200] if ps_available_val else 'UNAVAILABLE'
+
+        # Combined reading lines
         market_line   = f"Market: {market_verdict} ({conf_score}/100)"
         earnings_line = f"Earnings: {eq_pass_display}"
         rotation_line = f"Rotation: {rotation_signal_display}"
+        ps_cr_line    = f"Price Structure: {ps_entry_quality}"
 
         candidate_block = (
             f"\n[{ticker}] — {sector} ({industry})\n"
@@ -936,10 +1010,23 @@ def _build_ai_prompt(
             f"  Score:  {rotation_score_display}\n"
             f"  Signal: {rotation_signal_display}\n"
             f"\n"
+            f"Price Structure:\n"
+            f"  Available:      {ps_available_str}\n"
+            f"  Entry quality:  {ps_entry_quality}\n"
+            f"  Trend:          {ps_trend_structure} (strength: {ps_trend_strength}/100)\n"
+            f"  Key level:      {ps_key_level}\n"
+            f"  Structure:      {ps_structure_state}\n"
+            f"  Price action:   {ps_score}/100\n"
+            f"  Move extension: {ps_move_ext}% above 126-day low\n"
+            f"  Dist support:   {ps_dist_sup}%\n"
+            f"  Dist resist:    {ps_dist_res}%\n"
+            f"  Reasoning:      {ps_reasoning}\n"
+            f"\n"
             f"Combined Reading:\n"
             f"  {market_line}\n"
             f"  {earnings_line}\n"
             f"  {rotation_line}\n"
+            f"  {ps_cr_line}\n"
             f"  Alignment:  {alignment}\n"
             f"  {conclusion}\n"
         )
@@ -966,12 +1053,14 @@ def _build_ai_prompt(
         "   - Is the trend strong or extended?\n"
         "   - Does the sector support the move or contradict it?\n"
         "   - Are there contradictions between signals (e.g. stocks rising but commodity falling)?\n"
+        "   - What does the price structure say about entry timing?\n"
         "   Avoid technical jargon. If you use a term, explain it in parentheses.\n"
         "\n"
         "3) ENTRY LOGIC\n"
         "   Ideal entry scenario: [when would this be a good entry]\n"
         "   Bad entry scenario:   [what would make this a poor entry]\n"
         "   What to wait for:     [1-2 specific conditions that need to improve]\n"
+        "   Note entry_quality from System 4 when discussing entry timing.\n"
         "\n"
         "4) EXIT LOGIC\n"
         "   Take profit if: [specific condition]\n"
@@ -1035,7 +1124,6 @@ def build_intraday_report(
     confirmed_sectors = list({c['sector'] for c in companies})
     story_sentences   = _build_story_sentences(all_articles, sector_scores, confirmed_sectors)
 
-    # Always fetch commodity data so _build_ai_prompt() can use it
     commodity_data    = get_commodity_signal()
     commodity_summary = ''
     if any(c.get('sector') == 'energy' for c in companies):
@@ -1142,7 +1230,6 @@ def build_intraday_report(
             f.write(full_html)
         log.info(f'Full report written: {full_path}')
 
-        # Copy to docs/reports/ so GitHub Pages can serve it
         docs_reports_dir = os.path.join(os.path.dirname(__file__), '..', 'docs', 'reports')
         os.makedirs(docs_reports_dir, exist_ok=True)
         full_fname  = os.path.basename(full_path)
@@ -1160,10 +1247,6 @@ def build_intraday_report(
 
 
 def _write_fallback_email(slot, ts_str, pulse_lines, story_sentences, companies) -> str:
-    """
-    Minimal plain-HTML fallback if Jinja2 template fails.
-    Never raises — always returns a valid path.
-    """
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     path = os.path.join(OUTPUT_DIR, f'fallback_{slot.replace(":", "").replace("-", "_")}_{ts_str}.html')
     try:
@@ -1187,3 +1270,4 @@ def _write_fallback_email(slot, ts_str, pulse_lines, story_sentences, companies)
     except Exception as e:
         log.error(f'Fallback email write failed: {e}')
     return path
+    

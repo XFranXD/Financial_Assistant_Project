@@ -46,6 +46,19 @@ from contracts.sector_schema import (
     ROTATION_REASONING, TIMEFRAMES_USED
 )
 
+from price_structure import analyze as ps_analyze
+from contracts.price_structure_schema import (
+    PS_AVAILABLE,
+    PS_TREND_STRUCTURE, PS_TREND_STRENGTH, PS_KEY_LEVEL_POSITION,
+    PS_ENTRY_QUALITY, PS_VOLATILITY_STATE, PS_COMPRESSION_LOCATION,
+    PS_CONSOLIDATION_CONFIRMED, PS_SUPPORT_REACTION, PS_BASE_DURATION_DAYS,
+    PS_VOLUME_CONTRACTION, PS_PRICE_ACTION_SCORE, PS_MOVE_EXTENSION_PCT,
+    PS_DISTANCE_TO_SUPPORT_PCT, PS_DISTANCE_TO_RESIST_PCT,
+    PS_STRUCTURE_STATE, PS_RECENT_CROSSOVER, PS_DATA_CONFIDENCE,
+    PS_REASONING, PS_VERDICT_DISPLAY,
+    PRICE_STRUCTURE_DEFAULTS,
+)
+
 DISCLAIMER = (
     'DISCLAIMER: This system does NOT perform trading, does NOT give investment advice, '
     'and does NOT make price predictions. It is a research data aggregation and scoring tool only.'
@@ -147,6 +160,114 @@ def _fetch_av_data(ticker: str, state: dict) -> dict | None:
             'eps_ttm':        float(body.get('EPS', 0) or 0) or None,
         }
     return _call()
+
+
+# ── Pre-dashboard enrichment helper ────────────────────────────────────────
+# Centralised so both run() and _run_force_ticker_pipeline() stay in sync.
+
+def _enrich_for_dashboard(candidates: list) -> None:
+    """
+    Populates display fields on each candidate dict so _update_rank_board()
+    receives complete data. Mutates candidates in-place.
+
+    Fields set: return_1m/3m/6m, price_history,
+                eq_verdict_display, rotation_signal_display,
+                ps_verdict_display, market_verdict_display, alignment.
+    """
+    for _c in candidates:
+        try:
+            _mtf = _c.get('mtf') or {}
+            _c['return_1m'] = _mtf.get('r1m')
+            _c['return_3m'] = _mtf.get('r3m')
+            _c['return_6m'] = _mtf.get('r6m')
+
+            _fin = _c.get('financials') or {}
+            _c['price_history'] = _fin.get('price_history') or []
+
+            # ── EQ verdict ────────────────────────────────────────────────
+            if not _c.get(EQ_AVAILABLE):
+                _eq_vd = 'UNAVAILABLE'
+            elif _c.get(FATAL_FLAW_REASON):
+                _eq_vd = 'RISKY'
+            else:
+                _tier = (_c.get(PASS_TIER) or '').strip().upper()
+                _eq_vd = {
+                    'PASS':  'SUPPORTIVE',
+                    'WATCH': 'NEUTRAL',
+                    'FAIL':  'WEAK',
+                }.get(_tier, 'UNAVAILABLE')
+            _c['eq_verdict_display'] = _eq_vd
+
+            # ── Rotation signal ───────────────────────────────────────────
+            _c['rotation_signal_display'] = (
+                (_c.get(ROTATION_SIGNAL) or 'UNKNOWN')
+                .strip().upper()
+            )
+
+            # ── PS verdict display ────────────────────────────────────────
+            # Maps entry_quality directly for the dashboard pill.
+            # GOOD / EXTENDED / EARLY / WEAK / UNAVAILABLE
+            if not _c.get(PS_AVAILABLE):
+                _ps_vd = 'UNAVAILABLE'
+            else:
+                _eq_raw = (_c.get(PS_ENTRY_QUALITY) or '').strip().upper()
+                _ps_vd  = _eq_raw if _eq_raw in ('GOOD', 'EXTENDED', 'EARLY', 'WEAK') else 'UNAVAILABLE'
+            _c[PS_VERDICT_DISPLAY] = _ps_vd
+
+            # ── Market verdict ────────────────────────────────────────────
+            # Thresholds match summary_verdict() exactly:
+            # conf >= 70 AND risk <= 35 → RESEARCH NOW
+            # conf >= 55                → WATCH
+            # else                      → SKIP
+            _conf_v = _c.get('composite_confidence') or 0
+            _risk_v = _c.get('risk_score') or 100
+            if _conf_v >= 70 and _risk_v <= 35:
+                _mvd = 'RESEARCH NOW'
+            elif _conf_v >= 55:
+                _mvd = 'WATCH'
+            else:
+                _mvd = 'SKIP'
+            _c['market_verdict_display'] = _mvd
+
+            # ── Alignment (4-dimensional: S1 + S2 + S3 + S4) ─────────────
+            # S4 adds +1 if entry_quality == GOOD, -1 if WEAK or EXTENDED.
+            # EARLY is intentionally neutral (0) — promising but unconfirmed.
+            _al = 0
+            _mvd_n = (_c.get('market_verdict_display') or '').strip().upper()
+            _rot_n = (_c.get('rotation_signal_display') or '').strip().upper()
+            _eq_n  = (_c.get('eq_verdict_display') or '').strip().upper()
+            _ps_n  = _ps_vd
+
+            if _mvd_n == 'RESEARCH NOW': _al += 1
+            elif _mvd_n == 'SKIP':       _al -= 1
+            if _rot_n == 'SUPPORT':      _al += 1
+            elif _rot_n == 'WEAKEN':     _al -= 1
+            if _eq_n == 'SUPPORTIVE':           _al += 1
+            elif _eq_n in ('WEAK', 'RISKY'):    _al -= 1
+            if _ps_n == 'GOOD':                 _al += 1
+            elif _ps_n in ('WEAK', 'EXTENDED'): _al -= 1
+
+            if _al >= 2:   _c['alignment'] = 'ALIGNED'
+            elif _al >= 0: _c['alignment'] = 'PARTIAL'
+            else:          _c['alignment'] = 'CONFLICT'
+
+        except Exception as _enrich_err:
+            log.warning(
+                f'Pre-dashboard enrichment failed for '
+                f'{_c.get("ticker", "?")}: {_enrich_err} '
+                f'— fields: return_1m/3m/6m price_history '
+                f'eq_verdict_display rotation_signal_display '
+                f'ps_verdict_display market_verdict_display alignment'
+            )
+            _c.setdefault('return_1m', None)
+            _c.setdefault('return_3m', None)
+            _c.setdefault('return_6m', None)
+            _c.setdefault('price_history', [])
+            _c.setdefault('eq_verdict_display', 'UNAVAILABLE')
+            _c.setdefault('rotation_signal_display', 'UNKNOWN')
+            _c.setdefault(PS_VERDICT_DISPLAY, 'UNAVAILABLE')
+            _c.setdefault('market_verdict_display', 'WATCH')
+            _c.setdefault('alignment', 'PARTIAL')
 
 
 # ── Force-ticker pipeline (debug mode) ────────────────────────────────────
@@ -311,7 +432,7 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
         log.warning('[DEBUG] No candidates built from forced tickers — check ticker symbols')
         return
 
-    # EQ enrichment
+    # ── EQ enrichment ────────────────────────────────────────────────────
     try:
         eq_tickers = [c['ticker'] for c in all_candidates]
         log.info(f'[DEBUG][EQ] Running EQ analysis on {len(eq_tickers)} forced tickers')
@@ -348,7 +469,7 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
         for candidate in all_candidates:
             candidate[EQ_AVAILABLE] = False
 
-    # Sector Rotation enrichment (Debug)
+    # ── Sector Rotation enrichment ────────────────────────────────────────
     try:
         rotation_candidates = [
             {'ticker': c.get('ticker', ''), 'sector': c.get('sector', '')}
@@ -402,6 +523,56 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
             candidate[ROTATION_AVAILABLE] = False
             candidate[ROTATION_SIGNAL]    = 'UNKNOWN'
 
+    # ── Step 27f: Price Structure enrichment (Debug) ──────────────────────
+    # Run System 4 (Price Structure Analyzer) against all forced candidates.
+    # analyze() is called per-ticker. Non-fatal — PS_AVAILABLE=False on any error.
+    try:
+        log.info(f'[PS] Running price structure analysis on {len(all_candidates)} forced tickers')
+        ps_enriched = 0
+        for candidate in all_candidates:
+            t = candidate.get('ticker', '')
+            try:
+                ps_result = ps_analyze(t)
+                if (ps_result
+                        and isinstance(ps_result, dict)
+                        and ps_result.get(PS_DATA_CONFIDENCE, 'UNAVAILABLE') != 'UNAVAILABLE'):
+                    candidate[PS_AVAILABLE]               = True
+                    candidate[PS_TREND_STRUCTURE]         = ps_result.get(PS_TREND_STRUCTURE,        PRICE_STRUCTURE_DEFAULTS[PS_TREND_STRUCTURE])
+                    candidate[PS_TREND_STRENGTH]          = ps_result.get(PS_TREND_STRENGTH,         PRICE_STRUCTURE_DEFAULTS[PS_TREND_STRENGTH])
+                    candidate[PS_KEY_LEVEL_POSITION]      = ps_result.get(PS_KEY_LEVEL_POSITION,     PRICE_STRUCTURE_DEFAULTS[PS_KEY_LEVEL_POSITION])
+                    candidate[PS_ENTRY_QUALITY]           = ps_result.get(PS_ENTRY_QUALITY,          PRICE_STRUCTURE_DEFAULTS[PS_ENTRY_QUALITY])
+                    candidate[PS_VOLATILITY_STATE]        = ps_result.get(PS_VOLATILITY_STATE,       PRICE_STRUCTURE_DEFAULTS[PS_VOLATILITY_STATE])
+                    candidate[PS_COMPRESSION_LOCATION]    = ps_result.get(PS_COMPRESSION_LOCATION,   PRICE_STRUCTURE_DEFAULTS[PS_COMPRESSION_LOCATION])
+                    candidate[PS_CONSOLIDATION_CONFIRMED] = ps_result.get(PS_CONSOLIDATION_CONFIRMED,PRICE_STRUCTURE_DEFAULTS[PS_CONSOLIDATION_CONFIRMED])
+                    candidate[PS_SUPPORT_REACTION]        = ps_result.get(PS_SUPPORT_REACTION,       PRICE_STRUCTURE_DEFAULTS[PS_SUPPORT_REACTION])
+                    candidate[PS_BASE_DURATION_DAYS]      = ps_result.get(PS_BASE_DURATION_DAYS,     PRICE_STRUCTURE_DEFAULTS[PS_BASE_DURATION_DAYS])
+                    candidate[PS_VOLUME_CONTRACTION]      = ps_result.get(PS_VOLUME_CONTRACTION,     PRICE_STRUCTURE_DEFAULTS[PS_VOLUME_CONTRACTION])
+                    candidate[PS_PRICE_ACTION_SCORE]      = ps_result.get(PS_PRICE_ACTION_SCORE,     PRICE_STRUCTURE_DEFAULTS[PS_PRICE_ACTION_SCORE])
+                    candidate[PS_MOVE_EXTENSION_PCT]      = ps_result.get(PS_MOVE_EXTENSION_PCT,     PRICE_STRUCTURE_DEFAULTS[PS_MOVE_EXTENSION_PCT])
+                    candidate[PS_DISTANCE_TO_SUPPORT_PCT] = ps_result.get(PS_DISTANCE_TO_SUPPORT_PCT,PRICE_STRUCTURE_DEFAULTS[PS_DISTANCE_TO_SUPPORT_PCT])
+                    candidate[PS_DISTANCE_TO_RESIST_PCT]  = ps_result.get(PS_DISTANCE_TO_RESIST_PCT, PRICE_STRUCTURE_DEFAULTS[PS_DISTANCE_TO_RESIST_PCT])
+                    candidate[PS_STRUCTURE_STATE]         = ps_result.get(PS_STRUCTURE_STATE,        PRICE_STRUCTURE_DEFAULTS[PS_STRUCTURE_STATE])
+                    candidate[PS_RECENT_CROSSOVER]        = ps_result.get(PS_RECENT_CROSSOVER,       PRICE_STRUCTURE_DEFAULTS[PS_RECENT_CROSSOVER])
+                    candidate[PS_DATA_CONFIDENCE]         = ps_result.get(PS_DATA_CONFIDENCE,        PRICE_STRUCTURE_DEFAULTS[PS_DATA_CONFIDENCE])
+                    candidate[PS_REASONING]               = ps_result.get(PS_REASONING,              PRICE_STRUCTURE_DEFAULTS[PS_REASONING])
+                    ps_enriched += 1
+                else:
+                    candidate[PS_AVAILABLE] = False
+                    log.info(f'[PS] {t}: UNAVAILABLE confidence — skipped')
+            except Exception as _ps_ticker_err:
+                candidate[PS_AVAILABLE] = False
+                log.info(f'[PS] {t}: error — {_ps_ticker_err}')
+
+        log.info(
+            f'[PS] Enrichment complete. '
+            f'{ps_enriched} enriched / {len(all_candidates)} total'
+        )
+    except Exception as ps_err:
+        log.warning(f'[PS] Price structure analysis failed (non-fatal): {ps_err}')
+        for candidate in all_candidates:
+            candidate[PS_AVAILABLE] = False
+    # ── End Step 27f (Debug) ─────────────────────────────────────────────
+
     # Build and send report
     from reports.report_builder import build_intraday_report
     html_files = build_intraday_report(
@@ -415,89 +586,8 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
         rotation      = rotation,
     )
 
-    # ── Pre-dashboard candidate enrichment ───────────────────────────────────
-    # Populates display fields so _update_rank_board() receives complete data.
-    # _enrich_company_for_template() does this internally inside
-    # build_intraday_report() but does not mutate the shared list.
-    for _c in all_candidates:
-        try:
-            _mtf = _c.get('mtf') or {}
-            _c['return_1m'] = _mtf.get('r1m')
-            _c['return_3m'] = _mtf.get('r3m')
-            _c['return_6m'] = _mtf.get('r6m')
-
-            _fin = _c.get('financials') or {}
-            _c['price_history'] = _fin.get('price_history') or []
-
-            # EQ_AVAILABLE, PASS_TIER, FATAL_FLAW_REASON
-            # imported from contracts.eq_schema at top of file
-            if not _c.get(EQ_AVAILABLE):
-                _eq_vd = 'UNAVAILABLE'
-            elif _c.get(FATAL_FLAW_REASON):
-                _eq_vd = 'RISKY'
-            else:
-                _tier = (_c.get(PASS_TIER) or '').strip().upper()
-                _eq_vd = {
-                    'PASS':  'SUPPORTIVE',
-                    'WATCH': 'NEUTRAL',
-                    'FAIL':  'WEAK',
-                }.get(_tier, 'UNAVAILABLE')
-            _c['eq_verdict_display'] = _eq_vd
-
-            # ROTATION_SIGNAL imported from
-            # contracts.sector_schema at top of file
-            _c['rotation_signal_display'] = (
-                (_c.get(ROTATION_SIGNAL) or 'UNKNOWN')
-                .strip().upper()
-            )
-
-            # Thresholds match summary_verdict() exactly:
-            # conf >= 70 AND risk <= 35 → RESEARCH NOW
-            # conf >= 55                → WATCH
-            # else                      → SKIP
-            _conf_v = _c.get('composite_confidence') or 0
-            _risk_v = _c.get('risk_score') or 100
-            if _conf_v >= 70 and _risk_v <= 35:
-                _mvd = 'RESEARCH NOW'
-            elif _conf_v >= 55:
-                _mvd = 'WATCH'
-            else:
-                _mvd = 'SKIP'
-            _c['market_verdict_display'] = _mvd
-
-            # Alignment — all three source fields are now set above.
-            _al = 0
-            _mvd_n = (_c.get('market_verdict_display') or '').strip().upper()
-            _rot_n = (_c.get('rotation_signal_display') or '').strip().upper()
-            _eq_n  = (_c.get('eq_verdict_display') or '').strip().upper()
-
-            if _mvd_n == 'RESEARCH NOW': _al += 1
-            elif _mvd_n == 'SKIP':       _al -= 1
-            if _rot_n == 'SUPPORT':      _al += 1
-            elif _rot_n == 'WEAKEN':     _al -= 1
-            if _eq_n == 'SUPPORTIVE':           _al += 1
-            elif _eq_n in ('WEAK', 'RISKY'):    _al -= 1
-
-            if _al >= 2:   _c['alignment'] = 'ALIGNED'
-            elif _al >= 0: _c['alignment'] = 'PARTIAL'
-            else:          _c['alignment'] = 'CONFLICT'
-
-        except Exception as _enrich_err:
-            log.warning(
-                f'Pre-dashboard enrichment failed for '
-                f'{_c.get("ticker", "?")}: {_enrich_err} '
-                f'— fields: return_1m/3m/6m price_history '
-                f'eq_verdict_display rotation_signal_display '
-                f'market_verdict_display alignment'
-            )
-            _c.setdefault('return_1m', None)
-            _c.setdefault('return_3m', None)
-            _c.setdefault('return_6m', None)
-            _c.setdefault('price_history', [])
-            _c.setdefault('eq_verdict_display', 'UNAVAILABLE')
-            _c.setdefault('rotation_signal_display', 'UNKNOWN')
-            _c.setdefault('market_verdict_display', 'WATCH')
-            _c.setdefault('alignment', 'PARTIAL')
+    # ── Pre-dashboard candidate enrichment ───────────────────────────────
+    _enrich_for_dashboard(all_candidates)
 
     try:
         from reports.dashboard_builder import build_dashboard
@@ -537,8 +627,6 @@ def run():
     log.info('=' * 60)
 
     # ── Force-ticker debug mode check ─────────────────────────────────────
-    # Only active when FORCE_TICKERS env var is set via workflow_dispatch input.
-    # Scheduled runs never set this variable — behavior is completely unchanged.
     force_tickers_raw = os.environ.get('FORCE_TICKERS', '').strip()
     force_tickers = [t.strip().upper() for t in force_tickers_raw.split(',') if t.strip()]
 
@@ -550,10 +638,8 @@ def run():
         log.info(f'[DEBUG] Using slot: {slot}')
         _run_force_ticker_pipeline(force_tickers, slot, state)
         sys.exit(0)
-    # ── End force-ticker check ────────────────────────────────────────────
 
-    # ── Time gate — skip ghost triggers from dual DST crons ───────────────
-    # workflow_dispatch runs bypass this check intentionally.
+    # ── Time gate ─────────────────────────────────────────────────────────
     if os.environ.get('GITHUB_EVENT_NAME') == 'schedule':
         now_et = datetime.now(pytz.timezone(TIMEZONE))
         slot_match = _determine_slot()
@@ -564,9 +650,8 @@ def run():
             )
             sys.exit(0)
         log.info(f'[SCHEDULER] Time gate passed — matched slot {slot_match}')
-    # ── End time gate ─────────────────────────────────────────────────────
 
-    # ── Step 1: Startup check ──────────────────────────────────────────────
+    # ── Step 1: Startup check ─────────────────────────────────────────────
     _check_validated_file()
 
     # ── Step 2: Determine run slot ────────────────────────────────────────
@@ -628,15 +713,12 @@ def run():
     index_history = _get_idx_hist()
     log.info(f'News: {len(articles)} articles, {len(candidate_sectors)} candidate sectors')
 
-    # If no candidate sectors were found, write empty report and exit
     if not candidate_sectors:
         log.info('No candidate sectors — writing empty report')
         _write_empty_report(slot, state, indices, breadth)
         state = mark_slot_complete(state, slot)
         save_state(state)
         sys.exit(0)
-
-    # ── Step 11: Keyword scoring already done in collect_news() ───────────
 
     # ── Step 12: Apply event recency decay ───────────────────────────────
     from analyzers.event_detector import detect_events, summarise_sector_events
@@ -650,7 +732,7 @@ def run():
     from analyzers.news_impact_scorer import filter_sectors_by_impact
     impact_filtered = filter_sectors_by_impact(candidate_sectors)
 
-    # ── Step 14: Momentum gate — top 5 only ──────────────────────────────
+    # ── Step 14: Momentum gate ────────────────────────────────────────────
     momentum_filtered = {
         s: v for s, v in impact_filtered.items()
         if sector_scores.get(s, {}).get('top5', False)
@@ -710,7 +792,6 @@ def run():
             log.warning(f'No validated tickers for sector {sector}')
             continue
 
-        # Get sector context
         sector_pe           = get_sector_pe(sector)
         sector_median_ret   = get_sector_median_return(sector)
         etf_return          = sector_scores.get(sector, {}).get('ret5d')
@@ -722,10 +803,8 @@ def run():
         for ticker_entry in sector_ticker_list:
             ticker = ticker_entry['ticker'] if isinstance(ticker_entry, dict) else ticker_entry
 
-            # ── Step 17: Dedup + financials ──────────────────────────────
             fin = get_financials(ticker)
 
-            # ── Step 18: Candidate filter ─────────────────────────────────
             ok, reason = passes_candidate_filter(
                 ticker, fin, sector, state.get('reported_companies', [])
             )
@@ -733,46 +812,32 @@ def run():
             if not ok:
                 continue
 
-            # AV enrichment if budget allows
             av_data = _fetch_av_data(ticker, state)
             if av_data:
                 state['alpha_vantage_calls_today'] = state.get('alpha_vantage_calls_today', 0) + 1
                 save_state(state)
                 fin = enrich_with_alpha_vantage(ticker, av_data, fin)
 
-            # ── Step 19: Volume + unusual volume ─────────────────────────
             vol_result = compute_volume_confirmation(ticker)
             uv_result  = detect_unusual_volume(ticker, vol_result.get('volume_ratio'))
             if uv_result['unusual_flag']:
                 state['unusual_volume_flags'].append(ticker)
                 save_state(state)
 
-            # ── Step 20: Momentum ─────────────────────────────────────────
             ram_result = compute_risk_adjusted_momentum(ticker)
             mtf_result = compute_mtf_momentum(ticker)
 
-            # ── Step 21: Stability + drawdown ─────────────────────────────
             stability_result = compute_trend_stability(ticker)
             dd_result        = compute_drawdown_risk(ticker)
 
-            # ── Step 22: Risk score ───────────────────────────────────────
             risk_result = compute_risk_score(fin, regime, dd_result.get('drawdown_score'))
 
-            # ── Step 23: Opportunity score ────────────────────────────────
             opp_result = compute_opportunity_score(
-                fin,
-                regime,
-                breadth,
-                sector_pe,
-                sector_median_ret,
-                ram_result.get('ram_score'),
-                mtf_result.get('mtf_score'),
-                vol_result.get('volume_score'),
-                bma_score,
-                etf_return,
+                fin, regime, breadth, sector_pe, sector_median_ret,
+                ram_result.get('ram_score'), mtf_result.get('mtf_score'),
+                vol_result.get('volume_score'), bma_score, etf_return,
             )
 
-            # ── Step 24: Signal agreement ─────────────────────────────────
             sec_str       = sector_rank_to_score(sector_rank)
             norm_ev_score = min(1.0, sector_events.get(sector, {}).get('total_adjusted', 0) / 20.0)
             agreement     = compute_signal_agreement(
@@ -782,7 +847,6 @@ def run():
                 volume_score    = vol_result.get('volume_score', 0.5),
             )
 
-            # ── Step 25: Composite confidence ─────────────────────────────
             conf_result = compute_composite_confidence(
                 risk_score            = risk_result['risk_score'],
                 opportunity_score     = opp_result['opportunity_score'],
@@ -790,7 +854,6 @@ def run():
                 sector_momentum_score = sector_momentum_val,
             )
 
-            # ── Step 26: Exclude below confidence minimum ─────────────────
             log.info(f'DEBUG confidence {ticker}: conf={conf_result["composite_confidence"]} min={COMPOSITE_CONFIDENCE_MIN} risk={risk_result["risk_score"]} opp={opp_result["opportunity_score"]}')
             if conf_result['composite_confidence'] < COMPOSITE_CONFIDENCE_MIN:
                 log.info(
@@ -799,7 +862,6 @@ def run():
                 )
                 continue
 
-            # ── Assemble candidate dict ───────────────────────────────────
             candidate = {
                 'ticker':              ticker,
                 'sector':              sector,
@@ -875,10 +937,8 @@ def run():
 
         if _prior_conf is None:
             stable_companies.append(_c)
-            log.debug(f'score_stability: {_ticker} first appearance - allowed (score {_current_conf})')
         elif _current_conf >= _prior_conf:
             stable_companies.append(_c)
-            log.debug(f'score_stability: {_ticker} stable/improving ({_prior_conf} -> {_current_conf}) - allowed')
         else:
             log.info(f'score_stability: {_ticker} suppressed - score declined ({_prior_conf} -> {_current_conf})')
 
@@ -886,10 +946,6 @@ def run():
     log.info(f'Final company count after score stability filter: {len(final_companies)}')
 
     # ── Step 27d: Earnings Quality enrichment ────────────────────────────
-    # Run System 2 (EQ Analyzer) against all final candidates.
-    # System 2 returns raw data only. System 1 owns all rendering.
-    # combined_priority_score is available as a secondary signal but does
-    # NOT replace or reorder System 1's composite_confidence ranking.
     try:
         eq_tickers = [c['ticker'] for c in final_companies if c.get('ticker')]
         if eq_tickers:
@@ -942,9 +998,6 @@ def run():
     # ── End Step 27d ─────────────────────────────────────────────────────
 
     # ── Step 27e: Sector Rotation enrichment ─────────────────────────────
-    # Run System 3 (Sector Rotation Detector) against all final candidates.
-    # System 3 returns raw data only. System 1 owns all rendering.
-    # rotation_signal is a timing modifier only — does NOT reorder candidates.
     try:
         rotation_candidates = [
             {'ticker': c.get('ticker', ''), 'sector': c.get('sector', '')}
@@ -999,6 +1052,61 @@ def run():
             candidate[ROTATION_SIGNAL]    = 'UNKNOWN'
     # ── End Step 27e ─────────────────────────────────────────────────────
 
+    # ── Step 27f: Price Structure enrichment ─────────────────────────────
+    # Run System 4 (Price Structure Analyzer) against all final candidates.
+    # analyze() is called per-ticker. Non-fatal — PS_AVAILABLE=False on any error.
+    # entry_quality == GOOD is a hard gate for BUY NOW in _build_ai_prompt().
+    try:
+        if final_companies:
+            log.info(f'[PS] Running price structure analysis on {len(final_companies)} tickers')
+            ps_enriched = 0
+            for candidate in final_companies:
+                t = candidate.get('ticker', '')
+                try:
+                    ps_result = ps_analyze(t)
+                    if (ps_result
+                            and isinstance(ps_result, dict)
+                            and ps_result.get(PS_DATA_CONFIDENCE, 'UNAVAILABLE') != 'UNAVAILABLE'):
+                        candidate[PS_AVAILABLE]               = True
+                        candidate[PS_TREND_STRUCTURE]         = ps_result.get(PS_TREND_STRUCTURE,        PRICE_STRUCTURE_DEFAULTS[PS_TREND_STRUCTURE])
+                        candidate[PS_TREND_STRENGTH]          = ps_result.get(PS_TREND_STRENGTH,         PRICE_STRUCTURE_DEFAULTS[PS_TREND_STRENGTH])
+                        candidate[PS_KEY_LEVEL_POSITION]      = ps_result.get(PS_KEY_LEVEL_POSITION,     PRICE_STRUCTURE_DEFAULTS[PS_KEY_LEVEL_POSITION])
+                        candidate[PS_ENTRY_QUALITY]           = ps_result.get(PS_ENTRY_QUALITY,          PRICE_STRUCTURE_DEFAULTS[PS_ENTRY_QUALITY])
+                        candidate[PS_VOLATILITY_STATE]        = ps_result.get(PS_VOLATILITY_STATE,       PRICE_STRUCTURE_DEFAULTS[PS_VOLATILITY_STATE])
+                        candidate[PS_COMPRESSION_LOCATION]    = ps_result.get(PS_COMPRESSION_LOCATION,   PRICE_STRUCTURE_DEFAULTS[PS_COMPRESSION_LOCATION])
+                        candidate[PS_CONSOLIDATION_CONFIRMED] = ps_result.get(PS_CONSOLIDATION_CONFIRMED,PRICE_STRUCTURE_DEFAULTS[PS_CONSOLIDATION_CONFIRMED])
+                        candidate[PS_SUPPORT_REACTION]        = ps_result.get(PS_SUPPORT_REACTION,       PRICE_STRUCTURE_DEFAULTS[PS_SUPPORT_REACTION])
+                        candidate[PS_BASE_DURATION_DAYS]      = ps_result.get(PS_BASE_DURATION_DAYS,     PRICE_STRUCTURE_DEFAULTS[PS_BASE_DURATION_DAYS])
+                        candidate[PS_VOLUME_CONTRACTION]      = ps_result.get(PS_VOLUME_CONTRACTION,     PRICE_STRUCTURE_DEFAULTS[PS_VOLUME_CONTRACTION])
+                        candidate[PS_PRICE_ACTION_SCORE]      = ps_result.get(PS_PRICE_ACTION_SCORE,     PRICE_STRUCTURE_DEFAULTS[PS_PRICE_ACTION_SCORE])
+                        candidate[PS_MOVE_EXTENSION_PCT]      = ps_result.get(PS_MOVE_EXTENSION_PCT,     PRICE_STRUCTURE_DEFAULTS[PS_MOVE_EXTENSION_PCT])
+                        candidate[PS_DISTANCE_TO_SUPPORT_PCT] = ps_result.get(PS_DISTANCE_TO_SUPPORT_PCT,PRICE_STRUCTURE_DEFAULTS[PS_DISTANCE_TO_SUPPORT_PCT])
+                        candidate[PS_DISTANCE_TO_RESIST_PCT]  = ps_result.get(PS_DISTANCE_TO_RESIST_PCT, PRICE_STRUCTURE_DEFAULTS[PS_DISTANCE_TO_RESIST_PCT])
+                        candidate[PS_STRUCTURE_STATE]         = ps_result.get(PS_STRUCTURE_STATE,        PRICE_STRUCTURE_DEFAULTS[PS_STRUCTURE_STATE])
+                        candidate[PS_RECENT_CROSSOVER]        = ps_result.get(PS_RECENT_CROSSOVER,       PRICE_STRUCTURE_DEFAULTS[PS_RECENT_CROSSOVER])
+                        candidate[PS_DATA_CONFIDENCE]         = ps_result.get(PS_DATA_CONFIDENCE,        PRICE_STRUCTURE_DEFAULTS[PS_DATA_CONFIDENCE])
+                        candidate[PS_REASONING]               = ps_result.get(PS_REASONING,              PRICE_STRUCTURE_DEFAULTS[PS_REASONING])
+                        ps_enriched += 1
+                    else:
+                        candidate[PS_AVAILABLE] = False
+                        log.info(f'[PS] {t}: UNAVAILABLE confidence — skipped')
+                except Exception as _ps_ticker_err:
+                    candidate[PS_AVAILABLE] = False
+                    log.info(f'[PS] {t}: error — {_ps_ticker_err}')
+
+            log.info(
+                f'[PS] Enrichment complete. '
+                f'{ps_enriched} enriched / {len(final_companies)} total'
+            )
+        else:
+            log.info('[PS] No candidates for price structure analysis')
+
+    except Exception as ps_err:
+        log.warning(f'[PS] Price structure analysis failed (non-fatal): {ps_err}')
+        for candidate in final_companies:
+            candidate[PS_AVAILABLE] = False
+    # ── End Step 27f ─────────────────────────────────────────────────────
+
     # ── Step 28: Build reports ────────────────────────────────────────────
     from reports.report_builder import build_intraday_report
     html_files = build_intraday_report(
@@ -1012,89 +1120,8 @@ def run():
         rotation      = rotation,
     )
 
-    # ── Pre-dashboard candidate enrichment ───────────────────────────────────
-    # Populates display fields so _update_rank_board() receives complete data.
-    # _enrich_company_for_template() does this internally inside
-    # build_intraday_report() but does not mutate the shared list.
-    for _c in final_companies:
-        try:
-            _mtf = _c.get('mtf') or {}
-            _c['return_1m'] = _mtf.get('r1m')
-            _c['return_3m'] = _mtf.get('r3m')
-            _c['return_6m'] = _mtf.get('r6m')
-
-            _fin = _c.get('financials') or {}
-            _c['price_history'] = _fin.get('price_history') or []
-
-            # EQ_AVAILABLE, PASS_TIER, FATAL_FLAW_REASON
-            # imported from contracts.eq_schema at top of file
-            if not _c.get(EQ_AVAILABLE):
-                _eq_vd = 'UNAVAILABLE'
-            elif _c.get(FATAL_FLAW_REASON):
-                _eq_vd = 'RISKY'
-            else:
-                _tier = (_c.get(PASS_TIER) or '').strip().upper()
-                _eq_vd = {
-                    'PASS':  'SUPPORTIVE',
-                    'WATCH': 'NEUTRAL',
-                    'FAIL':  'WEAK',
-                }.get(_tier, 'UNAVAILABLE')
-            _c['eq_verdict_display'] = _eq_vd
-
-            # ROTATION_SIGNAL imported from
-            # contracts.sector_schema at top of file
-            _c['rotation_signal_display'] = (
-                (_c.get(ROTATION_SIGNAL) or 'UNKNOWN')
-                .strip().upper()
-            )
-
-            # Thresholds match summary_verdict() exactly:
-            # conf >= 70 AND risk <= 35 → RESEARCH NOW
-            # conf >= 55                → WATCH
-            # else                      → SKIP
-            _conf_v = _c.get('composite_confidence') or 0
-            _risk_v = _c.get('risk_score') or 100
-            if _conf_v >= 70 and _risk_v <= 35:
-                _mvd = 'RESEARCH NOW'
-            elif _conf_v >= 55:
-                _mvd = 'WATCH'
-            else:
-                _mvd = 'SKIP'
-            _c['market_verdict_display'] = _mvd
-
-            # Alignment — all three source fields are now set above.
-            _al = 0
-            _mvd_n = (_c.get('market_verdict_display') or '').strip().upper()
-            _rot_n = (_c.get('rotation_signal_display') or '').strip().upper()
-            _eq_n  = (_c.get('eq_verdict_display') or '').strip().upper()
-
-            if _mvd_n == 'RESEARCH NOW': _al += 1
-            elif _mvd_n == 'SKIP':       _al -= 1
-            if _rot_n == 'SUPPORT':      _al += 1
-            elif _rot_n == 'WEAKEN':     _al -= 1
-            if _eq_n == 'SUPPORTIVE':           _al += 1
-            elif _eq_n in ('WEAK', 'RISKY'):    _al -= 1
-
-            if _al >= 2:   _c['alignment'] = 'ALIGNED'
-            elif _al >= 0: _c['alignment'] = 'PARTIAL'
-            else:          _c['alignment'] = 'CONFLICT'
-
-        except Exception as _enrich_err:
-            log.warning(
-                f'Pre-dashboard enrichment failed for '
-                f'{_c.get("ticker", "?")}: {_enrich_err} '
-                f'— fields: return_1m/3m/6m price_history '
-                f'eq_verdict_display rotation_signal_display '
-                f'market_verdict_display alignment'
-            )
-            _c.setdefault('return_1m', None)
-            _c.setdefault('return_3m', None)
-            _c.setdefault('return_6m', None)
-            _c.setdefault('price_history', [])
-            _c.setdefault('eq_verdict_display', 'UNAVAILABLE')
-            _c.setdefault('rotation_signal_display', 'UNKNOWN')
-            _c.setdefault('market_verdict_display', 'WATCH')
-            _c.setdefault('alignment', 'PARTIAL')
+    # ── Pre-dashboard candidate enrichment ───────────────────────────────
+    _enrich_for_dashboard(final_companies)
 
     # ── Step 28b — Dashboard update (non-fatal) ───────────────────────────
     try:
@@ -1125,12 +1152,12 @@ def run():
     if not email_sent:
         log.warning('Email delivery failed — report still committed to repo')
 
-    # ── Step 30: Closing report if closing slot ───────────────────────────
+    # ── Step 30: Closing report ───────────────────────────────────────────
     if slot == CLOSING_SLOT:
         from reports.summary_builder import build_closing_report
         build_closing_report(state, indices, sector_scores, rotation)
 
-    # ── Step 31: Commit outputs to GitHub ─────────────────────────────────
+    # ── Step 31: Commit outputs ───────────────────────────────────────────
     _commit_outputs()
 
     # ── Step 32: Update state ─────────────────────────────────────────────

@@ -1413,6 +1413,34 @@ nav::before {
   border-image: linear-gradient(90deg, rgba(20, 16, 40, .9), rgba(74, 61, 114, .40)) 1;
 }
 
+/* PRICE STRUCTURE: good — green (valid entry, same family as support/low-risk) */
+.rpill-ps-gd {
+  color: #7dd8ff;
+  background: linear-gradient(90deg, rgba(5, 15, 50, .8), rgba(0, 180, 255, .25));
+  border-image: linear-gradient(90deg, rgba(5, 15, 50, .9), rgba(125, 216, 255, .75)) 1;
+}
+
+/* PRICE STRUCTURE: extended — red (overextended, do not enter) */
+.rpill-ps-ex {
+  color: #ff4d6d;
+  background: linear-gradient(90deg, rgba(60, 5, 10, .8), rgba(255, 77, 109, .20));
+  border-image: linear-gradient(90deg, rgba(80, 5, 15, .9), rgba(255, 77, 109, .70)) 1;
+}
+
+/* PRICE STRUCTURE: early — orange/neutral (pattern forming, not confirmed) */
+.rpill-ps-ea {
+  color: #ff9a3c;
+  background: linear-gradient(90deg, rgba(50, 25, 5, .8), rgba(255, 154, 60, .20));
+  border-image: linear-gradient(90deg, rgba(60, 30, 5, .9), rgba(255, 154, 60, .65)) 1;
+}
+
+/* PRICE STRUCTURE: weak — red (no valid setup, same as extended) */
+.rpill-ps-wk {
+  color: #ff4d6d;
+  background: linear-gradient(90deg, rgba(60, 5, 10, .8), rgba(255, 77, 109, .20));
+  border-image: linear-gradient(90deg, rgba(80, 5, 15, .9), rgba(255, 77, 109, .70)) 1;
+}
+
 .rank-head {
   display: grid;
   grid-template-columns: 36px 76px 1fr 84px 72px 60px 90px 90px;
