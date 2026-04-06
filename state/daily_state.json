@@ -1,33 +1,41 @@
 {
   "date": "2026-04-06",
   "reported_companies": [
-    "TXN",
-    "CB",
-    "USB",
-    "SBAC",
-    "FTNT",
+    "FHN",
+    "PLTR",
+    "FRT",
+    "MFC",
     "AAPL",
-    "PLD",
     "KIM",
-    "NNN",
-    "KLAC",
-    "WDC",
+    "REG",
+    "AMD",
+    "MSFT",
+    "PLD",
+    "UDR",
+    "TXN",
+    "FITB",
+    "PSA",
     "WBS",
-    "PGR",
+    "USB",
+    "HBAN",
     "EQR",
-    "VICI",
-    "RF",
     "AMAT",
     "TFC",
-    "AMD",
-    "MFC",
+    "PGR",
+    "KLAC",
+    "AVGO",
+    "RF",
     "O",
-    "PLTR",
-    "FITB",
-    "FRT",
-    "REG",
+    "VICI",
+    "CB",
+    "FTNT",
+    "SBAC",
     "SCHW",
-    "NVDA"
+    "WDC",
+    "CRM",
+    "GLPI",
+    "NVDA",
+    "NNN"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -74,8 +82,17 @@
       "status": "complete"
     },
     "16:00-17:20": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "MSFT",
+        "GLPI",
+        "AVGO",
+        "PSA",
+        "HBAN",
+        "FHN",
+        "UDR",
+        "CRM"
+      ],
+      "status": "complete"
     }
   },
   "failed_tickers": [],
@@ -183,14 +200,13 @@
     }
   },
   "today_scores": {
-    "AAPL": 54.2,
-    "AMD": 53.0,
-    "NNN": 52.7,
-    "EQR": 52.2,
-    "USB": 51.8,
-    "FRT": 51.7,
-    "RF": 51.7,
-    "KLAC": 51.4,
-    "PGR": 51.0
+    "MSFT": 53.7,
+    "GLPI": 52.3,
+    "AVGO": 51.8,
+    "PSA": 51.5,
+    "HBAN": 51.5,
+    "FHN": 50.7,
+    "UDR": 50.6,
+    "CRM": 50.5
   }
 }
