@@ -738,26 +738,24 @@ def _build_ai_prompt(
     commodity_data: dict,
 ) -> str:
     """
-    Builds the daily dynamic AI research prompt string (USER turn only).
-    Version: 2.0 — paired with MRE_AI_SYSTEM_PROMPT.md (static system prompt).
-
-    The system prompt (MRE_AI_SYSTEM_PROMPT.md) carries all rules, vocabulary,
-    decision hierarchy, and output format. This function provides only:
-    global market context + per-candidate data blocks.
+    Builds the daily AI research prompt string. Self-contained — all rules
+    and output format are embedded. Single paste into any AI interface.
+    Version: 2.1
 
     Called once per run — same string goes to full HTML and weekly_archive.
 
-    Changes from v1.0:
-      - BUG FIX: eq_strengths / eq_warnings_critical replaced with
-        top_strengths / top_risks (the actual keys set by eq_schema.py).
-        Strengths and risks now show real data instead of N/A on every run.
-      - ADDED: timing_label pre-computed in Python via _timing_label(r3m).
-        AI receives EARLY TREND / MID TREND / LATE TREND directly in the
-        candidate header instead of deriving it from a raw number.
-      - ADDED: ps_volatility_state and ps_compression_location in the S4 block.
-        COMPRESSING volatility near support is a meaningful setup signal.
-      - KEPT: volume_label — volume confirmation matters for entry quality.
-      - KEPT: Combined Reading block — pre-computed synthesis anchors AI analysis.
+    Changes from v2.0:
+      - BUG FIX: _timing_label() now returns DOWN TREND for negative 3M returns.
+        Previously any return below 15% (including negatives) fell through to
+        EARLY TREND — semantically wrong and caused misclassification.
+      - ADDED: DOWN TREND blocking rules in prompt. Cannot be PRIMARY, cannot
+        BUY NOW, can only be SECONDARY under strict conditions.
+      - ADDED: SECONDARY hard exclusions. CONFLICT alignment, WEAK entry_quality,
+        or SKIP verdict now each individually force REJECTED — not SECONDARY.
+      - ADDED: Explicit rule that sections 3 and 4 only apply to PRIMARY.
+        If no PRIMARY exists, no entry/exit logic is generated.
+      - TIGHTENED: Every risk in section 5 must cite the source system signal.
+      - UPDATED: Output format field names aligned with new timing vocabulary.
     """
     indices        = indices or {}
     commodity_data = commodity_data or {}
@@ -777,12 +775,19 @@ def _build_ai_prompt(
 
     def _timing_label(r3m_val):
         """
-        Pre-compute timing label so the AI receives a definitive label
-        rather than deriving it from raw numbers (reduces hallucination risk).
-        Matches definitions in MRE_AI_SYSTEM_PROMPT.md.
+        Pre-compute timing label from 3M return.
+        v2.1 BUG FIX: negative returns are DOWN TREND, not EARLY TREND.
+
+        DOWN TREND  — 3M return negative. Price is falling. Lowest timing quality.
+        EARLY TREND — 3M return 0% to <15%. Momentum building, unconfirmed.
+        MID TREND   — 3M return 15% to 30%. Trend established, valid entry window.
+        LATE TREND  — 3M return >30%. Elevated pullback risk.
+        UNKNOWN     — no 3M data available.
         """
         if r3m_val is None:
             return 'UNKNOWN'
+        if r3m_val < 0:
+            return 'DOWN TREND'
         if r3m_val > 30:
             return 'LATE TREND'
         if r3m_val >= 15:
@@ -851,9 +856,14 @@ def _build_ai_prompt(
         "TIMING QUALITY\n"
         "=============================================================\n"
         "\n"
-        "  EARLY TREND — 3M return < 15%. Momentum building.\n"
+        "  DOWN TREND  — 3M return is negative. Price is falling.\n"
+        "                Lowest timing quality. Cannot qualify for PRIMARY.\n"
+        "  EARLY TREND — 3M return 0% to <15%. Momentum building, unconfirmed.\n"
         "  MID TREND   — 3M return 15-30%. Trend established, valid entry window.\n"
-        "  LATE TREND  — 3M return > 30%. Elevated pullback risk.\n"
+        "  LATE TREND  — 3M return >30%. Elevated pullback risk.\n"
+        "  UNKNOWN     — no 3M return data available.\n"
+        "\n"
+        "The timing label is pre-computed by the system. Trust it. Do not reclassify.\n"
         "\n"
         "TIMING PRIORITY RULE:\n"
         "  3M return > 30% = LATE TREND. Final unless ALL THREE are true:\n"
@@ -863,11 +873,19 @@ def _build_ai_prompt(
         "  If any one condition is missing: LATE TREND stands. No exceptions.\n"
         "  Even with full override: LATE TREND can only upgrade to WAIT, never BUY NOW.\n"
         "\n"
+        "DOWN TREND RULE:\n"
+        "  A candidate with DOWN TREND timing:\n"
+        "    - Cannot qualify for PRIMARY tier under any conditions\n"
+        "    - Cannot receive BUY NOW under any conditions\n"
+        "    - Can only qualify for SECONDARY if alignment is PARTIAL and\n"
+        "      entry_quality is not WEAK\n"
+        "    - Otherwise must be REJECTED\n"
+        "\n"
         "=============================================================\n"
         "BUY NOW HARD GATE — ALL FIVE MUST BE TRUE\n"
         "=============================================================\n"
         "\n"
-        "  1. Timing = EARLY TREND or MID TREND\n"
+        "  1. Timing = EARLY TREND or MID TREND (DOWN TREND and LATE TREND blocked)\n"
         "  2. Market verdict = RESEARCH NOW\n"
         "  3. Rotation = SUPPORT\n"
         "  4. entry_quality = GOOD  <- cannot be overridden by any other signal\n"
@@ -916,39 +934,56 @@ def _build_ai_prompt(
         "CONFIDENCE IN TIMING:\n"
         "  HIGH   — strong alignment across all four systems + EARLY or MID TREND\n"
         "  MEDIUM — partial alignment or one system missing\n"
-        "  LOW    — conflicting signals, LATE TREND, or multiple systems unavailable\n"
+        "  LOW    — conflicting signals, DOWN TREND, LATE TREND, or multiple\n"
+        "           systems unavailable\n"
         "\n"
         "LANGUAGE RULES:\n"
         "  Never say: will, guaranteed, certain, definitely\n"
         "  Always state downside risk before upside potential\n"
         "  Name any conflict specifically before drawing conclusions\n"
         "  Explain financial terms in parentheses on first use\n"
+        "  Every risk listed in section 5 must reference a specific system signal\n"
+        "  (System 1 verdict, EQ tier, Rotation signal, or PS entry_quality)\n"
+        "  Example: 'System 3 (WEAKEN rotation) contradicts the price recovery.'\n"
         "\n"
         "=============================================================\n"
         "CANDIDATE TIERING — CLASSIFY BEFORE ANY ANALYSIS\n"
         "=============================================================\n"
         "\n"
         "PRIMARY — best single opportunity this session (exactly 1)\n"
-        "  Criteria: highest alignment + actionable entry_quality\n"
-        "  Receives full 7-section analysis\n"
+        "  Minimum standard — ALL of the following must be true:\n"
+        "    - Alignment is ALIGNED or strong PARTIAL\n"
+        "    - entry_quality is NOT WEAK\n"
+        "    - Market verdict is NOT SKIP\n"
+        "    - Timing is NOT DOWN TREND\n"
+        "  If no candidate meets all four: state PRIMARY = NONE and explain why.\n"
+        "  Do not force a PRIMARY. Do not lower the standard.\n"
+        "  Receives full 7-section analysis.\n"
         "\n"
         "SECONDARY — watchlist candidates (max 2)\n"
-        "  Criteria: partial alignment, setup not yet actionable\n"
-        "  Receives sections 1, 5, and 7 only\n"
+        "  Hard exclusions — a candidate MUST be REJECTED (not SECONDARY) if ANY\n"
+        "  of the following are true:\n"
+        "    - Alignment = CONFLICT\n"
+        "    - entry_quality = WEAK\n"
+        "    - Market verdict = SKIP\n"
+        "  If none of the above apply: SECONDARY requires partial alignment and\n"
+        "  a setup that is not yet actionable but worth monitoring.\n"
+        "  Receives sections 1, 5, and 7 only.\n"
         "\n"
         "REJECTED — all others\n"
-        "  One line only: ticker + reason (max 15 words)\n"
+        "  One line: ticker + reason (max 15 words).\n"
         "\n"
-        "If no candidate qualifies as PRIMARY: state this explicitly and explain why.\n"
-        "Do not force a PRIMARY tier if none qualifies.\n"
+        "IF NO PRIMARY EXISTS:\n"
+        "  Do NOT generate entry logic (section 3) or exit logic (section 4)\n"
+        "  for any candidate. These sections only apply to PRIMARY.\n"
         "\n"
         "=============================================================\n"
         "OUTPUT FORMAT\n"
         "=============================================================\n"
         "\n"
         "## TIER CLASSIFICATION\n"
-        "PRIMARY:   [TICKER] — one sentence why it leads\n"
-        "SECONDARY: [TICKER] — one sentence each (max 2)\n"
+        "PRIMARY:   [TICKER or NONE] — one sentence why it leads (or why none qualifies)\n"
+        "SECONDARY: [TICKER] — one sentence each (max 2, or NONE)\n"
         "REJECTED:  [TICKER] — reason | [TICKER] — reason\n"
         "\n"
         "---\n"
@@ -957,7 +992,7 @@ def _build_ai_prompt(
         "\n"
         "1) QUICK DECISION\n"
         "   Entry:                BUY NOW / WAIT / AVOID\n"
-        "   Timing:               EARLY / MID / LATE TREND\n"
+        "   Timing:               DOWN / EARLY / MID / LATE TREND\n"
         "   Confidence in timing: HIGH / MEDIUM / LOW\n"
         "   (2 sentences max — state the single most important reason)\n"
         "\n"
@@ -969,17 +1004,20 @@ def _build_ai_prompt(
         "   - Does volatility state add useful context?\n"
         "\n"
         "3) ENTRY LOGIC\n"
-        "   Ideal entry scenario:   [specific condition]\n"
+        "   Ideal entry scenario:   [specific condition referencing support/resistance/breakout]\n"
         "   Bad entry scenario:     [what makes this a poor entry now]\n"
-        "   What to wait for:       [1-2 specific measurable conditions]\n"
-        "   (Reference entry_quality and key_level_position directly)\n"
+        "   What to wait for:       [1-2 observable, measurable conditions — not opinions]\n"
+        "   Conditions must reference price structure terms. Avoid vague phrases.\n"
         "\n"
         "4) EXIT LOGIC\n"
-        "   Take profit if: [specific condition in plain English]\n"
-        "   Cut loss if:    [specific condition in plain English]\n"
+        "   Take profit if: [observable condition tied to this candidate's signals]\n"
+        "   Cut loss if:    [observable condition tied to this candidate's signals]\n"
+        "   No generic rules. No vague phrases like 'if momentum weakens'.\n"
         "\n"
         "5) TOP RISKS RIGHT NOW\n"
-        "   2-3 risks tied directly to this candidate's data. No generic risks.\n"
+        "   2-3 risks. Each must cite the specific system signal it comes from.\n"
+        "   Example: 'System 3 (WEAKEN rotation) contradicts the price recovery.'\n"
+        "   No generic market risks.\n"
         "\n"
         "6) VERDICT\n"
         "   Choose one: Worth researching further / Watch closely / Avoid for now\n"
@@ -987,7 +1025,7 @@ def _build_ai_prompt(
         "\n"
         "7) ENTRY URGENCY\n"
         "   Choose one: Immediate / Near-term / Wait for confirmation\n"
-        "   1 sentence with the specific condition that determines urgency.\n"
+        "   1 sentence — the specific observable condition that determines urgency.\n"
         "\n"
         "---\n"
         "\n"
@@ -995,13 +1033,13 @@ def _build_ai_prompt(
         "\n"
         "1) QUICK DECISION\n"
         "   Entry: WAIT / AVOID | Timing: [label] | Confidence: [level]\n"
-        "   (1 sentence — what is blocking a better classification)\n"
+        "   (1 sentence — what specific condition is blocking a better classification)\n"
         "\n"
         "5) TOP RISKS\n"
-        "   2 risks tied directly to this candidate's data.\n"
+        "   2 risks. Each must cite the specific system signal it comes from.\n"
         "\n"
         "7) ENTRY URGENCY\n"
-        "   1 sentence — specific condition needed before reconsidering.\n"
+        "   1 sentence — specific observable condition needed before reconsidering.\n"
         "\n"
         "---\n"
         "\n"
@@ -1011,8 +1049,10 @@ def _build_ai_prompt(
         "---\n"
         "\n"
         "## CROSS-CANDIDATE SUMMARY\n"
-        "Best entry opportunity:  [ticker] — one sentence\n"
+        "Best entry opportunity:  [ticker or NONE] — one sentence\n"
         "Worst timing right now:  [ticker] — one sentence\n"
+        "Compare candidates relative to each other, not individually.\n"
+        "Explain why the PRIMARY (if any) is better than the rest.\n"
         "Overall market read:     1-2 sentences on whether this is a good time to act\n"
         "\n"
         "=============================================================\n"
@@ -1176,7 +1216,7 @@ def _build_ai_prompt(
         )
         candidates_block += candidate_block
 
-    # ── Footer — single trigger line; all rules live in MRE_AI_SYSTEM_PROMPT.md ──
+    # ── Footer ────────────────────────────────────────────────────────────
 
     footer = (
         "\n"
@@ -1186,7 +1226,7 @@ def _build_ai_prompt(
         "\n"
         "Apply tier classification first.\n"
         "Then produce the required output sections for each tier.\n"
-        "Follow all rules and output format from your system prompt exactly.\n"
+        "Follow all rules and output format defined above exactly.\n"
     )
 
     return header + candidates_block + footer
