@@ -2,6 +2,25 @@
   "reports": [
     {
       "date": "2026-04-06",
+      "time": "15:31",
+      "slot": "9:45-11:15",
+      "breadth": "neutral breadth \u2014 mixed market movement",
+      "regime": "Normal market",
+      "count": 1,
+      "tickers": [
+        "TSLA"
+      ],
+      "top_score": 41.5,
+      "verdicts": {
+        "RESEARCH NOW": 0,
+        "WATCH": 0,
+        "SKIP": 1
+      },
+      "report_url": "reports/intraday_full_945_1115_20260406T193150Z.html",
+      "prompt": "=============================================================\nGLOBAL CONTEXT\n=============================================================\n\nDate:             2026-04-06\nSlot:             9:45-11:15\nMarket condition: Normal market\nMarket breadth:   neutral breadth \u2014 mixed market movement\n\nMarket indices:\n  Dow Jones: 46,595 (+0.2%)\n  S&P 500:   6,603 (+0.3%)\n  Nasdaq:    21,974 (+0.4%)\n\nCommodity context:\n  WTI Crude:   +9.7% (5-day)\n  Natural Gas: -2.9% (5-day)\n\n=============================================================\nCANDIDATES\n=============================================================\n\n[TSLA] \u2014 consumer_discretionary (Auto Manufacturers) | Timing: EARLY TREND\n\nPrice:          $351.45 (N/A today)\nConfidence:     41/100 (WEAK)\nMarket verdict: SKIP\n\nTrend:\n  1 month:  -13.3%\n  3 months: -19.8%  \u2190 timing basis\n  6 months: -19.4%\n  Label:    declining with instability\n\nVolume: normal trading activity\n\nEarnings Quality (System 2):\n  Score:     74/100\n  Tier:      WATCH (NEUTRAL)\n  Strengths: + Strong operating cash flow conversion\n+ Low accruals \u2014 earnings are cash-backed\n  Risks:     ! Accounts receivable is growing significantly faster than revenue, suggesting aggressive recognition or deteriorating collections.\n! Earnings are volatile or unpredictable\n\nSector Rotation (System 3):\n  ETF:    XLY\n  Score:  13.1/100\n  Signal: WEAKEN\n\nPrice Structure (System 4):\n  Available:        YES\n  Entry quality:    WEAK\n  Trend:            DOWN (strength: 15/100)\n  Key level:        NEAR_SUPPORT\n  Structure:        CONSOLIDATING\n  Volatility state: NORMAL (compression: NEUTRAL)\n  Price action:     30/100\n  Move extension:   1.4% above 126-day low\n  Dist to support:  1.4%\n  Dist to resist:   12.7%\n  Reasoning:        Downtrend with weak structure \u2014 avoid.\n\nCombined Reading:\n  Market:          SKIP (41/100)\n  Earnings:        WATCH (NEUTRAL)\n  Rotation:        WEAKEN\n  Price Structure: WEAK\n  Alignment:  CONFLICT\n  Conclusion: No alignment between signal and fundamentals \u2014 not actionable.\n\n=============================================================\nANALYZE THE CANDIDATES ABOVE\n=============================================================\n\nApply tier classification first.\nThen produce the required output sections for each tier.\nFollow all rules and output format from your system prompt exactly.\n"
+    },
+    {
+      "date": "2026-04-06",
       "time": "14:37",
       "slot": "13:45-15:15",
       "breadth": "neutral breadth \u2014 mixed market movement",
