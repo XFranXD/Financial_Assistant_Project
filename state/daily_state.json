@@ -22,11 +22,107 @@
   },
   "failed_tickers": [],
   "api_failures": {},
-  "sector_scores_today": {},
-  "breadth_score_today": null,
-  "sector_breadth_ma_today": {},
+  "sector_scores_today": {
+    "technology": 2.959,
+    "healthcare": 1.385,
+    "financials": 2.838,
+    "consumer_discretionary": 1.43,
+    "consumer_staples": 0.111,
+    "industrials": 1.516,
+    "materials": 2.885,
+    "energy": -4.759,
+    "utilities": 1.725,
+    "real_estate": 3.31,
+    "communication_services": 2.313,
+    "semiconductors": 4.011,
+    "defense": 1.498
+  },
+  "breadth_score_today": 0.523,
+  "sector_breadth_ma_today": {
+    "technology": {
+      "breadth_ma_score": 0.2,
+      "pct": 20.0,
+      "label": "sector is structurally weak"
+    },
+    "semiconductors": {
+      "breadth_ma_score": 0.4,
+      "pct": 40.0,
+      "label": "mixed signals"
+    },
+    "healthcare": {
+      "breadth_ma_score": 0.3,
+      "pct": 30.0,
+      "label": "mixed signals"
+    },
+    "financials": {
+      "breadth_ma_score": 0.1,
+      "pct": 10.0,
+      "label": "sector is structurally weak"
+    },
+    "consumer_discretionary": {
+      "breadth_ma_score": 0.2,
+      "pct": 20.0,
+      "label": "sector is structurally weak"
+    },
+    "consumer_staples": {
+      "breadth_ma_score": 0.4,
+      "pct": 40.0,
+      "label": "mixed signals"
+    },
+    "industrials": {
+      "breadth_ma_score": 0.2,
+      "pct": 20.0,
+      "label": "sector is structurally weak"
+    },
+    "defense": {
+      "breadth_ma_score": 0.0,
+      "pct": 0.0,
+      "label": "sector is structurally weak"
+    },
+    "energy": {
+      "breadth_ma_score": 0.9,
+      "pct": 90.0,
+      "label": "sector is genuinely strong"
+    },
+    "materials": {
+      "breadth_ma_score": 0.3,
+      "pct": 30.0,
+      "label": "mixed signals"
+    },
+    "utilities": {
+      "breadth_ma_score": 0.9,
+      "pct": 90.0,
+      "label": "sector is genuinely strong"
+    },
+    "real_estate": {
+      "breadth_ma_score": 0.5,
+      "pct": 50.0,
+      "label": "mixed signals"
+    },
+    "communication_services": {
+      "breadth_ma_score": 0.4,
+      "pct": 40.0,
+      "label": "mixed signals"
+    }
+  },
   "unusual_volume_flags": [],
   "event_scores_today": {},
-  "indices_today": {},
+  "indices_today": {
+    "dow": {
+      "value": 46633.13,
+      "change_pct": 0.28,
+      "label": "Rising"
+    },
+    "sp500": {
+      "value": 6604.73,
+      "change_pct": 0.33,
+      "label": "Rising"
+    },
+    "nasdaq": {
+      "value": 21986.7,
+      "change_pct": 0.49,
+      "label": "Rising"
+    }
+  },
   "today_scores": {}
 }
