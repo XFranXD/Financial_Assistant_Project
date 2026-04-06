@@ -3,6 +3,96 @@
     "2026-W14": {
       "runs": [
         {
+          "id": "11:45-13:15_2026-04-06T12:33",
+          "run_type": "SCHEDULED",
+          "timestamp": "2026-04-06T12:33",
+          "slot": "11:45-13:15",
+          "breadth": "neutral breadth \u2014 mixed market movement",
+          "regime": "Normal market",
+          "count": 9,
+          "verdict_counts": {
+            "RESEARCH NOW": 0,
+            "WATCH": 1,
+            "SKIP": 8
+          },
+          "candidates": [
+            {
+              "ticker": "SBAC",
+              "confidence": 55.5,
+              "eq_verdict": "NEUTRAL",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "TXN",
+              "confidence": 54.8,
+              "eq_verdict": "NEUTRAL",
+              "rotation_signal": "WEAKEN",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "FTNT",
+              "confidence": 54.1,
+              "eq_verdict": "NEUTRAL",
+              "rotation_signal": "WEAKEN",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "PLTR",
+              "confidence": 54.1,
+              "eq_verdict": "NEUTRAL",
+              "rotation_signal": "WEAKEN",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "O",
+              "confidence": 53.9,
+              "eq_verdict": "NEUTRAL",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "PLD",
+              "confidence": 53.0,
+              "eq_verdict": "UNAVAILABLE",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "FITB",
+              "confidence": 52.6,
+              "eq_verdict": "NEUTRAL",
+              "rotation_signal": "WEAKEN",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "MFC",
+              "confidence": 52.3,
+              "eq_verdict": "UNAVAILABLE",
+              "rotation_signal": "WEAKEN",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "WBS",
+              "confidence": 51.4,
+              "eq_verdict": "SUPPORTIVE",
+              "rotation_signal": "WEAKEN",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            }
+          ],
+          "prompt": "TIMING PRIORITY RULE (APPLIES TO ALL CANDIDATES):\n  3M return > 30% = automatically LATE TREND unless strong counter-evidence is present.\n  LATE TREND = elevated pullback risk and lower entry quality.\n  EARLY or MID TREND is always preferred over LATE TREND, even if momentum is weaker.\n\nSTRONG COUNTER-EVIDENCE DEFINITION:\n  LATE TREND can only be overridden if ALL of the following are true:\n    - Market verdict = RESEARCH NOW\n    - Rotation = SUPPORT with score 80 or higher\n    - No major contradictions in any signal\n  If these conditions are not all met, LATE TREND must not be overridden.\n\nLATE TREND OVERRIDE CLARIFICATION:\n  Even if LATE TREND is overridden by strong counter-evidence,\n  it must NOT be classified as BUY NOW.\n  A LATE TREND override can only upgrade the entry from AVOID to WAIT.\n  WAIT is the maximum allowed entry when timing is LATE TREND.\n\nMAJOR SIGNAL CONFLICT DEFINITION:\n  A major conflict exists if any of the following are true:\n    - Market verdict is SKIP while Rotation is SUPPORT\n    - Commodity trend contradicts sector direction\n    - Earnings = FAIL or RISKY while price trend is strong\n  Note: WATCH vs SUPPORT is a minor conflict, not a major one.\n  Only the above conditions qualify as major conflicts.\n\nBUY NOW CRITERIA (hard gate \u2014 all conditions must be true):\n  BUY NOW is only allowed if ALL of the following are true:\n    - Timing quality is EARLY TREND or MID TREND\n    - Market verdict = RESEARCH NOW\n    - Rotation = SUPPORT\n    - entry_quality = GOOD (System 4 hard gate \u2014 no exceptions)\n    - No major signal conflicts\n  If entry_quality is EXTENDED or WEAK: BUY NOW is blocked regardless of all other signals.\n  If entry_quality is EARLY: pattern unconfirmed \u2014 do not issue BUY NOW, use WAIT.\n  If entry_quality is UNAVAILABLE: treat same as EARLY \u2014 reduce confidence, do not issue BUY NOW.\n  If any other condition is not met, default to WAIT or AVOID.\n\nDECISION HIERARCHY (use this when signals conflict):\n  1. Timing quality (trend stage) has the highest priority.\n  2. Market verdict (System 1) is the primary directional signal.\n  3. Sector rotation confirms or weakens the timing.\n  4. Earnings quality validates or blocks conviction.\n  5. Price structure entry quality gates BUY NOW \u2014 cannot be overridden.\n\nUNAVAILABLE DATA RULE:\n  If earnings data is UNAVAILABLE, do not assume positive or negative.\n  Reduce confidence level. Do not issue BUY NOW unless all other signals\n  are strong and timing is EARLY or MID TREND.\n  If price structure data is UNAVAILABLE, treat same as EARLY \u2014 reduce confidence,\n  do not issue BUY NOW, verify entry manually.\n\nCOMMODITY CONTRADICTION RULE:\n  If a candidate's sector depends on a commodity (e.g. energy stocks depend\n  on oil/gas) and the commodity is falling while the stock is rising:\n    - Treat this as a negative divergence\n    - Reduce confidence level\n    - Flag as a key risk in section 5\n\nCONFIDENCE IN TIMING SCALE:\n  LOW    -- conflicting signals or LATE TREND\n  MEDIUM -- partial alignment or some uncertainty present\n  HIGH   -- strong alignment across signals and EARLY or MID TREND\n\nDo not use certainty words: never say \"will\", \"guaranteed\", or \"certain\".\nAlways prioritize downside risk before upside potential.\nIf signals conflict, highlight the conflict clearly before drawing any conclusion.\n\n=============================================================\nSYSTEM CONTEXT \u2014 READ THIS BEFORE ANALYZING\n=============================================================\n\nThis report was generated by an automated stock screening system.\nThe system has four scoring layers:\n\nMARKET SIGNAL (System 1)\n  Confidence score 0-100. Primary ranking signal.\n  Market verdict vocabulary:\n    RESEARCH NOW \u2014 strong setup, multiple signals aligned\n    WATCH        \u2014 moderate setup, signal not fully confirmed\n    SKIP         \u2014 weak or conflicting setup, do not act\n\nEARNINGS QUALITY (System 2)\n  EQ Score 0-100. Measures earnings reliability.\n  Pass tier vocabulary:\n    PASS (SUPPORTIVE) \u2014 earnings are reliable and cash-backed\n    WATCH (NEUTRAL)   \u2014 earnings are acceptable but have concerns\n    FAIL (WEAK)       \u2014 earnings are unreliable\n    fatal flaw \u2192 RISKY \u2014 overrides all tiers, critical structural problem\n    UNAVAILABLE       \u2014 no SEC data found for this ticker\n\nSECTOR ROTATION (System 3)\n  Rotation score 0-100. Measures sector timing.\n  Signal vocabulary:\n    SUPPORT  \u2014 sector flow supports acting now\n    WAIT     \u2014 neutral timing, not yet favorable\n    WEAKEN   \u2014 sector flow is deteriorating\n    UNKNOWN  \u2014 insufficient data\n\nPRICE STRUCTURE (System 4)\n  Price action score 0-100. Measures entry timing quality using OHLCV only.\n  entry_quality vocabulary (hard gate \u2014 controls BUY NOW eligibility):\n    GOOD      \u2014 price near support or confirmed base, valid entry window\n    EXTENDED  \u2014 price far above support, elevated pullback risk, do not enter\n    EARLY     \u2014 pattern forming but not yet confirmed, wait for confirmation\n    WEAK      \u2014 no valid setup detected, avoid entry\n    UNAVAILABLE \u2014 insufficient OHLCV data\n  key_level_position vocabulary:\n    NEAR_SUPPORT     \u2014 price close to a support zone\n    MID_RANGE        \u2014 price between support and resistance\n    NEAR_RESISTANCE  \u2014 price approaching a resistance zone\n    BREAKOUT         \u2014 price breaking above resistance\n  structure_state vocabulary: TRENDING / CONSOLIDATING / VOLATILE\n\nCOMBINED READING (four-layer synthesis)\n  Alignment vocabulary:\n    ALIGNED  \u2014 all four systems agree\n    PARTIAL  \u2014 mixed signals, partial agreement\n    CONFLICT \u2014 systems disagree\n\nTIMING QUALITY DEFINITIONS (use these when classifying)\n  EARLY TREND  \u2014 price up less than 15% in 3 months, momentum building\n  MID TREND    \u2014 price up 15-30% in 3 months, trend established\n  LATE TREND   \u2014 price up more than 30% in 3 months, elevated pullback risk\n\n=============================================================\nGLOBAL CONTEXT\n=============================================================\n\nDate: 2026-04-06\nSlot: 11:45-13:15\nMarket condition: Normal market\nMarket breadth: neutral breadth \u2014 mixed market movement\n\nMarket indices:\n  Dow Jones: 46,597 (+0.2%)\n  S&P 500:   6,601 (+0.3%)\n  Nasdaq:    21,964 (+0.4%)\n\nCommodity context:\n  WTI Crude:   +8.6% (5-day)\n  Natural Gas: -2.5% (5-day)\n\n=============================================================\nCANDIDATES\n=============================================================\n\n[SBAC] \u2014 real_estate (N/A)\n\nPrice:          $210.31 (N/A today)\nConfidence:     55.5/100 (MODERATE)\nMarket verdict: WATCH\n\nTrend:\n  1 month:  +9.8%\n  3 months: +11.6%\n  6 months: +12.7%\n  Label:    very stable upward trend\n\nVolume: higher activity than usual\n\nEarnings Quality:\n  Score:     77/100\n  Tier:      WATCH (NEUTRAL) \u2014 14th percentile\n  Strengths: N/A\n  Warnings:  N/A\n             \n\nSector Rotation:\n  ETF:    XLRE\n  Score:  52.1/100\n  Signal: WAIT\n\nPrice Structure:\n  Available:      YES\n  Entry quality:  WEAK\n  Trend:          SIDEWAYS (strength: 28/100)\n  Key level:      NEAR_RESISTANCE\n  Structure:      VOLATILE\n  Price action:   22/100\n  Move extension: 31.5% above 126-day low\n  Dist support:   10.8%\n  Dist resist:    0.1%\n  Reasoning:      Expanding volatility with no confirmed structure \u2014 unstable, avoid.\n\nCombined Reading:\n  Market: WATCH (55.5/100)\n  Earnings: WATCH (NEUTRAL) \u2014 14th percentile\n  Rotation: WAIT\n  Price Structure: WEAK\n  Alignment:  CONFLICT\n  Conclusion: No alignment between signal and fundamentals \u2014 not actionable.\n\n[TXN] \u2014 technology (N/A)\n\nPrice:          $198.24 (N/A today)\nConfidence:     54.8/100 (MODERATE)\nMarket verdict: WATCH\n\nTrend:\n  1 month:  -0.2%\n  3 months: +12.1%\n  6 months: +10.1%\n  Label:    very stable upward trend\n\nVolume: lower activity than usual\n\nEarnings Quality:\n  Score:     81/100\n  Tier:      WATCH (NEUTRAL) \u2014 43th percentile\n  Strengths: N/A\n  Warnings:  N/A\n             \n\nSector Rotation:\n  ETF:    XLK\n  Score:  36.6/100\n  Signal: WEAKEN\n\nPrice Structure:\n  Available:      YES\n  Entry quality:  WEAK\n  Trend:          SIDEWAYS (strength: 50/100)\n  Key level:      NEAR_RESISTANCE\n  Structure:      CONSOLIDATING\n  Price action:   31/100\n  Move extension: 30.2% above 126-day low\n  Dist support:   4.0%\n  Dist resist:    1.9%\n  Reasoning:      Sideways structure without compression or clear level \u2014 no actionable setup.\n\nCombined Reading:\n  Market: WATCH (54.8/100)\n  Earnings: WATCH (NEUTRAL) \u2014 43th percentile\n  Rotation: WEAKEN\n  Price Structure: WEAK\n  Alignment:  CONFLICT\n  Conclusion: No alignment between signal and fundamentals \u2014 not actionable.\n\n[FTNT] \u2014 technology (N/A)\n\nPrice:          $82.27 (N/A today)\nConfidence:     54.1/100 (MODERATE)\nMarket verdict: WATCH\n\nTrend:\n  1 month:  -2.3%\n  3 months: +5.9%\n  6 months: -4.5%\n  Label:    steady upward trend\n\nVolume: lower activity than usual\n\nEarnings Quality:\n  Score:     86/100\n  Tier:      WATCH (NEUTRAL) \u2014 71th percentile\n  Strengths: N/A\n  Warnings:  N/A\n             \n\nSector Rotation:\n  ETF:    XLK\n  Score:  36.6/100\n  Signal: WEAKEN\n\nPrice Structure:\n  Available:      YES\n  Entry quality:  WEAK\n  Trend:          SIDEWAYS (strength: 29/100)\n  Key level:      NEAR_SUPPORT\n  Structure:      CONSOLIDATING\n  Price action:   36/100\n  Move extension: 12.1% above 126-day low\n  Dist support:   1.0%\n  Dist resist:    3.1%\n  Reasoning:      Sideways structure without compression or clear level \u2014 no actionable setup.\n\nCombined Reading:\n  Market: WATCH (54.1/100)\n  Earnings: WATCH (NEUTRAL) \u2014 71th percentile\n  Rotation: WEAKEN\n  Price Structure: WEAK\n  Alignment:  CONFLICT\n  Conclusion: No alignment between signal and fundamentals \u2014 not actionable.\n\n[PLTR] \u2014 technology (N/A)\n\nPrice:          $148.71 (N/A today)\nConfidence:     54.1/100 (MODERATE)\nMarket verdict: WATCH\n\nTrend:\n  1 month:  -2.7%\n  3 months: -11.5%\n  6 months: -20.6%\n  Label:    declining with instability\n\nVolume: lower activity than usual\n\nEarnings Quality:\n  Score:     82/100\n  Tier:      WATCH (NEUTRAL) \u2014 57th percentile\n  Strengths: N/A\n  Warnings:  N/A\n             \n\nSector Rotation:\n  ETF:    XLK\n  Score:  36.6/100\n  Signal: WEAKEN\n\nPrice Structure:\n  Available:      YES\n  Entry quality:  WEAK\n  Trend:          SIDEWAYS (strength: 48/100)\n  Key level:      MID_RANGE\n  Structure:      CONSOLIDATING\n  Price action:   37/100\n  Move extension: 17.8% above 126-day low\n  Dist support:   8.3%\n  Dist resist:    5.4%\n  Reasoning:      Sideways structure without compression or clear level \u2014 no actionable setup.\n\nCombined Reading:\n  Market: WATCH (54.1/100)\n  Earnings: WATCH (NEUTRAL) \u2014 57th percentile\n  Rotation: WEAKEN\n  Price Structure: WEAK\n  Alignment:  CONFLICT\n  Conclusion: No alignment between signal and fundamentals \u2014 not actionable.\n\n[O] \u2014 real_estate (N/A)\n\nPrice:          $62.11 (N/A today)\nConfidence:     53.9/100 (MODERATE)\nMarket verdict: WATCH\n\nTrend:\n  1 month:  -3.9%\n  3 months: +9.6%\n  6 months: +6.1%\n  Label:    very stable upward trend\n\nVolume: lower activity than usual\n\nEarnings Quality:\n  Score:     76/100\n  Tier:      WATCH (NEUTRAL)\n  Strengths: N/A\n  Warnings:  N/A\n             \n\nSector Rotation:\n  ETF:    XLRE\n  Score:  52.1/100\n  Signal: WAIT\n\nPrice Structure:\n  Available:      YES\n  Entry quality:  WEAK\n  Trend:          DOWN (strength: 11/100)\n  Key level:      MID_RANGE\n  Structure:      CONSOLIDATING\n  Price action:   22/100\n  Move extension: 13.4% above 126-day low\n  Dist support:   4.3%\n  Dist resist:    6.6%\n  Reasoning:      Downtrend with weak structure \u2014 avoid.\n\nCombined Reading:\n  Market: WATCH (53.9/100)\n  Earnings: WATCH (NEUTRAL)\n  Rotation: WAIT\n  Price Structure: WEAK\n  Alignment:  CONFLICT\n  Conclusion: No alignment between signal and fundamentals \u2014 not actionable.\n\n[PLD] \u2014 real_estate (N/A)\n\nPrice:          $133.62 (N/A today)\nConfidence:     53.0/100 (MODERATE)\nMarket verdict: WATCH\n\nTrend:\n  1 month:  -2.7%\n  3 months: +3.9%\n  6 months: +16.4%\n  Label:    steady upward trend\n\nVolume: lower activity than usual\n\nEarnings Quality:\n  Score:     UNAVAILABLE\n  Tier:      UNAVAILABLE\n  Str",
+          "report_url": "reports/intraday_full_1145_1315_20260406T163301Z.html"
+        },
+        {
           "id": "9:45-11:15_2026-04-06T10:41",
           "run_type": "SCHEDULED",
           "timestamp": "2026-04-06T10:41",
