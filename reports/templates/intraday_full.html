@@ -7,29 +7,30 @@
   <title>{{ subject }}</title>
   <style>
     :root {
-      --void:    #0a0610;
-      --l1:      #130f22;
-      --l2:      #1a1430;
-      --l3:      #221a3e;
-      --l4:      #2c224e;
-      --pu:      #9b59ff;
-      --pu-lt:   #c084ff;
-      --pu-dk:   #5e2ba8;
-      --mg:      #ff6eb4;
-      --sun:     #ff9a3c;
-      --cyan:    #00e5ff;
-      --up:      #39e8a0;
-      --dn:      #ff4d6d;
-      --nt:      #ff9a3c;
-      --snow:    #f0eaff;
-      --slate:   #8878b8;
-      --mist:    #4a3d72;
-      --ghost:   #2a2248;
-      --rim:     rgba(155,89,255,0.12);
-      --rim2:    rgba(155,89,255,0.25);
+      --void: #0a0610;
+      --l1: #130f22;
+      --l2: #1a1430;
+      --l3: #221a3e;
+      --l4: #2c224e;
+      --pu: #9b59ff;
+      --pu-lt: #c084ff;
+      --pu-dk: #5e2ba8;
+      --mg: #ff6eb4;
+      --sun: #ff9a3c;
+      --cyan: #00e5ff;
+      --up: #39e8a0;
+      --dn: #ff4d6d;
+      --nt: #ff9a3c;
+      --snow: #f0eaff;
+      --slate: #8878b8;
+      --mist: #4a3d72;
+      --ghost: #2a2248;
+      --rim: rgba(155, 89, 255, 0.12);
+      --rim2: rgba(155, 89, 255, 0.25);
       --ff-head: 'Orbitron', sans-serif;
       --ff-mono: 'Share Tech Mono', monospace;
     }
+
     body {
       background: var(--void);
       color: var(--snow);
@@ -173,7 +174,6 @@
       margin-left: 6px
     }
 
-    /* ── Three-section layout ─────────────────────────────── */
     .analysis-section {
       padding: 12px 16px;
       border-bottom: 1px solid var(--rim)
@@ -201,8 +201,16 @@
       color: #aa88ff
     }
 
-    .sec-combined .section-label-inner {
+    .sec-rotation .section-label-inner {
       color: var(--nt)
+    }
+
+    .sec-ps .section-label-inner {
+      color: var(--up)
+    }
+
+    .sec-combined .section-label-inner {
+      color: var(--mg)
     }
 
     .row {
@@ -214,7 +222,7 @@
 
     .row .lbl {
       color: var(--slate);
-      min-width: 100px;
+      min-width: 120px;
       flex-shrink: 0
     }
 
@@ -223,7 +231,6 @@
       flex: 1
     }
 
-    /* Market verdict */
     .mv-now {
       color: var(--up);
       font-weight: bold
@@ -239,9 +246,13 @@
       font-weight: bold
     }
 
-    /* EQ verdict controlled vocabulary */
     .eq-v-supportive {
       color: var(--up);
+      font-weight: bold
+    }
+
+    .eq-v-neutral {
+      color: var(--pu-lt);
       font-weight: bold
     }
 
@@ -260,7 +271,39 @@
       font-weight: bold
     }
 
-    /* Combined reading */
+    /* PS entry quality colours */
+    .ps-good {
+      color: var(--up);
+      font-weight: bold
+    }
+
+    .ps-extended {
+      color: var(--dn);
+      font-weight: bold
+    }
+
+    .ps-early {
+      color: var(--nt);
+      font-weight: bold
+    }
+
+    .ps-weak {
+      color: var(--dn);
+      font-weight: bold
+    }
+
+    .ps-unavail {
+      color: var(--slate);
+      font-weight: bold
+    }
+
+    /* PS sub-row divider */
+    .ps-divider {
+      border: none;
+      border-top: 1px solid var(--rim);
+      margin: 6px 0 4px
+    }
+
     .combined-text {
       color: var(--snow);
       font-size: 13px;
@@ -417,7 +460,9 @@
     }
   </style>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap"
+    rel="stylesheet">
 </head>
 
 <body>
@@ -497,37 +542,84 @@
       {% else %}
       <div class="row"><span class="lbl">EQ Score:</span><span class="val" style="color:var(--slate)">UNAVAILABLE</span>
       </div>
-      <div class="row"><span class="lbl">Pass tier:</span><span class="val" style="color:var(--slate)">UNAVAILABLE</span>
-      </div>
+      <div class="row"><span class="lbl">Pass tier:</span><span class="val"
+          style="color:var(--slate)">UNAVAILABLE</span></div>
       {% endif %}
-
     </div>
 
     <!-- ── SECTOR ROTATION ANALYSIS ──────────────────────────── -->
     <div class="analysis-section sec-rotation">
       <div class="section-label-inner">── SECTOR ROTATION ANALYSIS ───────</div>
       {% if c.rotation_available %}
-      <div class="line">
-        Sector ETF:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <span class="val">{{ c.rotation_etf_display }}</span>
-      </div>
-      <div class="line">
-        Rotation score:&nbsp;
-        <span class="val">{{ c.rotation_score_display }}</span>
-        {{ c.rotation_conf_note }}
-      </div>
-      <div class="line">
-        Timing signal:&nbsp;&nbsp;
-        <span class="
-        {%- if c.rotation_signal_display == 'SUPPORT' %} eq-v-supportive
-        {%- elif c.rotation_signal_display == 'WEAKEN' %} eq-v-risky
-        {%- elif c.rotation_signal_display == 'WAIT' %} eq-v-weak
-        {%- else %} eq-v-unavailable{%- endif %}">
+      <div class="row"><span class="lbl">Sector ETF:</span><span class="val">{{ c.rotation_etf_display }}</span></div>
+      <div class="row"><span class="lbl">Rot. score:</span><span class="val">{{ c.rotation_score_display }}{{
+          c.rotation_conf_note }}</span></div>
+      <div class="row"><span class="lbl">Signal:</span>
+        <span class="val {%- if c.rotation_signal_display == 'SUPPORT' %} eq-v-supportive
+                          {%- elif c.rotation_signal_display == 'WEAKEN' %} eq-v-risky
+                          {%- elif c.rotation_signal_display == 'WAIT'   %} eq-v-weak
+                          {%- else %} eq-v-unavailable{%- endif %}">
           {{ c.rotation_signal_display }}
         </span>
       </div>
       {% else %}
-      <div class="line" style="color:var(--slate)">Rotation: UNAVAILABLE</div>
+      <div class="row"><span class="lbl">Rotation:</span><span class="val" style="color:var(--slate)">UNAVAILABLE</span>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- ── PRICE STRUCTURE ANALYSIS ──────────────────────────── -->
+    <div class="analysis-section sec-ps">
+      <div class="section-label-inner">── PRICE STRUCTURE ANALYSIS ───────</div>
+      {% if c.ps_available %}
+
+      <!-- Core entry fields -->
+      <div class="row"><span class="lbl">Entry quality:</span>
+        <span class="val {%- if c.ps_entry_quality_display == 'GOOD'     %} ps-good
+                          {%- elif c.ps_entry_quality_display == 'EXTENDED'%} ps-extended
+                          {%- elif c.ps_entry_quality_display == 'EARLY'  %} ps-early
+                          {%- elif c.ps_entry_quality_display == 'WEAK'   %} ps-weak
+                          {%- else %} ps-unavail{%- endif %}">
+          {{ c.ps_entry_quality_display }}
+        </span>
+      </div>
+      <div class="row"><span class="lbl">Trend:</span><span class="val">{{ c.ps_trend_display }}</span></div>
+      <div class="row"><span class="lbl">Key level:</span><span class="val">{{ c.ps_key_level_display }}</span></div>
+      <div class="row"><span class="lbl">Price action:</span><span class="val">{{ c.ps_score_display }}</span></div>
+
+      <!-- Extended fields -->
+      <hr class="ps-divider">
+      <div class="row"><span class="lbl">Move ext.:</span><span class="val">{{ c.move_extension_pct | round(1) }}% above
+          126d low</span></div>
+      <div class="row"><span class="lbl">Structure:</span><span class="val">{{ c.structure_state }}</span></div>
+      <div class="row"><span class="lbl">Dist. support:</span><span class="val">{{ c.distance_to_support_pct | round(1)
+          }}%</span></div>
+      <div class="row"><span class="lbl">Dist. resist.:</span><span class="val">{{ c.distance_to_resistance_pct |
+          round(1) }}%</span></div>
+      <div class="row"><span class="lbl">Volatility:</span><span class="val">{{ c.volatility_state }}</span></div>
+      <div class="row"><span class="lbl">Trend strength:</span><span class="val">{{ c.trend_strength }}/100</span></div>
+      <div class="row"><span class="lbl">Data confidence:</span><span class="val">{{ c.ps_data_confidence }}</span>
+      </div>
+
+      {% if c.consolidation_confirmed %}
+      <hr class="ps-divider">
+      <div class="row"><span class="lbl">Consolidating:</span><span class="val">{{ c.base_duration_days }} days</span>
+      </div>
+      <div class="row"><span class="lbl">Vol. contraction:</span><span class="val">{{ c.volume_contraction }}</span>
+      </div>
+      <div class="row"><span class="lbl">Compression:</span><span class="val">{{ c.compression_location }}</span></div>
+      {% endif %}
+
+      <div class="row"><span class="lbl">Crossover:</span><span class="val">{{ c.recent_crossover }}</span></div>
+
+      <div class="row" style="margin-top:6px">
+        <span class="lbl">Reasoning:</span>
+        <span class="val" style="color:var(--slate);font-style:italic">{{ c.ps_reasoning_display }}</span>
+      </div>
+
+      {% else %}
+      <div class="row"><span class="lbl">Price structure:</span><span class="val"
+          style="color:var(--slate)">UNAVAILABLE</span></div>
       {% endif %}
     </div>
 
@@ -537,17 +629,18 @@
       <div class="combined-text">{{ c.eq_combined_reading.market_line }}</div>
       <div class="combined-text">{{ c.eq_combined_reading.earnings_line }}</div>
       <div class="combined-text">{{ c.eq_combined_reading.rotation_line }}</div>
+      <div class="combined-text">{{ c.eq_combined_reading.ps_line }}</div>
       <div class="combined-text">
         Alignment:
-        <span class="
-        {%- if c.eq_alignment == 'ALIGNED' %} eq-v-supportive
-        {%- elif c.eq_alignment == 'PARTIAL' %} eq-v-weak
-        {%- elif c.eq_alignment == 'CONFLICT' %} eq-v-risky
-        {%- else %} eq-v-unavailable{%- endif %}">
+        <span class="{%- if c.eq_alignment == 'ALIGNED'  %} eq-v-supportive
+                     {%- elif c.eq_alignment == 'PARTIAL' %} eq-v-weak
+                     {%- elif c.eq_alignment == 'CONFLICT'%} eq-v-risky
+                     {%- else %} eq-v-unavailable{%- endif %}">
           {{ c.eq_alignment }}
         </span>
       </div>
-      <div class="combined-text" style="margin-top:4px">{{ c.eq_combined_reading.conclusion }}</div>
+      <div class="combined-text" style="margin-top:6px;padding-top:6px;border-top:1px solid var(--rim)">{{
+        c.eq_combined_reading.conclusion }}</div>
     </div>
 
   </div>
@@ -632,30 +725,63 @@
         <div class="guide-item">
           <span class="guide-term">Confidence Score (System 1)</span>
           <span class="guide-def">Market signal strength 0-100. Measures momentum,
-            volume, sector alignment, and risk. Strong ≥70 · Moderate 50-69 · Weak &lt;50.
-            Does NOT measure earnings quality.</span>
+            volume, sector alignment, and risk. Strong ≥70 · Moderate 50-69 · Weak &lt;50.</span>
         </div>
 
         <div class="guide-item">
           <span class="guide-term">EQ Score (System 2)</span>
           <span class="guide-def">Earnings quality 0-100. Measures how well reported
-            profits are backed by real cash flows. Independent of market signal.
-            PASS ≥75 · WATCH 55-74 · FAIL &lt;55.</span>
+            profits are backed by real cash flows. PASS ≥75 · WATCH 55-74 · FAIL &lt;55.</span>
         </div>
 
         <div class="guide-item">
           <span class="guide-term">EQ Verdict</span>
           <span class="guide-def">SUPPORTIVE — earnings back the signal.
-            WEAK — minor concerns, monitor closely.
-            RISKY — earnings do not support the signal.
-            UNAVAILABLE — insufficient SEC filing data.</span>
+            NEUTRAL — acceptable, monitor. WEAK — minor concerns.
+            RISKY — earnings do not support signal.
+            UNAVAILABLE — no SEC filing data.</span>
+        </div>
+
+        <div class="guide-item">
+          <span class="guide-term">Rotation Signal (System 3)</span>
+          <span class="guide-def">Sector timing signal. SUPPORT — sector flow
+            favors acting now. WAIT — neutral timing. WEAKEN — sector flow
+            deteriorating. UNKNOWN — insufficient data.</span>
+        </div>
+
+        <div class="guide-item">
+          <span class="guide-term">Entry Quality (System 4)</span>
+          <span class="guide-def">Price structure entry timing. GOOD — near support
+            or confirmed base, valid entry window. EXTENDED — too far above support,
+            pullback risk. EARLY — pattern forming, not confirmed.
+            WEAK — no valid setup. Required GOOD for BUY NOW.</span>
+        </div>
+
+        <div class="guide-item">
+          <span class="guide-term">Move Extension</span>
+          <span class="guide-def">% above the 126-day low. Higher values mean price
+            has already moved significantly from its base. Used to detect extended
+            entries where pullback risk is elevated.</span>
+        </div>
+
+        <div class="guide-item">
+          <span class="guide-term">Structure State</span>
+          <span class="guide-def">TRENDING — price in directional move.
+            CONSOLIDATING — price compressing in a range (base-building).
+            VOLATILE — erratic, no clear structure.</span>
+        </div>
+
+        <div class="guide-item">
+          <span class="guide-term">Dist. to Support / Resistance</span>
+          <span class="guide-def">% distance from current price to nearest support
+            and resistance levels. Tells you where price sits in its current range.</span>
         </div>
 
         <div class="guide-item">
           <span class="guide-term">Combined Reading</span>
-          <span class="guide-def">Deterministic synthesis of System 1 market signal
-            and System 2 earnings quality. Use this as your starting point for
-            further research — it does not replace independent analysis.</span>
+          <span class="guide-def">Deterministic four-layer synthesis of all systems.
+            ALIGNED ≥ 2 systems agree. PARTIAL — mixed. CONFLICT — systems disagree.
+            BUY NOW requires entry_quality = GOOD with all other gates met.</span>
         </div>
 
         <div class="guide-item">
@@ -670,26 +796,13 @@
             Factors: debt, volatility, liquidity, earnings stability, drawdown.</span>
         </div>
 
-        <div class="guide-item">
-          <span class="guide-term">ROIC</span>
-          <span class="guide-def">Return on Invested Capital — profit generated per
-            dollar invested in the business. Above 15% = excellent. Below 8% = weak.</span>
-        </div>
-
-        <div class="guide-item">
-          <span class="guide-term">Drawdown</span>
-          <span class="guide-def">How far the stock has fallen from its 90-day
-            highest price. Above 20% = meaningful risk even if fundamentals look clean.</span>
-        </div>
-
       </div>
     </div>
 
-    <div class="section-divider" style="margin: 40px 0 20px; border-top: 1px solid var(--rim);"></div>
+    <div class="section-divider" style="margin:40px 0 20px;border-top:1px solid var(--rim);"></div>
 
     <div class="wrap">
-      <div style="color:var(--slate);font-size:11px;text-transform:uppercase;
-                  letter-spacing:.08em;margin-bottom:8px;">
+      <div style="color:var(--slate);font-size:11px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">
         AI RESEARCH PROMPT
       </div>
       <div style="color:#555577;font-size:11px;font-family:monospace;margin-bottom:10px;">

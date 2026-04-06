@@ -144,6 +144,10 @@ _INDEX_FETCH_JS = (
     "        'Communication Services':'#d4b8ff'};\n"
     "      var _sKey=_sMap[sector]?sector:Object.keys(_sMap).find(function(k){return sector.toLowerCase().indexOf(k.toLowerCase())!==-1;})||'';\n"
     "      var sectorColor=_sMap[_sKey]||'#a89bc2';\n"
+    # ── PS fields for Top 5 preview ──────────────────────────────────────────
+    "      var psEntry   = s.ps_verdict_display || '\\u2014';\n"
+    "      var psKeyLvl  = s.ps_key_level_display || s.ps_key_level || '\\u2014';\n"
+    "      var psMoveExt = typeof s.ps_move_extension_pct === 'number' ? s.ps_move_extension_pct.toFixed(1) + '%' : '\\u2014';\n"
     "      rows += '<div class=\"rank-card\" onclick=\"rpT(\\'rp' + i + '\\')\">'\n"
     "            + '<div class=\"rank-card-main\">'\n"
     "            + '<div class=\"rck-n\">#' + i + '</div>'\n"
@@ -159,7 +163,9 @@ _INDEX_FETCH_JS = (
     "            + '<div class=\"pex-item\"><div class=\"pex-k\">3M Return</div><div class=\"pex-v\">' + ret3m + '</div></div>'\n"
     "            + '<div class=\"pex-item\"><div class=\"pex-k\">6M Return</div><div class=\"pex-v\">' + ret6m + '</div></div>'\n"
     "            + '<div class=\"pex-item\"><div class=\"pex-k\">Verdict</div><div class=\"pex-v ' + cCls + '\">' + verdict + '</div></div>'\n"
-    "            + '<div class=\"pex-item\"><div class=\"pex-k\">Entry</div><div class=\"pex-v\">' + (s.ps_verdict_display || '\\u2014') + '</div></div>'\n"
+    "            + '<div class=\"pex-item\"><div class=\"pex-k\">Entry</div><div class=\"pex-v\">' + psEntry + '</div></div>'\n"
+    "            + '<div class=\"pex-item\"><div class=\"pex-k\">Key Level</div><div class=\"pex-v\">' + psKeyLvl + '</div></div>'\n"
+    "            + '<div class=\"pex-item\"><div class=\"pex-k\">Move Ext.</div><div class=\"pex-v\">' + psMoveExt + '</div></div>'\n"
     "            + '</div></div>'\n"
     "            + '</div>';\n"
     "    });\n"
@@ -326,6 +332,14 @@ _RANK_FETCH_JS = (
     "      var confDisp   = confVal !== null ? Math.round(confVal) : '\\u2014';\n"
     "      var riskDisp   = riskVal !== null ? Math.round(riskVal) : '\\u2014';\n"
     "      var priceDisp  = typeof stock.price === 'number' ? '$' + stock.price.toFixed(2) : '\\u2014';\n"
+    # ── PS fields for weekly rank expanded row ───────────────────────────────
+    "      var psKeyLvl   = stock.ps_key_level_display || stock.ps_key_level_position || '\\u2014';\n"
+    "      var psPaScore  = typeof stock.ps_price_action_score === 'number' ? stock.ps_price_action_score + '/100' : '\\u2014';\n"
+    "      var psMoveExt  = typeof stock.ps_move_extension_pct === 'number' ? stock.ps_move_extension_pct.toFixed(1) + '%' : '\\u2014';\n"
+    "      var psTrend    = stock.ps_trend_structure || '\\u2014';\n"
+    "      var psDistSup  = typeof stock.ps_distance_to_support_pct === 'number' ? stock.ps_distance_to_support_pct.toFixed(1) + '%' : '\\u2014';\n"
+    "      var psDistRes  = typeof stock.ps_distance_to_resistance_pct === 'number' ? stock.ps_distance_to_resistance_pct.toFixed(1) + '%' : '\\u2014';\n"
+    "      var psAvail    = stock.ps_available === true;\n"
     "      html += '<div class=\"rank-card\" data-ref=\"' + phUid + '\" data-eid=\"e' + i + '\" data-cid=\"ec' + i + '\">'\n"
     "           + '<div class=\"rank-card-main\" onclick=\"expT(this.closest(\\'.rank-card\\'))\">'  \n"
     "           + '<div class=\"rck-n\">#' + i + '</div>'\n"
@@ -347,6 +361,15 @@ _RANK_FETCH_JS = (
     "           + '<div class=\"est\"><div class=\"est-k\">6M</div><div class=\"est-v\" data-raw=\"' + raw6m + '\">' + ret6m + '</div></div>'\n"
     "           + '<div class=\"est\"><div class=\"est-k\">Verdict</div><div class=\"est-v ' + cCls + '\">' + verdict + '</div></div>'\n"
     "           + '<div class=\"est\"><div class=\"est-k\">Align</div><div class=\"est-v ' + aCls + '\">' + (alignVal || '\\u2014') + '</div></div>'\n"
+    # ── PS block: only rendered when ps_available is true ───────────────────
+    "           + (psAvail ? ('<div class=\"est est-divider\"></div>'\n"
+    "           + '<div class=\"est\"><div class=\"est-k\">Entry</div><div class=\"est-v est-ps est-ps-' + psV.toLowerCase() + '\">' + (psV || '\\u2014') + '</div></div>'\n"
+    "           + '<div class=\"est\"><div class=\"est-k\">Key Level</div><div class=\"est-v\">' + psKeyLvl + '</div></div>'\n"
+    "           + '<div class=\"est\"><div class=\"est-k\">PA Score</div><div class=\"est-v\">' + psPaScore + '</div></div>'\n"
+    "           + '<div class=\"est\"><div class=\"est-k\">Move Ext.</div><div class=\"est-v\">' + psMoveExt + '</div></div>'\n"
+    "           + '<div class=\"est\"><div class=\"est-k\">Trend</div><div class=\"est-v\">' + psTrend + '</div></div>'\n"
+    "           + '<div class=\"est\"><div class=\"est-k\">Dist Sup.</div><div class=\"est-v\">' + psDistSup + '</div></div>'\n"
+    "           + '<div class=\"est\"><div class=\"est-k\">Dist Res.</div><div class=\"est-v\">' + psDistRes + '</div></div>') : '')\n"
     "           + '</div>'\n"
     "           + '<div class=\"exp-chart\">' + chartEl + '</div>'\n"
     "           + '</div></div>'\n"
@@ -1211,24 +1234,33 @@ def _update_rank_board(companies):
         if new_conf > existing.get('confidence', 0):
             raw_ph = c.get('price_history') or existing.get('price_history', [])
             rank_data['stocks'][ticker] = {
-                'ticker':                  ticker,
-                'name':                    c.get('company_name', ticker),
-                'sector':                  c.get('sector', ''),
-                'price':                   (c.get('current_price') or c.get('financials', {}).get('current_price')),
-                'confidence':              round(new_conf, 1),
-                'risk_score':              round(c.get('risk_score', 50), 1),
-                'opportunity_score':       c.get('opportunity_score'),
-                'signal_agreement':        c.get('agreement_score'),
-                'return_1m':               c.get('return_1m'),
-                'return_3m':               c.get('return_3m'),
-                'return_6m':               c.get('return_6m'),
-                'eq_verdict_display':      c.get('eq_verdict_display', ''),
-                'rotation_signal_display': c.get('rotation_signal_display', ''),
-                'ps_verdict_display':      c.get('ps_verdict_display', 'UNAVAILABLE'),
-                'market_verdict_display':  c.get('market_verdict_display', c.get('summary_verdict', '')),
-                'market_verdict':          c.get('summary_verdict', ''),
-                'price_history':           _sanitize_price_history(raw_ph),
-                'alignment':               c.get('alignment', 'PARTIAL'),
+                'ticker':                       ticker,
+                'name':                         c.get('company_name', ticker),
+                'sector':                       c.get('sector', ''),
+                'price':                        (c.get('current_price') or c.get('financials', {}).get('current_price')),
+                'confidence':                   round(new_conf, 1),
+                'risk_score':                   round(c.get('risk_score', 50), 1),
+                'opportunity_score':            c.get('opportunity_score'),
+                'signal_agreement':             c.get('agreement_score'),
+                'return_1m':                    c.get('return_1m'),
+                'return_3m':                    c.get('return_3m'),
+                'return_6m':                    c.get('return_6m'),
+                'eq_verdict_display':           c.get('eq_verdict_display', ''),
+                'rotation_signal_display':      c.get('rotation_signal_display', ''),
+                'ps_verdict_display':           c.get('ps_verdict_display', 'UNAVAILABLE'),
+                'market_verdict_display':       c.get('market_verdict_display', c.get('summary_verdict', '')),
+                'market_verdict':               c.get('summary_verdict', ''),
+                'price_history':                _sanitize_price_history(raw_ph),
+                'alignment':                    c.get('alignment', 'PARTIAL'),
+                # ── Sub4 fields for rank page expanded row ───────────────────
+                'ps_available':                 c.get('ps_available', False),
+                'ps_key_level_position':        c.get('key_level_position', ''),
+                'ps_key_level_display':         c.get('ps_key_level_display', ''),
+                'ps_price_action_score':        c.get('price_action_score'),
+                'ps_move_extension_pct':        c.get('move_extension_pct'),
+                'ps_trend_structure':           c.get('trend_structure', ''),
+                'ps_distance_to_support_pct':   c.get('distance_to_support_pct'),
+                'ps_distance_to_resistance_pct': c.get('distance_to_resistance_pct'),
             }
     try:
         tmp = rank_path + '.tmp'
@@ -1259,7 +1291,7 @@ def _update_weekly_archive(companies, slot, breadth, regime, prompt_text='', is_
         'count':     len(companies),
         'verdict_counts': {
             'RESEARCH NOW': sum(1 for c in companies if c.get('market_verdict_display', c.get('summary_verdict', '')) == 'RESEARCH NOW'),
-            'WATCH':        sum(1 for c in companies if c.get('market_verdict_display', c.get('summary_verdict', '')) == 'WATCH'),
+            'WATCH':        sum(1 for c in companies if c.get('market_verdict_display', c.get('summary_verdict', '')) == 'WATCH',),
             'SKIP':         sum(1 for c in companies if c.get('market_verdict_display', c.get('summary_verdict', '')) == 'SKIP'),
         },
         'candidates': [
@@ -1598,7 +1630,16 @@ def _render_rank_html(rank_data: dict) -> str:
             f'{_CHARTJS}'
             '<link rel="stylesheet" href="assets/style.css">'
             f'{_LOADER_CSS}'
-            '<style>.exp-chart canvas{width:100%!important;height:100%!important;}</style>'
+            '<style>'
+            '.exp-chart canvas{width:100%!important;height:100%!important;}'
+            '.est-divider{width:100%;height:1px;background:var(--rim);margin:6px 0;grid-column:1/-1;}'
+            '.est-ps{font-weight:bold;}'
+            '.est-ps-good{color:var(--up);}'
+            '.est-ps-extended{color:var(--dn);}'
+            '.est-ps-early{color:var(--nt);}'
+            '.est-ps-weak{color:var(--dn);}'
+            '.est-ps-unavailable{color:var(--slate);}'
+            '</style>'
             '</head><body>'
             f'{_LOADER_HTML}'
             f'{_LOADER_JS}'

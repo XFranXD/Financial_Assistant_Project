@@ -119,7 +119,6 @@
       font-size: 12px
     }
 
-    /* ── Three-section layout ─────────────────────────────── */
     .analysis-section {
       padding: 8px 12px;
       border-bottom: 1px solid #2c224e;
@@ -148,8 +147,16 @@
       color: #aa88ff
     }
 
-    .sec-combined .section-label-inner {
+    .sec-rotation .section-label-inner {
       color: #ff9a3c
+    }
+
+    .sec-ps .section-label-inner {
+      color: #39e8a0
+    }
+
+    .sec-combined .section-label-inner {
+      color: #c850c0
     }
 
     .line {
@@ -161,7 +168,6 @@
       color: #8878b8
     }
 
-    /* Market verdict */
     .mv-now {
       color: #39e8a0;
       font-weight: bold
@@ -177,9 +183,13 @@
       font-weight: bold
     }
 
-    /* EQ verdict controlled vocabulary */
     .eq-v-supportive {
       color: #39e8a0;
+      font-weight: bold
+    }
+
+    .eq-v-neutral {
+      color: #c084ff;
       font-weight: bold
     }
 
@@ -198,7 +208,32 @@
       font-weight: bold
     }
 
-    /* Combined reading */
+    /* PS entry quality colours */
+    .ps-good {
+      color: #39e8a0;
+      font-weight: bold
+    }
+
+    .ps-extended {
+      color: #ff4d6d;
+      font-weight: bold
+    }
+
+    .ps-early {
+      color: #ff9a3c;
+      font-weight: bold
+    }
+
+    .ps-weak {
+      color: #ff4d6d;
+      font-weight: bold
+    }
+
+    .ps-unavail {
+      color: #8878b8;
+      font-weight: bold
+    }
+
     .combined-text {
       color: #f0eaff;
       font-size: 12px;
@@ -343,7 +378,6 @@
       {% else %}
       <div class="line" style="color:#8878b8">EQ Score: UNAVAILABLE · Pass tier: UNAVAILABLE</div>
       {% endif %}
-
     </div>
 
     <!-- ── SECTOR ROTATION ANALYSIS ──────────────────────────── -->
@@ -351,26 +385,48 @@
       <div class="section-label-inner">── SECTOR ROTATION ANALYSIS ───────</div>
       {% if c.rotation_available %}
       <div class="line">
-        Sector ETF:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <span class="val">{{ c.rotation_etf_display }}</span>
+        <span class="lbl">Sector ETF: </span>
+        <span>{{ c.rotation_etf_display }}</span>
       </div>
       <div class="line">
-        Rotation score:&nbsp;
-        <span class="val">{{ c.rotation_score_display }}</span>
-        {{ c.rotation_conf_note }}
+        <span class="lbl">Rot. score: </span>
+        <span>{{ c.rotation_score_display }}{{ c.rotation_conf_note }}</span>
       </div>
       <div class="line">
-        Timing signal:&nbsp;&nbsp;
-        <span class="
-        {%- if c.rotation_signal_display == 'SUPPORT' %} eq-v-supportive
-        {%- elif c.rotation_signal_display == 'WEAKEN' %} eq-v-risky
-        {%- elif c.rotation_signal_display == 'WAIT' %} eq-v-weak
-        {%- else %} eq-v-unavailable{%- endif %}">
+        <span class="lbl">Signal: </span>
+        <span class="{%- if c.rotation_signal_display == 'SUPPORT' %} eq-v-supportive
+                     {%- elif c.rotation_signal_display == 'WEAKEN' %} eq-v-risky
+                     {%- elif c.rotation_signal_display == 'WAIT'   %} eq-v-weak
+                     {%- else %} eq-v-unavailable{%- endif %}">
           {{ c.rotation_signal_display }}
         </span>
       </div>
       {% else %}
       <div class="line" style="color:#8878b8">Rotation: UNAVAILABLE</div>
+      {% endif %}
+    </div>
+
+    <!-- ── PRICE STRUCTURE ANALYSIS ──────────────────────────── -->
+    <div class="analysis-section sec-ps">
+      <div class="section-label-inner">── PRICE STRUCTURE ANALYSIS ───────</div>
+      {% if c.ps_available %}
+      <div class="line">
+        <span class="lbl">Entry quality: </span>
+        <span class="{%- if c.ps_entry_quality_display == 'GOOD'     %} ps-good
+                     {%- elif c.ps_entry_quality_display == 'EXTENDED'%} ps-extended
+                     {%- elif c.ps_entry_quality_display == 'EARLY'  %} ps-early
+                     {%- elif c.ps_entry_quality_display == 'WEAK'   %} ps-weak
+                     {%- else %} ps-unavail{%- endif %}">
+          {{ c.ps_entry_quality_display }}
+        </span>
+      </div>
+      <div class="line"><span class="lbl">Trend: </span>{{ c.ps_trend_display }}</div>
+      <div class="line"><span class="lbl">Key level: </span>{{ c.ps_key_level_display }}</div>
+      <div class="line"><span class="lbl">Price action: </span>{{ c.ps_score_display }}</div>
+      <div class="line" style="margin-top:3px;color:#8878b8;font-size:12px;font-style:italic">{{ c.ps_reasoning_display
+        }}</div>
+      {% else %}
+      <div class="line" style="color:#8878b8">Price structure: UNAVAILABLE</div>
       {% endif %}
     </div>
 
@@ -380,13 +436,13 @@
       <div class="combined-text">{{ c.eq_combined_reading.market_line }}</div>
       <div class="combined-text">{{ c.eq_combined_reading.earnings_line }}</div>
       <div class="combined-text">{{ c.eq_combined_reading.rotation_line }}</div>
+      <div class="combined-text">{{ c.eq_combined_reading.ps_line }}</div>
       <div class="combined-text">
         Alignment:
-        <span class="
-        {%- if c.eq_alignment == 'ALIGNED' %} eq-v-supportive
-        {%- elif c.eq_alignment == 'PARTIAL' %} eq-v-weak
-        {%- elif c.eq_alignment == 'CONFLICT' %} eq-v-risky
-        {%- else %} eq-v-unavailable{%- endif %}">
+        <span class="{%- if c.eq_alignment == 'ALIGNED'  %} eq-v-supportive
+                     {%- elif c.eq_alignment == 'PARTIAL' %} eq-v-weak
+                     {%- elif c.eq_alignment == 'CONFLICT'%} eq-v-risky
+                     {%- else %} eq-v-unavailable{%- endif %}">
           {{ c.eq_alignment }}
         </span>
       </div>
@@ -451,7 +507,7 @@
     <div class="overflow">{{ overflow_notice }}</div>
     {% endif %}
 
-    <!-- Dashboard link notice -->
+    <!-- Dashboard link -->
     <div style="font-family:monospace;font-size:12px;color:#4a3d72;
                 text-align:center;padding:16px 0 8px;border-top:1px solid #2c224e;
                 margin-top:20px;">
