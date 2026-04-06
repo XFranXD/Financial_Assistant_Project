@@ -738,11 +738,31 @@ def _build_ai_prompt(
     commodity_data: dict,
 ) -> str:
     """
-    Builds the structured AI research prompt string.
+    Builds the daily dynamic AI research prompt string (USER turn only).
+    Version: 2.0 — paired with MRE_AI_SYSTEM_PROMPT.md (static system prompt).
+
+    The system prompt (MRE_AI_SYSTEM_PROMPT.md) carries all rules, vocabulary,
+    decision hierarchy, and output format. This function provides only:
+    global market context + per-candidate data blocks.
+
     Called once per run — same string goes to full HTML and weekly_archive.
+
+    Changes from v1.0:
+      - BUG FIX: eq_strengths / eq_warnings_critical replaced with
+        top_strengths / top_risks (the actual keys set by eq_schema.py).
+        Strengths and risks now show real data instead of N/A on every run.
+      - ADDED: timing_label pre-computed in Python via _timing_label(r3m).
+        AI receives EARLY TREND / MID TREND / LATE TREND directly in the
+        candidate header instead of deriving it from a raw number.
+      - ADDED: ps_volatility_state and ps_compression_location in the S4 block.
+        COMPRESSING volatility near support is a meaningful setup signal.
+      - KEPT: volume_label — volume confirmation matters for entry quality.
+      - KEPT: Combined Reading block — pre-computed synthesis anchors AI analysis.
     """
     indices        = indices or {}
     commodity_data = commodity_data or {}
+
+    # ── Formatting helpers ────────────────────────────────────────────────
 
     def fmt_pct(x):
         return 'N/A' if x is None else f'{x:+.1f}%'
@@ -755,6 +775,22 @@ def _build_ai_prompt(
             return 'N/A'
         return f'{val:,.0f} ({chg:+.1f}%)'
 
+    def _timing_label(r3m_val):
+        """
+        Pre-compute timing label so the AI receives a definitive label
+        rather than deriving it from raw numbers (reduces hallucination risk).
+        Matches definitions in MRE_AI_SYSTEM_PROMPT.md.
+        """
+        if r3m_val is None:
+            return 'UNKNOWN'
+        if r3m_val > 30:
+            return 'LATE TREND'
+        if r3m_val >= 15:
+            return 'MID TREND'
+        return 'EARLY TREND'
+
+    # ── Global context ────────────────────────────────────────────────────
+
     dow_val = indices.get('dow',    {}).get('value')
     dow_chg = indices.get('dow',    {}).get('change_pct')
     sp_val  = indices.get('sp500',  {}).get('value')
@@ -762,7 +798,7 @@ def _build_ai_prompt(
     nas_val = indices.get('nasdaq', {}).get('value')
     nas_chg = indices.get('nasdaq', {}).get('change_pct')
 
-    regime_label  = regime.get('label', 'N/A')  if regime  else 'N/A'
+    regime_label  = regime.get('label',  'N/A') if regime  else 'N/A'
     breadth_label = breadth.get('label', 'N/A') if breadth else 'N/A'
 
     crude_pct = commodity_data.get('crude_pct')
@@ -778,144 +814,19 @@ def _build_ai_prompt(
         commodity_block = "Commodity context: N/A"
 
     header = (
-        "TIMING PRIORITY RULE (APPLIES TO ALL CANDIDATES):\n"
-        "  3M return > 30% = automatically LATE TREND unless strong counter-evidence is present.\n"
-        "  LATE TREND = elevated pullback risk and lower entry quality.\n"
-        "  EARLY or MID TREND is always preferred over LATE TREND, even if momentum is weaker.\n"
-        "\n"
-        "STRONG COUNTER-EVIDENCE DEFINITION:\n"
-        "  LATE TREND can only be overridden if ALL of the following are true:\n"
-        "    - Market verdict = RESEARCH NOW\n"
-        "    - Rotation = SUPPORT with score 80 or higher\n"
-        "    - No major contradictions in any signal\n"
-        "  If these conditions are not all met, LATE TREND must not be overridden.\n"
-        "\n"
-        "LATE TREND OVERRIDE CLARIFICATION:\n"
-        "  Even if LATE TREND is overridden by strong counter-evidence,\n"
-        "  it must NOT be classified as BUY NOW.\n"
-        "  A LATE TREND override can only upgrade the entry from AVOID to WAIT.\n"
-        "  WAIT is the maximum allowed entry when timing is LATE TREND.\n"
-        "\n"
-        "MAJOR SIGNAL CONFLICT DEFINITION:\n"
-        "  A major conflict exists if any of the following are true:\n"
-        "    - Market verdict is SKIP while Rotation is SUPPORT\n"
-        "    - Commodity trend contradicts sector direction\n"
-        "    - Earnings = FAIL or RISKY while price trend is strong\n"
-        "  Note: WATCH vs SUPPORT is a minor conflict, not a major one.\n"
-        "  Only the above conditions qualify as major conflicts.\n"
-        "\n"
-        "BUY NOW CRITERIA (hard gate — all conditions must be true):\n"
-        "  BUY NOW is only allowed if ALL of the following are true:\n"
-        "    - Timing quality is EARLY TREND or MID TREND\n"
-        "    - Market verdict = RESEARCH NOW\n"
-        "    - Rotation = SUPPORT\n"
-        "    - entry_quality = GOOD (System 4 hard gate — no exceptions)\n"
-        "    - No major signal conflicts\n"
-        "  If entry_quality is EXTENDED or WEAK: BUY NOW is blocked regardless of all other signals.\n"
-        "  If entry_quality is EARLY: pattern unconfirmed — do not issue BUY NOW, use WAIT.\n"
-        "  If entry_quality is UNAVAILABLE: treat same as EARLY — reduce confidence, do not issue BUY NOW.\n"
-        "  If any other condition is not met, default to WAIT or AVOID.\n"
-        "\n"
-        "DECISION HIERARCHY (use this when signals conflict):\n"
-        "  1. Timing quality (trend stage) has the highest priority.\n"
-        "  2. Market verdict (System 1) is the primary directional signal.\n"
-        "  3. Sector rotation confirms or weakens the timing.\n"
-        "  4. Earnings quality validates or blocks conviction.\n"
-        "  5. Price structure entry quality gates BUY NOW — cannot be overridden.\n"
-        "\n"
-        "UNAVAILABLE DATA RULE:\n"
-        "  If earnings data is UNAVAILABLE, do not assume positive or negative.\n"
-        "  Reduce confidence level. Do not issue BUY NOW unless all other signals\n"
-        "  are strong and timing is EARLY or MID TREND.\n"
-        "  If price structure data is UNAVAILABLE, treat same as EARLY — reduce confidence,\n"
-        "  do not issue BUY NOW, verify entry manually.\n"
-        "\n"
-        "COMMODITY CONTRADICTION RULE:\n"
-        "  If a candidate's sector depends on a commodity (e.g. energy stocks depend\n"
-        "  on oil/gas) and the commodity is falling while the stock is rising:\n"
-        "    - Treat this as a negative divergence\n"
-        "    - Reduce confidence level\n"
-        "    - Flag as a key risk in section 5\n"
-        "\n"
-        "CONFIDENCE IN TIMING SCALE:\n"
-        "  LOW    -- conflicting signals or LATE TREND\n"
-        "  MEDIUM -- partial alignment or some uncertainty present\n"
-        "  HIGH   -- strong alignment across signals and EARLY or MID TREND\n"
-        "\n"
-        "Do not use certainty words: never say \"will\", \"guaranteed\", or \"certain\".\n"
-        "Always prioritize downside risk before upside potential.\n"
-        "If signals conflict, highlight the conflict clearly before drawing any conclusion.\n"
-        "\n"
-        "=============================================================\n"
-        "SYSTEM CONTEXT — READ THIS BEFORE ANALYZING\n"
-        "=============================================================\n"
-        "\n"
-        "This report was generated by an automated stock screening system.\n"
-        "The system has four scoring layers:\n"
-        "\n"
-        "MARKET SIGNAL (System 1)\n"
-        "  Confidence score 0-100. Primary ranking signal.\n"
-        "  Market verdict vocabulary:\n"
-        "    RESEARCH NOW — strong setup, multiple signals aligned\n"
-        "    WATCH        — moderate setup, signal not fully confirmed\n"
-        "    SKIP         — weak or conflicting setup, do not act\n"
-        "\n"
-        "EARNINGS QUALITY (System 2)\n"
-        "  EQ Score 0-100. Measures earnings reliability.\n"
-        "  Pass tier vocabulary:\n"
-        "    PASS (SUPPORTIVE) — earnings are reliable and cash-backed\n"
-        "    WATCH (NEUTRAL)   — earnings are acceptable but have concerns\n"
-        "    FAIL (WEAK)       — earnings are unreliable\n"
-        "    fatal flaw → RISKY — overrides all tiers, critical structural problem\n"
-        "    UNAVAILABLE       — no SEC data found for this ticker\n"
-        "\n"
-        "SECTOR ROTATION (System 3)\n"
-        "  Rotation score 0-100. Measures sector timing.\n"
-        "  Signal vocabulary:\n"
-        "    SUPPORT  — sector flow supports acting now\n"
-        "    WAIT     — neutral timing, not yet favorable\n"
-        "    WEAKEN   — sector flow is deteriorating\n"
-        "    UNKNOWN  — insufficient data\n"
-        "\n"
-        "PRICE STRUCTURE (System 4)\n"
-        "  Price action score 0-100. Measures entry timing quality using OHLCV only.\n"
-        "  entry_quality vocabulary (hard gate — controls BUY NOW eligibility):\n"
-        "    GOOD      — price near support or confirmed base, valid entry window\n"
-        "    EXTENDED  — price far above support, elevated pullback risk, do not enter\n"
-        "    EARLY     — pattern forming but not yet confirmed, wait for confirmation\n"
-        "    WEAK      — no valid setup detected, avoid entry\n"
-        "    UNAVAILABLE — insufficient OHLCV data\n"
-        "  key_level_position vocabulary:\n"
-        "    NEAR_SUPPORT     — price close to a support zone\n"
-        "    MID_RANGE        — price between support and resistance\n"
-        "    NEAR_RESISTANCE  — price approaching a resistance zone\n"
-        "    BREAKOUT         — price breaking above resistance\n"
-        "  structure_state vocabulary: TRENDING / CONSOLIDATING / VOLATILE\n"
-        "\n"
-        "COMBINED READING (four-layer synthesis)\n"
-        "  Alignment vocabulary:\n"
-        "    ALIGNED  — all four systems agree\n"
-        "    PARTIAL  — mixed signals, partial agreement\n"
-        "    CONFLICT — systems disagree\n"
-        "\n"
-        "TIMING QUALITY DEFINITIONS (use these when classifying)\n"
-        "  EARLY TREND  — price up less than 15% in 3 months, momentum building\n"
-        "  MID TREND    — price up 15-30% in 3 months, trend established\n"
-        "  LATE TREND   — price up more than 30% in 3 months, elevated pullback risk\n"
-        "\n"
         "=============================================================\n"
         "GLOBAL CONTEXT\n"
         "=============================================================\n"
         "\n"
-        f"Date: {date_str}\n"
-        f"Slot: {slot}\n"
+        f"Date:             {date_str}\n"
+        f"Slot:             {slot}\n"
         f"Market condition: {regime_label}\n"
-        f"Market breadth: {breadth_label}\n"
+        f"Market breadth:   {breadth_label}\n"
         "\n"
         "Market indices:\n"
         f"  Dow Jones: {fmt_index(dow_val, dow_chg)}\n"
-        f"  S&P 500:   {fmt_index(sp_val, sp_chg)}\n"
-        f"  Nasdaq:    {fmt_index(nas_val, nas_chg)}\n"
+        f"  S&P 500:   {fmt_index(sp_val,  sp_chg)}\n"
+        f"  Nasdaq:    {fmt_index(nas_val,  nas_chg)}\n"
         "\n"
         f"{commodity_block}\n"
         "\n"
@@ -924,103 +835,135 @@ def _build_ai_prompt(
         "=============================================================\n"
     )
 
-    candidates_block = ''
-    for c in enriched:
-        ticker    = c.get('ticker',   'N/A')
-        sector    = c.get('sector',   'N/A')
-        industry  = c.get('industry', 'N/A')
+    # ── Candidate blocks ──────────────────────────────────────────────────
 
+    candidates_block = ''
+
+    for c in enriched:
+
+        # ── Identity ──────────────────────────────────────────────────────
+        ticker   = c.get('ticker',   'N/A')
+        sector   = c.get('sector',   'N/A')
+        industry = c.get('industry', c.get('financials', {}).get('industry', 'N/A'))
+
+        # ── Price / momentum ──────────────────────────────────────────────
         current_price    = c.get('current_price')
-        price_change_pct = c.get('price_change_pct')
+        price_change_pct = c.get('price_change_pct') or c.get('financials', {}).get('price_change_pct')
 
         mtf = c.get('mtf', {})
         r1m = mtf.get('r1m') if mtf else c.get('r1m')
         r3m = mtf.get('r3m') if mtf else c.get('r3m')
         r6m = mtf.get('r6m') if mtf else c.get('r6m')
 
+        timing = _timing_label(r3m)
+
+        ram_label = (
+            c.get('ram', {}).get('label', 'N/A')
+            if c.get('ram')
+            else c.get('ram_label', 'N/A')
+        )
+
+        # ── System 1 ──────────────────────────────────────────────────────
         conf_score      = c.get('composite_confidence', 0)
         signal_strength = c.get('signal_strength', 'N/A')
         market_verdict  = c.get('summary_verdict',  'N/A')
 
-        ram_label    = c.get('ram', {}).get('label', 'N/A') if c.get('ram') else c.get('ram_label', 'N/A')
-        volume_label = c.get('volume_confirmation', {}).get('label', 'N/A') if c.get('volume_confirmation') else 'N/A'
+        # ── Volume ────────────────────────────────────────────────────────
+        volume_label = (
+            c.get('volume_confirmation', {}).get('label', 'N/A')
+            if c.get('volume_confirmation')
+            else 'N/A'
+        )
 
+        # ── System 2 — EQ ─────────────────────────────────────────────────
+        # v2.0 BUG FIX: use top_strengths / top_risks (actual eq_schema.py keys).
+        # v1.0 used eq_strengths / eq_warnings_critical — keys that were never set,
+        # causing Strengths and Risks to always render as N/A.
         eq_score_display = c.get('eq_score_display', 'UNAVAILABLE')
         eq_pass_display  = c.get('eq_pass_display',  'UNAVAILABLE')
 
+        top_strengths = c.get('top_strengths', []) or []
+        top_risks_raw = c.get('top_risks',     []) or []
+
+        strengths_txt = '\n'.join(f'+ {s}' for s in top_strengths[:2]) or 'N/A'
+        risks_txt     = '\n'.join(f'! {r}' for r in top_risks_raw[:2]) or 'N/A'
+
+        # ── System 3 — Rotation ───────────────────────────────────────────
         sector_etf              = c.get('sector_etf',              'N/A')
         rotation_score_display  = c.get('rotation_score_display',  'N/A')
         rotation_signal_display = c.get('rotation_signal_display', 'UNKNOWN')
 
+        # ── System 4 — Price Structure ────────────────────────────────────
+        ps_available_val   = bool(c.get(PS_AVAILABLE))
+        ps_available_str   = 'YES' if ps_available_val else 'NO'
+
+        ps_entry_quality   = (c.get(PS_ENTRY_QUALITY)          or 'UNAVAILABLE') if ps_available_val else 'UNAVAILABLE'
+        ps_trend_structure = (c.get(PS_TREND_STRUCTURE)        or 'UNAVAILABLE') if ps_available_val else 'UNAVAILABLE'
+        ps_trend_strength  = c.get(PS_TREND_STRENGTH, 0)       if ps_available_val else 'N/A'
+        ps_key_level       = (c.get(PS_KEY_LEVEL_POSITION)     or 'UNAVAILABLE') if ps_available_val else 'UNAVAILABLE'
+        ps_structure_state = (c.get(PS_STRUCTURE_STATE)        or 'UNAVAILABLE') if ps_available_val else 'UNAVAILABLE'
+        ps_score           = c.get(PS_PRICE_ACTION_SCORE, 0)   if ps_available_val else 'N/A'
+        ps_move_ext        = f"{c.get(PS_MOVE_EXTENSION_PCT,        0.0):.1f}" if ps_available_val else 'N/A'
+        ps_dist_sup        = f"{c.get(PS_DISTANCE_TO_SUPPORT_PCT,   0.0):.1f}" if ps_available_val else 'N/A'
+        ps_dist_res        = f"{c.get(PS_DISTANCE_TO_RESIST_PCT,    0.0):.1f}" if ps_available_val else 'N/A'
+        ps_reasoning       = (c.get(PS_REASONING) or 'No reasoning available.')[:200] if ps_available_val else 'UNAVAILABLE'
+
+        # v2.0 ADDED: volatility_state and compression_location.
+        # COMPRESSING near support is a meaningful setup signal the AI should see.
+        ps_volatility_state = (c.get(PS_VOLATILITY_STATE)     or 'NORMAL')  if ps_available_val else 'UNAVAILABLE'
+        ps_compression_loc  = (c.get(PS_COMPRESSION_LOCATION) or 'NEUTRAL') if ps_available_val else 'UNAVAILABLE'
+
+        # ── Combined reading (pre-computed synthesis) ─────────────────────
         alignment  = c.get('eq_alignment', 'N/A')
-        conclusion = c.get('eq_combined_reading', {}).get('conclusion', 'N/A') if c.get('eq_combined_reading') else 'N/A'
+        conclusion = (
+            c.get('eq_combined_reading', {}).get('conclusion', 'N/A')
+            if c.get('eq_combined_reading')
+            else 'N/A'
+        )
 
-        strengths  = c.get('eq_strengths',         []) or []
-        crit_warn  = c.get('eq_warnings_critical', []) or []
-        minor_warn = c.get('eq_warnings_minor',    []) or []
-
-        strengths_txt  = '\n'.join(f'+ {s}' for s in strengths[:3])  or 'N/A'
-        crit_warn_txt  = '\n'.join(f'! {w}' for w in crit_warn[:3])  or 'N/A'
-        minor_warn_txt = '\n'.join(f'w {w}' for w in minor_warn[:3]) or ''
-
-        # ── S4 fields ─────────────────────────────────────────────────────
-        ps_available_val    = bool(c.get(PS_AVAILABLE))
-        ps_available_str    = 'YES' if ps_available_val else 'NO'
-        ps_entry_quality    = (c.get(PS_ENTRY_QUALITY)          or 'UNAVAILABLE') if ps_available_val else 'UNAVAILABLE'
-        ps_trend_structure  = (c.get(PS_TREND_STRUCTURE)        or 'UNAVAILABLE') if ps_available_val else 'UNAVAILABLE'
-        ps_trend_strength   = c.get(PS_TREND_STRENGTH,  0)      if ps_available_val else 'N/A'
-        ps_key_level        = (c.get(PS_KEY_LEVEL_POSITION)     or 'UNAVAILABLE') if ps_available_val else 'UNAVAILABLE'
-        ps_structure_state  = (c.get(PS_STRUCTURE_STATE)        or 'UNAVAILABLE') if ps_available_val else 'UNAVAILABLE'
-        ps_score            = c.get(PS_PRICE_ACTION_SCORE, 0)   if ps_available_val else 'N/A'
-        ps_move_ext         = f"{c.get(PS_MOVE_EXTENSION_PCT,  0.0):.1f}" if ps_available_val else 'N/A'
-        ps_dist_sup         = f"{c.get(PS_DISTANCE_TO_SUPPORT_PCT, 0.0):.1f}" if ps_available_val else 'N/A'
-        ps_dist_res         = f"{c.get(PS_DISTANCE_TO_RESIST_PCT,  0.0):.1f}" if ps_available_val else 'N/A'
-        ps_reasoning        = (c.get(PS_REASONING) or 'No reasoning available.')[:200] if ps_available_val else 'UNAVAILABLE'
-
-        # Combined reading lines
-        market_line   = f"Market: {market_verdict} ({conf_score}/100)"
-        earnings_line = f"Earnings: {eq_pass_display}"
-        rotation_line = f"Rotation: {rotation_signal_display}"
+        market_line   = f"Market:          {market_verdict} ({int(conf_score)}/100)"
+        earnings_line = f"Earnings:        {eq_pass_display}"
+        rotation_line = f"Rotation:        {rotation_signal_display}"
         ps_cr_line    = f"Price Structure: {ps_entry_quality}"
 
         candidate_block = (
-            f"\n[{ticker}] — {sector} ({industry})\n"
+            f"\n[{ticker}] — {sector} ({industry}) | Timing: {timing}\n"
             f"\n"
             f"Price:          {fmt_price(current_price)} ({fmt_pct(price_change_pct)} today)\n"
-            f"Confidence:     {conf_score}/100 ({signal_strength})\n"
+            f"Confidence:     {int(conf_score)}/100 ({signal_strength})\n"
             f"Market verdict: {market_verdict}\n"
             f"\n"
             f"Trend:\n"
             f"  1 month:  {fmt_pct(r1m)}\n"
-            f"  3 months: {fmt_pct(r3m)}\n"
+            f"  3 months: {fmt_pct(r3m)}  ← timing basis\n"
             f"  6 months: {fmt_pct(r6m)}\n"
             f"  Label:    {ram_label}\n"
             f"\n"
             f"Volume: {volume_label}\n"
             f"\n"
-            f"Earnings Quality:\n"
+            f"Earnings Quality (System 2):\n"
             f"  Score:     {eq_score_display}\n"
             f"  Tier:      {eq_pass_display}\n"
             f"  Strengths: {strengths_txt}\n"
-            f"  Warnings:  {crit_warn_txt}\n"
-            f"             {minor_warn_txt}\n"
+            f"  Risks:     {risks_txt}\n"
             f"\n"
-            f"Sector Rotation:\n"
+            f"Sector Rotation (System 3):\n"
             f"  ETF:    {sector_etf}\n"
             f"  Score:  {rotation_score_display}\n"
             f"  Signal: {rotation_signal_display}\n"
             f"\n"
-            f"Price Structure:\n"
-            f"  Available:      {ps_available_str}\n"
-            f"  Entry quality:  {ps_entry_quality}\n"
-            f"  Trend:          {ps_trend_structure} (strength: {ps_trend_strength}/100)\n"
-            f"  Key level:      {ps_key_level}\n"
-            f"  Structure:      {ps_structure_state}\n"
-            f"  Price action:   {ps_score}/100\n"
-            f"  Move extension: {ps_move_ext}% above 126-day low\n"
-            f"  Dist support:   {ps_dist_sup}%\n"
-            f"  Dist resist:    {ps_dist_res}%\n"
-            f"  Reasoning:      {ps_reasoning}\n"
+            f"Price Structure (System 4):\n"
+            f"  Available:        {ps_available_str}\n"
+            f"  Entry quality:    {ps_entry_quality}\n"
+            f"  Trend:            {ps_trend_structure} (strength: {ps_trend_strength}/100)\n"
+            f"  Key level:        {ps_key_level}\n"
+            f"  Structure:        {ps_structure_state}\n"
+            f"  Volatility state: {ps_volatility_state} (compression: {ps_compression_loc})\n"
+            f"  Price action:     {ps_score}/100\n"
+            f"  Move extension:   {ps_move_ext}% above 126-day low\n"
+            f"  Dist to support:  {ps_dist_sup}%\n"
+            f"  Dist to resist:   {ps_dist_res}%\n"
+            f"  Reasoning:        {ps_reasoning}\n"
             f"\n"
             f"Combined Reading:\n"
             f"  {market_line}\n"
@@ -1032,64 +975,17 @@ def _build_ai_prompt(
         )
         candidates_block += candidate_block
 
+    # ── Footer — single trigger line; all rules live in MRE_AI_SYSTEM_PROMPT.md ──
+
     footer = (
         "\n"
         "=============================================================\n"
-        "YOUR TASK\n"
+        "ANALYZE THE CANDIDATES ABOVE\n"
         "=============================================================\n"
         "\n"
-        "For EACH candidate above, provide this structure:\n"
-        "\n"
-        "--- [TICKER] ---\n"
-        "\n"
-        "1) QUICK DECISION\n"
-        "   Entry: BUY NOW / WAIT / AVOID\n"
-        "   Timing quality: EARLY / MID / LATE TREND\n"
-        "   Confidence in timing: LOW / MEDIUM / HIGH\n"
-        "   (2 sentences max explaining your decision)\n"
-        "\n"
-        "2) WHY (PLAIN ENGLISH)\n"
-        "   Explain what is happening using simple logic:\n"
-        "   - Is the trend strong or extended?\n"
-        "   - Does the sector support the move or contradict it?\n"
-        "   - Are there contradictions between signals (e.g. stocks rising but commodity falling)?\n"
-        "   - What does the price structure say about entry timing?\n"
-        "   Avoid technical jargon. If you use a term, explain it in parentheses.\n"
-        "\n"
-        "3) ENTRY LOGIC\n"
-        "   Ideal entry scenario: [when would this be a good entry]\n"
-        "   Bad entry scenario:   [what would make this a poor entry]\n"
-        "   What to wait for:     [1-2 specific conditions that need to improve]\n"
-        "   Note entry_quality from System 4 when discussing entry timing.\n"
-        "\n"
-        "4) EXIT LOGIC\n"
-        "   Take profit if: [specific condition]\n"
-        "   Cut loss if:    [specific condition]\n"
-        "   Explain each in plain English.\n"
-        "\n"
-        "5) TOP RISKS RIGHT NOW\n"
-        "   List the 2-3 biggest risks specific to this candidate based on the data above.\n"
-        "   No generic risks. Be specific to the signals shown.\n"
-        "\n"
-        "6) VERDICT\n"
-        "   Choose one: Worth researching further / Watch closely / Avoid for now\n"
-        "   Explain in 2-3 sentences why.\n"
-        "\n"
-        "7) ENTRY URGENCY\n"
-        "   Choose one: Immediate / Near-term / Wait for confirmation\n"
-        "   (1 sentence explaining the specific condition that determines urgency.\n"
-        "   Example: \"Immediate — sector support and trend intact, but extended 3M return\n"
-        "   means entry window is narrow.\" or \"Wait for confirmation — signal needs\n"
-        "   market verdict to strengthen from WATCH to RESEARCH NOW before acting.\")\n"
-        "\n"
-        "---\n"
-        "\n"
-        "After all individual candidates, provide:\n"
-        "\n"
-        "CROSS-CANDIDATE SUMMARY\n"
-        "  Best entry opportunity:  [ticker and one-sentence reason]\n"
-        "  Worst timing right now:  [ticker and one-sentence reason]\n"
-        "  Overall market read:     [1-2 sentences on whether this is a good time to act]\n"
+        "Apply tier classification first.\n"
+        "Then produce the required output sections for each tier.\n"
+        "Follow all rules and output format from your system prompt exactly.\n"
     )
 
     return header + candidates_block + footer
