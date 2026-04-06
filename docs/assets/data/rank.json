@@ -265,6 +265,7 @@
       "return_6m": 45.71,
       "eq_verdict_display": "UNAVAILABLE",
       "rotation_signal_display": "SUPPORT",
+      "ps_verdict_display": "WEAK",
       "market_verdict_display": "WATCH",
       "market_verdict": "",
       "price_history": [
@@ -299,7 +300,15 @@
         160.78,
         160.69
       ],
-      "alignment": "PARTIAL"
+      "alignment": "PARTIAL",
+      "ps_available": true,
+      "ps_key_level_position": "MID_RANGE",
+      "ps_key_level_display": "Mid Range",
+      "ps_price_action_score": 51,
+      "ps_move_extension_pct": 47.817665376014965,
+      "ps_trend_structure": "UP",
+      "ps_distance_to_support_pct": 8.606634900075777,
+      "ps_distance_to_resistance_pct": 9.782812235898273
     },
     "CVX": {
       "ticker": "CVX",
@@ -309,12 +318,13 @@
       "confidence": 59.1,
       "risk_score": 11.3,
       "opportunity_score": 47.7,
-      "signal_agreement": 0.068,
+      "signal_agreement": 0.069,
       "return_1m": 6.96,
       "return_3m": 31.83,
       "return_6m": 31.43,
       "eq_verdict_display": "UNAVAILABLE",
       "rotation_signal_display": "SUPPORT",
+      "ps_verdict_display": "WEAK",
       "market_verdict_display": "WATCH",
       "market_verdict": "",
       "price_history": [
@@ -349,7 +359,15 @@
         197.41,
         198.97
       ],
-      "alignment": "PARTIAL"
+      "alignment": "PARTIAL",
+      "ps_available": true,
+      "ps_key_level_position": "NEAR_SUPPORT",
+      "ps_key_level_display": "Near Support",
+      "ps_price_action_score": 53,
+      "ps_move_extension_pct": 37.15366222558442,
+      "ps_trend_structure": "UP",
+      "ps_distance_to_support_pct": 0.8041443904605766,
+      "ps_distance_to_resistance_pct": 7.910743024876803
     },
     "COP": {
       "ticker": "COP",
@@ -415,6 +433,7 @@
       "return_6m": 0.37,
       "eq_verdict_display": "SUPPORTIVE",
       "rotation_signal_display": "WEAKEN",
+      "ps_verdict_display": "WEAK",
       "market_verdict_display": "SKIP",
       "market_verdict": "",
       "price_history": [
@@ -449,7 +468,15 @@
         255.63,
         255.92
       ],
-      "alignment": "CONFLICT"
+      "alignment": "CONFLICT",
+      "ps_available": true,
+      "ps_key_level_position": "NEAR_SUPPORT",
+      "ps_key_level_display": "Near Support",
+      "ps_price_action_score": 42,
+      "ps_move_extension_pct": 5.233532322351081,
+      "ps_trend_structure": "SIDEWAYS",
+      "ps_distance_to_support_pct": 0.6979532353633894,
+      "ps_distance_to_resistance_pct": 0.42200759564781076
     },
     "AMZN": {
       "ticker": "AMZN",
