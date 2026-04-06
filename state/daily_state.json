@@ -1,15 +1,24 @@
 {
   "date": "2026-04-06",
   "reported_companies": [
-    "VICI",
-    "AMAT",
-    "NVDA",
     "REG",
-    "CB",
-    "SCHW",
-    "WDC",
+    "O",
+    "AMAT",
+    "WBS",
+    "TXN",
+    "SBAC",
+    "PLD",
+    "MFC",
+    "NVDA",
+    "FTNT",
     "KIM",
-    "TFC"
+    "PLTR",
+    "CB",
+    "WDC",
+    "TFC",
+    "FITB",
+    "VICI",
+    "SCHW"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -28,8 +37,18 @@
       "status": "complete"
     },
     "11:45-13:15": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "SBAC",
+        "TXN",
+        "FTNT",
+        "PLTR",
+        "O",
+        "PLD",
+        "FITB",
+        "MFC",
+        "WBS"
+      ],
+      "status": "complete"
     },
     "13:45-15:15": {
       "companies": [],
@@ -145,14 +164,14 @@
     }
   },
   "today_scores": {
-    "WDC": 61.9,
-    "NVDA": 55.6,
-    "VICI": 55.4,
-    "KIM": 55.3,
-    "REG": 55.1,
-    "AMAT": 54.6,
-    "TFC": 54.4,
-    "SCHW": 53.3,
-    "CB": 52.2
+    "SBAC": 55.5,
+    "TXN": 54.8,
+    "FTNT": 54.1,
+    "PLTR": 54.1,
+    "O": 53.9,
+    "PLD": 53.0,
+    "FITB": 52.6,
+    "MFC": 52.3,
+    "WBS": 51.4
   }
 }
