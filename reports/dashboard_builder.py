@@ -1291,7 +1291,7 @@ def _update_weekly_archive(companies, slot, breadth, regime, prompt_text='', is_
         'count':     len(companies),
         'verdict_counts': {
             'RESEARCH NOW': sum(1 for c in companies if c.get('market_verdict_display', c.get('summary_verdict', '')) == 'RESEARCH NOW'),
-            'WATCH':        sum(1 for c in companies if c.get('market_verdict_display', c.get('summary_verdict', '')) == 'WATCH',),
+            'WATCH':        sum(1 for c in companies if c.get('market_verdict_display', c.get('summary_verdict', '')) == 'WATCH'),
             'SKIP':         sum(1 for c in companies if c.get('market_verdict_display', c.get('summary_verdict', '')) == 'SKIP'),
         },
         'candidates': [
@@ -1868,4 +1868,3 @@ def build_dashboard(
         log.error(f'news.html write failed: {e}')
 
     log.info('build_dashboard complete')
-    
