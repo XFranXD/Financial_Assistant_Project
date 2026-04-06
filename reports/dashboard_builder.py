@@ -1231,7 +1231,7 @@ def _update_rank_board(companies):
             continue
         existing = rank_data['stocks'].get(ticker, {})
         new_conf  = c.get('composite_confidence', 0)
-        if new_conf > existing.get('confidence', 0):
+        if new_conf >= existing.get('confidence', 0):
             raw_ph = c.get('price_history') or existing.get('price_history', [])
             rank_data['stocks'][ticker] = {
                 'ticker':                       ticker,
@@ -1255,7 +1255,7 @@ def _update_rank_board(companies):
                 # ── Sub4 fields for rank page expanded row ───────────────────
                 'ps_available':                 c.get('ps_available', False),
                 'ps_key_level_position':        c.get('key_level_position', ''),
-                'ps_key_level_display':         c.get('ps_key_level_display', ''),
+                'ps_key_level_display':         c.get('key_level_position', '').replace('_', ' ').title(),
                 'ps_price_action_score':        c.get('price_action_score'),
                 'ps_move_extension_pct':        c.get('move_extension_pct'),
                 'ps_trend_structure':           c.get('trend_structure', ''),

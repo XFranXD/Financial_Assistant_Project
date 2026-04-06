@@ -589,13 +589,11 @@
 
       <!-- Extended fields -->
       <hr class="ps-divider">
-      <div class="row"><span class="lbl">Move ext.:</span><span class="val">{{ c.move_extension_pct | round(1) }}% above
+      <div class="row"><span class="lbl">Move ext.:</span><span class="val">{{ (c.move_extension_pct or 0) | round(1) }}% above
           126d low</span></div>
       <div class="row"><span class="lbl">Structure:</span><span class="val">{{ c.structure_state }}</span></div>
-      <div class="row"><span class="lbl">Dist. support:</span><span class="val">{{ c.distance_to_support_pct | round(1)
-          }}%</span></div>
-      <div class="row"><span class="lbl">Dist. resist.:</span><span class="val">{{ c.distance_to_resistance_pct |
-          round(1) }}%</span></div>
+      <div class="row"><span class="lbl">Dist. support:</span><span class="val">{{ (c.distance_to_support_pct or 0) | round(1) }}%</span></div>
+      <div class="row"><span class="lbl">Dist. resist.:</span><span class="val">{{ (c.distance_to_resistance_pct or 0) | round(1) }}%</span></div>
       <div class="row"><span class="lbl">Volatility:</span><span class="val">{{ c.volatility_state }}</span></div>
       <div class="row"><span class="lbl">Trend strength:</span><span class="val">{{ c.trend_strength }}/100</span></div>
       <div class="row"><span class="lbl">Data confidence:</span><span class="val">{{ c.ps_data_confidence }}</span>
@@ -605,12 +603,12 @@
       <hr class="ps-divider">
       <div class="row"><span class="lbl">Consolidating:</span><span class="val">{{ c.base_duration_days }} days</span>
       </div>
-      <div class="row"><span class="lbl">Vol. contraction:</span><span class="val">{{ c.volume_contraction }}</span>
+      <div class="row"><span class="lbl">Vol. contraction:</span><span class="val">{{ 'YES' if c.volume_contraction else 'NO' }}</span>
       </div>
       <div class="row"><span class="lbl">Compression:</span><span class="val">{{ c.compression_location }}</span></div>
       {% endif %}
 
-      <div class="row"><span class="lbl">Crossover:</span><span class="val">{{ c.recent_crossover }}</span></div>
+      <div class="row"><span class="lbl">Crossover:</span><span class="val">{{ 'YES' if c.recent_crossover else 'NO' }}</span></div>
 
       <div class="row" style="margin-top:6px">
         <span class="lbl">Reasoning:</span>
