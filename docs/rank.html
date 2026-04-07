@@ -328,7 +328,7 @@ document.addEventListener('click', function(e) {
         ? '<canvas id="ec' + i + '" height="92"></canvas>'
         : '<div style="color:var(--mist);font-size:11px;padding:8px 0;">Price history unavailable</div>';
       scripts += '<script type="application/json" id="' + phUid + '">'
-              + JSON.stringify(phList).replace(/<\\/script>/gi,'<\\\\/script>')
+              + JSON.stringify(phList).replace(/<\/script>/gi,'<\\/script>')
               + '<\\/script>';
       var confVal    = typeof stock.confidence === 'number' ? stock.confidence : null;
       var riskVal    = typeof stock.risk_score === 'number' ? stock.risk_score : null;
