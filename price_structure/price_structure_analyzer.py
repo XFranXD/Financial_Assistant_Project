@@ -26,25 +26,6 @@ def analyze(ticker: str) -> dict:
         levels_result = detect_levels(df, volatility_result["consolidation_confirmed"])
         entry_result = classify_entry(df, trend_result, levels_result, volatility_result)
         score = compute_score(trend_result, levels_result, entry_result)
-
-        # ── Execution Layer (1C) ─────────────────────────────────────────
-        from price_structure.execution_layer import compute_execution_levels
-
-        current_price      = float(df["Close"].iloc[-1]) if len(df) > 0 else 0.0
-        nearest_support    = levels_result.get("nearest_support")
-        nearest_resistance = levels_result.get("nearest_resistance")
-        entry_quality_raw  = entry_result.get("entry_quality", "WEAK")
-
-        exec_result = compute_execution_levels(
-            current_price      = current_price,
-            nearest_support    = nearest_support,
-            nearest_resistance = nearest_resistance,
-            entry_quality      = entry_quality_raw,
-        )
-
-        # Apply R/R override back to entry_result before building final output
-        entry_result["entry_quality"] = exec_result["entry_quality"]
-        # ── End Execution Layer ──────────────────────────────────────────
         
         conf = "HIGH" if levels_result.get("level_confidence_tier", 3) == 1 else "LOW"
         
@@ -106,13 +87,6 @@ def analyze(ticker: str) -> dict:
             reasoning = "Structure present but no high-confidence entry signal detected."
             
         result["ps_reasoning"] = reasoning
-
-        # ── Stamp execution fields ───────────────────────────────────────
-        result["entry_price"]       = exec_result.get("entry_price")
-        result["stop_loss"]         = exec_result.get("stop_loss")
-        result["price_target"]      = exec_result.get("price_target")
-        result["risk_reward_ratio"] = exec_result.get("risk_reward_ratio")
-        result["rr_override"]       = exec_result.get("rr_override", False)
         
         return result
         

@@ -245,12 +245,11 @@ def normalize_result(r: dict) -> dict:
     }
 
 
-def run_eq_analyzer(tickers: list) -> tuple:
+def run_eq_analyzer(tickers: list) -> list:
     """
     Entry point called by System 1's main.py.
     Accepts list of ticker strings.
-    Returns tuple: (normalized list of result dicts, EdgarFetcher instance).
-    The fetcher is returned so Layer 1B can reuse it for CIK resolution.
+    Returns normalized list of result dicts — one per ticker.
     Never raises — all exceptions caught per ticker and returned as error result.
     """
     logger.info(f"[EQ_ANALYZER] Starting run for {len(tickers)} tickers: {tickers}")
@@ -260,8 +259,8 @@ def run_eq_analyzer(tickers: list) -> tuple:
         fallbacks = load_fallbacks()
     except Exception as e:
         logger.critical(f"[EQ_ANALYZER] Fatal: failed to load config or fallbacks: {e}")
-        return ([normalize_result({"ticker": t, "passed": False,
-                                   "error": "config load failed"}) for t in tickers], None)
+        return [normalize_result({"ticker": t, "passed": False,
+                                  "error": "config load failed"}) for t in tickers]
 
     fetcher = EdgarFetcher(config, fallbacks)
     results = []
@@ -300,7 +299,7 @@ def run_eq_analyzer(tickers: list) -> tuple:
         f"[EQ_ANALYZER] Run complete. "
         f"{sum(1 for r in results if r.get('passed'))} passed / {len(results)} total"
     )
-    return results, fetcher
+    return results
 
 
 # Standalone testing only — not used by System 1

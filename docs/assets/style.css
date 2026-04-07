@@ -1441,42 +1441,6 @@ nav::before {
   border-image: linear-gradient(90deg, rgba(80, 5, 15, .9), rgba(255, 77, 109, .70)) 1;
 }
 
-/* EVENT RISK: normal — green (safe) */
-.rpill-ev-ok {
-  background: rgba(57, 232, 160, 0.12);
-  color: var(--up);
-  border-color: rgba(57, 232, 160, 0.35);
-}
-
-/* EVENT RISK: high risk — red (danger) */
-.rpill-ev-hr {
-  background: rgba(255, 77, 109, 0.18);
-  color: var(--dn);
-  border-color: rgba(255, 77, 109, 0.45);
-  font-weight: 700;
-}
-
-/* INSIDER: accumulating — green (net buying) */
-.rpill-ins-ac {
-  background: rgba(57, 232, 160, 0.12);
-  color: var(--up);
-  border-color: rgba(57, 232, 160, 0.35);
-}
-
-/* INSIDER: distributing — red (net selling) */
-.rpill-ins-di {
-  background: rgba(255, 77, 109, 0.18);
-  color: var(--dn);
-  border-color: rgba(255, 77, 109, 0.45);
-}
-
-/* INSIDER: neutral / unavailable — muted (no data) */
-.rpill-ins-na {
-  background: rgba(168, 155, 194, 0.10);
-  color: var(--mist);
-  border-color: rgba(168, 155, 194, 0.25);
-}
-
 .rank-head {
   display: grid;
   grid-template-columns: 36px 76px 1fr 84px 72px 60px 90px 90px;

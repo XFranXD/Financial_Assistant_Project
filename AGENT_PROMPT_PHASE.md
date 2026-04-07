@@ -23,15 +23,6 @@ You are implementing Phase 1 of the MRE (Market Research Engine) — three addit
 - `price_structure/price_structure_analyzer.py`
 - `docs/assets/style.css`
 
-**Required Imports** (add to each new module where needed):
-- `requests`
-- `time`
-- `datetime` (use `datetime.timezone.utc` for comparisons)
-- `json`
-- `xml.etree.ElementTree as ET`
-- `logging`
-- `pathlib`
-
 Do not modify any file not listed in the explicit "Files to modify" section for each layer. Do not rename, restructure, or refactor anything outside of what is specified. All three layers are additive — they stamp new keys onto existing candidate dicts and add new display paths without altering existing ones.
 
 **Locked constraints carry through every file you touch:**
@@ -71,12 +62,8 @@ Return dict contract:
 - Hit Finnhub earnings calendar endpoint: `https://finnhub.io/api/v1/calendar/earnings?from={today}&to={today+7d}&symbol={ticker}&token={finnhub_token}`
 - **Expected response format:** `{"earningsCalendar": [{"date": "YYYY-MM-DD", ...}]}`
 - If any earnings date is within 1–5 calendar days (inclusive): `event_risk = 'HIGH RISK'`, `event_risk_reason = 'Earnings in {N} day(s)'`, `days_to_earnings = N`
-- If a macro event (from `macro_events.json`) also triggers `HIGH RISK` for this sector:
-  - Keep `'Earnings in {N} day(s)'` as the primary reason.
-  - Append the macro event description: `event_risk_reason = 'Earnings in {N} day(s) / {macro_desc}'`.
-- If no earnings in range but macro event exists: `event_risk = 'HIGH RISK'`, `event_risk_reason = macro_desc`
-- If neither exists: `event_risk = 'NORMAL'`, `event_risk_reason = ''`, `days_to_earnings = None`
-- On any exception (network error, bad response, missing token): return `event_risk = 'NORMAL'`, log the error, do not raise.
+- If no earnings in range: `event_risk = 'NORMAL'`, `event_risk_reason = ''`, `days_to_earnings = None`
+- On any exception (network error, bad response, missing token): return `event_risk = 'NORMAL'`, log the error, do not raise
 
 **Macro event check logic:**
 - Import the macro event list from `data/macro_events.json` (you will create this file)
@@ -385,11 +372,11 @@ Return dict contract:
 
 **CIK resolution:** Call `fetcher._resolve_cik(ticker)` directly. If it returns `None`, return `UNAVAILABLE`.
 
-- Create a single `requests.Session()` at the start of `get_insider_signal` and reuse it for all HTTP calls.
-- Fetch Atom feed for Form 4s: `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK={cik}&type=4&dateb=&owner=include&count=40&output=atom`
-- Parse the Atom feed. **Strictly ignore filings older than 90 days** by comparing the `<updated>` or `<published>` timestamp with `datetime.now(timezone.utc)`.
-- For each valid entry, fetch the filing index page.
-- **XML Discovery Rule:** Select the first link where `href` ends with `.xml` AND the filename contains `form4` (case-insensitive). If no filename match, fallback to the first link ending in `.xml`.
+**Form 4 RSS fetch:**
+- URL: `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK={cik}&type=4&dateb=&owner=include&count=40&output=atom`
+- Parse the Atom feed XML (use `xml.etree.ElementTree`)
+- Look for entries where `<title>` contains `Form 4`.
+- For each filing entry, fetch the filing index page. Look for the Form 4 XML document (usually has `.xml` extension and contains `form4` in the name).
 - **SEC Form 4 XML Structure Reference:**
 
 ```xml

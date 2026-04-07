@@ -396,11 +396,6 @@ def _build_ps_display(c: dict) -> dict:
             PS_REASONING_DISPLAY:     'Price structure data unavailable.',
             PS_VERDICT_DISPLAY:       'UNAVAILABLE',
             'ps_available':           False,
-            'ps_entry_price':         None,
-            'ps_stop_loss':           None,
-            'ps_price_target':        None,
-            'ps_risk_reward_ratio':   None,
-            'ps_rr_override':         False,
         }
 
     entry_quality = (c.get(PS_ENTRY_QUALITY)     or 'WEAK').strip().upper()
@@ -660,7 +655,12 @@ def _enrich_company_for_template(c: dict) -> dict:
         er_reason = c.get(EVENT_RISK_REASON, 'event risk')
         notices.append(f'\u26a0\ufe0f Event risk: {er_reason}. Exercise additional caution.')
 
-    # earnings_warning notice removed — superseded by event_risk (Layer 1A)
+    if c.get('earnings_warning'):
+        days = fin.get('earnings_days', 5)
+        if days <= 1:
+            notices.append(EARNINGS_WARNING_IMMINENT)
+        else:
+            notices.append(EARNINGS_WARNING.format(DAYS=int(days)))
 
     if c.get(INSIDER_SIGNAL) == 'DISTRIBUTING':
         ins_note = c.get(INSIDER_NOTE, '')
