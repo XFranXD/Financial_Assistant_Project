@@ -59,8 +59,6 @@ from contracts.eq_schema import (
     EQ_PERCENTILE, BATCH_REGIME, EQ_SCORE_DISPLAY,
     EQ_LABEL_DISPLAY, EQ_VERDICT_DISPLAY, EQ_TOP_RISKS_DISPLAY,
     EQ_TOP_STRENGTHS_DISPLAY, EQ_WARNINGS_DISPLAY,
-    EVENT_RISK, EVENT_RISK_REASON, DAYS_TO_EARNINGS,
-    INSIDER_SIGNAL, INSIDER_NOTE,
 )
 from contracts.sector_schema import (
     ROTATION_AVAILABLE, ROTATION_SCORE, ROTATION_STATUS,
@@ -78,8 +76,6 @@ from contracts.price_structure_schema import (
     PS_ENTRY_QUALITY_DISPLAY, PS_TREND_DISPLAY,
     PS_KEY_LEVEL_DISPLAY, PS_SCORE_DISPLAY, PS_REASONING_DISPLAY,
     PS_VERDICT_DISPLAY, PS_COMPRESSION_LOCATION,
-    PS_ENTRY_PRICE, PS_STOP_LOSS, PS_PRICE_TARGET,
-    PS_RISK_REWARD_RATIO, PS_RR_OVERRIDE,
 )
 
 log = get_logger('report_builder')
@@ -415,11 +411,6 @@ def _build_ps_display(c: dict) -> dict:
         PS_REASONING_DISPLAY:     (reasoning[:200] if reasoning else ''),
         PS_VERDICT_DISPLAY:       entry_quality,   # same vocabulary — pill uses this
         'ps_available':           True,
-        'ps_entry_price_display':   f"${c.get(PS_ENTRY_PRICE, 0):,.2f}" if c.get(PS_ENTRY_PRICE) else 'N/A',
-        'ps_stop_loss_display':     f"${c.get(PS_STOP_LOSS, 0):,.2f}" if c.get(PS_STOP_LOSS) else 'N/A',
-        'ps_price_target_display':  f"${c.get(PS_PRICE_TARGET, 0):,.2f}" if c.get(PS_PRICE_TARGET) else 'N/A',
-        'ps_risk_reward_display':   f"{c.get(PS_RISK_REWARD_RATIO, 0):.2f}" if c.get(PS_RISK_REWARD_RATIO) is not None else 'N/A',
-        'ps_rr_override':           bool(c.get(PS_RR_OVERRIDE, False)),
     }
 
 
@@ -651,28 +642,12 @@ def _enrich_company_for_template(c: dict) -> dict:
     )
 
     notices = []
-    if c.get(EVENT_RISK) == 'HIGH RISK':
-        er_reason = c.get(EVENT_RISK_REASON, 'event risk')
-        notices.append(f'\u26a0\ufe0f Event risk: {er_reason}. Exercise additional caution.')
-
     if c.get('earnings_warning'):
         days = fin.get('earnings_days', 5)
         if days <= 1:
             notices.append(EARNINGS_WARNING_IMMINENT)
         else:
             notices.append(EARNINGS_WARNING.format(DAYS=int(days)))
-
-    if c.get(INSIDER_SIGNAL) == 'DISTRIBUTING':
-        ins_note = c.get(INSIDER_NOTE, '')
-        notices.append(f'\u26a0\ufe0f Insider activity: DISTRIBUTING. {ins_note}')
-    elif c.get(INSIDER_SIGNAL) == 'ACCUMULATING':
-        ins_note = c.get(INSIDER_NOTE, '')
-        notices.append(f'\u2705 Insider activity: ACCUMULATING. {ins_note}')
-
-    if c.get(PS_RR_OVERRIDE):
-        rr = c.get(PS_RISK_REWARD_RATIO)
-        rr_str = f'{rr:.1f}' if isinstance(rr, (int, float)) else 'N/A'
-        notices.append(f'\u26a0\ufe0f R/R override: entry_quality forced to WEAK (R:R = {rr_str}, below 2.0 threshold).')
 
     if c.get('divergence_warning'):
         notices.append(DIVERGENCE_WARNING)
@@ -873,19 +848,6 @@ def _build_ai_prompt(
         "  key_level_position: NEAR_SUPPORT | MID_RANGE | NEAR_RESISTANCE | BREAKOUT\n"
         "  structure_state: TRENDING | CONSOLIDATING | VOLATILE\n"
         "  volatility_state: COMPRESSING | EXPANDING | NORMAL\n"
-        "  Execution fields: entry_price, stop_loss, price_target, risk_reward_ratio\n"
-        "  rr_override: True if R/R < 2.0 — entry_quality forced to WEAK\n"
-        "\n"
-        "EVENT RISK (Layer 1A)\n"
-        "  Classifies each ticker as NORMAL or HIGH RISK based on: earnings proximity\n"
-        "  (Finnhub, 1-5 days) and macro events (Fed meetings, CPI releases, 0-1 days).\n"
-        "  HIGH RISK —> BUY NOW blocked. Must be flagged in Top Risks.\n"
-        "\n"
-        "INSIDER ACTIVITY (Layer 1B)\n"
-        "  SEC Form 4 insider transaction signal from last 90 days.\n"
-        "  ACCUMULATING: net insider buying — positive conviction signal.\n"
-        "  DISTRIBUTING: net insider selling — flag as risk.\n"
-        "  NEUTRAL / UNAVAILABLE: no signal. Do not assume positive or negative.\n"
         "\n"
         "COMBINED ALIGNMENT\n"
         "  ALIGNED (score >= 2) | PARTIAL (0-1) | CONFLICT (< 0)\n"
@@ -920,7 +882,7 @@ def _build_ai_prompt(
         "    - Otherwise must be REJECTED\n"
         "\n"
         "=============================================================\n"
-        "BUY NOW HARD GATE — ALL SIX MUST BE TRUE\n"
+        "BUY NOW HARD GATE — ALL FIVE MUST BE TRUE\n"
         "=============================================================\n"
         "\n"
         "  1. Timing = EARLY TREND or MID TREND (DOWN TREND and LATE TREND blocked)\n"
@@ -928,7 +890,6 @@ def _build_ai_prompt(
         "  3. Rotation = SUPPORT\n"
         "  4. entry_quality = GOOD  <- cannot be overridden by any other signal\n"
         "  5. No major signal conflicts\n"
-        "  6. event_risk = NORMAL  <- HIGH RISK blocks BUY NOW\n"
         "\n"
         "  EXTENDED    -> BUY NOW blocked. High pullback risk.\n"
         "  WEAK        -> BUY NOW blocked. No valid setup.\n"
@@ -1245,49 +1206,11 @@ def _build_ai_prompt(
             f"  Dist to resist:   {ps_dist_res}%\n"
             f"  Reasoning:        {ps_reasoning}\n"
             f"\n"
-        )
-
-        # ── Execution fields (1C) ────────────────────────────────────────
-        exec_entry  = c.get('ps_entry_price_display',  'N/A') if ps_available_val else 'N/A'
-        exec_stop   = c.get('ps_stop_loss_display',    'N/A') if ps_available_val else 'N/A'
-        exec_target = c.get('ps_price_target_display', 'N/A') if ps_available_val else 'N/A'
-        exec_rr     = c.get('ps_risk_reward_display',  'N/A') if ps_available_val else 'N/A'
-        exec_rr_ovr = 'YES' if c.get('ps_rr_override') else 'NO'
-
-        # ── Event risk (1A) ─────────────────────────────────────────────
-        ev_risk   = c.get('event_risk', 'NORMAL')
-        ev_reason = c.get('event_risk_reason', '')
-        ev_days   = c.get('days_to_earnings')
-        ev_days_str = str(ev_days) if ev_days is not None else 'N/A'
-
-        # ── Insider activity (1B) ───────────────────────────────────────
-        ins_signal = c.get('insider_signal', 'UNAVAILABLE')
-        ins_note   = c.get('insider_note', '')
-
-        candidate_block += (
-            f"Execution (System 4 ext.):\n"
-            f"  Entry:   {exec_entry}\n"
-            f"  Stop:    {exec_stop}\n"
-            f"  Target:  {exec_target}\n"
-            f"  R:R:     {exec_rr}\n"
-            f"  R/R override: {exec_rr_ovr}\n"
-            f"\n"
-            f"Event Risk (1A):\n"
-            f"  Status:           {ev_risk}\n"
-            f"  Reason:           {ev_reason or 'None'}\n"
-            f"  Days to earnings: {ev_days_str}\n"
-            f"\n"
-            f"Insider Activity (1B):\n"
-            f"  Signal: {ins_signal}\n"
-            f"  Note:   {ins_note or 'None'}\n"
-            f"\n"
             f"Combined Reading:\n"
             f"  {market_line}\n"
             f"  {earnings_line}\n"
             f"  {rotation_line}\n"
             f"  {ps_cr_line}\n"
-            f"  Event risk:      {ev_risk}\n"
-            f"  Insider:         {ins_signal}\n"
             f"  Alignment:  {alignment}\n"
             f"  {conclusion}\n"
         )

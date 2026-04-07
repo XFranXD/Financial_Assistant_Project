@@ -309,22 +309,35 @@ document.addEventListener('click', function(e) {
       var risk = typeof stock.risk_score  === 'number' ? stock.risk_score  : null;
       var cCls   = conf === null ? 'nt' : conf >= 70 ? 'up' : conf >= 50 ? 'nt' : 'dn';
       var eqV    = stock.eq_verdict_display  || '';
+      var eqCls  = eqV  === 'STRONG'  ? 'up' : eqV  === 'WEAK'    ? 'dn' : 'nt';
       var rotS   = stock.rotation_signal_display || '';
+      var rotCls = rotS === 'LEADING' ? 'up' : rotS === 'LAGGING' ? 'dn' : 'nt';
       var psV    = stock.ps_verdict_display  || '';
       var psCls  = psV  === 'GOOD'     ? 'up' : psV  === 'EXTENDED' ? 'dn' : psV === 'WEAK' ? 'dn' : psV === 'EARLY' ? 'nt' : 'pu';
-      var evRisk = stock.event_risk || 'NORMAL';
-      var evRiskCls = evRisk === 'HIGH RISK' ? 'rpill-ev-hr' : 'rpill-ev-ok';
-      var insS   = stock.insider_signal || 'UNAVAILABLE';
-      var insCls = insS === 'ACCUMULATING' ? 'rpill-ins-ac' : insS === 'DISTRIBUTING' ? 'rpill-ins-di' : 'rpill-ins-na';
-      var verdict  = stock.market_verdict_display || stock.market_verdict || '\\u2014';
-      var confStr  = conf !== null ? Math.round(conf) : '\\u2014';
-      var riskStr  = risk !== null ? Math.round(risk)  : '\\u2014';
-      var price    = typeof stock.price === 'number' ? '$' + stock.price.toFixed(2) : '\\u2014';
-      var phUid    = 'ph-' + i;
-      var rawPh    = Array.isArray(stock.price_history) ? stock.price_history : [];
-      var phList   = rawPh.filter(function(v){ return typeof v === 'number' && isFinite(v); });
-      var hasCh    = phList.length > 1;
-      var chartEl  = hasCh
+      var verdict  = stock.market_verdict_display || stock.market_verdict || '\u2014';
+      var confStr  = conf !== null ? Math.round(conf) : '\u2014';
+      var riskStr  = risk !== null ? Math.round(risk)  : '\u2014';
+      var price    = typeof stock.price === 'number' ? '$' + stock.price.toFixed(2) : '\u2014';
+      var alignVal = stock.alignment || '';
+      var aCls     = alignVal === 'ALIGNED' ? 'up' : alignVal === 'MIXED' ? 'nt' : 'dn';
+      var sector    = (stock.sector || '').replace(/_/g,' ').replace(/\b\w/g, function(c){ return c.toUpperCase(); });
+      var _sMap={'Energy':'#f4a44a','Technology':'#7dd8ff','Healthcare':'#7be8b0','Financials':'#c9b8ff',
+        'Consumer Discretionary':'#ff9ec4','Consumer Staples':'#b8e8c8','Industrials':'#ffd27a',
+        'Materials':'#a8e6cf','Real Estate':'#ffb8a0','Utilities':'#9ecfff',
+        'Communication Services':'#d4b8ff'};
+      var _sKey=_sMap[sector]?sector:Object.keys(_sMap).find(function(k){return sector.toLowerCase().indexOf(k.toLowerCase())!==-1;})||'';
+      var sectorColor=_sMap[_sKey]||'#a89bc2';
+      var ret1m = typeof stock.return_1m === 'number' ? (stock.return_1m >= 0 ? '\u25b2' : '\u25bc') + ' ' + Math.abs(stock.return_1m).toFixed(1) + '%' : '\u2014';
+      var ret3m = typeof stock.return_3m === 'number' ? (stock.return_3m >= 0 ? '\u25b2' : '\u25bc') + ' ' + Math.abs(stock.return_3m).toFixed(1) + '%' : '\u2014';
+      var ret6m = typeof stock.return_6m === 'number' ? (stock.return_6m >= 0 ? '\u25b2' : '\u25bc') + ' ' + Math.abs(stock.return_6m).toFixed(1) + '%' : '\u2014';
+      var raw1m = typeof stock.return_1m === 'number' ? (stock.return_1m >= 0 ? '\u25b2' : '\u25bc') + '|' + Math.abs(stock.return_1m).toFixed(1) + '|%' : '';
+      var raw3m = typeof stock.return_3m === 'number' ? (stock.return_3m >= 0 ? '\u25b2' : '\u25bc') + '|' + Math.abs(stock.return_3m).toFixed(1) + '|%' : '';
+      var raw6m = typeof stock.return_6m === 'number' ? (stock.return_6m >= 0 ? '\u25b2' : '\u25bc') + '|' + Math.abs(stock.return_6m).toFixed(1) + '|%' : '';
+      var phUid  = 'ph-' + i;
+      var rawPh  = Array.isArray(stock.price_history) ? stock.price_history : [];
+      var phList = rawPh.filter(function(v){ return typeof v === 'number' && isFinite(v); });
+      var hasCh  = phList.length > 1;
+      var chartEl = hasCh
         ? '<canvas id="ec' + i + '" height="92"></canvas>'
         : '<div style="color:var(--mist);font-size:11px;padding:8px 0;">Price history unavailable</div>';
       scripts += '<script type="application/json" id="' + phUid + '">'
@@ -340,40 +353,52 @@ document.addEventListener('click', function(e) {
       var rotPillCls = rotMap[rotS] || 'rpill-una';
       var psMap      = {'GOOD':'rpill-ps-gd','EXTENDED':'rpill-ps-ex','EARLY':'rpill-ps-ea','WEAK':'rpill-ps-wk','UNAVAILABLE':'rpill-eq-una'};
       var psPillCls  = psMap[psV]  || 'rpill-una';
-      var priceDisp  = typeof stock.price === 'number' ? '$' + stock.price.toFixed(2) : '\\u2014';
-      var psEntryPx  = typeof stock.ps_entry_price === 'number' ? '$' + stock.ps_entry_price.toFixed(2) : '\\u2014';
-      var psStopLx   = typeof stock.ps_stop_loss   === 'number' ? '$' + stock.ps_stop_loss.toFixed(2)   : '\\u2014';
-      var psTgtPx    = typeof stock.ps_price_target === 'number' ? '$' + stock.ps_price_target.toFixed(2) : '\\u2014';
-      var psRR       = typeof stock.ps_risk_reward_ratio === 'number' ? stock.ps_risk_reward_ratio.toFixed(2) + 'x' : '\\u2014';
-      var psRROvr    = stock.ps_rr_override === true;
-      html += '<div class="rank-card" data-ref="' + phUid + '" data-eid="e' + i + '" data-cid="ec' + i + '">' 
+      var confDisp   = confVal !== null ? Math.round(confVal) : '\u2014';
+      var riskDisp   = riskVal !== null ? Math.round(riskVal) : '\u2014';
+      var priceDisp  = typeof stock.price === 'number' ? '$' + stock.price.toFixed(2) : '\u2014';
+      var psKeyLvl   = stock.ps_key_level_display || stock.ps_key_level_position || '\u2014';
+      var psPaScore  = typeof stock.ps_price_action_score === 'number' ? stock.ps_price_action_score + '/100' : '\u2014';
+      var psMoveExt  = typeof stock.ps_move_extension_pct === 'number' ? stock.ps_move_extension_pct.toFixed(1) + '%' : '\u2014';
+      var psTrend    = stock.ps_trend_structure || '\u2014';
+      var psDistSup  = typeof stock.ps_distance_to_support_pct === 'number' ? stock.ps_distance_to_support_pct.toFixed(1) + '%' : '\u2014';
+      var psDistRes  = typeof stock.ps_distance_to_resistance_pct === 'number' ? stock.ps_distance_to_resistance_pct.toFixed(1) + '%' : '\u2014';
+      var psAvail    = stock.ps_available === true;
+      html += '<div class="rank-card" data-ref="' + phUid + '" data-eid="e' + i + '" data-cid="ec' + i + '">'
            + '<div class="rank-card-main" onclick="expT(this.closest(\'.rank-card\'))">'  
            + '<div class="rck-n">#' + i + '</div>'
-           + '<div class="rck-t">' + (stock.ticker || '\\u2014') + '</div>'
+           + '<div class="rck-t">' + (stock.ticker || '\u2014') + '</div>'
+           + '<div class="rck-s" style="color:' + sectorColor + '">' + sector + '</div>'
            + '<div class="rck-pills">'
            + '<span class="rpill rpill-price"><span class="rpill-lbl">Price</span>' + priceDisp + '</span>'
-           + '<span class="rpill ' + confCls + '"><span class="rpill-lbl">Conf</span>' + confVal + '/100</span>'
-           + '<span class="rpill ' + eqPillCls + '"><span class="rpill-lbl">EQ</span>' + (eqV || '\\u2014') + '</span>'
-           + '<span class="rpill ' + rotPillCls + '"><span class="rpill-lbl">Rotation</span>' + (rotS || '\\u2014') + '</span>'
-           + '<span class="rpill ' + psPillCls + '"><span class="rpill-lbl">Entry</span>' + (psV || '\\u2014') + '</span>'
-           + '<span class="rpill ' + evRiskCls + '"><span class="rpill-lbl">Event</span>' + evRisk + '</span>'
-           + '<span class="rpill ' + insCls + '"><span class="rpill-lbl">Insider</span>' + insS + '</span>'
+           + '<span class="rpill ' + confCls + '"><span class="rpill-lbl">Conf</span>' + confDisp + '/100</span>'
+           + '<span class="rpill ' + riskCls + '"><span class="rpill-lbl">Risk</span>' + riskDisp + '</span>'
+           + '<span class="rpill ' + eqPillCls + '"><span class="rpill-lbl">EQ</span>' + (eqV || '\u2014') + '</span>'
+           + '<span class="rpill ' + rotPillCls + '"><span class="rpill-lbl">Rotation</span>' + (rotS || '\u2014') + '</span>'
+           + '<span class="rpill ' + psPillCls + '"><span class="rpill-lbl">Entry</span>' + (psV || '\u2014') + '</span>'
            + '</div>'
            + '</div>'
            + '<div class="exp-row" id="e' + i + '" onclick="event.stopPropagation()"><div class="exp-inner">'
            + '<div class="exp-stats">'
+           + '<div class="est"><div class="est-k">1M</div><div class="est-v" data-raw="' + raw1m + '">' + ret1m + '</div></div>'
+           + '<div class="est"><div class="est-k">3M</div><div class="est-v" data-raw="' + raw3m + '">' + ret3m + '</div></div>'
+           + '<div class="est"><div class="est-k">6M</div><div class="est-v" data-raw="' + raw6m + '">' + ret6m + '</div></div>'
            + '<div class="est"><div class="est-k">Verdict</div><div class="est-v ' + cCls + '">' + verdict + '</div></div>'
-           + '<div class="est est-divider"></div>'
-           + '<div class="est"><div class="est-k">Entry $</div><div class="est-v">' + psEntryPx + '</div></div>'
-           + '<div class="est"><div class="est-k">Stop $</div><div class="est-v est-dn">' + psStopLx + '</div></div>'
-           + '<div class="est"><div class="est-k">Target $</div><div class="est-v est-up">' + psTgtPx + '</div></div>'
-           + '<div class="est"><div class="est-k">R/R</div><div class="est-v' + (psRROvr ? ' est-dn' : '') + '">' + psRR + (psRROvr ? ' \u26a0' : '') + '</div></div>'
+           + '<div class="est"><div class="est-k">Align</div><div class="est-v ' + aCls + '">' + (alignVal || '\u2014') + '</div></div>'
+           + (psAvail ? ('<div class="est est-divider"></div>'
+           + '<div class="est"><div class="est-k">Entry</div><div class="est-v est-ps est-ps-' + psV.toLowerCase() + '">' + (psV || '\u2014') + '</div></div>'
+           + '<div class="est"><div class="est-k">Key Level</div><div class="est-v">' + psKeyLvl + '</div></div>'
+           + '<div class="est"><div class="est-k">PA Score</div><div class="est-v">' + psPaScore + '</div></div>'
+           + '<div class="est"><div class="est-k">Move Ext.</div><div class="est-v">' + psMoveExt + '</div></div>'
+           + '<div class="est"><div class="est-k">Trend</div><div class="est-v">' + psTrend + '</div></div>'
+           + '<div class="est"><div class="est-k">Dist Sup.</div><div class="est-v">' + psDistSup + '</div></div>'
+           + '<div class="est"><div class="est-k">Dist Res.</div><div class="est-v">' + psDistRes + '</div></div>') : '')
            + '</div>'
            + '<div class="exp-chart">' + chartEl + '</div>'
            + '</div></div>'
            + '</div>';
     });
     if (!html) html = '<div style="color:var(--mist);font-family:var(--ff-mono);padding:28px;">No candidates this week.</div>';
+    // Inject script blocks first (before HTML) so they exist when onclick handlers fire
     document.getElementById('rank-board-mount').innerHTML = scripts + html;
     if (window.dismissLoader) window.dismissLoader();
   })
