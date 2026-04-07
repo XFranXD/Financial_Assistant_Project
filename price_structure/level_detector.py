@@ -102,5 +102,7 @@ def detect_levels(df: pd.DataFrame, consolidation_confirmed: bool) -> dict:
         "key_level_position": key_level_position,
         "distance_to_support_pct": float(distance_to_support_pct),
         "distance_to_resistance_pct": float(distance_to_resistance_pct),
-        "level_confidence_tier": tier
+        "level_confidence_tier": tier,
+        "nearest_support":    float(nearest_support)    if nearest_support    is not None else None,
+        "nearest_resistance": float(nearest_resistance) if nearest_resistance is not None else None,
     }

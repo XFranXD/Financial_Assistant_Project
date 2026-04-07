@@ -39,3 +39,12 @@ EQ_TOP_RISKS_DISPLAY     = "eq_top_risks_display"
 EQ_TOP_STRENGTHS_DISPLAY = "eq_top_strengths_display"
 EQ_WARNINGS_DISPLAY      = "eq_warnings_display"
 EQ_AVAILABLE             = "eq_available"
+
+# ── Event Risk (1A) ─────────────────────────────────────────────────────────
+EVENT_RISK        = 'event_risk'          # 'NORMAL' | 'HIGH RISK'
+EVENT_RISK_REASON = 'event_risk_reason'   # display string
+DAYS_TO_EARNINGS  = 'days_to_earnings'    # int | None
+
+# ── Insider Activity (1B) ────────────────────────────────────────────────────
+INSIDER_SIGNAL = 'insider_signal'   # 'ACCUMULATING' | 'DISTRIBUTING' | 'NEUTRAL' | 'UNAVAILABLE'
+INSIDER_NOTE   = 'insider_note'     # display string

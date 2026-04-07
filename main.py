@@ -37,6 +37,8 @@ from contracts.eq_schema import (
     TOP_RISKS, TOP_STRENGTHS, WARNINGS, DATA_CONFIDENCE,
     COMBINED_PRIORITY_SCORE, EQ_PERCENTILE, BATCH_REGIME,
     EQ_AVAILABLE, FATAL_FLAW_REASON,
+    EVENT_RISK, EVENT_RISK_REASON, DAYS_TO_EARNINGS,
+    INSIDER_SIGNAL, INSIDER_NOTE,
 )
 
 from sector_detector import run_rotation_analyzer
@@ -56,6 +58,8 @@ from contracts.price_structure_schema import (
     PS_DISTANCE_TO_SUPPORT_PCT, PS_DISTANCE_TO_RESIST_PCT,
     PS_STRUCTURE_STATE, PS_RECENT_CROSSOVER, PS_DATA_CONFIDENCE,
     PS_REASONING, PS_VERDICT_DISPLAY,
+    PS_ENTRY_PRICE, PS_STOP_LOSS, PS_PRICE_TARGET,
+    PS_RISK_REWARD_RATIO, PS_RR_OVERRIDE,
     PRICE_STRUCTURE_DEFAULTS,
 )
 
@@ -436,7 +440,7 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
     try:
         eq_tickers = [c['ticker'] for c in all_candidates]
         log.info(f'[DEBUG][EQ] Running EQ analysis on {len(eq_tickers)} forced tickers')
-        eq_results = run_eq_analyzer(eq_tickers)
+        eq_results, eq_fetcher = run_eq_analyzer(eq_tickers)
         eq_map = {
             r.get('ticker'): r
             for r in eq_results
@@ -464,8 +468,10 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
             else:
                 candidate[EQ_AVAILABLE] = False
                 log.info(f'[DEBUG][EQ] {t}: no EQ data — skipped or error')
+        eq_fetcher = eq_fetcher  # preserve for 1B
     except Exception as eq_err:
         log.warning(f'[DEBUG][EQ] EQ analysis failed (non-fatal): {eq_err}')
+        eq_fetcher = None
         for candidate in all_candidates:
             candidate[EQ_AVAILABLE] = False
 
@@ -555,6 +561,11 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
                     candidate[PS_RECENT_CROSSOVER]        = ps_result.get(PS_RECENT_CROSSOVER,       PRICE_STRUCTURE_DEFAULTS[PS_RECENT_CROSSOVER])
                     candidate[PS_DATA_CONFIDENCE]         = ps_result.get(PS_DATA_CONFIDENCE,        PRICE_STRUCTURE_DEFAULTS[PS_DATA_CONFIDENCE])
                     candidate[PS_REASONING]               = ps_result.get(PS_REASONING,              PRICE_STRUCTURE_DEFAULTS[PS_REASONING])
+                    candidate[PS_ENTRY_PRICE]             = ps_result.get(PS_ENTRY_PRICE,             PRICE_STRUCTURE_DEFAULTS[PS_ENTRY_PRICE])
+                    candidate[PS_STOP_LOSS]               = ps_result.get(PS_STOP_LOSS,               PRICE_STRUCTURE_DEFAULTS[PS_STOP_LOSS])
+                    candidate[PS_PRICE_TARGET]            = ps_result.get(PS_PRICE_TARGET,            PRICE_STRUCTURE_DEFAULTS[PS_PRICE_TARGET])
+                    candidate[PS_RISK_REWARD_RATIO]       = ps_result.get(PS_RISK_REWARD_RATIO,       PRICE_STRUCTURE_DEFAULTS[PS_RISK_REWARD_RATIO])
+                    candidate[PS_RR_OVERRIDE]             = ps_result.get(PS_RR_OVERRIDE,             PRICE_STRUCTURE_DEFAULTS[PS_RR_OVERRIDE])
                     ps_enriched += 1
                 else:
                     candidate[PS_AVAILABLE] = False
@@ -572,6 +583,62 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
         for candidate in all_candidates:
             candidate[PS_AVAILABLE] = False
     # ── End Step 27f (Debug) ─────────────────────────────────────────────
+
+    # ── Step 27g: Event Risk enrichment (Debug) ──────────────────────────
+    try:
+        import os as _os_er
+        finnhub_token = _os_er.environ.get('FINNHUB_TOKEN', '')
+        from eq_analyzer.event_risk import get_event_risk
+        er_enriched = 0
+        for candidate in all_candidates:
+            t = candidate.get('ticker', '')
+            try:
+                er = get_event_risk(t, finnhub_token)
+                candidate[EVENT_RISK]        = er.get('event_risk', 'NORMAL')
+                candidate[EVENT_RISK_REASON] = er.get('event_risk_reason', '')
+                candidate[DAYS_TO_EARNINGS]  = er.get('days_to_earnings')
+                if er.get('event_risk') == 'HIGH RISK':
+                    er_enriched += 1
+            except Exception as _er_err:
+                candidate[EVENT_RISK]        = 'NORMAL'
+                candidate[EVENT_RISK_REASON] = ''
+                candidate[DAYS_TO_EARNINGS]  = None
+                log.info(f'[ER] {t}: error — {_er_err}')
+        log.info(f'[ER] Event risk complete. {er_enriched} HIGH RISK / {len(all_candidates)} total')
+    except Exception as er_err:
+        log.warning(f'[ER] Event risk analysis failed (non-fatal): {er_err}')
+        for candidate in all_candidates:
+            candidate[EVENT_RISK]        = 'NORMAL'
+            candidate[EVENT_RISK_REASON] = ''
+            candidate[DAYS_TO_EARNINGS]  = None
+    # ── End Step 27g (Debug) ─────────────────────────────────────────────
+
+    # ── Step 27h: Insider Activity enrichment (Debug) ────────────────────
+    try:
+        from eq_analyzer.insider_activity import get_insider_signal
+        ins_enriched = 0
+        for candidate in all_candidates:
+            t = candidate.get('ticker', '')
+            try:
+                if eq_fetcher is not None:
+                    ins = get_insider_signal(t, eq_fetcher)
+                else:
+                    ins = {'insider_signal': 'UNAVAILABLE', 'insider_note': ''}
+                candidate[INSIDER_SIGNAL] = ins.get('insider_signal', 'UNAVAILABLE')
+                candidate[INSIDER_NOTE]   = ins.get('insider_note', '')
+                if ins.get('insider_signal') in ('ACCUMULATING', 'DISTRIBUTING'):
+                    ins_enriched += 1
+            except Exception as _ins_err:
+                candidate[INSIDER_SIGNAL] = 'UNAVAILABLE'
+                candidate[INSIDER_NOTE]   = ''
+                log.info(f'[INS] {t}: error — {_ins_err}')
+        log.info(f'[INS] Insider activity complete. {ins_enriched} signals / {len(all_candidates)} total')
+    except Exception as ins_err:
+        log.warning(f'[INS] Insider activity analysis failed (non-fatal): {ins_err}')
+        for candidate in all_candidates:
+            candidate[INSIDER_SIGNAL] = 'UNAVAILABLE'
+            candidate[INSIDER_NOTE]   = ''
+    # ── End Step 27h (Debug) ─────────────────────────────────────────────
 
     # Build and send report
     from reports.report_builder import build_intraday_report
@@ -950,7 +1017,7 @@ def run():
         eq_tickers = [c['ticker'] for c in final_companies if c.get('ticker')]
         if eq_tickers:
             log.info(f'[EQ] Running earnings quality analysis on {len(eq_tickers)} tickers')
-            eq_results = run_eq_analyzer(eq_tickers)
+            eq_results, eq_fetcher = run_eq_analyzer(eq_tickers)
             eq_map = {
                 r.get('ticker'): r
                 for r in eq_results
@@ -993,6 +1060,7 @@ def run():
 
     except Exception as eq_err:
         log.warning(f'[EQ] EQ analysis failed (non-fatal): {eq_err}')
+        eq_fetcher = None
         for candidate in final_companies:
             candidate[EQ_AVAILABLE] = False
     # ── End Step 27d ─────────────────────────────────────────────────────
@@ -1086,6 +1154,11 @@ def run():
                         candidate[PS_RECENT_CROSSOVER]        = ps_result.get(PS_RECENT_CROSSOVER,       PRICE_STRUCTURE_DEFAULTS[PS_RECENT_CROSSOVER])
                         candidate[PS_DATA_CONFIDENCE]         = ps_result.get(PS_DATA_CONFIDENCE,        PRICE_STRUCTURE_DEFAULTS[PS_DATA_CONFIDENCE])
                         candidate[PS_REASONING]               = ps_result.get(PS_REASONING,              PRICE_STRUCTURE_DEFAULTS[PS_REASONING])
+                        candidate[PS_ENTRY_PRICE]             = ps_result.get(PS_ENTRY_PRICE,             PRICE_STRUCTURE_DEFAULTS[PS_ENTRY_PRICE])
+                        candidate[PS_STOP_LOSS]               = ps_result.get(PS_STOP_LOSS,               PRICE_STRUCTURE_DEFAULTS[PS_STOP_LOSS])
+                        candidate[PS_PRICE_TARGET]            = ps_result.get(PS_PRICE_TARGET,            PRICE_STRUCTURE_DEFAULTS[PS_PRICE_TARGET])
+                        candidate[PS_RISK_REWARD_RATIO]       = ps_result.get(PS_RISK_REWARD_RATIO,       PRICE_STRUCTURE_DEFAULTS[PS_RISK_REWARD_RATIO])
+                        candidate[PS_RR_OVERRIDE]             = ps_result.get(PS_RR_OVERRIDE,             PRICE_STRUCTURE_DEFAULTS[PS_RR_OVERRIDE])
                         ps_enriched += 1
                     else:
                         candidate[PS_AVAILABLE] = False
@@ -1106,6 +1179,62 @@ def run():
         for candidate in final_companies:
             candidate[PS_AVAILABLE] = False
     # ── End Step 27f ─────────────────────────────────────────────────────
+
+    # ── Step 27g: Event Risk enrichment ──────────────────────────────────
+    try:
+        import os as _os_er
+        finnhub_token = _os_er.environ.get('FINNHUB_TOKEN', '')
+        from eq_analyzer.event_risk import get_event_risk
+        er_enriched = 0
+        for candidate in final_companies:
+            t = candidate.get('ticker', '')
+            try:
+                er = get_event_risk(t, finnhub_token)
+                candidate[EVENT_RISK]        = er.get('event_risk', 'NORMAL')
+                candidate[EVENT_RISK_REASON] = er.get('event_risk_reason', '')
+                candidate[DAYS_TO_EARNINGS]  = er.get('days_to_earnings')
+                if er.get('event_risk') == 'HIGH RISK':
+                    er_enriched += 1
+            except Exception as _er_err:
+                candidate[EVENT_RISK]        = 'NORMAL'
+                candidate[EVENT_RISK_REASON] = ''
+                candidate[DAYS_TO_EARNINGS]  = None
+                log.info(f'[ER] {t}: error — {_er_err}')
+        log.info(f'[ER] Event risk complete. {er_enriched} HIGH RISK / {len(final_companies)} total')
+    except Exception as er_err:
+        log.warning(f'[ER] Event risk analysis failed (non-fatal): {er_err}')
+        for candidate in final_companies:
+            candidate[EVENT_RISK]        = 'NORMAL'
+            candidate[EVENT_RISK_REASON] = ''
+            candidate[DAYS_TO_EARNINGS]  = None
+    # ── End Step 27g ─────────────────────────────────────────────────────
+
+    # ── Step 27h: Insider Activity enrichment ────────────────────────────
+    try:
+        from eq_analyzer.insider_activity import get_insider_signal
+        ins_enriched = 0
+        for candidate in final_companies:
+            t = candidate.get('ticker', '')
+            try:
+                if eq_fetcher is not None:
+                    ins = get_insider_signal(t, eq_fetcher)
+                else:
+                    ins = {'insider_signal': 'UNAVAILABLE', 'insider_note': ''}
+                candidate[INSIDER_SIGNAL] = ins.get('insider_signal', 'UNAVAILABLE')
+                candidate[INSIDER_NOTE]   = ins.get('insider_note', '')
+                if ins.get('insider_signal') in ('ACCUMULATING', 'DISTRIBUTING'):
+                    ins_enriched += 1
+            except Exception as _ins_err:
+                candidate[INSIDER_SIGNAL] = 'UNAVAILABLE'
+                candidate[INSIDER_NOTE]   = ''
+                log.info(f'[INS] {t}: error — {_ins_err}')
+        log.info(f'[INS] Insider activity complete. {ins_enriched} signals / {len(final_companies)} total')
+    except Exception as ins_err:
+        log.warning(f'[INS] Insider activity analysis failed (non-fatal): {ins_err}')
+        for candidate in final_companies:
+            candidate[INSIDER_SIGNAL] = 'UNAVAILABLE'
+            candidate[INSIDER_NOTE]   = ''
+    # ── End Step 27h ─────────────────────────────────────────────────────
 
     # ── Step 28: Build reports ────────────────────────────────────────────
     from reports.report_builder import build_intraday_report
