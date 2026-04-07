@@ -23,21 +23,21 @@
   "failed_tickers": [],
   "api_failures": {},
   "sector_scores_today": {
-    "technology": 3.448,
-    "healthcare": 0.43,
-    "financials": 1.527,
-    "consumer_discretionary": -0.686,
-    "consumer_staples": -0.841,
-    "industrials": 2.518,
-    "materials": 1.809,
-    "energy": -2.381,
-    "utilities": 0.913,
-    "real_estate": 2.535,
-    "communication_services": 1.251,
-    "semiconductors": 7.191,
-    "defense": 3.146
+    "technology": 3.773,
+    "healthcare": 1.105,
+    "financials": 1.679,
+    "consumer_discretionary": -0.464,
+    "consumer_staples": -0.941,
+    "industrials": 2.394,
+    "materials": 1.889,
+    "energy": -2.852,
+    "utilities": 0.85,
+    "real_estate": 2.781,
+    "communication_services": 1.342,
+    "semiconductors": 7.512,
+    "defense": 2.876
   },
-  "breadth_score_today": 0.308,
+  "breadth_score_today": 0.362,
   "sector_breadth_ma_today": {
     "technology": {
       "breadth_ma_score": 0.2,
@@ -50,9 +50,9 @@
       "label": "mixed signals"
     },
     "healthcare": {
-      "breadth_ma_score": 0.1,
-      "pct": 10.0,
-      "label": "sector is structurally weak"
+      "breadth_ma_score": 0.4,
+      "pct": 40.0,
+      "label": "mixed signals"
     },
     "financials": {
       "breadth_ma_score": 0.1,
@@ -70,9 +70,9 @@
       "label": "sector is structurally weak"
     },
     "industrials": {
-      "breadth_ma_score": 0.2,
-      "pct": 20.0,
-      "label": "sector is structurally weak"
+      "breadth_ma_score": 0.3,
+      "pct": 30.0,
+      "label": "mixed signals"
     },
     "defense": {
       "breadth_ma_score": 0.0,
@@ -100,8 +100,8 @@
       "label": "mixed signals"
     },
     "communication_services": {
-      "breadth_ma_score": 0.3,
-      "pct": 30.0,
+      "breadth_ma_score": 0.4,
+      "pct": 40.0,
       "label": "mixed signals"
     }
   },
@@ -109,18 +109,18 @@
   "event_scores_today": {},
   "indices_today": {
     "dow": {
-      "value": 46329.26,
-      "change_pct": -0.73,
+      "value": 46461.63,
+      "change_pct": -0.45,
       "label": "Falling"
     },
     "sp500": {
-      "value": 6564.34,
-      "change_pct": -0.72,
+      "value": 6585.64,
+      "change_pct": -0.4,
       "label": "Falling"
     },
     "nasdaq": {
-      "value": 21773.29,
-      "change_pct": -1.01,
+      "value": 21861.61,
+      "change_pct": -0.61,
       "label": "Falling"
     }
   },
