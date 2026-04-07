@@ -1,6 +1,10 @@
 {
   "date": "2026-04-07",
-  "reported_companies": [],
+  "reported_companies": [
+    "NVDA",
+    "WDC",
+    "FTNT"
+  ],
   "alpha_vantage_calls_today": 20,
   "runs": {
     "9:45-11:15": {
@@ -16,8 +20,12 @@
       "status": "pending"
     },
     "16:00-17:20": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "WDC",
+        "FTNT",
+        "NVDA"
+      ],
+      "status": "complete"
     }
   },
   "failed_tickers": [],
@@ -124,5 +132,9 @@
       "label": "Flat"
     }
   },
-  "today_scores": {}
+  "today_scores": {
+    "WDC": 58.9,
+    "FTNT": 54.3,
+    "NVDA": 54.1
+  }
 }
