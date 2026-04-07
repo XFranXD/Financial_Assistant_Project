@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>■ Stock Research — 16:00-17:20 Update — 1 opportunity found</title>
+  <style>
+    :root {
+      --void: #0a0610;
+      --l1: #130f22;
+      --l2: #1a1430;
+      --l3: #221a3e;
+      --l4: #2c224e;
+      --pu: #9b59ff;
+      --pu-lt: #c084ff;
+      --pu-dk: #5e2ba8;
+      --mg: #ff6eb4;
+      --sun: #ff9a3c;
+      --cyan: #00e5ff;
+      --up: #39e8a0;
+      --dn: #ff4d6d;
+      --nt: #ff9a3c;
+      --snow: #f0eaff;
+      --slate: #8878b8;
+      --mist: #4a3d72;
+      --ghost: #2a2248;
+      --rim: rgba(155, 89, 255, 0.12);
+      --rim2: rgba(155, 89, 255, 0.25);
+      --ff-head: 'Orbitron', sans-serif;
+      --ff-mono: 'Share Tech Mono', monospace;
+    }
+
+    body {
+      background: var(--void);
+      color: var(--snow);
+      font-family: var(--ff-mono);
+      font-size: 14px;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0
+    }
+
+    .wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px 16px
+    }
+
+    h1 {
+      color: var(--snow);
+      font-size: 20px;
+      margin: 0 0 4px
+    }
+
+    .meta {
+      color: var(--slate);
+      font-size: 12px;
+      margin-bottom: 20px
+    }
+
+    .market-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 20px
+    }
+
+    .idx-card {
+      background: var(--l1);
+      border: 1px solid var(--rim);
+      border-radius: 8px;
+      padding: 14px;
+      text-align: center
+    }
+
+    .idx-name {
+      color: var(--slate);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 6px
+    }
+
+    .idx-val {
+      font-size: 22px;
+      font-weight: bold;
+      color: var(--snow)
+    }
+
+    .idx-chg {
+      font-size: 13px;
+      margin-top: 4px
+    }
+
+    .idx-chg.up {
+      color: var(--up)
+    }
+
+    .idx-chg.dn {
+      color: var(--dn)
+    }
+
+    .idx-chg.fl {
+      color: var(--slate)
+    }
+
+    .story-block {
+      background: var(--l1);
+      border: 1px solid var(--rim);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 20px;
+      color: var(--slate);
+      font-size: 13px
+    }
+
+    .story-block p {
+      margin: 4px 0
+    }
+
+    .section-hdr {
+      font-size: 13px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      padding: 8px 0 6px;
+      border-bottom: 2px solid;
+      margin-bottom: 12px
+    }
+
+    .sec-low .section-hdr {
+      color: var(--up);
+      border-color: var(--up)
+    }
+
+    .sec-mod .section-hdr {
+      color: var(--nt);
+      border-color: var(--nt)
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px
+    }
+
+    .card {
+      background: var(--l1);
+      border: 1px solid var(--rim);
+      border-radius: 8px;
+      padding: 0;
+      overflow: hidden
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: bold;
+      color: var(--cyan);
+      padding: 14px 16px 10px;
+      border-bottom: 1px solid var(--rim);
+      margin: 0
+    }
+
+    .card-title .tk {
+      color: var(--slate);
+      font-size: 12px
+    }
+
+    .card-title .sec {
+      color: var(--slate);
+      font-size: 12px;
+      margin-left: 6px
+    }
+
+    .analysis-section {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--rim)
+    }
+
+    .analysis-section:last-child {
+      border-bottom: none
+    }
+
+    .section-label-inner {
+      font-size: 11px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      margin-bottom: 8px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--rim)
+    }
+
+    .sec-market .section-label-inner {
+      color: var(--cyan)
+    }
+
+    .sec-eq .section-label-inner {
+      color: #aa88ff
+    }
+
+    .sec-rotation .section-label-inner {
+      color: var(--nt)
+    }
+
+    .sec-ps .section-label-inner {
+      color: var(--up)
+    }
+
+    .sec-combined .section-label-inner {
+      color: var(--mg)
+    }
+
+    .row {
+      display: flex;
+      margin: 3px 0;
+      font-size: 13px;
+      line-height: 1.5
+    }
+
+    .row .lbl {
+      color: var(--slate);
+      min-width: 120px;
+      flex-shrink: 0
+    }
+
+    .row .val {
+      color: var(--snow);
+      flex: 1
+    }
+
+    .mv-now {
+      color: var(--up);
+      font-weight: bold
+    }
+
+    .mv-watch {
+      color: var(--nt);
+      font-weight: bold
+    }
+
+    .mv-skip {
+      color: var(--slate);
+      font-weight: bold
+    }
+
+    .eq-v-supportive {
+      color: var(--up);
+      font-weight: bold
+    }
+
+    .eq-v-neutral {
+      color: var(--pu-lt);
+      font-weight: bold
+    }
+
+    .eq-v-weak {
+      color: var(--nt);
+      font-weight: bold
+    }
+
+    .eq-v-risky {
+      color: var(--dn);
+      font-weight: bold
+    }
+
+    .eq-v-unavailable {
+      color: var(--slate);
+      font-weight: bold
+    }
+
+    /* PS entry quality colours */
+    .ps-good {
+      color: var(--up);
+      font-weight: bold
+    }
+
+    .ps-extended {
+      color: var(--dn);
+      font-weight: bold
+    }
+
+    .ps-early {
+      color: var(--nt);
+      font-weight: bold
+    }
+
+    .ps-weak {
+      color: var(--dn);
+      font-weight: bold
+    }
+
+    .ps-unavail {
+      color: var(--slate);
+      font-weight: bold
+    }
+
+    /* PS sub-row divider */
+    .ps-divider {
+      border: none;
+      border-top: 1px solid var(--rim);
+      margin: 6px 0 4px
+    }
+
+    .combined-text {
+      color: var(--snow);
+      font-size: 13px;
+      line-height: 1.6
+    }
+
+    .eq-strength {
+      color: var(--up);
+      font-size: 12px;
+      margin: 2px 0
+    }
+
+    .eq-risk {
+      color: var(--dn);
+      font-size: 12px;
+      margin: 2px 0
+    }
+
+    .warn {
+      background: #1a1104;
+      border-left: 3px solid var(--nt);
+      padding: 8px 10px;
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--nt);
+      border-radius: 3px;
+      line-height: 1.5
+    }
+
+    .note-box {
+      background: var(--l2);
+      border-left: 3px solid var(--cyan);
+      padding: 8px 10px;
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--slate);
+      border-radius: 3px
+    }
+
+    .conf-strong {
+      color: var(--up);
+      font-weight: bold
+    }
+
+    .conf-mod {
+      color: var(--nt);
+      font-weight: bold
+    }
+
+    .conf-weak {
+      color: var(--slate);
+      font-weight: bold
+    }
+
+    .rotation-block {
+      background: var(--l2);
+      border: 1px solid var(--rim);
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 20px
+    }
+
+    .rotation-block h2 {
+      color: var(--slate);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin: 0 0 10px
+    }
+
+    .rot-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      padding: 3px 0;
+      border-bottom: 1px solid var(--rim)
+    }
+
+    .rot-sector {
+      color: var(--snow)
+    }
+
+    .rot-label {
+      color: var(--slate);
+      font-size: 12px
+    }
+
+    .rot-accel {
+      color: var(--up)
+    }
+
+    .rot-decel {
+      color: var(--dn)
+    }
+
+    .metric-guide {
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--rim)
+    }
+
+    .metric-guide h3 {
+      color: var(--slate);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      margin: 0 0 14px
+    }
+
+    .guide-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px
+    }
+
+    .guide-item {
+      background: var(--l1);
+      border: 1px solid var(--rim);
+      border-radius: 6px;
+      padding: 10px 12px
+    }
+
+    .guide-term {
+      display: block;
+      color: var(--cyan);
+      font-size: 12px;
+      font-weight: bold;
+      margin-bottom: 4px
+    }
+
+    .guide-def {
+      display: block;
+      color: var(--slate);
+      font-size: 12px;
+      line-height: 1.5
+    }
+
+    .disclaimer {
+      margin-top: 24px;
+      font-size: 11px;
+      color: var(--mist);
+      border-top: 1px solid var(--rim);
+      padding-top: 12px
+    }
+
+    @media(max-width:600px) {
+      .market-grid {
+        grid-template-columns: 1fr
+      }
+
+      .card-grid {
+        grid-template-columns: 1fr
+      }
+    }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap"
+    rel="stylesheet">
+</head>
+
+<body>
+
+
+  <div class="wrap">
+
+    <h1>■ Stock Research — 16:00-17:20 Full Report</h1>
+    <div class="meta">2026-04-07 · 16:28 ET · Market regime: Elevated uncertainty · Breadth: neutral breadth — mixed market movement
+      · 1 opportunities found</div>
+
+    <!-- Market Pulse -->
+    <div class="market-grid">
+      <div class="idx-card">
+        <div class="idx-name">Dow Jones
+        </div>
+        <div class="idx-val" style="font-size:13px;font-family:var(--ff-mono)">Dow Jones :      46,584  ▼ 0.2%  Falling</div>
+      </div>
+      <div class="idx-card">
+        <div class="idx-name">S&amp;amp;P 500
+        </div>
+        <div class="idx-val" style="font-size:13px;font-family:var(--ff-mono)">S&amp;P 500   :       6,617  – +0.1%  Flat</div>
+      </div>
+      <div class="idx-card">
+        <div class="idx-name">Nasdaq
+        </div>
+        <div class="idx-val" style="font-size:13px;font-family:var(--ff-mono)">Nasdaq    :      22,018  – +0.1%  Flat</div>
+      </div>
+    </div>
+
+    <!-- Today's Story -->
+    <div class="story-block">
+      <p><strong>Today's story</strong></p>
+      <p>Technology stocks are moving higher today following news about positive sector news signals.</p>
+    </div>
+
+    <!-- Low Risk -->
+    <div class="sec-low">
+      <div class="section-hdr">■ LOW RISK OPPORTUNITIES (1)</div>
+      <div class="card-grid">
+  <div class="card">
+    <div class="card-title">
+      NVDA <span class="tk">(NVDA)</span>
+      <span class="sec">— Technology (Semiconductors)</span>
+    </div>
+
+    <!-- ── MARKET SIGNAL ANALYSIS ───────────────────────────── -->
+    <div class="analysis-section sec-market">
+      <div class="section-label-inner">── MARKET SIGNAL ANALYSIS ────────</div>
+      <div class="row"><span class="lbl">Confidence:</span>
+        <span
+          class="val conf-mod">
+          [█████░░░░░] 52/100 (MODERATE)
+        </span>
+      </div>
+      <div class="row"><span class="lbl">Trend:</span><span class="val">declining with instability — 1M: ▲0.2% · 3M: ▼5.3% · 6M: ▼5.1%</span></div>
+      <div class="row"><span class="lbl">Price:</span><span class="val">Price: $178.10</span></div>
+      <div class="row"><span class="lbl">Volume:</span><span class="val">Lower activity than usual.</span></div>
+      <div class="row"><span class="lbl">Financials:</span><span class="val">keeps 56 cents per $1 earned · very little debt · ROIC: n/a · Operating cash flow: positive</span></div>
+      <div class="row"><span class="lbl">Risk:</span><span class="val">LOW RISK</span></div>
+      <div class="row" style="margin-top:6px"><span class="lbl">Market verdict:</span>
+        <span
+          class="val mv-watch">
+          WATCH
+        </span>
+      </div>
+    </div>
+
+    <!-- ── EARNINGS QUALITY ANALYSIS ────────────────────────── -->
+    <div class="analysis-section sec-eq">
+      <div class="section-label-inner">── EARNINGS QUALITY ANALYSIS ─────</div>
+      <div class="row"><span class="lbl">EQ Score:</span>
+        <span class="val">70/100 — WEAK</span>
+      </div>
+      <div class="row"><span class="lbl">Pass tier:</span>
+        <span class="val">WATCH (NEUTRAL)</span>
+      </div>
+      <div style="margin-top:4px">
+        <div class="eq-strength">[+] Dividend policy is financially sustainable</div>
+        <div class="eq-strength">[+] Business trajectory improving across multiple dimensions</div>
+      </div>
+      <div style="margin-top:2px">
+        <div class="eq-risk">[!] Accounts receivable is growing significantly faster than revenue, suggesting aggressive recognition or deteriorating collections.</div>
+        <div class="eq-risk">[!] Earnings are volatile or unpredictable</div>
+      </div>
+      <div style="margin-top:2px">
+        <div class="eq-risk" style="color:var(--nt)">[w] Accounts receivable growing faster than revenue</div>
+        <div class="eq-risk" style="color:var(--nt)">[w] Revenue growth diverging significantly from cash conversion</div>
+      </div>
+    </div>
+
+    <!-- ── SECTOR ROTATION ANALYSIS ──────────────────────────── -->
+    <div class="analysis-section sec-rotation">
+      <div class="section-label-inner">── SECTOR ROTATION ANALYSIS ───────</div>
+      <div class="row"><span class="lbl">Sector ETF:</span><span class="val">XLK</span></div>
+      <div class="row"><span class="lbl">Rot. score:</span><span class="val">39.3/100</span></div>
+      <div class="row"><span class="lbl">Signal:</span>
+        <span class="val eq-v-risky">
+          WEAKEN
+        </span>
+      </div>
+    </div>
+
+    <!-- ── PRICE STRUCTURE ANALYSIS ──────────────────────────── -->
+    <div class="analysis-section sec-ps">
+      <div class="section-label-inner">── PRICE STRUCTURE ANALYSIS ───────</div>
+
+      <!-- Core entry fields -->
+      <div class="row"><span class="lbl">Entry quality:</span>
+        <span class="val ps-weak">
+          WEAK
+        </span>
+      </div>
+      <div class="row"><span class="lbl">Trend:</span><span class="val">DOWN</span></div>
+      <div class="row"><span class="lbl">Key level:</span><span class="val">Near Support</span></div>
+      <div class="row"><span class="lbl">Price action:</span><span class="val">32/100</span></div>
+
+      <!-- Extended fields -->
+      <hr class="ps-divider">
+      <div class="row"><span class="lbl">Move ext.:</span><span class="val">8.4% above
+          126d low</span></div>
+      <div class="row"><span class="lbl">Structure:</span><span class="val">CONSOLIDATING</span></div>
+      <div class="row"><span class="lbl">Dist. support:</span><span class="val">1.2%</span></div>
+      <div class="row"><span class="lbl">Dist. resist.:</span><span class="val">1.8%</span></div>
+      <div class="row"><span class="lbl">Volatility:</span><span class="val">NORMAL</span></div>
+      <div class="row"><span class="lbl">Trend strength:</span><span class="val">19/100</span></div>
+      <div class="row"><span class="lbl">Data confidence:</span><span class="val">HIGH</span>
+      </div>
+
+
+      <div class="row"><span class="lbl">Crossover:</span><span class="val">NO</span></div>
+      <div class="row"><span class="lbl">Sup. reaction:</span><span class="val">YES</span></div>
+
+      <div class="row" style="margin-top:6px">
+        <span class="lbl">Reasoning:</span>
+        <span class="val" style="color:var(--slate);font-style:italic">Downtrend with weak structure — avoid.</span>
+      </div>
+
+    </div>
+
+    <!-- ── COMBINED READING ──────────────────────────────────── -->
+    <div class="analysis-section sec-combined">
+      <div class="section-label-inner">── COMBINED READING ──────────────</div>
+      <div class="combined-text">Market:          WATCH (52/100)</div>
+      <div class="combined-text">Earnings:        NEUTRAL</div>
+      <div class="combined-text">Rotation:        WEAKEN</div>
+      <div class="combined-text">Price Structure: WEAK</div>
+      <div class="combined-text">
+        Alignment:
+        <span class=" eq-v-risky">
+          CONFLICT
+        </span>
+      </div>
+      <div class="combined-text" style="margin-top:6px;padding-top:6px;border-top:1px solid var(--rim)">Conclusion: No alignment between signal and fundamentals — not actionable.</div>
+    </div>
+
+  </div>
+      </div>
+    </div>
+
+    <!-- Moderate Risk -->
+
+    <!-- No opportunities -->
+
+    <!-- Sector Rotation -->
+    <div class="rotation-block">
+      <h2>Sector Rotation Signals</h2>
+      <div class="rot-row">
+        <span class="rot-sector">Technology</span>
+        <span
+          class="rot-label">
+          gaining momentum        </span>
+      </div>
+      <div class="rot-row">
+        <span class="rot-sector">Healthcare</span>
+        <span
+          class="rot-label">
+          losing momentum        </span>
+      </div>
+      <div class="rot-row">
+        <span class="rot-sector">Financials</span>
+        <span
+          class="rot-decel">
+          rapidly losing strength        </span>
+      </div>
+      <div class="rot-row">
+        <span class="rot-sector">Consumer Discretionary</span>
+        <span
+          class="rot-decel">
+          losing momentum        </span>
+      </div>
+      <div class="rot-row">
+        <span class="rot-sector">Consumer Staples</span>
+        <span
+          class="rot-label">
+          losing momentum        </span>
+      </div>
+      <div class="rot-row">
+        <span class="rot-sector">Industrials</span>
+        <span
+          class="rot-label">
+          gaining momentum        </span>
+      </div>
+      <div class="rot-row">
+        <span class="rot-sector">Materials</span>
+        <span
+          class="rot-accel">
+          rapidly gaining strength ▲        </span>
+      </div>
+      <div class="rot-row">
+        <span class="rot-sector">Energy</span>
+        <span
+          class="rot-decel">
+          rapidly losing strength        </span>
+      </div>
+      <div class="rot-row">
+        <span class="rot-sector">Utilities</span>
+        <span
+          class="rot-label">
+          gaining momentum        </span>
+      </div>
+      <div class="rot-row">
+        <span class="rot-sector">Real Estate</span>
+        <span
+          class="rot-accel">
+          rapidly gaining strength ▲        </span>
+      </div>
+      <div class="rot-row">
+        <span class="rot-sector">Communication Services</span>
+        <span
+          class="rot-decel">
+          losing momentum        </span>
+      </div>
+      <div class="rot-row">
+        <span class="rot-sector">Semiconductors</span>
+        <span
+          class="rot-label">
+          stable        </span>
+      </div>
+      <div class="rot-row">
+        <span class="rot-sector">Defense</span>
+        <span
+          class="rot-accel">
+          rapidly gaining strength ▲        </span>
+      </div>
+    </div>
+
+    <!-- Metric Guide -->
+    <div class="metric-guide">
+      <h3>METRIC GUIDE</h3>
+      <div class="guide-grid">
+
+        <div class="guide-item">
+          <span class="guide-term">Confidence Score (System 1)</span>
+          <span class="guide-def">Market signal strength 0-100. Measures momentum,
+            volume, sector alignment, and risk. Strong ≥70 · Moderate 50-69 · Weak &lt;50.</span>
+        </div>
+
+        <div class="guide-item">
+          <span class="guide-term">EQ Score (System 2)</span>
+          <span class="guide-def">Earnings quality 0-100. Measures how well reported
+            profits are backed by real cash flows. PASS ≥75 · WATCH 55-74 · FAIL &lt;55.</span>
+        </div>
+
+        <div class="guide-item">
+          <span class="guide-term">EQ Verdict</span>
+          <span class="guide-def">SUPPORTIVE — earnings back the signal.
+            NEUTRAL — acceptable, monitor. WEAK — minor concerns.
+            RISKY — earnings do not support signal.
+            UNAVAILABLE — no SEC filing data.</span>
+        </div>
+
+        <div class="guide-item">
+          <span class="guide-term">Rotation Signal (System 3)</span>
+          <span class="guide-def">Sector timing signal. SUPPORT — sector flow
+            favors acting now. WAIT — neutral timing. WEAKEN — sector flow
+            deteriorating. UNKNOWN — insufficient data.</span>
+        </div>
+
+        <div class="guide-item">
+          <span class="guide-term">Entry Quality (System 4)</span>
+          <span class="guide-def">Price structure entry timing. GOOD — near support
+            or confirmed base, valid entry window. EXTENDED — too far above support,
+            pullback risk. EARLY — pattern forming, not confirmed.
+            WEAK — no valid setup. Required GOOD for BUY NOW.</span>
+        </div>
+
+        <div class="guide-item">
+          <span class="guide-term">Move Extension</span>
+          <span class="guide-def">% above the 126-day low. Higher values mean price
+            has already moved significantly from its base. Used to detect extended
+            entries where pullback risk is elevated.</span>
+        </div>
+
+        <div class="guide-item">
+          <span class="guide-term">Structure State</span>
+          <span class="guide-def">TRENDING — price in directional move.
+            CONSOLIDATING — price compressing in a range (base-building).
+            VOLATILE — erratic, no clear structure.</span>
+        </div>
+
+        <div class="guide-item">
+          <span class="guide-term">Dist. to Support / Resistance</span>
+          <span class="guide-def">% distance from current price to nearest support
+            and resistance levels. Tells you where price sits in its current range.</span>
+        </div>
+
+        <div class="guide-item">
+          <span class="guide-term">Combined Reading</span>
+          <span class="guide-def">Deterministic four-layer synthesis of all systems.
+            ALIGNED ≥ 2 systems agree. PARTIAL — mixed. CONFLICT — systems disagree.
+            BUY NOW requires entry_quality = GOOD with all other gates met.</span>
+        </div>
+
+        <div class="guide-item">
+          <span class="guide-term">Trend (1M/3M/6M)</span>
+          <span class="guide-def">Price return over 1, 3, and 6 months. Positive
+            across all three = confirmed momentum. One timeframe only = early stage.</span>
+        </div>
+
+        <div class="guide-item">
+          <span class="guide-term">Risk Score</span>
+          <span class="guide-def">Composite risk measure 0-100. Higher = more risk.
+            Factors: debt, volatility, liquidity, earnings stability, drawdown.</span>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="section-divider" style="margin:40px 0 20px;border-top:1px solid var(--rim);"></div>
+
+    <div class="wrap">
+      <div style="color:var(--slate);font-size:11px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">
+        AI RESEARCH PROMPT
+      </div>
+      <div style="color:#555577;font-size:11px;font-family:monospace;margin-bottom:10px;">
+        Paste into any AI assistant (Claude, ChatGPT, Gemini) for entry and exit timing analysis.
+      </div>
+      <div style="margin-bottom:12px;">
+        <button id="copy-prompt-btn" onclick="
+          var el = document.getElementById('ai-prompt-text');
+          var txt = el.innerText || el.textContent;
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(txt).then(function() {
+              var btn = document.getElementById('copy-prompt-btn');
+              btn.innerText = '✓ Copied!';
+              btn.style.background = '#00aa55';
+              btn.style.borderColor = '#00aa55';
+              btn.style.color = '#ffffff';
+              setTimeout(function() {
+                btn.innerText = '⧉ Copy Full Prompt';
+                btn.style.background = '#0f1f2f';
+                btn.style.borderColor = '#00e5ff';
+                btn.style.color = '#00e5ff';
+              }, 2500);
+            }).catch(function() {
+              var r = document.createRange();
+              r.selectNode(el);
+              window.getSelection().removeAllRanges();
+              window.getSelection().addRange(r);
+            });
+          } else {
+            var r = document.createRange();
+            r.selectNode(el);
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(r);
+          }
+        " style="
+          background:#0f1f2f;
+          border:1px solid var(--cyan);
+          border-radius:6px;
+          color:var(--cyan);
+          font-size:13px;
+          font-family:var(--ff-mono);
+          padding:10px 20px;
+          cursor:pointer;
+          width:100%;
+          text-align:center;
+          letter-spacing:.04em;
+        ">⧉ Copy Full Prompt</button>
+      </div>
+      <pre id="ai-prompt-text" style="
+        background:#050508;
+        border:1px solid #2a2a4a;
+        border-radius:6px;
+        padding:20px;
+        font-family:var(--ff-mono);
+        font-size:12px;
+        line-height:1.6;
+        color:#c8c8e0;
+        overflow-x:auto;
+        white-space:pre;
+        word-wrap:normal;
+        max-height:600px;
+        overflow-y:auto;
+      ">You are a stock research analyst assistant for an automated four-layer screening
+system called MRE (Market Research Engine). Interpret pre-computed signals and
+produce structured, actionable research notes. Do NOT predict prices. Do NOT give
+investment advice. Analyze signal alignment and flag risks.
+
+=============================================================
+SYSTEM ARCHITECTURE
+=============================================================
+
+SYSTEM 1 — MARKET SIGNAL
+  Composite confidence score: 0-100. Primary ranking signal.
+  Verdicts: RESEARCH NOW | WATCH | SKIP
+
+SYSTEM 2 — EARNINGS QUALITY (EQ)
+  EQ score: 0-100. Measures earnings reliability from SEC filings.
+  PASS → SUPPORTIVE | WATCH → NEUTRAL | FAIL → WEAK
+  Fatal flaw present → RISKY (overrides all tiers)
+  UNAVAILABLE — no SEC data found
+
+SYSTEM 3 — SECTOR ROTATION
+  Rotation score: 0-100. Measures sector timing and institutional flow.
+  Signals: SUPPORT | WAIT | WEAKEN | UNKNOWN
+
+SYSTEM 4 — PRICE STRUCTURE (PSA)
+  Price action score: 0-100. OHLCV-only entry timing. Hard gate on BUY NOW.
+  entry_quality: GOOD | EXTENDED | EARLY | WEAK | UNAVAILABLE
+  key_level_position: NEAR_SUPPORT | MID_RANGE | NEAR_RESISTANCE | BREAKOUT
+  structure_state: TRENDING | CONSOLIDATING | VOLATILE
+  volatility_state: COMPRESSING | EXPANDING | NORMAL
+
+COMBINED ALIGNMENT
+  ALIGNED (score &gt;= 2) | PARTIAL (0-1) | CONFLICT (&lt; 0)
+
+=============================================================
+TIMING QUALITY
+=============================================================
+
+  DOWN TREND  — 3M return is negative. Price is falling.
+                Lowest timing quality. Cannot qualify for PRIMARY.
+  EARLY TREND — 3M return 0% to &lt;15%. Momentum building, unconfirmed.
+  MID TREND   — 3M return 15-30%. Trend established, valid entry window.
+  LATE TREND  — 3M return &gt;30%. Elevated pullback risk.
+  UNKNOWN     — no 3M return data available.
+
+The timing label is pre-computed by the system. Trust it. Do not reclassify.
+
+TIMING PRIORITY RULE:
+  3M return &gt; 30% = LATE TREND. Final unless ALL THREE are true:
+    1. Market verdict = RESEARCH NOW
+    2. Rotation = SUPPORT with score &gt;= 80
+    3. No major signal conflicts
+  If any one condition is missing: LATE TREND stands. No exceptions.
+  Even with full override: LATE TREND can only upgrade to WAIT, never BUY NOW.
+
+DOWN TREND RULE:
+  A candidate with DOWN TREND timing:
+    - Cannot qualify for PRIMARY tier under any conditions
+    - Cannot receive BUY NOW under any conditions
+    - Can only qualify for SECONDARY if alignment is PARTIAL and
+      entry_quality is not WEAK
+    - Otherwise must be REJECTED
+
+=============================================================
+BUY NOW HARD GATE — ALL FIVE MUST BE TRUE
+=============================================================
+
+  1. Timing = EARLY TREND or MID TREND (DOWN TREND and LATE TREND blocked)
+  2. Market verdict = RESEARCH NOW
+  3. Rotation = SUPPORT
+  4. entry_quality = GOOD  &lt;- cannot be overridden by any other signal
+  5. No major signal conflicts
+
+  EXTENDED    -&gt; BUY NOW blocked. High pullback risk.
+  WEAK        -&gt; BUY NOW blocked. No valid setup.
+  EARLY       -&gt; BUY NOW blocked. Maximum output: WAIT.
+  UNAVAILABLE -&gt; Same as EARLY. BUY NOW blocked.
+
+=============================================================
+DECISION HIERARCHY (highest to lowest priority)
+=============================================================
+
+  1. Timing quality (trend stage)
+  2. Market verdict (System 1)
+  3. Sector rotation (System 3)
+  4. Earnings quality (System 2)
+  5. entry_quality (System 4) — gates BUY NOW only
+
+=============================================================
+CONFLICT AND RISK RULES
+=============================================================
+
+MAJOR SIGNAL CONFLICTS (any one = conflict):
+  - Market verdict = SKIP while Rotation = SUPPORT
+  - Commodity trend contradicts sector direction
+  - EQ = WEAK or RISKY while price trend is strong upward
+  Note: WATCH vs SUPPORT is a minor conflict only.
+
+COMMODITY CONTRADICTION RULE:
+  If sector depends on a commodity and that commodity is falling
+  while the stock is rising:
+    -&gt; Reduce confidence one step (HIGH-&gt;MEDIUM, MEDIUM-&gt;LOW)
+    -&gt; Flag explicitly in section 5 (Top Risks)
+
+UNAVAILABLE DATA RULES:
+  EQ UNAVAILABLE: do not assume positive or negative. Reduce confidence.
+  PS UNAVAILABLE: treat as EARLY. BUY NOW blocked. Flag for manual check.
+
+VOLATILITY STATE:
+  COMPRESSING near NEAR_SUPPORT or MID_RANGE -&gt; potential breakout setup
+  EXPANDING near NEAR_RESISTANCE or BREAKOUT -&gt; momentum or breakdown risk
+  EXPANDING + VOLATILE structure -&gt; unstable, not a valid entry setup
+
+CONFIDENCE IN TIMING:
+  HIGH   — strong alignment across all four systems + EARLY or MID TREND
+  MEDIUM — partial alignment or one system missing
+  LOW    — conflicting signals, DOWN TREND, LATE TREND, or multiple
+           systems unavailable
+
+LANGUAGE RULES:
+  Never say: will, guaranteed, certain, definitely
+  Always state downside risk before upside potential
+  Name any conflict specifically before drawing conclusions
+  Explain financial terms in parentheses on first use
+  Every risk listed in section 5 must reference a specific system signal
+  (System 1 verdict, EQ tier, Rotation signal, or PS entry_quality)
+  Example: &#39;System 3 (WEAKEN rotation) contradicts the price recovery.&#39;
+
+=============================================================
+CANDIDATE TIERING — CLASSIFY BEFORE ANY ANALYSIS
+=============================================================
+
+PRIMARY — best single opportunity this session (exactly 1)
+  Minimum standard — ALL of the following must be true:
+    - Alignment is ALIGNED or strong PARTIAL
+    - entry_quality is NOT WEAK
+    - Market verdict is NOT SKIP
+    - Timing is NOT DOWN TREND
+  If no candidate meets all four: state PRIMARY = NONE and explain why.
+  Do not force a PRIMARY. Do not lower the standard.
+  Receives full 7-section analysis.
+
+SECONDARY — watchlist candidates (max 2)
+  Hard exclusions — a candidate MUST be REJECTED (not SECONDARY) if ANY
+  of the following are true:
+    - Alignment = CONFLICT
+    - entry_quality = WEAK
+    - Market verdict = SKIP
+  If none of the above apply: SECONDARY requires partial alignment and
+  a setup that is not yet actionable but worth monitoring.
+  Receives sections 1, 5, and 7 only.
+
+REJECTED — all others
+  One line: ticker + reason (max 15 words).
+
+IF NO PRIMARY EXISTS:
+  Do NOT generate entry logic (section 3) or exit logic (section 4)
+  for any candidate. These sections only apply to PRIMARY.
+
+=============================================================
+OUTPUT FORMAT
+=============================================================
+
+## TIER CLASSIFICATION
+PRIMARY:   [TICKER or NONE] — one sentence why it leads (or why none qualifies)
+SECONDARY: [TICKER] — one sentence each (max 2, or NONE)
+REJECTED:  [TICKER] — reason | [TICKER] — reason
+
+---
+
+## PRIMARY: [TICKER]
+
+1) QUICK DECISION
+   Entry:                BUY NOW / WAIT / AVOID
+   Timing:               DOWN / EARLY / MID / LATE TREND
+   Confidence in timing: HIGH / MEDIUM / LOW
+   (2 sentences max — state the single most important reason)
+
+2) WHY (PLAIN ENGLISH)
+   - Is the trend fresh or extended?
+   - Does the sector support or contradict the move?
+   - Any signal conflicts? Name them specifically.
+   - What does price structure say about entry?
+   - Does volatility state add useful context?
+
+3) ENTRY LOGIC
+   Ideal entry scenario:   [specific condition referencing support/resistance/breakout]
+   Bad entry scenario:     [what makes this a poor entry now]
+   What to wait for:       [1-2 observable, measurable conditions — not opinions]
+   Conditions must reference price structure terms. Avoid vague phrases.
+
+4) EXIT LOGIC
+   Take profit if: [observable condition tied to this candidate&#39;s signals]
+   Cut loss if:    [observable condition tied to this candidate&#39;s signals]
+   No generic rules. No vague phrases like &#39;if momentum weakens&#39;.
+
+5) TOP RISKS RIGHT NOW
+   2-3 risks. Each must cite the specific system signal it comes from.
+   Example: &#39;System 3 (WEAKEN rotation) contradicts the price recovery.&#39;
+   No generic market risks.
+
+6) VERDICT
+   Choose one: Worth researching further / Watch closely / Avoid for now
+   2-3 sentences referencing the specific alignment state.
+
+7) ENTRY URGENCY
+   Choose one: Immediate / Near-term / Wait for confirmation
+   1 sentence — the specific observable condition that determines urgency.
+
+---
+
+## SECONDARY: [TICKER]
+
+1) QUICK DECISION
+   Entry: WAIT / AVOID | Timing: [label] | Confidence: [level]
+   (1 sentence — what specific condition is blocking a better classification)
+
+5) TOP RISKS
+   2 risks. Each must cite the specific system signal it comes from.
+
+7) ENTRY URGENCY
+   1 sentence — specific observable condition needed before reconsidering.
+
+---
+
+## REJECTED
+[TICKER] — [reason, max 15 words]
+
+---
+
+## CROSS-CANDIDATE SUMMARY
+Best entry opportunity:  [ticker or NONE] — one sentence
+Worst timing right now:  [ticker] — one sentence
+Compare candidates relative to each other, not individually.
+Explain why the PRIMARY (if any) is better than the rest.
+Overall market read:     1-2 sentences on whether this is a good time to act
+
+=============================================================
+GLOBAL CONTEXT
+=============================================================
+
+Date:             2026-04-07
+Slot:             16:00-17:20
+Market condition: Elevated uncertainty
+Market breadth:   neutral breadth — mixed market movement
+
+Market indices:
+  Dow Jones: 46,584 (-0.2%)
+  S&amp;P 500:   6,617 (+0.1%)
+  Nasdaq:    22,018 (+0.1%)
+
+Commodity context:
+  WTI Crude:   +9.0% (5-day)
+  Natural Gas: -1.5% (5-day)
+
+=============================================================
+CANDIDATES
+=============================================================
+
+[NVDA] — technology (Semiconductors) | Timing: DOWN TREND
+
+Price:          $178.10 (N/A today)
+Confidence:     52/100 (MODERATE)
+Market verdict: WATCH
+
+Trend:
+  1 month:  +0.2%
+  3 months: -5.3%  ← timing basis
+  6 months: -5.1%
+  Label:    declining with instability
+
+Volume: lower activity than usual
+
+Earnings Quality (System 2):
+  Score:     70/100
+  Tier:      WATCH (NEUTRAL)
+  Strengths: + Dividend policy is financially sustainable
++ Business trajectory improving across multiple dimensions
+  Risks:     ! Accounts receivable is growing significantly faster than revenue, suggesting aggressive recognition or deteriorating collections.
+! Earnings are volatile or unpredictable
+
+Sector Rotation (System 3):
+  ETF:    XLK
+  Score:  39.3/100
+  Signal: WEAKEN
+
+Price Structure (System 4):
+  Available:        YES
+  Entry quality:    WEAK
+  Trend:            DOWN (strength: 19/100)
+  Key level:        NEAR_SUPPORT
+  Structure:        CONSOLIDATING
+  Volatility state: NORMAL (compression: NEUTRAL)
+  Price action:     32/100
+  Move extension:   8.4% above 126-day low
+  Dist to support:  1.2%
+  Dist to resist:   1.8%
+  Reasoning:        Downtrend with weak structure — avoid.
+
+Combined Reading:
+  Market:          WATCH (52/100)
+  Earnings:        WATCH (NEUTRAL)
+  Rotation:        WEAKEN
+  Price Structure: WEAK
+  Alignment:  CONFLICT
+  Conclusion: No alignment between signal and fundamentals — not actionable.
+
+=============================================================
+ANALYZE THE CANDIDATES ABOVE
+=============================================================
+
+Apply tier classification first.
+Then produce the required output sections for each tier.
+Follow all rules and output format defined above exactly.
+</pre>
+    </div>
+
+    <div class="disclaimer">DISCLAIMER: This system does NOT perform trading, does NOT give investment advice, and does NOT make price predictions. It is a research data aggregation and scoring tool only.</div>
+
+  </div>
+</body>
+
+</html>
