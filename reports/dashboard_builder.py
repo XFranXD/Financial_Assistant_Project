@@ -305,7 +305,7 @@ _RANK_FETCH_JS = (
     "        : '<div style=\"color:var(--mist);font-size:11px;padding:8px 0;\">Price history unavailable</div>';\n"
     "      scripts += '<script type=\"application/json\" id=\"' + phUid + '\">'\n"
     "              + JSON.stringify(phList).replace(/<\\/script>/gi,'<\\\\/script>')\n"
-    "              + '<\\\\/script>';\n"
+    "              + '<\\/script>';\n"
     "      var confVal    = typeof stock.confidence === 'number' ? stock.confidence : null;\n"
     "      var riskVal    = typeof stock.risk_score === 'number' ? stock.risk_score : null;\n"
     "      var confCls    = confVal !== null ? (confVal >= 70 ? 'rpill-cup' : confVal >= 50 ? 'rpill-cnt' : 'rpill-cdn') : 'rpill-una';\n"
