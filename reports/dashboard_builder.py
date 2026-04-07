@@ -323,7 +323,7 @@ _RANK_FETCH_JS = (
     "      var psRR       = typeof stock.ps_risk_reward_ratio === 'number' ? stock.ps_risk_reward_ratio.toFixed(2) + 'x' : '\\\\u2014';\n"
     "      var psRROvr    = stock.ps_rr_override === true;\n"
     "      html += '<div class=\"rank-card\" data-ref=\"' + phUid + '\" data-eid=\"e' + i + '\" data-cid=\"ec' + i + '\">' \n"
-    "           + '<div class=\"rank-card-main\" onclick=\"expT(this.closest(\\\\'.rank-card\\\\'))\">'  \n"
+    "           + '<div class=\"rank-card-main\" onclick=\"expT(this.closest(\\\'.rank-card\\\'))\">'  \n"
     "           + '<div class=\"rck-n\">#' + i + '</div>'\n"
     "           + '<div class=\"rck-t\">' + (stock.ticker || '\\\\u2014') + '</div>'\n"
     "           + '<div class=\"rck-pills\">'\n"
