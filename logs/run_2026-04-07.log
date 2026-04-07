@@ -359,3 +359,96 @@
 2026-04-07T18:59:07 UTC | INFO     | email_sender | Email sent to francisco.ale.caballero01+stocks@gmail.com: ■ Stock Research — 13:45-15:15 Update — 1 opportunity found
 2026-04-07T18:59:07 UTC | INFO     | main | Git: committed and pushed
 2026-04-07T18:59:07 UTC | INFO     | main | [DEBUG] Force-ticker run complete. Tickers: ['NVDA']
+2026-04-07T19:39:49 UTC | INFO     | main | ============================================================
+2026-04-07T19:39:49 UTC | INFO     | main | AUTOMATED STOCK RESEARCH SYSTEM — starting run
+2026-04-07T19:39:49 UTC | INFO     | main | DISCLAIMER: This system does NOT perform trading, does NOT give investment advice, and does NOT make price predictions. It is a research data aggregation and scoring tool only.
+2026-04-07T19:39:49 UTC | INFO     | main | ============================================================
+2026-04-07T19:39:49 UTC | INFO     | main | [DEBUG] FORCE_TICKERS detected — entering debug mode
+2026-04-07T19:39:49 UTC | INFO     | main | [DEBUG] Using slot: 9:45-11:15
+2026-04-07T19:39:49 UTC | INFO     | main | [DEBUG] Force-ticker mode active — tickers: ['NVDA']
+2026-04-07T19:39:49 UTC | INFO     | main | [DEBUG] Skipping all sector/news gates
+2026-04-07T19:39:50 UTC | INFO     | market_collector | Index dow: 46407.72 Falling (-0.56%)
+2026-04-07T19:39:50 UTC | INFO     | market_collector | Index sp500: 6583.53 Falling (-0.43%)
+2026-04-07T19:39:51 UTC | INFO     | market_collector | Index nasdaq: 21863.49 Falling (-0.60%)
+2026-04-07T19:39:51 UTC | INFO     | market_regime | VIX fetched: 26.72
+2026-04-07T19:39:51 UTC | INFO     | market_regime | Regime: elevated vix=26.72 risk_mult=1.2 opp_mult=0.85
+2026-04-07T19:40:36 UTC | INFO     | market_breadth | Market breadth: 47/130 advancing (0.36) — weak breadth — most stocks declining
+2026-04-07T19:40:38 UTC | INFO     | sector_breadth_ma | Sector breadth MA technology: 2/10 = 0.20 (sector is structurally weak)
+2026-04-07T19:40:39 UTC | INFO     | sector_breadth_ma | Sector breadth MA semiconductors: 6/10 = 0.60 (healthy participation)
+2026-04-07T19:40:41 UTC | INFO     | sector_breadth_ma | Sector breadth MA healthcare: 3/10 = 0.30 (mixed signals)
+2026-04-07T19:40:43 UTC | INFO     | sector_breadth_ma | Sector breadth MA financials: 1/10 = 0.10 (sector is structurally weak)
+2026-04-07T19:40:45 UTC | INFO     | sector_breadth_ma | Sector breadth MA consumer_discretionary: 1/10 = 0.10 (sector is structurally weak)
+2026-04-07T19:40:47 UTC | INFO     | sector_breadth_ma | Sector breadth MA consumer_staples: 2/10 = 0.20 (sector is structurally weak)
+2026-04-07T19:40:49 UTC | INFO     | sector_breadth_ma | Sector breadth MA industrials: 3/10 = 0.30 (mixed signals)
+2026-04-07T19:40:51 UTC | INFO     | sector_breadth_ma | Sector breadth MA defense: 0/10 = 0.00 (sector is structurally weak)
+2026-04-07T19:40:52 UTC | INFO     | sector_breadth_ma | Sector breadth MA energy: 10/10 = 1.00 (sector is genuinely strong)
+2026-04-07T19:40:54 UTC | INFO     | sector_breadth_ma | Sector breadth MA materials: 3/10 = 0.30 (mixed signals)
+2026-04-07T19:40:56 UTC | INFO     | sector_breadth_ma | Sector breadth MA utilities: 9/10 = 0.90 (sector is genuinely strong)
+2026-04-07T19:40:58 UTC | INFO     | sector_breadth_ma | Sector breadth MA real_estate: 5/10 = 0.50 (mixed signals)
+2026-04-07T19:40:59 UTC | INFO     | sector_breadth_ma | Sector breadth MA communication_services: 4/10 = 0.40 (mixed signals)
+2026-04-07T19:41:03 UTC | INFO     | sector_momentum | Top 5 sectors: ['semiconductors', 'technology', 'defense', 'real_estate', 'industrials']
+2026-04-07T19:41:03 UTC | INFO     | sector_momentum | Sector momentum history updated (4 entries)
+2026-04-07T19:41:03 UTC | INFO     | sector_rotation_speed | Rotation technology: rank 4 -> 2 speed=2 (gaining momentum)
+2026-04-07T19:41:03 UTC | INFO     | sector_rotation_speed | Rotation healthcare: rank 7 -> 10 speed=-3 (losing momentum)
+2026-04-07T19:41:03 UTC | INFO     | sector_rotation_speed | Rotation financials: rank 3 -> 7 speed=-4 (rapidly losing strength)
+2026-04-07T19:41:03 UTC | INFO     | sector_rotation_speed | Rotation consumer_discretionary: rank 8 -> 11 speed=-3 (losing momentum)
+2026-04-07T19:41:03 UTC | INFO     | sector_rotation_speed | Rotation consumer_staples: rank 10 -> 12 speed=-2 (losing momentum)
+2026-04-07T19:41:03 UTC | INFO     | sector_rotation_speed | Rotation industrials: rank 6 -> 5 speed=1 (stable)
+2026-04-07T19:41:03 UTC | INFO     | sector_rotation_speed | Rotation materials: rank 13 -> 6 speed=7 (rapidly gaining strength)
+2026-04-07T19:41:03 UTC | INFO     | sector_rotation_speed | Rotation energy: rank 1 -> 13 speed=-12 (rapidly losing strength)
+2026-04-07T19:41:03 UTC | INFO     | sector_rotation_speed | Rotation utilities: rank 12 -> 9 speed=3 (gaining momentum)
+2026-04-07T19:41:03 UTC | INFO     | sector_rotation_speed | Rotation real_estate: rank 9 -> 4 speed=5 (rapidly gaining strength)
+2026-04-07T19:41:03 UTC | INFO     | sector_rotation_speed | Rotation communication_services: rank 5 -> 8 speed=-3 (losing momentum)
+2026-04-07T19:41:03 UTC | INFO     | sector_rotation_speed | Rotation semiconductors: rank 2 -> 1 speed=1 (stable)
+2026-04-07T19:41:03 UTC | INFO     | sector_rotation_speed | Rotation defense: rank 11 -> 3 speed=8 (rapidly gaining strength)
+2026-04-07T19:41:03 UTC | INFO     | news_collector | reuters RSS: fetched 0 articles
+2026-04-07T19:41:04 UTC | INFO     | news_collector | ft RSS: fetched 12 articles
+2026-04-07T19:41:04 UTC | INFO     | news_collector | Finnhub: fetched 100 articles
+2026-04-07T19:41:04 UTC | INFO     | news_collector | Filter: 112 raw → 56 passed
+2026-04-07T19:41:04 UTC | INFO     | news_collector | Dedup: 56 → 56 articles
+2026-04-07T19:41:04 UTC | INFO     | news_collector | Sector confirmed: financials score=48.6 headlines=16
+2026-04-07T19:41:04 UTC | INFO     | news_collector | Sector confirmed: real_estate score=36.9 headlines=12
+2026-04-07T19:41:04 UTC | INFO     | news_collector | Sector confirmed: utilities score=39.5 headlines=15
+2026-04-07T19:41:04 UTC | INFO     | news_collector | Sector confirmed: consumer_discretionary score=59.4 headlines=21
+2026-04-07T19:41:04 UTC | INFO     | news_collector | Sector confirmed: technology score=30.8 headlines=11
+2026-04-07T19:41:04 UTC | INFO     | news_collector | Sector confirmed: defense score=8.1 headlines=2
+2026-04-07T19:41:04 UTC | INFO     | news_collector | Sector confirmed: energy score=12.0 headlines=4
+2026-04-07T19:41:04 UTC | INFO     | news_collector | Sector confirmed: materials score=9.6 headlines=4
+2026-04-07T19:41:04 UTC | INFO     | news_collector | Sector confirmed: consumer_staples score=14.9 headlines=6
+2026-04-07T19:41:04 UTC | INFO     | news_collector | Sector confirmed: industrials score=21.6 headlines=9
+2026-04-07T19:41:04 UTC | INFO     | news_collector | Sector gated: semiconductors score=2.7 headlines=1 (need score>=4, headlines>=2)
+2026-04-07T19:41:04 UTC | INFO     | news_collector | Sector gated: communication_services score=2.2 headlines=1 (need score>=4, headlines>=2)
+2026-04-07T19:41:04 UTC | INFO     | news_collector | Confirmed sectors: ['financials', 'real_estate', 'utilities', 'consumer_discretionary', 'technology', 'defense', 'energy', 'materials', 'consumer_staples', 'industrials']
+2026-04-07T19:41:04 UTC | INFO     | market_collector | get_index_history dow: 30 points
+2026-04-07T19:41:04 UTC | INFO     | market_collector | get_index_history sp500: 30 points
+2026-04-07T19:41:04 UTC | INFO     | market_collector | get_index_history nasdaq: 30 points
+2026-04-07T19:41:04 UTC | INFO     | main | [DEBUG] Processing forced ticker: NVDA
+2026-04-07T19:41:04 UTC | INFO     | financial_parser | NVDA: using cached financials (1d old)
+2026-04-07T19:41:05 UTC | INFO     | volume_confirmation | NVDA volume ratio=0.52 score=0.17 label=lower activity than usual
+2026-04-07T19:41:05 UTC | INFO     | risk_adjusted_momentum | NVDA RAM raw=-2.51 score=0.37
+2026-04-07T19:41:05 UTC | INFO     | multi_timeframe_momentum | NVDA MTF 1m=-0.7847605689908874 3m=-6.217019597313913 6m=-5.961861854656324 score=0.42
+2026-04-07T19:41:05 UTC | INFO     | trend_stability | NVDA trend stability: dev=0.0500 score=0.50
+2026-04-07T19:41:06 UTC | INFO     | drawdown_risk | NVDA drawdown=9.8% score=0.76
+2026-04-07T19:41:06 UTC | INFO     | risk_model | Risk score: raw=21.7 penalty=0 mult=1.2 final=26.1
+2026-04-07T19:41:06 UTC | INFO     | opportunity_model | Opp score: b1=74.6 b2=43.2 b3=37.0 raw=54.5 x0.85 x0.85 = 39.4
+2026-04-07T19:41:06 UTC | INFO     | signal_agreement | Signal agreement: m=0.37 s=0.50 e=0.50 v=0.17 -> 0.016
+2026-04-07T19:41:06 UTC | INFO     | opportunity_model | Composite confidence: 50.0 (Moderate confidence)
+2026-04-07T19:41:06 UTC | INFO     | main | [DEBUG] NVDA: conf=50.0 risk=26.1 opp=39.4
+2026-04-07T19:41:06 UTC | INFO     | main | [DEBUG][EQ] Running EQ analysis on 1 forced tickers
+2026-04-07T19:41:07 UTC | INFO     | main | [ROT] Running rotation analysis on 1 candidates
+2026-04-07T19:41:09 UTC | INFO     | main | [ROT] Enrichment complete. 1 enriched / 1 total
+2026-04-07T19:41:09 UTC | INFO     | main | [PS] Running price structure analysis on 1 forced tickers
+2026-04-07T19:41:09 UTC | INFO     | main | [PS] Enrichment complete. 1 enriched / 1 total
+2026-04-07T19:41:09 UTC | INFO     | main | [ER] Event risk complete. 0 HIGH RISK / 1 total
+2026-04-07T19:41:24 UTC | INFO     | main | [INS] Insider activity complete. 0 signals / 1 total
+2026-04-07T19:41:24 UTC | INFO     | report_builder | Email report written: /home/runner/work/Financial_Assistant_Project/Financial_Assistant_Project/reports/output/intraday_email_945_1115_20260407T194124Z.html
+2026-04-07T19:41:24 UTC | INFO     | report_builder | Full report written: /home/runner/work/Financial_Assistant_Project/Financial_Assistant_Project/reports/output/intraday_full_945_1115_20260407T194124Z.html
+2026-04-07T19:41:24 UTC | INFO     | report_builder | Full report served at docs/reports/intraday_full_945_1115_20260407T194124Z.html
+2026-04-07T19:41:24 UTC | INFO     | dashboard_builder | News JSON written: 10 sectors
+2026-04-07T19:41:24 UTC | INFO     | dashboard_builder | index.html written
+2026-04-07T19:41:24 UTC | INFO     | dashboard_builder | rank.html written
+2026-04-07T19:41:24 UTC | INFO     | dashboard_builder | archive.html written
+2026-04-07T19:41:24 UTC | INFO     | dashboard_builder | news.html written
+2026-04-07T19:41:24 UTC | INFO     | dashboard_builder | build_dashboard complete
+2026-04-07T19:41:24 UTC | INFO     | email_sender | Using pre-built HTML: /home/runner/work/Financial_Assistant_Project/Financial_Assistant_Project/reports/output/intraday_email_945_1115_20260407T194124Z.html
+2026-04-07T19:41:26 UTC | INFO     | email_sender | Email sent to francisco.ale.caballero01+stocks@gmail.com: ■ Stock Research — 9:45-11:15 Update — 1 opportunity found
