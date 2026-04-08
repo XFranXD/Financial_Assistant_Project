@@ -354,7 +354,7 @@ document.addEventListener('click', function(e) {
       var psMap      = {'GOOD':'rpill-ps-gd','EXTENDED':'rpill-ps-ex','EARLY':'rpill-ps-ea','WEAK':'rpill-ps-wk','UNAVAILABLE':'rpill-eq-una'};
       var psPillCls  = psMap[psV]  || 'rpill-una';
       var evMap      = {'NORMAL':'rpill-ev-ok','HIGH RISK':'rpill-ev-hr'};
-      var insMap     = {'ACCUMULATING':'rpill-ins-ac','DISTRIBUTING':'rpill-ins-di','UNAVAILABLE':'rpill-ins-na'};
+      var insMap     = {'ACCUMULATING':'rpill-ins-ac','DISTRIBUTING':'rpill-ins-di','NEUTRAL':'rpill-ins-nt','UNAVAILABLE':'rpill-ins-na'};
       var evV        = stock.event_risk        || 'NORMAL';
       var insV       = stock.insider_signal    || 'UNAVAILABLE';
       var evPillCls  = evMap[evV]  || 'rpill-ev-ok';
