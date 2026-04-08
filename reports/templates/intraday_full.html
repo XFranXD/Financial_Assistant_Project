@@ -509,7 +509,7 @@
       <div class="row"><span class="lbl">Insider:</span>
         <span
           class="val {% if c.insider_signal == 'ACCUMULATING' %}eq-v-supportive{% elif c.insider_signal == 'DISTRIBUTING' %}eq-v-risky{% else %}eq-v-unavailable{% endif %}">
-          {{ c.insider_signal or 'UNAVAILABLE' }}
+          {{ c.insider_signal or 'UNAVAILABLE' }}{% if c.insider_note %} — {{ c.insider_note }}{% endif %}
         </span>
       </div>
       <div class="row" style="margin-top:6px"><span class="lbl">Market verdict:</span>
@@ -651,6 +651,11 @@
           %}
         </span>
       </div>
+      {% if c.ps_rr_override %}
+      <div class="row"><span class="lbl">R/R override:</span>
+        <span class="val ps-weak">YES — entry downgraded to WEAK</span>
+      </div>
+      {% endif %}
       {% endif %}
 
       <div class="row" style="margin-top:6px">
