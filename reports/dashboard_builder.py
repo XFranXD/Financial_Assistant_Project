@@ -382,9 +382,9 @@ _RANK_FETCH_JS = (
     "           + '<div class=\"est\"><div class=\"est-k\">Stop $</div><div class=\"est-v\">' + (typeof stock.ps_stop_loss==='number' ? '$'+stock.ps_stop_loss.toFixed(2) : '\\u2014') + '</div></div>'\n"
     "           + '<div class=\"est\"><div class=\"est-k\">Target $</div><div class=\"est-v\">' + (typeof stock.ps_price_target==='number' ? '$'+stock.ps_price_target.toFixed(2) : '\\u2014') + '</div></div>'\n"
     "           + '<div class=\"est\"><div class=\"est-k\">R/R</div><div class=\"est-v\">' + (typeof stock.ps_risk_reward_ratio==='number' ? stock.ps_risk_reward_ratio.toFixed(2)+'x' : '\\u2014') + '</div></div>'\n"
-    "           + '<div class=\"est est-divider\"></div>'\n"
+    "           + '<div class=\"est est-divider\"></div>') : '')\n"
     "           + '<div class=\"est\"><div class=\"est-k\">Event Risk</div><div class=\"est-v\">' + (stock.event_risk || 'NORMAL') + '</div></div>'\n"
-    "           + '<div class=\"est\"><div class=\"est-k\">Insider</div><div class=\"est-v\">' + (stock.insider_signal || 'N/A') + '</div></div>') : '')\n"
+    "           + '<div class=\"est\"><div class=\"est-k\">Insider</div><div class=\"est-v\">' + (stock.insider_signal || 'N/A') + '</div></div>'\n"
     "           + '</div>'\n"
     "           + '<div class=\"exp-chart\">' + chartEl + '</div>'\n"
     "           + '</div></div>'\n"
@@ -1911,3 +1911,4 @@ def build_dashboard(
         log.error(f'news.html write failed: {e}')
 
     log.info('build_dashboard complete')
+    
