@@ -1,25 +1,34 @@
 {
   "date": "2026-04-08",
   "reported_companies": [
-    "PLTR",
+    "O",
+    "REG",
     "KIM",
     "TXN",
-    "AME",
-    "NVDA",
+    "RTX",
+    "AMAT",
+    "AAPL",
+    "UNP",
+    "NOC",
+    "GD",
+    "AMD",
+    "RSG",
+    "CSX",
     "PLD",
+    "FRT",
+    "AME",
+    "FTNT",
+    "NVDA",
+    "DRS",
+    "WDC",
     "NNN",
     "ETN",
-    "O",
-    "CSX",
-    "RTX",
-    "WDC",
-    "NOC",
-    "AMAT",
-    "UNP",
-    "FTNT",
-    "VICI",
-    "REG",
-    "DRS"
+    "SBAC",
+    "AVGO",
+    "PLTR",
+    "GE",
+    "GLPI",
+    "VICI"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -54,8 +63,18 @@
       "status": "complete"
     },
     "13:45-15:15": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "AMD",
+        "AVGO",
+        "AAPL",
+        "FRT",
+        "RSG",
+        "GLPI",
+        "SBAC",
+        "GE",
+        "GD"
+      ],
+      "status": "complete"
     },
     "16:00-17:20": {
       "companies": [],
@@ -167,13 +186,14 @@
     }
   },
   "today_scores": {
-    "TXN": 61.3,
-    "FTNT": 59.7,
-    "PLTR": 59.2,
-    "O": 57.9,
-    "PLD": 57.5,
-    "UNP": 56.4,
-    "NOC": 56.1,
-    "NNN": 55.7
+    "AMD": 59.9,
+    "AVGO": 59.9,
+    "AAPL": 59.7,
+    "FRT": 56.3,
+    "RSG": 55.7,
+    "GLPI": 55.4,
+    "SBAC": 55.2,
+    "GE": 55.1,
+    "GD": 54.6
   }
 }
