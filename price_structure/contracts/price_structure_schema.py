@@ -31,6 +31,13 @@ PS_RECENT_CROSSOVER         = 'recent_crossover'          # bool
 PS_DATA_CONFIDENCE          = 'ps_data_confidence'        # HIGH / LOW / UNAVAILABLE
 PS_REASONING                = 'ps_reasoning'              # one-sentence human-readable summary
 
+# ── Execution Layer (1C) ─────────────────────────────────────────────────────
+PS_ENTRY_PRICE       = 'entry_price'        # float | None — computed entry price
+PS_STOP_LOSS         = 'stop_loss'          # float | None — stop loss level
+PS_PRICE_TARGET      = 'price_target'       # float | None — nearest resistance as target
+PS_RISK_REWARD_RATIO = 'risk_reward_ratio'  # float | None — (target-entry)/(entry-stop)
+PS_RR_OVERRIDE       = 'rr_override'        # bool — True if entry_quality overridden to WEAK
+
 # ── Availability flag (set by main.py enrichment, not by analyze()) ─────────
 
 PS_AVAILABLE                = 'ps_available'              # bool
@@ -66,6 +73,11 @@ PRICE_STRUCTURE_KEYS = {
     'recent_crossover':             bool,
     'ps_data_confidence':           str,
     'ps_reasoning':                 str,
+    'entry_price':                  float,
+    'stop_loss':                    float,
+    'price_target':                 float,
+    'risk_reward_ratio':            float,
+    'rr_override':                  bool,
 }
 
 PRICE_STRUCTURE_DEFAULTS = {
@@ -88,4 +100,9 @@ PRICE_STRUCTURE_DEFAULTS = {
     'recent_crossover':             False,
     'ps_data_confidence':           'UNAVAILABLE',
     'ps_reasoning':                 'Insufficient data to assess price structure.',
+    'entry_price':                  None,
+    'stop_loss':                    None,
+    'price_target':                 None,
+    'risk_reward_ratio':            None,
+    'rr_override':                  False,
 }

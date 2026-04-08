@@ -500,6 +500,18 @@
       {% for notice in c.notices %}
       <div class="{% if '■■' in notice %}warn{% else %}note-box{% endif %}" style="margin-top:4px">{{ notice }}</div>
       {% endfor %}
+      <div class="row" style="margin-top:4px"><span class="lbl">Event risk:</span>
+        <span class="val {% if c.event_risk == 'HIGH RISK' %}eq-v-risky{% else %}eq-v-supportive{% endif %}">
+          {{ c.event_risk or 'NORMAL' }}{% if c.event_risk == 'HIGH RISK' and c.event_risk_reason %} — {{
+          c.event_risk_reason }}{% endif %}
+        </span>
+      </div>
+      <div class="row"><span class="lbl">Insider:</span>
+        <span
+          class="val {% if c.insider_signal == 'ACCUMULATING' %}eq-v-supportive{% elif c.insider_signal == 'DISTRIBUTING' %}eq-v-risky{% else %}eq-v-unavailable{% endif %}">
+          {{ c.insider_signal or 'UNAVAILABLE' }}
+        </span>
+      </div>
       <div class="row" style="margin-top:6px"><span class="lbl">Market verdict:</span>
         <span
           class="val {% if c.market_verdict == 'RESEARCH NOW' %}mv-now{% elif c.market_verdict == 'WATCH' %}mv-watch{% else %}mv-skip{% endif %}">
@@ -589,11 +601,14 @@
 
       <!-- Extended fields -->
       <hr class="ps-divider">
-      <div class="row"><span class="lbl">Move ext.:</span><span class="val">{{ (c.move_extension_pct or 0) | round(1) }}% above
+      <div class="row"><span class="lbl">Move ext.:</span><span class="val">{{ (c.move_extension_pct or 0) | round(1)
+          }}% above
           126d low</span></div>
       <div class="row"><span class="lbl">Structure:</span><span class="val">{{ c.structure_state }}</span></div>
-      <div class="row"><span class="lbl">Dist. support:</span><span class="val">{{ (c.distance_to_support_pct or 0) | round(1) }}%</span></div>
-      <div class="row"><span class="lbl">Dist. resist.:</span><span class="val">{{ (c.distance_to_resistance_pct or 0) | round(1) }}%</span></div>
+      <div class="row"><span class="lbl">Dist. support:</span><span class="val">{{ (c.distance_to_support_pct or 0) |
+          round(1) }}%</span></div>
+      <div class="row"><span class="lbl">Dist. resist.:</span><span class="val">{{ (c.distance_to_resistance_pct or 0) |
+          round(1) }}%</span></div>
       <div class="row"><span class="lbl">Volatility:</span><span class="val">{{ c.volatility_state }}</span></div>
       <div class="row"><span class="lbl">Trend strength:</span><span class="val">{{ c.trend_strength }}/100</span></div>
       <div class="row"><span class="lbl">Data confidence:</span><span class="val">{{ c.ps_data_confidence }}</span>
@@ -603,13 +618,40 @@
       <hr class="ps-divider">
       <div class="row"><span class="lbl">Consolidating:</span><span class="val">{{ c.base_duration_days }} days</span>
       </div>
-      <div class="row"><span class="lbl">Vol. contraction:</span><span class="val">{{ 'YES' if c.volume_contraction else 'NO' }}</span>
+      <div class="row"><span class="lbl">Vol. contraction:</span><span class="val">{{ 'YES' if c.volume_contraction else
+          'NO' }}</span>
       </div>
       <div class="row"><span class="lbl">Compression:</span><span class="val">{{ c.compression_location }}</span></div>
       {% endif %}
 
-      <div class="row"><span class="lbl">Crossover:</span><span class="val">{{ 'YES' if c.recent_crossover else 'NO' }}</span></div>
-      <div class="row"><span class="lbl">Sup. reaction:</span><span class="val">{{ 'YES' if c.support_reaction else 'NO' }}</span></div>
+      <div class="row"><span class="lbl">Crossover:</span><span class="val">{{ 'YES' if c.recent_crossover else 'NO'
+          }}</span></div>
+      <div class="row"><span class="lbl">Sup. reaction:</span><span class="val">{{ 'YES' if c.support_reaction else 'NO'
+          }}</span></div>
+
+      <!-- ── Execution Layer (1C) ────────────────────────────────── -->
+      {% if c.ps_entry_price is not none or c.ps_stop_loss is not none or c.ps_price_target is not none %}
+      <hr class="ps-divider">
+      <div class="row"><span class="lbl">Entry $</span>
+        <span class="val">{% if c.ps_entry_price is not none %}${{ '%.2f' | format(c.ps_entry_price) }}{% else %}—{%
+          endif %}</span>
+      </div>
+      <div class="row"><span class="lbl">Stop $</span>
+        <span class="val">{% if c.ps_stop_loss is not none %}${{ '%.2f' | format(c.ps_stop_loss) }}{% else %}—{% endif
+          %}</span>
+      </div>
+      <div class="row"><span class="lbl">Target $</span>
+        <span class="val">{% if c.ps_price_target is not none %}${{ '%.2f' | format(c.ps_price_target) }}{% else %}—{%
+          endif %}</span>
+      </div>
+      <div class="row"><span class="lbl">R/R</span>
+        <span
+          class="val {% if c.ps_risk_reward_ratio is not none and c.ps_risk_reward_ratio >= 2.0 %}ps-good{% elif c.ps_risk_reward_ratio is not none %}ps-weak{% endif %}">
+          {% if c.ps_risk_reward_ratio is not none %}{{ '%.2f' | format(c.ps_risk_reward_ratio) }}x{% else %}—{% endif
+          %}
+        </span>
+      </div>
+      {% endif %}
 
       <div class="row" style="margin-top:6px">
         <span class="lbl">Reasoning:</span>
@@ -795,20 +837,40 @@
             Factors: debt, volatility, liquidity, earnings stability, drawdown.</span>
         </div>
 
-      </div>
-    </div>
+        <div class="guide-item">
+          <span class="guide-term">Event Risk (Phase 1A)</span>
+          <span class="guide-def">NORMAL — no earnings or macro event imminent.
+            HIGH RISK — earnings within 1–5 days or Fed/CPI release within 1 day.
+            HIGH RISK blocks BUY NOW regardless of entry quality.</span>
+        </div>
 
-    <div class="section-divider" style="margin:40px 0 20px;border-top:1px solid var(--rim);"></div>
+        <div class="guide-item">
+          <span class="guide-term">Insider Activity (Phase 1B)</span>
+          <span class="guide-def">Directional signal from SEC Form 4 filings (90-day window).
+            ACCUMULATING — net insider buying. DISTRIBUTING — net insider selling.
+            NEUTRAL — no clear direction. UNAVAILABLE — no filing data.
+            Confirmation layer only — does not change alignment score.</span>
+        </div>
 
-    <div class="wrap">
-      <div style="color:var(--slate);font-size:11px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">
-        AI RESEARCH PROMPT
+        <div class="guide-item">
+          <span class="guide-term">R/R Ratio (Phase 1C)</span>
+          <span class="guide-def">Risk/Reward = (Target − Entry) ÷ (Entry − Stop).
+            Minimum threshold is 2.0x. Below 2.0x overrides entry_quality to WEAK
+            automatically. Stop is placed 0.5% below nearest support level.</span>
+        </div>
       </div>
-      <div style="color:#555577;font-size:11px;font-family:monospace;margin-bottom:10px;">
-        Paste into any AI assistant (Claude, ChatGPT, Gemini) for entry and exit timing analysis.
-      </div>
-      <div style="margin-bottom:12px;">
-        <button id="copy-prompt-btn" onclick="
+
+      <div class="section-divider" style="margin:40px 0 20px;border-top:1px solid var(--rim);"></div>
+
+      <div class="wrap">
+        <div style="color:var(--slate);font-size:11px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">
+          AI RESEARCH PROMPT
+        </div>
+        <div style="color:#555577;font-size:11px;font-family:monospace;margin-bottom:10px;">
+          Paste into any AI assistant (Claude, ChatGPT, Gemini) for entry and exit timing analysis.
+        </div>
+        <div style="margin-bottom:12px;">
+          <button id="copy-prompt-btn" onclick="
           var el = document.getElementById('ai-prompt-text');
           var txt = el.innerText || el.textContent;
           if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -849,8 +911,8 @@
           text-align:center;
           letter-spacing:.04em;
         ">⧉ Copy Full Prompt</button>
-      </div>
-      <pre id="ai-prompt-text" style="
+        </div>
+        <pre id="ai-prompt-text" style="
         background:#050508;
         border:1px solid #2a2a4a;
         border-radius:6px;
@@ -865,11 +927,11 @@
         max-height:600px;
         overflow-y:auto;
       ">{{ ai_prompt | e }}</pre>
+      </div>
+
+      <div class="disclaimer">{{ disclaimer }}</div>
+
     </div>
-
-    <div class="disclaimer">{{ disclaimer }}</div>
-
-  </div>
 </body>
 
 </html>
