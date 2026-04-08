@@ -1476,6 +1476,13 @@ nav::before {
   border-image: linear-gradient(90deg, rgba(20, 16, 40, .9), rgba(74, 61, 114, .40)) 1;
 }
 
+/* INSIDER: neutral — dim white/mist (checked, nothing significant) */
+.rpill-ins-nt {
+  color: #a89bc2;
+  background: linear-gradient(90deg, rgba(20, 16, 40, .8), rgba(100, 85, 150, .25));
+  border-image: linear-gradient(90deg, rgba(20, 16, 40, .9), rgba(168, 155, 194, .45)) 1;
+}
+
 .rank-head {
   display: grid;
   grid-template-columns: 36px 76px 1fr 84px 72px 60px 90px 90px;
