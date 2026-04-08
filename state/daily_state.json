@@ -1,17 +1,25 @@
 {
   "date": "2026-04-08",
   "reported_companies": [
-    "AMAT",
+    "PLTR",
+    "KIM",
+    "TXN",
+    "AME",
+    "NVDA",
+    "PLD",
+    "NNN",
+    "ETN",
+    "O",
     "CSX",
     "RTX",
-    "DRS",
     "WDC",
-    "NVDA",
-    "ETN",
-    "KIM",
-    "AME",
+    "NOC",
+    "AMAT",
+    "UNP",
+    "FTNT",
     "VICI",
-    "REG"
+    "REG",
+    "DRS"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -32,8 +40,18 @@
       "status": "complete"
     },
     "11:45-13:15": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "TXN",
+        "FTNT",
+        "PLTR",
+        "O",
+        "PLD",
+        "UNP",
+        "NOC",
+        "NOC",
+        "NNN"
+      ],
+      "status": "complete"
     },
     "13:45-15:15": {
       "companies": [],
@@ -149,16 +167,13 @@
     }
   },
   "today_scores": {
-    "WDC": 69.0,
-    "AMAT": 62.0,
-    "NVDA": 61.6,
-    "CSX": 60.3,
-    "VICI": 58.9,
-    "REG": 58.7,
-    "KIM": 58.6,
-    "RTX": 56.4,
-    "ETN": 55.8,
-    "AME": 55.8,
-    "DRS": 55.8
+    "TXN": 61.3,
+    "FTNT": 59.7,
+    "PLTR": 59.2,
+    "O": 57.9,
+    "PLD": 57.5,
+    "UNP": 56.4,
+    "NOC": 56.1,
+    "NNN": 55.7
   }
 }
