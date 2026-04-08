@@ -1,0 +1,93 @@
+2026-04-08T02:01:07 UTC | INFO     | main | ============================================================
+2026-04-08T02:01:07 UTC | INFO     | main | AUTOMATED STOCK RESEARCH SYSTEM — starting run
+2026-04-08T02:01:07 UTC | INFO     | main | DISCLAIMER: This system does NOT perform trading, does NOT give investment advice, and does NOT make price predictions. It is a research data aggregation and scoring tool only.
+2026-04-08T02:01:07 UTC | INFO     | main | ============================================================
+2026-04-08T02:01:07 UTC | INFO     | main | [DEBUG] FORCE_TICKERS detected — entering debug mode
+2026-04-08T02:01:07 UTC | INFO     | state_manager | New trading day (2026-04-08) — resetting state
+2026-04-08T02:01:07 UTC | INFO     | main | [DEBUG] Using slot: 9:45-11:15
+2026-04-08T02:01:07 UTC | INFO     | main | [DEBUG] Force-ticker mode active — tickers: ['AAPL']
+2026-04-08T02:01:07 UTC | INFO     | main | [DEBUG] Skipping all sector/news gates
+2026-04-08T02:01:08 UTC | INFO     | market_collector | Index dow: 46584.46 Falling (-0.18%)
+2026-04-08T02:01:08 UTC | INFO     | market_collector | Index sp500: 6616.85 Flat (+0.08%)
+2026-04-08T02:01:08 UTC | INFO     | market_collector | Index nasdaq: 22017.85 Flat (+0.10%)
+2026-04-08T02:01:08 UTC | INFO     | market_regime | VIX fetched: 25.78
+2026-04-08T02:01:08 UTC | INFO     | market_regime | Regime: elevated vix=25.78 risk_mult=1.2 opp_mult=0.85
+2026-04-08T02:01:34 UTC | INFO     | market_breadth | Market breadth: 62/130 advancing (0.48) — neutral breadth — mixed market movement
+2026-04-08T02:01:36 UTC | INFO     | sector_breadth_ma | Sector breadth MA technology: 2/10 = 0.20 (sector is structurally weak)
+2026-04-08T02:01:37 UTC | INFO     | sector_breadth_ma | Sector breadth MA semiconductors: 6/10 = 0.60 (healthy participation)
+2026-04-08T02:01:40 UTC | INFO     | sector_breadth_ma | Sector breadth MA healthcare: 3/10 = 0.30 (mixed signals)
+2026-04-08T02:01:42 UTC | INFO     | sector_breadth_ma | Sector breadth MA financials: 1/10 = 0.10 (sector is structurally weak)
+2026-04-08T02:01:44 UTC | INFO     | sector_breadth_ma | Sector breadth MA consumer_discretionary: 1/10 = 0.10 (sector is structurally weak)
+2026-04-08T02:01:46 UTC | INFO     | sector_breadth_ma | Sector breadth MA consumer_staples: 2/10 = 0.20 (sector is structurally weak)
+2026-04-08T02:01:49 UTC | INFO     | sector_breadth_ma | Sector breadth MA industrials: 3/10 = 0.30 (mixed signals)
+2026-04-08T02:01:51 UTC | INFO     | sector_breadth_ma | Sector breadth MA defense: 0/10 = 0.00 (sector is structurally weak)
+2026-04-08T02:01:54 UTC | INFO     | sector_breadth_ma | Sector breadth MA energy: 10/10 = 1.00 (sector is genuinely strong)
+2026-04-08T02:01:56 UTC | INFO     | sector_breadth_ma | Sector breadth MA materials: 3/10 = 0.30 (mixed signals)
+2026-04-08T02:01:58 UTC | INFO     | sector_breadth_ma | Sector breadth MA utilities: 9/10 = 0.90 (sector is genuinely strong)
+2026-04-08T02:02:00 UTC | INFO     | sector_breadth_ma | Sector breadth MA real_estate: 4/10 = 0.40 (mixed signals)
+2026-04-08T02:02:02 UTC | INFO     | sector_breadth_ma | Sector breadth MA communication_services: 4/10 = 0.40 (mixed signals)
+2026-04-08T02:02:04 UTC | INFO     | sector_momentum | Top 5 sectors: ['semiconductors', 'technology', 'defense', 'industrials', 'real_estate']
+2026-04-08T02:02:04 UTC | INFO     | sector_momentum | Sector momentum history updated (4 entries)
+2026-04-08T02:02:04 UTC | INFO     | sector_rotation_speed | Rotation technology: rank 4 -> 2 speed=2 (gaining momentum)
+2026-04-08T02:02:04 UTC | INFO     | sector_rotation_speed | Rotation healthcare: rank 7 -> 9 speed=-2 (losing momentum)
+2026-04-08T02:02:04 UTC | INFO     | sector_rotation_speed | Rotation financials: rank 3 -> 7 speed=-4 (rapidly losing strength)
+2026-04-08T02:02:04 UTC | INFO     | sector_rotation_speed | Rotation consumer_discretionary: rank 8 -> 11 speed=-3 (losing momentum)
+2026-04-08T02:02:04 UTC | INFO     | sector_rotation_speed | Rotation consumer_staples: rank 10 -> 12 speed=-2 (losing momentum)
+2026-04-08T02:02:04 UTC | INFO     | sector_rotation_speed | Rotation industrials: rank 6 -> 4 speed=2 (gaining momentum)
+2026-04-08T02:02:04 UTC | INFO     | sector_rotation_speed | Rotation materials: rank 13 -> 6 speed=7 (rapidly gaining strength)
+2026-04-08T02:02:04 UTC | INFO     | sector_rotation_speed | Rotation energy: rank 1 -> 13 speed=-12 (rapidly losing strength)
+2026-04-08T02:02:04 UTC | INFO     | sector_rotation_speed | Rotation utilities: rank 12 -> 10 speed=2 (gaining momentum)
+2026-04-08T02:02:04 UTC | INFO     | sector_rotation_speed | Rotation real_estate: rank 9 -> 5 speed=4 (rapidly gaining strength)
+2026-04-08T02:02:04 UTC | INFO     | sector_rotation_speed | Rotation communication_services: rank 5 -> 8 speed=-3 (losing momentum)
+2026-04-08T02:02:04 UTC | INFO     | sector_rotation_speed | Rotation semiconductors: rank 2 -> 1 speed=1 (stable)
+2026-04-08T02:02:04 UTC | INFO     | sector_rotation_speed | Rotation defense: rank 11 -> 3 speed=8 (rapidly gaining strength)
+2026-04-08T02:02:04 UTC | INFO     | news_collector | reuters RSS: fetched 0 articles
+2026-04-08T02:02:05 UTC | INFO     | news_collector | ft RSS: fetched 11 articles
+2026-04-08T02:02:05 UTC | WARNING  | news_collector | FINNHUB_API_KEY not set — skipping Finnhub
+2026-04-08T02:02:05 UTC | INFO     | news_collector | Filter: 11 raw → 10 passed
+2026-04-08T02:02:05 UTC | INFO     | news_collector | Dedup: 10 → 10 articles
+2026-04-08T02:02:05 UTC | INFO     | news_collector | Sector confirmed: financials score=19.8 headlines=5
+2026-04-08T02:02:05 UTC | INFO     | news_collector | Sector confirmed: real_estate score=15.6 headlines=4
+2026-04-08T02:02:05 UTC | INFO     | news_collector | Sector confirmed: utilities score=17.4 headlines=5
+2026-04-08T02:02:05 UTC | INFO     | news_collector | Sector confirmed: consumer_discretionary score=22.2 headlines=6
+2026-04-08T02:02:05 UTC | INFO     | news_collector | Sector confirmed: technology score=11.7 headlines=3
+2026-04-08T02:02:05 UTC | INFO     | news_collector | Sector gated: defense score=5.4 headlines=1 (need score>=4, headlines>=2)
+2026-04-08T02:02:05 UTC | INFO     | news_collector | Sector gated: energy score=4.5 headlines=1 (need score>=4, headlines>=2)
+2026-04-08T02:02:05 UTC | INFO     | news_collector | Sector gated: materials score=3.9 headlines=1 (need score>=4, headlines>=2)
+2026-04-08T02:02:05 UTC | INFO     | news_collector | Sector confirmed: consumer_staples score=8.4 headlines=3
+2026-04-08T02:02:05 UTC | INFO     | news_collector | Sector gated: industrials score=4.5 headlines=1 (need score>=4, headlines>=2)
+2026-04-08T02:02:05 UTC | INFO     | news_collector | Confirmed sectors: ['financials', 'real_estate', 'utilities', 'consumer_discretionary', 'technology', 'consumer_staples']
+2026-04-08T02:02:05 UTC | INFO     | market_collector | get_index_history dow: 30 points
+2026-04-08T02:02:05 UTC | INFO     | market_collector | get_index_history sp500: 30 points
+2026-04-08T02:02:05 UTC | INFO     | market_collector | get_index_history nasdaq: 30 points
+2026-04-08T02:02:06 UTC | INFO     | main | [DEBUG] Processing forced ticker: AAPL
+2026-04-08T02:02:07 UTC | INFO     | financial_parser | AAPL: financials fetched OK (price=253.5)
+2026-04-08T02:02:08 UTC | INFO     | volume_confirmation | AAPL volume ratio=1.49 score=0.50 label=higher activity than usual
+2026-04-08T02:02:08 UTC | INFO     | risk_adjusted_momentum | AAPL RAM raw=-2.09 score=0.40
+2026-04-08T02:02:08 UTC | INFO     | multi_timeframe_momentum | AAPL MTF 1m=-1.538099738408897 3m=-5.059793318139129 6m=-1.5645391508067283 score=0.44
+2026-04-08T02:02:08 UTC | INFO     | trend_stability | AAPL trend stability: dev=0.0306 score=0.69
+2026-04-08T02:02:08 UTC | INFO     | drawdown_risk | AAPL drawdown=11.3% score=0.72
+2026-04-08T02:02:08 UTC | INFO     | risk_model | Risk score: raw=15.8 penalty=0 mult=1.2 final=19.0
+2026-04-08T02:02:08 UTC | INFO     | opportunity_model | Opp score: b1=44.2 b2=44.5 b3=49.9 raw=45.5 x0.85 x1.0 = 38.6
+2026-04-08T02:02:08 UTC | INFO     | signal_agreement | Signal agreement: m=0.40 s=0.50 e=0.50 v=0.50 -> 0.049
+2026-04-08T02:02:08 UTC | INFO     | opportunity_model | Composite confidence: 52.8 (Moderate confidence)
+2026-04-08T02:02:08 UTC | INFO     | main | [DEBUG] AAPL: conf=52.8 risk=19.0 opp=38.6
+2026-04-08T02:02:08 UTC | INFO     | main | [DEBUG][EQ] Running EQ analysis on 1 forced tickers
+2026-04-08T02:02:11 UTC | INFO     | main | [ROT] Running rotation analysis on 1 candidates
+2026-04-08T02:02:13 UTC | INFO     | main | [ROT] Enrichment complete. 1 enriched / 1 total
+2026-04-08T02:02:13 UTC | INFO     | main | [PS] Running price structure analysis on 1 forced tickers
+2026-04-08T02:02:13 UTC | INFO     | main | [PS] Enrichment complete. 1 enriched / 1 total
+2026-04-08T02:02:13 UTC | INFO     | main | [ER] Event risk enrichment complete. 1/1 processed
+2026-04-08T02:02:26 UTC | INFO     | main | [INS] Insider enrichment complete. 1/1 processed
+2026-04-08T02:02:27 UTC | INFO     | report_builder | Email report written: /home/alejandro/FINANCIAL_ASSISTANT_CORE/reports/output/intraday_email_945_1115_20260408T020226Z.html
+2026-04-08T02:02:27 UTC | INFO     | report_builder | Full report written: /home/alejandro/FINANCIAL_ASSISTANT_CORE/reports/output/intraday_full_945_1115_20260408T020226Z.html
+2026-04-08T02:02:27 UTC | INFO     | report_builder | Full report served at docs/reports/intraday_full_945_1115_20260408T020226Z.html
+2026-04-08T02:02:27 UTC | INFO     | dashboard_builder | News JSON written: 6 sectors
+2026-04-08T02:02:27 UTC | INFO     | dashboard_builder | index.html written
+2026-04-08T02:02:27 UTC | INFO     | dashboard_builder | rank.html written
+2026-04-08T02:02:27 UTC | INFO     | dashboard_builder | archive.html written
+2026-04-08T02:02:27 UTC | INFO     | dashboard_builder | news.html written
+2026-04-08T02:02:27 UTC | INFO     | dashboard_builder | build_dashboard complete
+2026-04-08T02:02:27 UTC | WARNING  | email_sender | GMAIL_EMAIL not set — skipping email send
+2026-04-08T02:02:27 UTC | WARNING  | main | Git commit failed (non-fatal): /home/alejandro/FINANCIAL_ASSISTANT_CORE
+2026-04-08T02:02:27 UTC | INFO     | main | [DEBUG] Force-ticker run complete. Tickers: ['AAPL']

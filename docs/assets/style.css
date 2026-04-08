@@ -1441,6 +1441,41 @@ nav::before {
   border-image: linear-gradient(90deg, rgba(80, 5, 15, .9), rgba(255, 77, 109, .70)) 1;
 }
 
+/* EVENT RISK: normal — green (no imminent event) */
+.rpill-ev-ok {
+  color: #39e8a0;
+  background: linear-gradient(90deg, rgba(5, 40, 20, .8), rgba(57, 232, 160, .20));
+  border-image: linear-gradient(90deg, rgba(5, 40, 20, .9), rgba(57, 232, 160, .65)) 1;
+}
+
+/* EVENT RISK: high risk — red (earnings/macro event imminent) */
+.rpill-ev-hr {
+  color: #ff4d6d;
+  background: linear-gradient(90deg, rgba(60, 5, 10, .8), rgba(255, 77, 109, .20));
+  border-image: linear-gradient(90deg, rgba(80, 5, 15, .9), rgba(255, 77, 109, .70)) 1;
+}
+
+/* INSIDER: accumulating — green (net buying) */
+.rpill-ins-ac {
+  color: #39e8a0;
+  background: linear-gradient(90deg, rgba(5, 40, 20, .8), rgba(57, 232, 160, .20));
+  border-image: linear-gradient(90deg, rgba(5, 40, 20, .9), rgba(57, 232, 160, .65)) 1;
+}
+
+/* INSIDER: distributing — red (net selling) */
+.rpill-ins-di {
+  color: #ff4d6d;
+  background: linear-gradient(90deg, rgba(60, 5, 10, .8), rgba(255, 77, 109, .20));
+  border-image: linear-gradient(90deg, rgba(80, 5, 15, .9), rgba(255, 77, 109, .70)) 1;
+}
+
+/* INSIDER: unavailable — mist/off (no SEC data) */
+.rpill-ins-na {
+  color: #4a3d72;
+  background: linear-gradient(90deg, rgba(20, 16, 40, .8), rgba(42, 34, 72, .50));
+  border-image: linear-gradient(90deg, rgba(20, 16, 40, .9), rgba(74, 61, 114, .40)) 1;
+}
+
 .rank-head {
   display: grid;
   grid-template-columns: 36px 76px 1fr 84px 72px 60px 90px 90px;

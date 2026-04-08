@@ -329,6 +329,12 @@ _RANK_FETCH_JS = (
     "      var rotPillCls = rotMap[rotS] || 'rpill-una';\n"
     "      var psMap      = {'GOOD':'rpill-ps-gd','EXTENDED':'rpill-ps-ex','EARLY':'rpill-ps-ea','WEAK':'rpill-ps-wk','UNAVAILABLE':'rpill-eq-una'};\n"
     "      var psPillCls  = psMap[psV]  || 'rpill-una';\n"
+    "      var evMap      = {'NORMAL':'rpill-ev-ok','HIGH RISK':'rpill-ev-hr'};\n"
+    "      var insMap     = {'ACCUMULATING':'rpill-ins-ac','DISTRIBUTING':'rpill-ins-di','UNAVAILABLE':'rpill-ins-na'};\n"
+    "      var evV        = stock.event_risk        || 'NORMAL';\n"
+    "      var insV       = stock.insider_signal    || 'UNAVAILABLE';\n"
+    "      var evPillCls  = evMap[evV]  || 'rpill-ev-ok';\n"
+    "      var insPillCls = insMap[insV] || 'rpill-ins-na';\n"
     "      var confDisp   = confVal !== null ? Math.round(confVal) : '\\u2014';\n"
     "      var riskDisp   = riskVal !== null ? Math.round(riskVal) : '\\u2014';\n"
     "      var priceDisp  = typeof stock.price === 'number' ? '$' + stock.price.toFixed(2) : '\\u2014';\n"
@@ -352,6 +358,8 @@ _RANK_FETCH_JS = (
     "           + '<span class=\"rpill ' + eqPillCls + '\"><span class=\"rpill-lbl\">EQ</span>' + (eqV || '\\u2014') + '</span>'\n"
     "           + '<span class=\"rpill ' + rotPillCls + '\"><span class=\"rpill-lbl\">Rotation</span>' + (rotS || '\\u2014') + '</span>'\n"
     "           + '<span class=\"rpill ' + psPillCls + '\"><span class=\"rpill-lbl\">Entry</span>' + (psV || '\\u2014') + '</span>'\n"
+    "           + '<span class=\"rpill ' + evPillCls + '\"><span class=\"rpill-lbl\">Event</span>' + evV + '</span>'\n"
+    "           + '<span class=\"rpill ' + insPillCls + '\"><span class=\"rpill-lbl\">Insider</span>' + insV + '</span>'\n"
     "           + '</div>'\n"
     "           + '</div>'\n"
     "           + '<div class=\"exp-row\" id=\"e' + i + '\" onclick=\"event.stopPropagation()\"><div class=\"exp-inner\">'\n"
@@ -369,7 +377,14 @@ _RANK_FETCH_JS = (
     "           + '<div class=\"est\"><div class=\"est-k\">Move Ext.</div><div class=\"est-v\">' + psMoveExt + '</div></div>'\n"
     "           + '<div class=\"est\"><div class=\"est-k\">Trend</div><div class=\"est-v\">' + psTrend + '</div></div>'\n"
     "           + '<div class=\"est\"><div class=\"est-k\">Dist Sup.</div><div class=\"est-v\">' + psDistSup + '</div></div>'\n"
-    "           + '<div class=\"est\"><div class=\"est-k\">Dist Res.</div><div class=\"est-v\">' + psDistRes + '</div></div>') : '')\n"
+    "           + '<div class=\"est\"><div class=\"est-k\">Dist Res.</div><div class=\"est-v\">' + psDistRes + '</div></div>'\n"
+    "           + '<div class=\"est\"><div class=\"est-k\">Entry $</div><div class=\"est-v\">' + (typeof stock.ps_entry_price==='number' ? '$'+stock.ps_entry_price.toFixed(2) : '\\u2014') + '</div></div>'\n"
+    "           + '<div class=\"est\"><div class=\"est-k\">Stop $</div><div class=\"est-v\">' + (typeof stock.ps_stop_loss==='number' ? '$'+stock.ps_stop_loss.toFixed(2) : '\\u2014') + '</div></div>'\n"
+    "           + '<div class=\"est\"><div class=\"est-k\">Target $</div><div class=\"est-v\">' + (typeof stock.ps_price_target==='number' ? '$'+stock.ps_price_target.toFixed(2) : '\\u2014') + '</div></div>'\n"
+    "           + '<div class=\"est\"><div class=\"est-k\">R/R</div><div class=\"est-v\">' + (typeof stock.ps_risk_reward_ratio==='number' ? stock.ps_risk_reward_ratio.toFixed(2)+'x' : '\\u2014') + '</div></div>'\n"
+    "           + '<div class=\"est est-divider\"></div>'\n"
+    "           + '<div class=\"est\"><div class=\"est-k\">Event Risk</div><div class=\"est-v\">' + (stock.event_risk || 'NORMAL') + '</div></div>'\n"
+    "           + '<div class=\"est\"><div class=\"est-k\">Insider</div><div class=\"est-v\">' + (stock.insider_signal || 'N/A') + '</div></div>') : '')\n"
     "           + '</div>'\n"
     "           + '<div class=\"exp-chart\">' + chartEl + '</div>'\n"
     "           + '</div></div>'\n"
@@ -1278,6 +1293,17 @@ def _update_rank_board(companies):
                 'ps_trend_structure':           c.get('trend_structure', ''),
                 'ps_distance_to_support_pct':   c.get('distance_to_support_pct'),
                 'ps_distance_to_resistance_pct': c.get('distance_to_resistance_pct'),
+                # ── Phase 1 (1A/1B/1C) fields ──
+                'event_risk':          c.get('event_risk',        'NORMAL'),
+                'event_risk_reason':   c.get('event_risk_reason', ''),
+                'days_to_earnings':    c.get('days_to_earnings'),
+                'insider_signal':      c.get('insider_signal',    'UNAVAILABLE'),
+                'insider_note':        c.get('insider_note',      ''),
+                'ps_entry_price':      c.get('entry_price'),
+                'ps_stop_loss':        c.get('stop_loss'),
+                'ps_price_target':     c.get('price_target'),
+                'ps_risk_reward_ratio': c.get('risk_reward_ratio'),
+                'ps_rr_override':      bool(c.get('rr_override', False)),
             }
     try:
         tmp = rank_path + '.tmp'

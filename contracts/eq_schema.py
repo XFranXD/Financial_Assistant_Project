@@ -30,6 +30,15 @@ COMBINED_PRIORITY_SCORE = "combined_priority_score"
 BATCH_REGIME            = "batch_regime"
 BATCH_MEDIAN            = "batch_median"
 
+# ── Event Risk (1A) ─────────────────────────────────────────────────────────
+EVENT_RISK        = 'event_risk'          # 'NORMAL' | 'HIGH RISK'
+EVENT_RISK_REASON = 'event_risk_reason'   # display string
+DAYS_TO_EARNINGS  = 'days_to_earnings'    # int | None
+
+# ── Insider Activity (1B) ────────────────────────────────────────────────────
+INSIDER_SIGNAL = 'insider_signal'   # 'ACCUMULATING' | 'DISTRIBUTING' | 'NEUTRAL' | 'UNAVAILABLE'
+INSIDER_NOTE   = 'insider_note'     # display string
+
 # ── Display keys built by System 1's report_builder.py ────────────────────
 # These are never set by eq_analyzer. They are computed from the raw keys above.
 EQ_SCORE_DISPLAY         = "eq_score_display"

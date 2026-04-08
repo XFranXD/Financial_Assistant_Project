@@ -59,6 +59,8 @@ from contracts.eq_schema import (
     EQ_PERCENTILE, BATCH_REGIME, EQ_SCORE_DISPLAY,
     EQ_LABEL_DISPLAY, EQ_VERDICT_DISPLAY, EQ_TOP_RISKS_DISPLAY,
     EQ_TOP_STRENGTHS_DISPLAY, EQ_WARNINGS_DISPLAY,
+    EVENT_RISK, EVENT_RISK_REASON,
+    INSIDER_SIGNAL, INSIDER_NOTE,
 )
 from contracts.sector_schema import (
     ROTATION_AVAILABLE, ROTATION_SCORE, ROTATION_STATUS,
@@ -76,6 +78,8 @@ from contracts.price_structure_schema import (
     PS_ENTRY_QUALITY_DISPLAY, PS_TREND_DISPLAY,
     PS_KEY_LEVEL_DISPLAY, PS_SCORE_DISPLAY, PS_REASONING_DISPLAY,
     PS_VERDICT_DISPLAY, PS_COMPRESSION_LOCATION,
+    PS_ENTRY_PRICE, PS_STOP_LOSS, PS_PRICE_TARGET,
+    PS_RISK_REWARD_RATIO, PS_RR_OVERRIDE,
 )
 
 log = get_logger('report_builder')
@@ -392,6 +396,11 @@ def _build_ps_display(c: dict) -> dict:
             PS_REASONING_DISPLAY:     'Price structure data unavailable.',
             PS_VERDICT_DISPLAY:       'UNAVAILABLE',
             'ps_available':           False,
+            'ps_entry_price':         None,
+            'ps_stop_loss':           None,
+            'ps_price_target':        None,
+            'ps_risk_reward_ratio':   None,
+            'ps_rr_override':         False,
         }
 
     entry_quality = (c.get(PS_ENTRY_QUALITY)     or 'WEAK').strip().upper()
@@ -411,6 +420,11 @@ def _build_ps_display(c: dict) -> dict:
         PS_REASONING_DISPLAY:     (reasoning[:200] if reasoning else ''),
         PS_VERDICT_DISPLAY:       entry_quality,   # same vocabulary — pill uses this
         'ps_available':           True,
+        'ps_entry_price':         c.get(PS_ENTRY_PRICE),
+        'ps_stop_loss':           c.get(PS_STOP_LOSS),
+        'ps_price_target':        c.get(PS_PRICE_TARGET),
+        'ps_risk_reward_ratio':   c.get(PS_RISK_REWARD_RATIO),
+        'ps_rr_override':         bool(c.get(PS_RR_OVERRIDE, False)),
     }
 
 
@@ -642,15 +656,29 @@ def _enrich_company_for_template(c: dict) -> dict:
     )
 
     notices = []
-    if c.get('earnings_warning'):
-        days = fin.get('earnings_days', 5)
-        if days <= 1:
-            notices.append(EARNINGS_WARNING_IMMINENT)
-        else:
-            notices.append(EARNINGS_WARNING.format(DAYS=int(days)))
+    # ── Event Risk notice (1A) — supersedes earnings_warning display ────────────────────────
+    event_risk_val    = c.get('event_risk', 'NORMAL')
+    event_risk_reason = c.get('event_risk_reason', '')
+    if event_risk_val == 'HIGH RISK':
+        reason_str = f' — {event_risk_reason}' if event_risk_reason else ''
+        notices.append(f'⚠ EVENT RISK: HIGH RISK{reason_str}. Avoid new entries until event passes.')
 
     if c.get('divergence_warning'):
         notices.append(DIVERGENCE_WARNING)
+
+    # ── Insider Activity notice (1B) ─────────────────────────────────────────────────
+    insider_signal_val = c.get('insider_signal', 'UNAVAILABLE')
+    insider_note_val   = c.get('insider_note', '')
+    if insider_signal_val == 'DISTRIBUTING':
+        notices.append(f'⚠ INSIDER ACTIVITY: Net selling detected. {insider_note_val}')
+    elif insider_signal_val == 'ACCUMULATING':
+        notices.append(f'✓ INSIDER ACTIVITY: Net buying detected. {insider_note_val}')
+
+    # ── R/R Override notice (1C) ──────────────────────────────────────────────────
+    if c.get(PS_RR_OVERRIDE) or c.get('rr_override'):
+        rr_val = c.get(PS_RISK_REWARD_RATIO) or c.get('risk_reward_ratio')
+        rr_str = f' (computed R/R: {rr_val:.2f}x)' if rr_val else ''
+        notices.append(f'↓ ENTRY QUALITY OVERRIDDEN: R/R below 2.0{rr_str}. Entry downgraded to WEAK.')
 
     if uv.get('unusual_flag'):
         notices.append(UNUSUAL_VOLUME_NOTE.format(
@@ -882,7 +910,7 @@ def _build_ai_prompt(
         "    - Otherwise must be REJECTED\n"
         "\n"
         "=============================================================\n"
-        "BUY NOW HARD GATE — ALL FIVE MUST BE TRUE\n"
+        "BUY NOW HARD GATE — ALL SIX MUST BE TRUE\n"
         "=============================================================\n"
         "\n"
         "  1. Timing = EARLY TREND or MID TREND (DOWN TREND and LATE TREND blocked)\n"
@@ -890,11 +918,13 @@ def _build_ai_prompt(
         "  3. Rotation = SUPPORT\n"
         "  4. entry_quality = GOOD  <- cannot be overridden by any other signal\n"
         "  5. No major signal conflicts\n"
+        "  6. event_risk = NORMAL  <- HIGH RISK blocks BUY NOW regardless of entry quality\n"
         "\n"
         "  EXTENDED    -> BUY NOW blocked. High pullback risk.\n"
         "  WEAK        -> BUY NOW blocked. No valid setup.\n"
         "  EARLY       -> BUY NOW blocked. Maximum output: WAIT.\n"
         "  UNAVAILABLE -> Same as EARLY. BUY NOW blocked.\n"
+        "  HIGH RISK   -> BUY NOW blocked. Risk event imminent. Flag prominently.\n"
         "\n"
         "=============================================================\n"
         "DECISION HIERARCHY (highest to lowest priority)\n"
@@ -925,6 +955,15 @@ def _build_ai_prompt(
         "UNAVAILABLE DATA RULES:\n"
         "  EQ UNAVAILABLE: do not assume positive or negative. Reduce confidence.\n"
         "  PS UNAVAILABLE: treat as EARLY. BUY NOW blocked. Flag for manual check.\n"
+        "\n"
+        "INSIDER ACTIVITY RULES:\n"
+        "  DISTRIBUTING insider signal near resistance = elevated risk flag.\n"
+        "  ACCUMULATING insider signal near support = confirmation note.\n"
+        "  UNAVAILABLE = no data. Do not treat as negative signal.\n"
+        "\n"
+        "R/R RULES:\n"
+        "  R/R < 2.0 overrides entry_quality to WEAK automatically (rr_override=YES).\n"
+        "  Even with GOOD entry_quality, if R/R is 'N/A', treat as WEAK for BUY NOW.\n"
         "\n"
         "VOLATILITY STATE:\n"
         "  COMPRESSING near NEAR_SUPPORT or MID_RANGE -> potential breakout setup\n"
@@ -1167,6 +1206,9 @@ def _build_ai_prompt(
         rotation_line = f"Rotation:        {rotation_signal_display}"
         ps_cr_line    = f"Price Structure: {ps_entry_quality}"
 
+        _rr_raw   = c.get(PS_RISK_REWARD_RATIO)
+        rr_display = ('%.2fx' % _rr_raw) if _rr_raw else 'N/A'
+
         candidate_block = (
             f"\n[{ticker}] — {sector} ({industry}) | Timing: {timing}\n"
             f"\n"
@@ -1204,7 +1246,20 @@ def _build_ai_prompt(
             f"  Move extension:   {ps_move_ext}% above 126-day low\n"
             f"  Dist to support:  {ps_dist_sup}%\n"
             f"  Dist to resist:   {ps_dist_res}%\n"
+            f"  Entry price:      {fmt_price(c.get(PS_ENTRY_PRICE)) if c.get(PS_ENTRY_PRICE) else 'N/A'}\n"
+            f"  Stop loss:        {fmt_price(c.get(PS_STOP_LOSS))   if c.get(PS_STOP_LOSS)   else 'N/A'}\n"
+            f"  Price target:     {fmt_price(c.get(PS_PRICE_TARGET)) if c.get(PS_PRICE_TARGET) else 'N/A'}\n"
+            f"  Risk/Reward:      {rr_display}\n"
+            f"  R/R override:     {'YES — entry_quality downgraded to WEAK' if c.get(PS_RR_OVERRIDE) else 'No'}\n"
             f"  Reasoning:        {ps_reasoning}\n"
+            f"\n"
+            f"Event Risk (1A):\n"
+            f"  Status: {c.get('event_risk', 'NORMAL')}\n"
+            f"  Reason: {c.get('event_risk_reason', '') or 'None'}\n"
+            f"\n"
+            f"Insider Activity (1B):\n"
+            f"  Signal: {c.get('insider_signal', 'UNAVAILABLE')}\n"
+            f"  Note:   {c.get('insider_note', '') or 'None'}\n"
             f"\n"
             f"Combined Reading:\n"
             f"  {market_line}\n"
