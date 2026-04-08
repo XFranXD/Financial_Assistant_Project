@@ -7,6 +7,7 @@ NEVER raises — all failures logged and skipped safely.
 
 import html
 import json
+import math
 import os
 from datetime import datetime
 
@@ -538,7 +539,7 @@ def _fmt_price(val) -> str:
 
 
 def _fmt_index_val(val) -> str:
-    if not isinstance(val, (int, float)):
+    if not isinstance(val, (int, float)) or math.isnan(val):
         return '\u2014'
     return f'{val:,.0f}'
 
