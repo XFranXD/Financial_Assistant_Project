@@ -1,8 +1,11 @@
 {
   "date": "2026-04-09",
   "reported_companies": [
-    "KIM",
+    "NVDA",
+    "WDC",
+    "AMAT",
     "REG",
+    "KIM",
     "VICI"
   ],
   "alpha_vantage_calls_today": 20,
@@ -24,8 +27,12 @@
       "status": "complete"
     },
     "16:00-17:20": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "WDC",
+        "AMAT",
+        "NVDA"
+      ],
+      "status": "complete"
     }
   },
   "failed_tickers": [],
@@ -145,8 +152,8 @@
     }
   },
   "today_scores": {
-    "REG": 61.9,
-    "KIM": 61.8,
-    "VICI": 61.4
+    "WDC": 69.5,
+    "AMAT": 63.8,
+    "NVDA": 62.5
   }
 }
