@@ -48,3 +48,10 @@ EQ_TOP_RISKS_DISPLAY     = "eq_top_risks_display"
 EQ_TOP_STRENGTHS_DISPLAY = "eq_top_strengths_display"
 EQ_WARNINGS_DISPLAY      = "eq_warnings_display"
 EQ_AVAILABLE             = "eq_available"
+
+# ── Market Regime (2A) — run-level context, not per-ticker ───────────────────
+MARKET_REGIME       = 'market_regime'    # 'BULL' | 'NEUTRAL' | 'BEAR'
+MARKET_BREADTH_PCT  = 'breadth_pct'      # float | None — % stocks above 200d SMA
+REGIME_SCORE        = 'regime_score'     # int — raw score -3 to +3 (debug only)
+REGIME_SPY_ABOVE    = 'spy_above_200d'   # bool | None — SPY above its 200d SMA
+REGIME_VIX          = 'regime_vix'       # float | None — VIX value at run time

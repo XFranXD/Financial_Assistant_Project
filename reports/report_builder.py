@@ -764,6 +764,7 @@ def _build_ai_prompt(
     breadth: dict,
     regime: dict,
     commodity_data: dict,
+    market_regime_dict: dict | None = None,
 ) -> str:
     """
     Builds the daily AI research prompt string. Self-contained — all rules
@@ -833,6 +834,15 @@ def _build_ai_prompt(
 
     regime_label  = regime.get('label',  'N/A') if regime  else 'N/A'
     breadth_label = breadth.get('label', 'N/A') if breadth else 'N/A'
+
+    _mr_dict     = market_regime_dict or {}
+    _mr_label    = _mr_dict.get('market_regime', 'NEUTRAL')
+    _br_pct      = _mr_dict.get('breadth_pct')
+    _br_pct_str  = (str(round(_br_pct, 1)) + '%') if isinstance(_br_pct, float) else 'N/A'
+    _spy_above   = _mr_dict.get('spy_above_200d')
+    _spy_str     = 'above' if _spy_above is True else ('below' if _spy_above is False else 'N/A')
+    _vix_val     = _mr_dict.get('regime_vix')
+    _vix_str     = (str(round(_vix_val, 1))) if isinstance(_vix_val, float) else 'N/A'
 
     crude_pct = commodity_data.get('crude_pct')
     gas_pct   = commodity_data.get('gas_pct')
@@ -960,6 +970,12 @@ def _build_ai_prompt(
         "  DISTRIBUTING insider signal near resistance = elevated risk flag.\n"
         "  ACCUMULATING insider signal near support = confirmation note.\n"
         "  UNAVAILABLE = no data. Do not treat as negative signal.\n"
+        "\n"
+        "MARKET REGIME RULES:\n"
+        "  BEAR regime = visible context warning. Not a hard BUY NOW gate.\n"
+        "  In BEAR regime: reduce confidence one step on all candidates.\n"
+        "  In BEAR regime: flag in section 5 (Top Risks) for all candidates.\n"
+        "  BULL/NEUTRAL regime: system operates normally. No modification.\n"
         "\n"
         "R/R RULES:\n"
         "  R/R < 2.0 overrides entry_quality to WEAK automatically (rr_override=YES).\n"
@@ -1101,6 +1117,7 @@ def _build_ai_prompt(
         f"Date:             {date_str}\n"
         f"Slot:             {slot}\n"
         f"Market condition: {regime_label}\n"
+        f"Market regime:    {_mr_label} (SPY {_spy_str} 200d SMA | VIX {_vix_str} | breadth {_br_pct_str} above 200d SMA)\n"
         f"Market breadth:   {breadth_label}\n"
         "\n"
         "Market indices:\n"
@@ -1288,14 +1305,15 @@ def _build_ai_prompt(
 
 
 def build_intraday_report(
-    companies:     list,
-    slot:          str,
-    indices:       dict,
-    breadth:       dict,
-    regime:        dict,
-    all_articles:  list,
-    sector_scores: dict,
-    rotation:      dict,
+    companies:          list,
+    slot:               str,
+    indices:            dict,
+    breadth:            dict,
+    regime:             dict,
+    all_articles:       list,
+    sector_scores:      dict,
+    rotation:           dict,
+    market_regime_dict: dict | None = None,
 ) -> dict:
     """
     Builds intraday report HTML files (email + full browser).
@@ -1350,8 +1368,12 @@ def build_intraday_report(
     enriched = [_enrich_company_for_template(c) for c in companies]
 
     prompt_text = _build_ai_prompt(
-        enriched, slot, date_str, indices, breadth, regime, commodity_data
+        enriched, slot, date_str, indices, breadth, regime, commodity_data,
+        market_regime_dict=market_regime_dict,
     )
+
+    _mr_dict_outer  = market_regime_dict or {}
+    _mr_label_outer = _mr_dict_outer.get('market_regime', 'NEUTRAL')
 
     email_companies    = enriched[:EMAIL_MAX]
     overflow_companies = enriched[EMAIL_MAX:]
@@ -1385,6 +1407,7 @@ def build_intraday_report(
             overflow_notice   = overflow_notice,
             regime_label      = regime.get('label', 'Normal market'),
             breadth_label     = breadth.get('label', 'neutral'),
+            market_regime_label=_mr_label_outer,
             disclaimer        = DISCLAIMER,
             total_companies   = n_found,
             commodity_summary = commodity_summary,
@@ -1411,6 +1434,7 @@ def build_intraday_report(
             moderate_risk     = full_mod,
             regime_label      = regime.get('label', 'Normal market'),
             breadth_label     = breadth.get('label', 'neutral'),
+            market_regime_label=_mr_label_outer,
             disclaimer        = DISCLAIMER,
             total_companies   = n_found,
             rotation          = rotation,

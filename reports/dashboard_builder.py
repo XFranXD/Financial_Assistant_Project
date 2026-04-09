@@ -1207,7 +1207,7 @@ def _write_news_json(confirmed_sectors: dict) -> None:
         log.error(f'News JSON write failed: {e}')
 
 
-def _update_reports_index(companies, slot, indices, breadth, regime, full_url='', prompt_text=''):
+def _update_reports_index(companies, slot, indices, breadth, regime, full_url='', prompt_text='', market_regime_dict=None):
     index_path = os.path.join(DATA_DIR, 'reports.json')
     try:
         with open(index_path, encoding='utf-8') as f:
@@ -1227,6 +1227,8 @@ def _update_reports_index(companies, slot, indices, breadth, regime, full_url=''
         'slot':       slot,
         'breadth':    breadth.get('label', 'unknown') if breadth else 'unknown',
         'regime':     regime.get('label', 'unknown')  if regime  else 'unknown',
+        'market_regime': (market_regime_dict or {}).get('market_regime', 'NEUTRAL'),
+        'breadth_pct':   (market_regime_dict or {}).get('breadth_pct'),
         'count':      len(companies),
         'tickers':    [c.get('ticker', '') for c in companies[:5]],
         'top_score':  max((c.get('composite_confidence', 0) for c in companies), default=0),
@@ -1315,7 +1317,7 @@ def _update_rank_board(companies):
         log.error(f'rank.json write failed: {e}')
 
 
-def _update_weekly_archive(companies, slot, breadth, regime, prompt_text='', is_debug=False, full_url=''):
+def _update_weekly_archive(companies, slot, breadth, regime, prompt_text='', is_debug=False, full_url='', market_regime_dict=None):
     archive_path = os.path.join(DATA_DIR, 'weekly_archive.json')
     try:
         with open(archive_path, encoding='utf-8') as f:
@@ -1332,6 +1334,8 @@ def _update_weekly_archive(companies, slot, breadth, regime, prompt_text='', is_
         'slot':      slot,
         'breadth':   breadth.get('label', '') if breadth else '',
         'regime':    regime.get('label', '')  if regime  else '',
+        'market_regime': (market_regime_dict or {}).get('market_regime', 'NEUTRAL'),
+        'breadth_pct':   (market_regime_dict or {}).get('breadth_pct'),
         'count':     len(companies),
         'verdict_counts': {
             'RESEARCH NOW': sum(1 for c in companies if c.get('market_verdict_display', c.get('summary_verdict', '')) == 'RESEARCH NOW'),
@@ -1370,7 +1374,7 @@ def _update_weekly_archive(companies, slot, breadth, regime, prompt_text='', is_
         log.error(f'weekly_archive.json write failed: {e}')
 
 
-def _write_index_page(indices, breadth, regime, index_history=None):
+def _write_index_page(indices, breadth, regime, index_history=None, market_regime_dict=None):
     index_history = index_history or {}
     index_path    = os.path.join(DATA_DIR, 'reports.json')
     rank_path     = os.path.join(DATA_DIR, 'rank.json')
@@ -1397,7 +1401,7 @@ def _write_index_page(indices, breadth, regime, index_history=None):
     except Exception:
         news_data = {}
     now_et = datetime.now(pytz.utc).astimezone(pytz.timezone('America/New_York'))
-    html_content = _render_index_html(reports[:14], rank_data, indices, breadth, regime, now_et, index_history, news_data)
+    html_content = _render_index_html(reports[:14], rank_data, indices, breadth, regime, now_et, index_history, news_data, market_regime_dict)
     out_path = os.path.join(DOCS_DIR, 'index.html')
     with open(out_path, 'w', encoding='utf-8') as f:
         f.write(html_content)
@@ -1462,7 +1466,7 @@ def _write_news_page(confirmed_sectors: dict) -> None:
         os.replace(tmp, news_html_path)
     except Exception as e:
         log.error(f'news.html write failed: {e}')
-def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, index_history, news_data) -> str:
+def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, index_history, news_data, market_regime_dict=None) -> str:
     try:
         indices = indices or {}
         # ── Index pills ──────────────────────────────────────────────────────
@@ -1520,13 +1524,24 @@ def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, ind
         b_label   = (breadth.get('label', '') if breadth else '').upper() or 'UNKNOWN'
         r_label   = (regime.get('label', '')  if regime  else '') or 'unknown'
         b_cls     = _breadth_cls(b_label)
+
+        _mr_dict_s  = market_regime_dict or {}
+        _mr_lbl_s   = _mr_dict_s.get('market_regime', 'NEUTRAL')
+        _mr_cls_s   = 'up' if _mr_lbl_s == 'BULL' else ('dn' if _mr_lbl_s == 'BEAR' else 'nt')
+        _mr_esc_s   = _esc(_mr_lbl_s)
+        _r_esc_s    = _esc(r_label)
+        _b_esc_s    = _esc(b_label)
+
         strip = (
             '<div class="status-strip stagger-3">'
             '<span class="ss-label" style="font-size:11px;">Breadth</span>'
-            f'<span class="ss-val {b_cls}">{_esc(b_label)}</span>'
+            f'<span class="ss-val {b_cls}">{_b_esc_s}</span>'
             '<span class="ss-divider">&middot;</span>'
             '<span class="ss-label" style="font-size:11px;">Market</span>'
-            f'<span class="ss-val nt">{_esc(r_label)}</span>'
+            f'<span class="ss-val nt">{_r_esc_s}</span>'
+            '<span class="ss-divider">&middot;</span>'
+            '<span class="ss-label" style="font-size:11px;">Regime</span>'
+            f'<span class="ss-val {_mr_cls_s}">{_mr_esc_s}</span>'
             '</div>'
         )
 
@@ -1831,6 +1846,7 @@ def build_dashboard(
     is_debug=False,
     index_history=None,
     confirmed_sectors=None,
+    market_regime_dict=None,
 ):
     """
     Main dashboard builder. Call from main.py after build_intraday_report().
@@ -1866,7 +1882,9 @@ def build_dashboard(
 
     # ── Update data stores ──────────────────────────────────────────────────
     try:
-        _update_reports_index(companies, slot, indices, breadth, regime, full_url, prompt_text)
+        _update_reports_index(companies, slot, indices, breadth, regime,
+                              full_url, prompt_text,
+                              market_regime_dict=market_regime_dict)
     except Exception as e:
         log.error(f'_update_reports_index error: {e}')
 
@@ -1876,7 +1894,9 @@ def build_dashboard(
         log.error(f'_update_rank_board error: {e}')
 
     try:
-        _update_weekly_archive(companies, slot, breadth, regime, prompt_text, is_debug, full_url)
+        _update_weekly_archive(companies, slot, breadth, regime,
+                               prompt_text, is_debug, full_url,
+                               market_regime_dict=market_regime_dict)
     except Exception as e:
         log.error(f'_update_weekly_archive error: {e}')
 
@@ -1888,7 +1908,8 @@ def build_dashboard(
 
     # ── Render all pages ────────────────────────────────────────────────────
     try:
-        _write_index_page(indices, breadth, regime, index_history)
+        _write_index_page(indices, breadth, regime, index_history,
+                          market_regime_dict=market_regime_dict)
         log.info('index.html written')
     except Exception as e:
         log.error(f'index.html write failed: {e}')

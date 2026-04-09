@@ -49,6 +49,106 @@ SLOT_MAP = {
 }
 
 
+def refresh_breadth_basket() -> None:
+    """
+    Fetches the current S&P 500 constituent list from Wikipedia and rebuilds
+    data/sector_breadth_stocks.json with a stratified sample per sector.
+
+    - Source: https://en.wikipedia.org/wiki/List_of_S%26P_500_companies
+    - Preserves existing MRE-internal sector keys not in standard GICS
+      (e.g. 'semiconductors', 'defense') — these are kept from current basket.
+    - Full replace — no diff/merge.
+    - Non-fatal: logs error and returns without modifying file on any exception.
+    """
+    import logging
+    import pandas as pd
+    from pathlib import Path
+
+    log = logging.getLogger('cleanup.basket_refresh')
+    basket_path = Path('data') / 'sector_breadth_stocks.json'
+
+    # GICS sector name (Wikipedia) → MRE internal sector key
+    GICS_MAP = {
+        'Information Technology':  'technology',
+        'Health Care':             'healthcare',
+        'Financials':              'financials',
+        'Consumer Discretionary':  'consumer_discretionary',
+        'Consumer Staples':        'consumer_staples',
+        'Industrials':             'industrials',
+        'Materials':               'materials',
+        'Energy':                  'energy',
+        'Utilities':               'utilities',
+        'Real Estate':             'real_estate',
+        'Communication Services':  'communication_services',
+    }
+    TICKERS_PER_SECTOR = 14
+
+    try:
+        # ── Load current basket to preserve internal-only sectors ─────────
+        try:
+            with open(basket_path, encoding='utf-8') as f:
+                current = json.load(f)
+            current.pop('_comment', None)
+            existing_sectors = list(current.keys())
+        except Exception as _load_err:
+            log.warning(f'[BASKET] Cannot load existing basket — aborting: {_load_err}')
+            return
+
+        # ── Fetch S&P 500 list from Wikipedia ─────────────────────────────
+        wiki_url = 'https://en.wikipedia.org/wiki/List_of_S%26P_500_companies'
+        tables   = pd.read_html(wiki_url)
+        df       = tables[0]
+
+        # Normalize column names (Wikipedia table columns)
+        df.columns = [str(c).strip() for c in df.columns]
+        ticker_col = next((c for c in df.columns if 'symbol' in c.lower()), None)
+        sector_col = next((c for c in df.columns if 'gics sector' in c.lower()), None)
+        if ticker_col is None or sector_col is None:
+            log.warning(f'[BASKET] Unexpected Wikipedia table columns: {list(df.columns)} — aborting')
+            return
+
+        df = df[[ticker_col, sector_col]].copy()
+        df.columns = ['ticker', 'gics_sector']
+        # yfinance compatibility: BRK.B → BRK-B
+        df['ticker'] = df['ticker'].str.replace('.', '-', regex=False)
+
+        # ── Build new basket ───────────────────────────────────────────────
+        new_basket = {
+            '_comment': (
+                'Representative tickers per sector for market breadth 200d SMA '
+                'and sector_breadth_ma.py. Auto-refreshed weekly from Wikipedia '
+                'S&P 500 list. 12-15 liquid large-caps per sector.'
+            )
+        }
+
+        for gics_name, internal_key in GICS_MAP.items():
+            sector_tickers = df[df['gics_sector'] == gics_name]['ticker'].tolist()
+            if not sector_tickers:
+                new_basket[internal_key] = current.get(internal_key, [])
+                log.warning(f'[BASKET] No Wikipedia tickers for {internal_key} — keeping existing')
+                continue
+            new_basket[internal_key] = sector_tickers[:TICKERS_PER_SECTOR]
+            log.info(f'[BASKET] {internal_key}: {len(new_basket[internal_key])} tickers')
+
+        # ── Preserve MRE-internal sectors not in GICS_MAP ────────────────
+        for internal_key in existing_sectors:
+            if internal_key not in new_basket:
+                new_basket[internal_key] = current.get(internal_key, [])
+                log.info(f'[BASKET] Preserved internal sector: {internal_key}')
+
+        # ── Atomic write ──────────────────────────────────────────────────
+        tmp_path = basket_path.with_suffix('.json.tmp')
+        with open(tmp_path, 'w', encoding='utf-8') as f:
+            json.dump(new_basket, f, indent=2)
+        tmp_path.replace(basket_path)
+
+        sector_count = len(new_basket) - 1  # exclude _comment
+        log.info(f'[BASKET] Basket refreshed successfully. {sector_count} sectors written.')
+
+    except Exception as e:
+        log.error(f'[BASKET] refresh_breadth_basket failed (non-fatal): {e}')
+
+
 # ══════════════════════════════════════════════════════════════════════════════
 # SCHEDULED CLEANUP (--force)
 # ══════════════════════════════════════════════════════════════════════════════
@@ -97,6 +197,7 @@ def run_cleanup():
 
     _rebuild_index()
     _prune_weekly_archive()
+    refresh_breadth_basket()
     print(f'Cleanup complete. Removed {removed} output + {served_removed} served file(s).')
 
 

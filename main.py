@@ -301,6 +301,45 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
     regime  = get_regime()
     breadth = compute_market_breadth()
 
+    # ── Step 6b: Market Regime Classification (2A) ────────────────────────
+    from analyzers.spy_sma import get_spy_vs_200d
+    from analyzers.market_breadth import compute_breadth_200d
+    from analyzers.market_regime_classifier import get_market_regime_classification
+    from contracts.eq_schema import MARKET_REGIME, MARKET_BREADTH_PCT
+    try:
+        _spy_result    = get_spy_vs_200d()
+        _bd200_result  = compute_breadth_200d()
+        _mr_result     = get_market_regime_classification(
+            spy_sma_result = _spy_result,
+            vix_value      = regime.get('vix'),
+            breadth_pct    = _bd200_result.get('breadth_pct'),
+        )
+        market_regime_dict = {
+            MARKET_REGIME:      _mr_result['market_regime'],
+            MARKET_BREADTH_PCT: _bd200_result.get('breadth_pct'),
+            'spy_above_200d':   _spy_result.get('spy_above_200d'),
+            'regime_vix':       regime.get('vix'),
+            'regime_score':     _mr_result.get('regime_score', 0),
+        }
+        _mr_label_log = _mr_result['market_regime']
+        _mr_score_log = _mr_result.get('regime_score', 0)
+        _mr_bpct_log  = _bd200_result.get('breadth_pct')
+        log.info(
+            f'[MR] market_regime={_mr_label_log} '
+            f'score={_mr_score_log} '
+            f'breadth_pct={_mr_bpct_log}'
+        )
+    except Exception as _mr_err:
+        log.warning(f'[MR] Market regime classification failed (non-fatal): {_mr_err}')
+        market_regime_dict = {
+            MARKET_REGIME:      'NEUTRAL',
+            MARKET_BREADTH_PCT: None,
+            'spy_above_200d':   None,
+            'regime_vix':       regime.get('vix'),
+            'regime_score':     0,
+        }
+    # ── End Step 6b ───────────────────────────────────────────────────────
+
     breadth_stocks = _load_json(SECTOR_BREADTH_STOCKS_FILE, {})
     breadth_stocks.pop('_comment', None)
     sector_breadth_ma = compute_sector_breadth_ma(breadth_stocks)
@@ -638,14 +677,15 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
     # Build and send report
     from reports.report_builder import build_intraday_report
     html_files = build_intraday_report(
-        companies     = all_candidates,
-        slot          = slot,
-        indices       = indices,
-        breadth       = breadth,
-        regime        = regime,
-        all_articles  = articles,
-        sector_scores = sector_scores,
-        rotation      = rotation,
+        companies          = all_candidates,
+        slot               = slot,
+        indices            = indices,
+        breadth            = breadth,
+        regime             = regime,
+        all_articles       = articles,
+        sector_scores      = sector_scores,
+        rotation           = rotation,
+        market_regime_dict = market_regime_dict,
     )
 
     # ── Pre-dashboard candidate enrichment ───────────────────────────────
@@ -654,16 +694,17 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
     try:
         from reports.dashboard_builder import build_dashboard
         build_dashboard(
-            companies         = all_candidates,
-            slot              = slot,
-            indices           = indices,
-            breadth           = breadth,
-            regime            = regime,
-            prompt_text       = html_files.get('prompt', ''),
-            full_url          = html_files.get('full_url', ''),
-            is_debug          = True,
-            index_history     = _index_history,
-            confirmed_sectors = candidate_sectors,
+            companies          = all_candidates,
+            slot               = slot,
+            indices            = indices,
+            breadth            = breadth,
+            regime             = regime,
+            prompt_text        = html_files.get('prompt', ''),
+            full_url           = html_files.get('full_url', ''),
+            is_debug           = True,
+            index_history      = _index_history,
+            confirmed_sectors  = candidate_sectors,
+            market_regime_dict = market_regime_dict,
         )
     except Exception as _dash_err:
         log.warning(f'[DEBUG] Dashboard build skipped: {_dash_err}')
@@ -749,6 +790,45 @@ def run():
     breadth = compute_market_breadth()
     state['breadth_score_today'] = breadth['breadth_score']
     save_state(state)
+
+    # ── Step 6b: Market Regime Classification (2A) ────────────────────────
+    from analyzers.spy_sma import get_spy_vs_200d
+    from analyzers.market_breadth import compute_breadth_200d
+    from analyzers.market_regime_classifier import get_market_regime_classification
+    from contracts.eq_schema import MARKET_REGIME, MARKET_BREADTH_PCT
+    try:
+        _spy_result    = get_spy_vs_200d()
+        _bd200_result  = compute_breadth_200d()
+        _mr_result     = get_market_regime_classification(
+            spy_sma_result = _spy_result,
+            vix_value      = regime.get('vix'),
+            breadth_pct    = _bd200_result.get('breadth_pct'),
+        )
+        market_regime_dict = {
+            MARKET_REGIME:      _mr_result['market_regime'],
+            MARKET_BREADTH_PCT: _bd200_result.get('breadth_pct'),
+            'spy_above_200d':   _spy_result.get('spy_above_200d'),
+            'regime_vix':       regime.get('vix'),
+            'regime_score':     _mr_result.get('regime_score', 0),
+        }
+        _mr_label_log = _mr_result['market_regime']
+        _mr_score_log = _mr_result.get('regime_score', 0)
+        _mr_bpct_log  = _bd200_result.get('breadth_pct')
+        log.info(
+            f'[MR] market_regime={_mr_label_log} '
+            f'score={_mr_score_log} '
+            f'breadth_pct={_mr_bpct_log}'
+        )
+    except Exception as _mr_err:
+        log.warning(f'[MR] Market regime classification failed (non-fatal): {_mr_err}')
+        market_regime_dict = {
+            MARKET_REGIME:      'NEUTRAL',
+            MARKET_BREADTH_PCT: None,
+            'spy_above_200d':   None,
+            'regime_vix':       regime.get('vix'),
+            'regime_score':     0,
+        }
+    # ── End Step 6b ───────────────────────────────────────────────────────
 
     # ── Step 7: Sector MA breadth ─────────────────────────────────────────
     from analyzers.sector_breadth_ma import compute_sector_breadth_ma
@@ -1238,14 +1318,15 @@ def run():
     # ── Step 28: Build reports ────────────────────────────────────────────
     from reports.report_builder import build_intraday_report
     html_files = build_intraday_report(
-        companies     = final_companies,
-        slot          = slot,
-        indices       = indices,
-        breadth       = breadth,
-        regime        = regime,
-        all_articles  = articles,
-        sector_scores = sector_scores,
-        rotation      = rotation,
+        companies          = final_companies,
+        slot               = slot,
+        indices            = indices,
+        breadth            = breadth,
+        regime             = regime,
+        all_articles       = articles,
+        sector_scores      = sector_scores,
+        rotation           = rotation,
+        market_regime_dict = market_regime_dict,
     )
 
     # ── Pre-dashboard candidate enrichment ───────────────────────────────
@@ -1255,16 +1336,17 @@ def run():
     try:
         from reports.dashboard_builder import build_dashboard
         build_dashboard(
-            companies         = final_companies,
-            slot              = slot,
-            indices           = state.get('indices_today', {}),
-            breadth           = breadth,
-            regime            = regime,
-            prompt_text       = html_files.get('prompt', ''),
-            full_url          = html_files.get('full_url', ''),
-            is_debug          = False,
-            index_history     = index_history,
-            confirmed_sectors = candidate_sectors,
+            companies          = final_companies,
+            slot               = slot,
+            indices            = state.get('indices_today', {}),
+            breadth            = breadth,
+            regime             = regime,
+            prompt_text        = html_files.get('prompt', ''),
+            full_url           = html_files.get('full_url', ''),
+            is_debug           = False,
+            index_history      = index_history,
+            confirmed_sectors  = candidate_sectors,
+            market_regime_dict = market_regime_dict,
         )
     except Exception as _dash_err:
         log.warning(f'Dashboard build skipped: {_dash_err}')
