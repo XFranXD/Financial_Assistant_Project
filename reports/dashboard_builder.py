@@ -332,6 +332,7 @@ _RANK_FETCH_JS = (
     "      var psPillCls  = psMap[psV]  || 'rpill-una';\n"
     "      var evMap      = {'NORMAL':'rpill-ev-ok','HIGH RISK':'rpill-ev-hr'};\n"
     "      var insMap     = {'ACCUMULATING':'rpill-ins-ac','DISTRIBUTING':'rpill-ins-di','NEUTRAL':'rpill-ins-nt','UNAVAILABLE':'rpill-ins-na'};\n"
+    "      var expMap     = {'BEATING':'rpill-exp-bt','INLINE':'rpill-exp-in','MISSING':'rpill-exp-ms','UNAVAILABLE':'rpill-exp-na'};\n"
     "      var evV        = stock.event_risk        || 'NORMAL';\n"
     "      var insV       = stock.insider_signal    || 'UNAVAILABLE';\n"
     "      var evPillCls  = evMap[evV]  || 'rpill-ev-ok';\n"
@@ -386,6 +387,7 @@ _RANK_FETCH_JS = (
     "           + '<div class=\"est est-divider\"></div>') : '')\n"
     "           + '<div class=\"est\"><div class=\"est-k\">Event Risk</div><div class=\"est-v\">' + (stock.event_risk || 'NORMAL') + '</div></div>'\n"
     "           + '<div class=\"est\"><div class=\"est-k\">Insider</div><div class=\"est-v\">' + (stock.insider_signal || 'N/A') + '</div></div>'\n"
+    "           + '<div class=\"est\"><div class=\"est-k\">Expect.</div><div class=\"est-v\">' + (stock.expectations_signal || 'N/A') + '</div></div>'\n"
     "           + '</div>'\n"
     "           + '<div class=\"exp-chart\">' + chartEl + '</div>'\n"
     "           + '</div></div>'\n"
@@ -1302,6 +1304,9 @@ def _update_rank_board(companies):
                 'days_to_earnings':    c.get('days_to_earnings'),
                 'insider_signal':      c.get('insider_signal',    'UNAVAILABLE'),
                 'insider_note':        c.get('insider_note',      ''),
+                'expectations_signal': c.get('expectations_signal', 'UNAVAILABLE'),
+                'earnings_beat_rate':  c.get('earnings_beat_rate'),
+                'peg_ratio':           c.get('peg_ratio'),
                 'ps_entry_price':      c.get('entry_price'),
                 'ps_stop_loss':        c.get('stop_loss'),
                 'ps_price_target':     c.get('price_target'),

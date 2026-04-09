@@ -61,6 +61,7 @@ from contracts.eq_schema import (
     EQ_TOP_STRENGTHS_DISPLAY, EQ_WARNINGS_DISPLAY,
     EVENT_RISK, EVENT_RISK_REASON,
     INSIDER_SIGNAL, INSIDER_NOTE,
+    EXPECTATIONS_SIGNAL, EARNINGS_BEAT_RATE, PEG_RATIO,
 )
 from contracts.sector_schema import (
     ROTATION_AVAILABLE, ROTATION_SCORE, ROTATION_STATUS,
@@ -1226,6 +1227,11 @@ def _build_ai_prompt(
         _rr_raw   = c.get(PS_RISK_REWARD_RATIO)
         rr_display = ('%.2fx' % _rr_raw) if _rr_raw else 'N/A'
 
+        _exp_beat_raw     = c.get('earnings_beat_rate')
+        _exp_beat_display = f'{round(_exp_beat_raw * 100)}%' if _exp_beat_raw is not None else 'N/A'
+        _exp_peg_raw      = c.get('peg_ratio')
+        _exp_peg_display  = str(_exp_peg_raw) if _exp_peg_raw is not None else 'N/A'
+
         candidate_block = (
             f"\n[{ticker}] — {sector} ({industry}) | Timing: {timing}\n"
             f"\n"
@@ -1277,6 +1283,11 @@ def _build_ai_prompt(
             f"Insider Activity (1B):\n"
             f"  Signal: {c.get('insider_signal', 'UNAVAILABLE')}\n"
             f"  Note:   {c.get('insider_note', '') or 'None'}\n"
+            f"\n"
+            f"Expectations vs Reality (2B):\n"
+            f"  Signal:     {c.get('expectations_signal', 'UNAVAILABLE')}\n"
+            f"  Beat rate:  {_exp_beat_display}\n"
+            f"  PEG ratio:  {_exp_peg_display}\n"
             f"\n"
             f"Combined Reading:\n"
             f"  {market_line}\n"

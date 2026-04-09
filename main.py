@@ -674,6 +674,38 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
             candidate[INSIDER_NOTE]   = ''
     # ── End Step 27h (Debug) ─────────────────────────────────────────────
 
+    # ── Step 27i: Expectations vs Reality enrichment (Debug) ──────────────
+    try:
+        from analyzers.expectations import get_expectations_signal
+        from contracts.eq_schema import EXPECTATIONS_SIGNAL, EARNINGS_BEAT_RATE, PEG_RATIO
+        exp_enriched = 0
+        for candidate in all_candidates:
+            t = candidate.get('ticker', '')
+            try:
+                exp_result = get_expectations_signal(
+                    ticker        = t,
+                    finnhub_token = finnhub_token,
+                    pe_ratio      = candidate.get('pe_ratio'),
+                    eps_quarterly = candidate.get('eps_quarterly', []),
+                )
+                candidate[EXPECTATIONS_SIGNAL] = exp_result.get('expectations_signal', 'UNAVAILABLE')
+                candidate[EARNINGS_BEAT_RATE]  = exp_result.get('earnings_beat_rate')
+                candidate[PEG_RATIO]           = exp_result.get('peg_ratio')
+                exp_enriched += 1
+            except Exception as _exp_ticker_err:
+                candidate[EXPECTATIONS_SIGNAL] = 'UNAVAILABLE'
+                candidate[EARNINGS_BEAT_RATE]  = None
+                candidate[PEG_RATIO]           = None
+                log.info(f'[EXP] {t}: error — {_exp_ticker_err}')
+        log.info(f'[EXP] Expectations enrichment complete. {exp_enriched}/{len(all_candidates)} processed')
+    except Exception as exp_err:
+        log.warning(f'[EXP] Expectations enrichment failed (non-fatal): {exp_err}')
+        for candidate in all_candidates:
+            candidate[EXPECTATIONS_SIGNAL] = 'UNAVAILABLE'
+            candidate[EARNINGS_BEAT_RATE]  = None
+            candidate[PEG_RATIO]           = None
+    # ── End Step 27i (Debug) ─────────────────────────────────────────────
+
     # Build and send report
     from reports.report_builder import build_intraday_report
     html_files = build_intraday_report(
@@ -1314,6 +1346,40 @@ def run():
             candidate[INSIDER_SIGNAL] = 'UNAVAILABLE'
             candidate[INSIDER_NOTE]   = ''
     # ── End Step 27h ─────────────────────────────────────────────────────────
+
+    # ── Step 27i: Expectations vs Reality enrichment ─────────────────────────
+    # Computes per-ticker expectations signal from Finnhub EPS history and
+    # Sub1 fundamentals. Non-fatal — defaults to UNAVAILABLE on any error.
+    try:
+        from analyzers.expectations import get_expectations_signal
+        from contracts.eq_schema import EXPECTATIONS_SIGNAL, EARNINGS_BEAT_RATE, PEG_RATIO
+        exp_enriched = 0
+        for candidate in final_companies:
+            t = candidate.get('ticker', '')
+            try:
+                exp_result = get_expectations_signal(
+                    ticker        = t,
+                    finnhub_token = finnhub_token,
+                    pe_ratio      = candidate.get('pe_ratio'),
+                    eps_quarterly = candidate.get('eps_quarterly', []),
+                )
+                candidate[EXPECTATIONS_SIGNAL] = exp_result.get('expectations_signal', 'UNAVAILABLE')
+                candidate[EARNINGS_BEAT_RATE]  = exp_result.get('earnings_beat_rate')
+                candidate[PEG_RATIO]           = exp_result.get('peg_ratio')
+                exp_enriched += 1
+            except Exception as _exp_ticker_err:
+                candidate[EXPECTATIONS_SIGNAL] = 'UNAVAILABLE'
+                candidate[EARNINGS_BEAT_RATE]  = None
+                candidate[PEG_RATIO]           = None
+                log.info(f'[EXP] {t}: error — {_exp_ticker_err}')
+        log.info(f'[EXP] Expectations enrichment complete. {exp_enriched}/{len(final_companies)} processed')
+    except Exception as exp_err:
+        log.warning(f'[EXP] Expectations enrichment failed (non-fatal): {exp_err}')
+        for candidate in final_companies:
+            candidate[EXPECTATIONS_SIGNAL] = 'UNAVAILABLE'
+            candidate[EARNINGS_BEAT_RATE]  = None
+            candidate[PEG_RATIO]           = None
+    # ── End Step 27i ─────────────────────────────────────────────────────────
 
     # ── Step 28: Build reports ────────────────────────────────────────────
     from reports.report_builder import build_intraday_report
