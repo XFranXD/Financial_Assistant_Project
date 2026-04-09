@@ -409,6 +409,11 @@ document.addEventListener('click', function(e) {
            + '<div class="est"><div class="est-k">Event Risk</div><div class="est-v">' + (stock.event_risk || 'NORMAL') + '</div></div>'
            + '<div class="est"><div class="est-k">Insider</div><div class="est-v">' + (stock.insider_signal || 'N/A') + '</div></div>'
            + '<div class="est"><div class="est-k">Expect.</div><div class="est-v">' + (stock.expectations_signal || 'N/A') + '</div></div>'
+           + '<div class="est"><div class="est-k">Portfolio</div>'
+           + '<div class="est-v">'
+           + (stock.pl_selected
+               ? (stock.pl_position_weight != null ? stock.pl_position_weight.toFixed(1) + '%' : 'Selected')
+               : (stock.pl_exclusion_reason || 'Excluded')) + '</div></div>'
            + '</div>'
            + '<div class="exp-chart">' + chartEl + '</div>'
            + '</div></div>'
