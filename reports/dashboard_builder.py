@@ -388,6 +388,11 @@ _RANK_FETCH_JS = (
     "           + '<div class=\"est\"><div class=\"est-k\">Event Risk</div><div class=\"est-v\">' + (stock.event_risk || 'NORMAL') + '</div></div>'\n"
     "           + '<div class=\"est\"><div class=\"est-k\">Insider</div><div class=\"est-v\">' + (stock.insider_signal || 'N/A') + '</div></div>'\n"
     "           + '<div class=\"est\"><div class=\"est-k\">Expect.</div><div class=\"est-v\">' + (stock.expectations_signal || 'N/A') + '</div></div>'\n"
+    "           + '<div class=\"est\"><div class=\"est-k\">Portfolio</div>'\n"
+    "           + '<div class=\"est-v\">'\n"
+    "           + (stock.pl_selected\n"
+    "               ? (stock.pl_position_weight != null ? stock.pl_position_weight.toFixed(1) + '%' : 'Selected')\n"
+    "               : (stock.pl_exclusion_reason || 'Excluded')) + '</div></div>'\n"
     "           + '</div>'\n"
     "           + '<div class=\"exp-chart\">' + chartEl + '</div>'\n"
     "           + '</div></div>'\n"
@@ -1209,7 +1214,7 @@ def _write_news_json(confirmed_sectors: dict) -> None:
         log.error(f'News JSON write failed: {e}')
 
 
-def _update_reports_index(companies, slot, indices, breadth, regime, full_url='', prompt_text='', market_regime_dict=None):
+def _update_reports_index(companies, slot, indices, breadth, regime, full_url='', prompt_text='', market_regime_dict=None, portfolio_summary=None):
     index_path = os.path.join(DATA_DIR, 'reports.json')
     try:
         with open(index_path, encoding='utf-8') as f:
@@ -1237,6 +1242,10 @@ def _update_reports_index(companies, slot, indices, breadth, regime, full_url=''
         'verdicts':   vc,
         'report_url': full_url,
         'prompt':     prompt_text[:12000] if prompt_text else '',
+        'pl_recommended_subset':    (portfolio_summary or {}).get('pl_recommended_subset', []),
+        'pl_sector_exposure':       (portfolio_summary or {}).get('pl_sector_exposure', {}),
+        'pl_diversification_score': (portfolio_summary or {}).get('pl_diversification_score'),
+        'pl_avg_correlation':       (portfolio_summary or {}).get('pl_avg_correlation'),
     }
     if not isinstance(index.get('reports'), list):
         index['reports'] = []
@@ -1312,6 +1321,12 @@ def _update_rank_board(companies):
                 'ps_price_target':     c.get('price_target'),
                 'ps_risk_reward_ratio': c.get('risk_reward_ratio'),
                 'ps_rr_override':      bool(c.get('rr_override', False)),
+                # ── Sub5 fields ─────────────────────────────────────────────────
+                'pl_selected':          c.get('pl_selected', False),
+                'pl_position_weight':   c.get('pl_position_weight'),
+                'pl_cluster_id':        c.get('pl_cluster_id'),
+                'pl_correlation_flags': c.get('pl_correlation_flags', []),
+                'pl_exclusion_reason':  c.get('pl_exclusion_reason'),
             }
     try:
         tmp = rank_path + '.tmp'
@@ -1852,6 +1867,7 @@ def build_dashboard(
     index_history=None,
     confirmed_sectors=None,
     market_regime_dict=None,
+    portfolio_summary=None,
 ):
     """
     Main dashboard builder. Call from main.py after build_intraday_report().
@@ -1889,7 +1905,8 @@ def build_dashboard(
     try:
         _update_reports_index(companies, slot, indices, breadth, regime,
                               full_url, prompt_text,
-                              market_regime_dict=market_regime_dict)
+                              market_regime_dict=market_regime_dict,
+                              portfolio_summary=portfolio_summary)
     except Exception as e:
         log.error(f'_update_reports_index error: {e}')
 

@@ -59,6 +59,12 @@ from contracts.price_structure_schema import (
     PS_ENTRY_PRICE, PS_STOP_LOSS, PS_PRICE_TARGET, PS_RISK_REWARD_RATIO, PS_RR_OVERRIDE,
     PRICE_STRUCTURE_DEFAULTS,
 )
+from contracts.portfolio_schema import (
+    PL_CLUSTER_ID, PL_CORRELATION_FLAGS, PL_SELECTED,
+    PL_EXCLUSION_REASON, PL_POSITION_WEIGHT, PL_AVAILABLE,
+    PL_RECOMMENDED_SUBSET, PL_EXCLUDED_CANDIDATES,
+    PL_SECTOR_EXPOSURE, PL_AVG_CORRELATION, PL_DIVERSIFICATION_SCORE,
+)
 
 DISCLAIMER = (
     'DISCLAIMER: This system does NOT perform trading, does NOT give investment advice, '
@@ -706,6 +712,29 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
             candidate[PEG_RATIO]           = None
     # ── End Step 27i (Debug) ─────────────────────────────────────────────
 
+    # ── Step 27j: Portfolio & Correlation Layer (Sub5 — Debug) ───────────────
+    portfolio_summary: dict = {}
+    try:
+        if len(all_candidates) >= 2:
+            from portfolio.portfolio_analyzer import analyze as pl_analyze
+            portfolio_summary = pl_analyze(all_candidates)
+            log.info(
+                f'[PL][DEBUG] Portfolio analysis complete. '
+                f'Selected: {portfolio_summary.get(PL_RECOMMENDED_SUBSET, [])} | '
+                f'Diversification: {portfolio_summary.get(PL_DIVERSIFICATION_SCORE)}'
+            )
+        else:
+            portfolio_summary = {PL_AVAILABLE: False}
+            for candidate in all_candidates:
+                candidate[PL_AVAILABLE] = False
+            log.info('[PL][DEBUG] Portfolio analysis skipped — fewer than 2 candidates')
+    except Exception as pl_err:
+        portfolio_summary = {PL_AVAILABLE: False}
+        for candidate in all_candidates:
+            candidate[PL_AVAILABLE] = False
+        log.warning(f'[PL][DEBUG] Portfolio analysis failed (non-fatal): {pl_err}')
+    # ── End Step 27j (Debug) ─────────────────────────────────────────────────
+
     # Build and send report
     from reports.report_builder import build_intraday_report
     html_files = build_intraday_report(
@@ -718,6 +747,7 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
         sector_scores      = sector_scores,
         rotation           = rotation,
         market_regime_dict = market_regime_dict,
+        portfolio_summary  = portfolio_summary,
     )
 
     # ── Pre-dashboard candidate enrichment ───────────────────────────────
@@ -737,6 +767,7 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
             index_history      = _index_history,
             confirmed_sectors  = candidate_sectors,
             market_regime_dict = market_regime_dict,
+            portfolio_summary  = portfolio_summary,
         )
     except Exception as _dash_err:
         log.warning(f'[DEBUG] Dashboard build skipped: {_dash_err}')
@@ -1381,6 +1412,31 @@ def run():
             candidate[PEG_RATIO]           = None
     # ── End Step 27i ─────────────────────────────────────────────────────────
 
+    # ── Step 27j: Portfolio & Correlation Layer (Sub5) ────────────────────────
+    # Runs after all S1-S4 enrichment, before report generation.
+    # Non-fatal — PL_AVAILABLE=False on any failure. Mutates candidates in-place.
+    portfolio_summary: dict = {}
+    try:
+        if len(final_companies) >= 2:
+            from portfolio.portfolio_analyzer import analyze as pl_analyze
+            portfolio_summary = pl_analyze(final_companies)
+            log.info(
+                f'[PL] Portfolio analysis complete. '
+                f'Selected: {portfolio_summary.get(PL_RECOMMENDED_SUBSET, [])} | '
+                f'Diversification: {portfolio_summary.get(PL_DIVERSIFICATION_SCORE)}'
+            )
+        else:
+            portfolio_summary = {PL_AVAILABLE: False}
+            for candidate in final_companies:
+                candidate[PL_AVAILABLE] = False
+            log.info('[PL] Portfolio analysis skipped — fewer than 2 candidates')
+    except Exception as pl_err:
+        portfolio_summary = {PL_AVAILABLE: False}
+        for candidate in final_companies:
+            candidate[PL_AVAILABLE] = False
+        log.warning(f'[PL] Portfolio analysis failed (non-fatal): {pl_err}')
+    # ── End Step 27j ──────────────────────────────────────────────────────────
+
     # ── Step 28: Build reports ────────────────────────────────────────────
     from reports.report_builder import build_intraday_report
     html_files = build_intraday_report(
@@ -1393,6 +1449,7 @@ def run():
         sector_scores      = sector_scores,
         rotation           = rotation,
         market_regime_dict = market_regime_dict,
+        portfolio_summary  = portfolio_summary,
     )
 
     # ── Pre-dashboard candidate enrichment ───────────────────────────────
@@ -1413,6 +1470,7 @@ def run():
             index_history      = index_history,
             confirmed_sectors  = candidate_sectors,
             market_regime_dict = market_regime_dict,
+            portfolio_summary  = portfolio_summary,
         )
     except Exception as _dash_err:
         log.warning(f'Dashboard build skipped: {_dash_err}')

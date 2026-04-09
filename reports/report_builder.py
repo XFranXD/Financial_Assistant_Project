@@ -757,6 +757,30 @@ def _enrich_company_for_template(c: dict) -> dict:
     }
 
 
+def _build_portfolio_context_block(portfolio_summary: dict) -> str:
+    """
+    Builds the Portfolio Layer (System 5) context block for the AI prompt
+    GLOBAL CONTEXT section. Returns a formatted string.
+    """
+    from contracts.portfolio_schema import (
+        PL_AVAILABLE, PL_RECOMMENDED_SUBSET, PL_DIVERSIFICATION_SCORE, PL_SECTOR_EXPOSURE,
+    )
+    if not portfolio_summary or not portfolio_summary.get(PL_AVAILABLE):
+        return "=============================================================\nPortfolio Layer (System 5): UNAVAILABLE\n"
+    _subset  = ', '.join(portfolio_summary.get(PL_RECOMMENDED_SUBSET, [])) or 'None'
+    _div     = portfolio_summary.get(PL_DIVERSIFICATION_SCORE)
+    _div_str = f'{_div:.2f}' if _div is not None else 'N/A'
+    _sectors = portfolio_summary.get(PL_SECTOR_EXPOSURE, {})
+    _sec_str = ', '.join(f'{k}: {v:.0f}%' for k, v in _sectors.items()) or 'N/A'
+    return (
+        "=============================================================\n"
+        "Portfolio Layer (System 5):\n"
+        f"  Selected subset:       {_subset}\n"
+        f"  Diversification score: {_div_str} (1.0 = fully uncorrelated)\n"
+        f"  Sector exposure:       {_sec_str}\n"
+    )
+
+
 def _build_ai_prompt(
     enriched: list,
     slot: str,
@@ -766,6 +790,7 @@ def _build_ai_prompt(
     regime: dict,
     commodity_data: dict,
     market_regime_dict: dict | None = None,
+    portfolio_summary: dict | None = None,
 ) -> str:
     """
     Builds the daily AI research prompt string. Self-contained — all rules
@@ -787,6 +812,12 @@ def _build_ai_prompt(
       - TIGHTENED: Every risk in section 5 must cite the source system signal.
       - UPDATED: Output format field names aligned with new timing vocabulary.
     """
+    from contracts.portfolio_schema import (
+        PL_AVAILABLE, PL_RECOMMENDED_SUBSET, PL_DIVERSIFICATION_SCORE,
+        PL_SECTOR_EXPOSURE, PL_SELECTED, PL_POSITION_WEIGHT,
+        PL_CLUSTER_ID, PL_CORRELATION_FLAGS, PL_EXCLUSION_REASON,
+    )
+    _portfolio_summary = portfolio_summary or {}
     indices        = indices or {}
     commodity_data = commodity_data or {}
 
@@ -890,6 +921,11 @@ def _build_ai_prompt(
         "\n"
         "COMBINED ALIGNMENT\n"
         "  ALIGNED (score >= 2) | PARTIAL (0-1) | CONFLICT (< 0)\n"
+        "\n"
+        "SYSTEM 5 — PORTFOLIO LAYER\n"
+        "  pl_selected = True: ticker is in the recommended portfolio subset.\n"
+        "  pl_position_weight: recommended allocation % within selected subset.\n"
+        "  pl_selected = False: excluded (CORRELATED | SECTOR_CAP | RANK_CUT | UNAVAILABLE).\n"
         "\n"
         "=============================================================\n"
         "TIMING QUALITY\n"
@@ -1128,6 +1164,8 @@ def _build_ai_prompt(
         "\n"
         f"{commodity_block}\n"
         "\n"
+        + _build_portfolio_context_block(_portfolio_summary)
+        + "\n"
         "=============================================================\n"
         "CANDIDATES\n"
         "=============================================================\n"
@@ -1296,6 +1334,15 @@ def _build_ai_prompt(
             f"  {ps_cr_line}\n"
             f"  Alignment:  {alignment}\n"
             f"  {conclusion}\n"
+            f"\n"
+            f"Portfolio Layer (System 5):\n"
+            f"  Selected:         {'YES' if c.get(PL_SELECTED) else 'NO'}\n"
+            f"  Position weight:  "
+            + (f"{c.get(PL_POSITION_WEIGHT):.1f}%" if c.get(PL_POSITION_WEIGHT) is not None else "N/A")
+            + "\n"
+            + f"  Cluster ID:       {c.get(PL_CLUSTER_ID, 'N/A')}\n"
+            + f"  Correlated with:  {', '.join(c.get(PL_CORRELATION_FLAGS) or []) or 'None'}\n"
+            + f"  Exclusion reason: {c.get(PL_EXCLUSION_REASON) or 'None'}\n"
         )
         candidates_block += candidate_block
 
@@ -1325,6 +1372,7 @@ def build_intraday_report(
     sector_scores:      dict,
     rotation:           dict,
     market_regime_dict: dict | None = None,
+    portfolio_summary:  dict | None = None,
 ) -> dict:
     """
     Builds intraday report HTML files (email + full browser).
@@ -1381,6 +1429,7 @@ def build_intraday_report(
     prompt_text = _build_ai_prompt(
         enriched, slot, date_str, indices, breadth, regime, commodity_data,
         market_regime_dict=market_regime_dict,
+        portfolio_summary=portfolio_summary,
     )
 
     _mr_dict_outer  = market_regime_dict or {}
@@ -1497,4 +1546,3 @@ def _write_fallback_email(slot, ts_str, pulse_lines, story_sentences, companies)
     except Exception as e:
         log.error(f'Fallback email write failed: {e}')
     return path
-    
