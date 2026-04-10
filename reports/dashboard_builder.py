@@ -1935,7 +1935,7 @@ def write_trades_json(paper_trading_summary: dict) -> None:
 def build_trades_page(paper_trading_summary: dict) -> None:
     html_content = (
         '<!DOCTYPE html><html lang="en"><head>'
-        '<meta charset="UTF-8"><title>Paper Trading | MRE</title>'
+        '<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Paper Trading | MRE</title>'
         f'{_FONTS_LINK}'
         '<link rel="stylesheet" href="assets/style.css">'
         f'{_LOADER_CSS}'

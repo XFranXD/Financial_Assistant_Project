@@ -2021,6 +2021,27 @@ a:hover {
     font-size: 7px;
     padding: 2px 6px;
   }
+
+  /* Nav — horizontal scroll so 6 tabs don't overflow viewport */
+  .nav-tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex-shrink: 0;
+  }
+
+  .nav-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab {
+    padding: 7px 11px;
+  }
+
+  /* PT scorecard — 2 columns on mobile */
+  .pt-scorecard {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 /* ── Sub6 Paper Trading Page ─────────────────────────────────────── */
@@ -2059,7 +2080,8 @@ a:hover {
   background: #12121a;
   border: 1px solid #1e1e2e;
   border-radius: 8px;
-  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   margin-bottom: 2rem;
 }
 
