@@ -1,12 +1,20 @@
 {
   "date": "2026-04-10",
   "reported_companies": [
-    "WDC",
-    "CF",
+    "VICI",
+    "ROST",
+    "REG",
     "AMAT",
+    "EBAY",
+    "AVGO",
+    "MCD",
+    "KIM",
     "LIN",
-    "NVDA",
-    "NEM"
+    "WDC",
+    "NEM",
+    "TXN",
+    "CF",
+    "NVDA"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -30,8 +38,17 @@
       "status": "complete"
     },
     "16:00-17:20": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "TXN",
+        "AVGO",
+        "KIM",
+        "REG",
+        "VICI",
+        "ROST",
+        "MCD",
+        "EBAY"
+      ],
+      "status": "complete"
     }
   },
   "failed_tickers": [],
@@ -150,11 +167,13 @@
     }
   },
   "today_scores": {
-    "WDC": 61.2,
-    "NEM": 59.1,
-    "NVDA": 58.0,
-    "AMAT": 57.4,
-    "CF": 56.6,
-    "LIN": 51.4
+    "TXN": 57.0,
+    "AVGO": 57.0,
+    "KIM": 55.1,
+    "REG": 55.0,
+    "VICI": 54.5,
+    "ROST": 53.0,
+    "MCD": 50.9,
+    "EBAY": 49.3
   }
 }
