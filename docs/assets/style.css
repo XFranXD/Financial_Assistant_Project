@@ -2022,3 +2022,144 @@ a:hover {
     padding: 2px 6px;
   }
 }
+
+/* ── Sub6 Paper Trading Page ─────────────────────────────────────── */
+
+.pt-scorecard {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.pt-stat-tile {
+  background: #12121a;
+  border: 1px solid #1e1e2e;
+  border-radius: 8px;
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.pt-stat-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #00f0ff;
+  display: block;
+}
+
+.pt-stat-label {
+  font-size: 0.75rem;
+  color: #666680;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 0.25rem;
+}
+
+.pt-table {
+  background: #12121a;
+  border: 1px solid #1e1e2e;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+
+.pt-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.pt-table th {
+  background: #1e1e2e;
+  color: #00f0ff;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.72rem;
+}
+
+.pt-table td {
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid #1e1e2e;
+  color: #c8c8e0;
+}
+
+.pt-table tr:last-child td {
+  border-bottom: none;
+}
+
+.pt-table tr:hover td {
+  background: #16161f;
+}
+
+.pt-pill-target {
+  background: rgba(0, 255, 136, 0.15);
+  color: #00ff88;
+  border: 1px solid #00ff88;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.pt-pill-stop {
+  background: rgba(255, 45, 120, 0.15);
+  color: #ff2d78;
+  border: 1px solid #ff2d78;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.pt-pill-timeout {
+  background: rgba(255, 170, 0, 0.15);
+  color: #ffaa00;
+  border: 1px solid #ffaa00;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.pt-pill-dropped {
+  background: rgba(102, 102, 128, 0.15);
+  color: #666680;
+  border: 1px solid #666680;
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.pt-pnl-pos {
+  color: #00ff88;
+  font-weight: 600;
+}
+
+.pt-pnl-neg {
+  color: #ff2d78;
+  font-weight: 600;
+}
+
+.pt-dir-correct {
+  color: #00f0ff;
+  font-weight: 700;
+}
+
+.pt-dir-wrong {
+  color: #ff2d78;
+  font-weight: 700;
+}
+
+.pt-unavailable {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #666680;
+  font-size: 0.9rem;
+  background: #12121a;
+  border: 1px solid #1e1e2e;
+  border-radius: 8px;
+}

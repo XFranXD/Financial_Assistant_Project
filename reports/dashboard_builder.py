@@ -1132,6 +1132,7 @@ def _nav_html(active: str) -> str:
     pages = [
         ('index.html',   'home',    'Home'),
         ('rank.html',    'rank',    'Rank'),
+        ('trades.html',  'trades',  'Paper Trading'),
         ('news.html',    'news',    'News'),
         ('archive.html', 'archive', 'Archive'),
         ('guide.html',   'guide',   'Guide'),
@@ -1849,6 +1850,251 @@ def _render_news_html(sectors: list, generated: str) -> str:
         return _err_page('news', 'News render error. Check logs.')
 
 
+# ── Sub6 Paper Trading ───────────────────────────────────────────────────────
+
+def write_trades_json(paper_trading_summary: dict) -> None:
+    try:
+        from contracts.eq_schema import (
+            PT_AVAILABLE, PT_OPEN_COUNT, PT_NEW_COUNT, PT_CLOSED_COUNT
+        )
+        from contracts.paper_trading_schema import (
+            PT_TICKER, PT_ENTRY_DATE, PT_ENTRY_RUN, PT_ENTRY_TIMESTAMP,
+            PT_ENTRY_PRICE, PT_STOP_LOSS, PT_PRICE_TARGET, PT_RISK_REWARD,
+            PT_POSITION_SIZE_PCT, PT_MARKET_VERDICT, PT_ENTRY_QUALITY,
+            PT_EQ_VERDICT, PT_ROTATION_SIGNAL, PT_ALIGNMENT, PT_COMPOSITE_SCORE,
+            PT_MARKET_REGIME, PT_INSIDER_SIGNAL, PT_EVENT_RISK,
+            PT_EXPECTATIONS_SIGNAL, PT_STATUS, PT_EXIT_DATE, PT_EXIT_RUN,
+            PT_EXIT_PRICE, PT_EXIT_REASON, PT_LIVE_PNL_PCT, PT_DAYS_HELD,
+            PT_CLOSED_AT_TIMESTAMP, PT_EXPECTED_RETURN_PCT, PT_ERROR_PCT,
+            PT_DIRECTION_CORRECT, PT_BENCHMARK_RETURN, PT_ALPHA,
+            PT_LAST_UPDATED_RUN, PT_DATA_VALID, PT_VERSION
+        )
+
+        pt_avail = paper_trading_summary.get('pt_available', False)
+        trades_list = paper_trading_summary.get('trades', [])
+        
+        output = {
+            "generated_at": datetime.now(pytz.utc).isoformat(),
+            "pt_available": pt_avail,
+            "open_count": paper_trading_summary.get('open_count', 0),
+            "new_count": paper_trading_summary.get('new_count', 0),
+            "closed_count": paper_trading_summary.get('closed_count', 0),
+            "total_count": len(trades_list),
+            "trades": []
+        }
+        
+        for t in trades_list:
+            output["trades"].append({
+                "trade_id": t.get("trade_id"),
+                PT_TICKER: t.get(PT_TICKER),
+                PT_ENTRY_DATE: t.get(PT_ENTRY_DATE),
+                PT_ENTRY_RUN: t.get(PT_ENTRY_RUN),
+                PT_ENTRY_TIMESTAMP: t.get(PT_ENTRY_TIMESTAMP),
+                PT_ENTRY_PRICE: t.get(PT_ENTRY_PRICE),
+                PT_STOP_LOSS: t.get(PT_STOP_LOSS),
+                PT_PRICE_TARGET: t.get(PT_PRICE_TARGET),
+                PT_RISK_REWARD: t.get(PT_RISK_REWARD),
+                PT_POSITION_SIZE_PCT: t.get(PT_POSITION_SIZE_PCT),
+                PT_MARKET_VERDICT: t.get(PT_MARKET_VERDICT),
+                PT_ENTRY_QUALITY: t.get(PT_ENTRY_QUALITY),
+                PT_EQ_VERDICT: t.get(PT_EQ_VERDICT),
+                PT_ROTATION_SIGNAL: t.get(PT_ROTATION_SIGNAL),
+                PT_ALIGNMENT: t.get(PT_ALIGNMENT),
+                PT_COMPOSITE_SCORE: t.get(PT_COMPOSITE_SCORE),
+                PT_MARKET_REGIME: t.get(PT_MARKET_REGIME),
+                PT_INSIDER_SIGNAL: t.get(PT_INSIDER_SIGNAL),
+                PT_EVENT_RISK: t.get(PT_EVENT_RISK),
+                PT_EXPECTATIONS_SIGNAL: t.get(PT_EXPECTATIONS_SIGNAL),
+                PT_STATUS: t.get(PT_STATUS),
+                PT_EXIT_DATE: t.get(PT_EXIT_DATE),
+                PT_EXIT_RUN: t.get(PT_EXIT_RUN),
+                PT_EXIT_PRICE: t.get(PT_EXIT_PRICE),
+                PT_EXIT_REASON: t.get(PT_EXIT_REASON),
+                PT_LIVE_PNL_PCT: t.get(PT_LIVE_PNL_PCT),
+                PT_DAYS_HELD: t.get(PT_DAYS_HELD),
+                PT_CLOSED_AT_TIMESTAMP: t.get(PT_CLOSED_AT_TIMESTAMP),
+                PT_EXPECTED_RETURN_PCT: t.get(PT_EXPECTED_RETURN_PCT),
+                PT_ERROR_PCT: t.get(PT_ERROR_PCT),
+                PT_DIRECTION_CORRECT: t.get(PT_DIRECTION_CORRECT),
+                PT_BENCHMARK_RETURN: t.get(PT_BENCHMARK_RETURN),
+                PT_ALPHA: t.get(PT_ALPHA),
+                PT_LAST_UPDATED_RUN: t.get(PT_LAST_UPDATED_RUN),
+                PT_DATA_VALID: t.get(PT_DATA_VALID),
+                PT_VERSION: t.get(PT_VERSION),
+            })
+            
+        out_path = os.path.join(DATA_DIR, 'trades.json')
+        tmp = out_path + '.tmp'
+        with open(tmp, 'w', encoding='utf-8') as f:
+            json.dump(output, f, ensure_ascii=False)
+        os.replace(tmp, out_path)
+    except Exception as e:
+        log.warning(f'trades.json write failed: {e}')
+
+
+def build_trades_page(paper_trading_summary: dict) -> None:
+    html_content = (
+        '<!DOCTYPE html><html lang="en"><head>'
+        '<meta charset="UTF-8"><title>Paper Trading | MRE</title>'
+        f'{_FONTS_LINK}'
+        '<link rel="stylesheet" href="assets/style.css">'
+        f'{_LOADER_CSS}'
+        '</head><body>'
+        f'{_LOADER_HTML}'
+        f'{_LOADER_JS}'
+        '<div class="scanlines"></div>'
+        f'{_nav_html("trades")}'
+        '<div class="pages">'
+        '<div class="page on">'
+        '<div class="pg-eyebrow">LEDGER</div>'
+        '<div class="pg-title">Paper <span class="hi">Trading</span></div>'
+        f'<div class="pg-sub">Simulated trade ledger | Google Sheets backed'
+        f'<span style="float:right;color:var(--pu);">Generated: {{datetime.now(pytz.utc).strftime("%Y-%m-%d %H:%M:%S UTC")}}</span></div>'
+        
+        '<div id="pt-mount"></div>'
+        
+        '</div>'
+        '</div>'
+        
+        '<script>'
+        'function fmtPct(val) {'
+        '  if (val === null || val === undefined) return "\\u2014";'
+        '  return val.toFixed(2) + "%";'
+        '}'
+        'function fmtErrPct(val) {'
+        '  if (val === null || val === undefined) return "\\u2014";'
+        '  var s = val > 0 ? "+" : "";'
+        '  var c = val > 0 ? "pt-pnl-pos" : val < 0 ? "pt-pnl-neg" : "";'
+        '  return "<span class=\\"" + c + "\\">" + s + val.toFixed(2) + "%</span>";'
+        '}'
+        'function fmtPnl(val) {'
+        '  if (val === null || val === undefined) return "\\u2014";'
+        '  var c = val > 0 ? "pt-pnl-pos" : val < 0 ? "pt-pnl-neg" : "";'
+        '  return "<span class=\\"" + c + "\\">" + val.toFixed(2) + "%</span>";'
+        '}'
+        'function fmtNum(val, dec) {'
+        '  if (val === null || val === undefined) return "\\u2014";'
+        '  return val.toFixed(dec);'
+        '}'
+        'function fmtPrice(val) {'
+        '  if (val === null || val === undefined) return "\\u2014";'
+        '  return "$" + val.toFixed(2);'
+        '}'
+        'function calcDaysOpen(entryDate) {'
+        '  if (!entryDate) return "\\u2014";'
+        '  var e = new Date(entryDate);'
+        '  var diff = Date.now() - e.getTime();'
+        '  return Math.max(0, Math.floor(diff / (1000 * 3600 * 24)));'
+        '}'
+        'function getPillClass(reason) {'
+        '  if (reason === "TARGET_HIT") return "pt-pill-target";'
+        '  if (reason === "STOP_HIT") return "pt-pill-stop";'
+        '  if (reason === "TIMEOUT") return "pt-pill-timeout";'
+        '  if (reason === "DROPPED") return "pt-pill-dropped";'
+        '  return "pt-pill-dropped";'
+        '}'
+        
+        'function renderTrades(data) {'
+        '  if (!data.pt_available) {'
+        '    document.getElementById("pt-mount").innerHTML = '
+        '      "<div class=\\"pt-unavailable\\">Paper trading data unavailable \\u2014 Google Sheets connection required.</div>";'
+        '    if(window.dismissLoader) window.dismissLoader();'
+        '    return;'
+        '  }'
+        
+        '  var hc = "<div class=\\"pt-scorecard stagger-1\\">";'
+        '  hc += "<div class=\\"pt-stat-tile\\"><span class=\\"pt-stat-value\\">" + (data.open_count || 0) + "</span><span class=\\"pt-stat-label\\">Open Trades</span></div>";'
+        '  hc += "<div class=\\"pt-stat-tile\\"><span class=\\"pt-stat-value\\">" + (data.new_count || 0) + "</span><span class=\\"pt-stat-label\\">New This Run</span></div>";'
+        '  hc += "<div class=\\"pt-stat-tile\\"><span class=\\"pt-stat-value\\">" + (data.closed_count || 0) + "</span><span class=\\"pt-stat-label\\">Closed This Run</span></div>";'
+        '  hc += "<div class=\\"pt-stat-tile\\"><span class=\\"pt-stat-value\\">" + (data.total_count || 0) + "</span><span class=\\"pt-stat-label\\">Total Trades</span></div>";'
+        '  hc += "</div>";'
+        
+        '  var allTrades = Array.isArray(data.trades) ? data.trades : [];'
+        '  var op = allTrades.filter(function(t) { return t.status === "OPEN"; });'
+        '  var cl = allTrades.filter(function(t) { return t.status === "CLOSED" || t.status === "DROPPED"; });'
+        
+        '  hc += "<div class=\\"sl stagger-2\\">OPEN TRADES</div>";'
+        '  if (op.length === 0) {'
+        '    hc += "<div class=\\"stagger-2\\" style=\\"margin-bottom:2rem;color:var(--mist);font-size:0.9rem;\\">No open trades.</div>";'
+        '  } else {'
+        '    op.sort(function(a,b) { var da = a.entry_date || ""; var db = b.entry_date || ""; return da < db ? 1 : da > db ? -1 : 0; });'
+        '    hc += "<div class=\\"pt-table stagger-2\\"><table><thead><tr>";'
+        '    hc += "<th>Ticker</th><th>Entry Date</th><th>Entry $</th><th>Stop $</th><th>Target $</th><th>R/R</th><th>Regime</th><th>Quality</th><th>Days Open (cal.)</th><th>Score</th>";'
+        '    hc += "</tr></thead><tbody>";'
+        '    op.forEach(function(t) {'
+        '      var reg = t.market_regime || "";'
+        '      var regCol = reg === "BULL" ? "var(--up)" : reg === "BEAR" ? "var(--dn)" : "var(--nt)";'
+        '      hc += "<tr>";'
+        '      hc += "<td style=\\"color:#fff;font-weight:700;\\">" + (t.ticker || "\\u2014") + "</td>";'
+        '      hc += "<td>" + (t.entry_date || "\\u2014") + "</td>";'
+        '      hc += "<td>" + fmtPrice(t.entry_price) + "</td>";'
+        '      hc += "<td>" + fmtPrice(t.stop_loss) + "</td>";'
+        '      hc += "<td>" + fmtPrice(t.price_target) + "</td>";'
+        '      hc += "<td>" + (t.risk_reward_ratio !== null ? t.risk_reward_ratio.toFixed(2)+"x" : "\\u2014") + "</td>";'
+        '      hc += "<td><span style=\\"color:" + regCol + "\\">" + reg + "</span></td>";'
+        '      hc += "<td>" + (t.entry_quality || "\\u2014") + "</td>";'
+        '      hc += "<td>" + calcDaysOpen(t.entry_date) + "</td>";'
+        '      hc += "<td>" + fmtNum(t.composite_score, 1) + "</td>";'
+        '      hc += "</tr>";'
+        '    });'
+        '    hc += "</tbody></table></div>";'
+        '  }'
+        
+        '  hc += "<div class=\\"sl stagger-3\\">CLOSED TRADES</div>";'
+        '  if (cl.length === 0) {'
+        '    hc += "<div class=\\"stagger-3\\" style=\\"margin-bottom:2rem;color:var(--mist);font-size:0.9rem;\\">No closed trades.</div>";'
+        '  } else {'
+        '    cl.sort(function(a,b) { var da = a.exit_date || "0000"; var db = b.exit_date || "0000"; return da < db ? 1 : da > db ? -1 : 0; });'
+        '    hc += "<div class=\\"pt-table stagger-3\\"><table><thead><tr>";'
+        '    hc += "<th>Ticker</th><th>Entry</th><th>Exit</th><th>P&L %</th><th>Exit Reason</th><th>Expected %</th><th>Error %</th><th>Direction</th><th>Days</th><th>Verdict</th>";'
+        '    hc += "</tr></thead><tbody>";'
+        '    cl.forEach(function(t) {'
+        '      var dir = t.direction_correct;'
+        '      var dirH = dir === true ? "<span style=\\"color:#00f0ff;font-weight:bold;\\">\\u2713</span>" : dir === false ? "<span style=\\"color:#ff2d78;font-weight:bold;\\">\\u2717</span>" : "\\u2014";'
+        '      var res = t.exit_reason || "DROPPED";'
+        '      var resH = "<span class=\\"" + getPillClass(res) + "\\">" + res + "</span>";'
+        '      hc += "<tr>";'
+        '      hc += "<td style=\\"color:#fff;font-weight:700;\\">" + (t.ticker || "\\u2014") + "</td>";'
+        '      hc += "<td>" + (t.entry_date || "\\u2014") + "</td>";'
+        '      hc += "<td>" + (t.exit_date || "\\u2014") + "</td>";'
+        '      hc += "<td>" + fmtPnl(t.live_pnl_pct) + "</td>";'
+        '      hc += "<td>" + resH + "</td>";'
+        '      hc += "<td>" + fmtPct(t.expected_return_pct) + "</td>";'
+        '      hc += "<td>" + fmtErrPct(t.error_pct) + "</td>";'
+        '      hc += "<td style=\\"text-align:center;\\">" + dirH + "</td>";'
+        '      hc += "<td>" + (t.days_held !== null ? t.days_held : "\\u2014") + "</td>";'
+        '      hc += "<td>" + (t.market_verdict || "\\u2014") + "</td>";'
+        '      hc += "</tr>";'
+        '    });'
+        '    hc += "</tbody></table></div>";'
+        '  }'
+        
+        '  document.getElementById("pt-mount").innerHTML = hc;'
+        '  if(window.dismissLoader) window.dismissLoader();'
+        '}'
+        
+        'function showUnavailable() {'
+        '  document.getElementById("pt-mount").innerHTML = '
+        '    "<div class=\\"pt-unavailable\\">Paper trading data unavailable \\u2014 Google Sheets connection required.</div>";'
+        '  if(window.dismissLoader) window.dismissLoader();'
+        '}'
+        
+        'fetch("assets/data/trades.json?v=" + Date.now())'
+        '  .then(function(r){ return r.ok ? r.json() : Promise.reject(r.status); })'
+        '  .then(function(data){ renderTrades(data); })'
+        '  .catch(function(err){ showUnavailable(); });'
+        '</script>'
+        '</body></html>'
+    )
+    
+    try:
+        out_path = os.path.join(DOCS_DIR, 'trades.html')
+        with open(out_path, 'w', encoding='utf-8') as f:
+            f.write(html_content)
+    except Exception as e:
+        log.error(f'trades.html write failed: {e}')
+
+
 # ─────────────────────────────────────────────────────────────────────────────
 # PUBLIC ENTRY POINT
 # ─────────────────────────────────────────────────────────────────────────────
@@ -1868,6 +2114,7 @@ def build_dashboard(
     confirmed_sectors=None,
     market_regime_dict=None,
     portfolio_summary=None,
+    paper_trading_summary=None,
 ):
     """
     Main dashboard builder. Call from main.py after build_intraday_report().
@@ -1953,6 +2200,14 @@ def build_dashboard(
         log.info('news.html written')
     except Exception as e:
         log.error(f'news.html write failed: {e}')
+
+    try:
+        paper_trading_summary = paper_trading_summary or {}
+        write_trades_json(paper_trading_summary)
+        build_trades_page(paper_trading_summary)
+        log.info('trades.html written')
+    except Exception as e:
+        log.error(f'trades update failed: {e}')
 
     log.info('build_dashboard complete')
     

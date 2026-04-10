@@ -1373,6 +1373,7 @@ def build_intraday_report(
     rotation:           dict,
     market_regime_dict: dict | None = None,
     portfolio_summary:  dict | None = None,
+    paper_trading_summary: dict | None = None,
 ) -> dict:
     """
     Builds intraday report HTML files (email + full browser).

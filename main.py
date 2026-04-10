@@ -735,6 +735,41 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
         log.warning(f'[PL][DEBUG] Portfolio analysis failed (non-fatal): {pl_err}')
     # ── End Step 27j (Debug) ─────────────────────────────────────────────────
 
+    # ── Step 27k: Paper Trading Engine (Sub6 — Debug) ─────────────────────
+    paper_trading_summary: dict = {}
+    try:
+        from paper_trading.live_engine import run_paper_trading
+        from paper_trading.replay_engine import simulate_expected_return
+        from paper_trading.comparison_engine import enrich_closed_trades
+        from contracts.paper_trading_schema import (
+            PT_EXPECTED_RETURN_PCT, PT_STATUS, PT_STATUS_CLOSED,
+        )
+        _pt_regime = market_regime_dict.get('market_regime', 'NEUTRAL')
+        paper_trading_summary = run_paper_trading(
+            candidates    = all_candidates,
+            current_slot  = slot,
+            market_regime = _pt_regime,
+        )
+        for _pt_trade in paper_trading_summary.get('trades', []):
+            if (
+                _pt_trade.get(PT_STATUS) == PT_STATUS_CLOSED
+                and _pt_trade.get(PT_EXPECTED_RETURN_PCT) is None
+            ):
+                _expected = simulate_expected_return(_pt_trade)
+                if _expected is not None:
+                    _pt_trade[PT_EXPECTED_RETURN_PCT] = _expected
+                    enrich_closed_trades([_pt_trade])
+        log.info(
+            f'[PT][DEBUG] Paper trading complete. '
+            f'Open: {paper_trading_summary.get("open_count")} | '
+            f'New: {paper_trading_summary.get("new_count")} | '
+            f'Closed: {paper_trading_summary.get("closed_count")}'
+        )
+    except Exception as _pt_err:
+        paper_trading_summary = {'pt_available': False}
+        log.warning(f'[PT][DEBUG] Paper trading failed (non-fatal): {_pt_err}')
+    # ── End Step 27k (Debug) ───────────────────────────────────────────────
+
     # Build and send report
     from reports.report_builder import build_intraday_report
     html_files = build_intraday_report(
@@ -748,6 +783,7 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
         rotation           = rotation,
         market_regime_dict = market_regime_dict,
         portfolio_summary  = portfolio_summary,
+        paper_trading_summary = paper_trading_summary,
     )
 
     # ── Pre-dashboard candidate enrichment ───────────────────────────────
@@ -768,6 +804,7 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
             confirmed_sectors  = candidate_sectors,
             market_regime_dict = market_regime_dict,
             portfolio_summary  = portfolio_summary,
+            paper_trading_summary = paper_trading_summary,
         )
     except Exception as _dash_err:
         log.warning(f'[DEBUG] Dashboard build skipped: {_dash_err}')
@@ -1437,6 +1474,45 @@ def run():
         log.warning(f'[PL] Portfolio analysis failed (non-fatal): {pl_err}')
     # ── End Step 27j ──────────────────────────────────────────────────────────
 
+    # ── Step 27k: Paper Trading Engine (Sub6) ──────────────────────────────
+    # Runs after Sub5. Non-fatal — paper_trading_summary={} on any failure.
+    # Reads/writes Google Sheets ledger. All Sheets I/O is non-fatal.
+    # Replay is computed once per trade and frozen — guard:
+    #   PT_EXPECTED_RETURN_PCT is None before calling simulate_expected_return.
+    paper_trading_summary: dict = {}
+    try:
+        from paper_trading.live_engine import run_paper_trading
+        from paper_trading.replay_engine import simulate_expected_return
+        from paper_trading.comparison_engine import enrich_closed_trades
+        from contracts.paper_trading_schema import (
+            PT_EXPECTED_RETURN_PCT, PT_STATUS, PT_STATUS_CLOSED,
+        )
+        _pt_regime = market_regime_dict.get('market_regime', 'NEUTRAL')
+        paper_trading_summary = run_paper_trading(
+            candidates    = final_companies,
+            current_slot  = slot,
+            market_regime = _pt_regime,
+        )
+        for _pt_trade in paper_trading_summary.get('trades', []):
+            if (
+                _pt_trade.get(PT_STATUS) == PT_STATUS_CLOSED
+                and _pt_trade.get(PT_EXPECTED_RETURN_PCT) is None
+            ):
+                _expected = simulate_expected_return(_pt_trade)
+                if _expected is not None:
+                    _pt_trade[PT_EXPECTED_RETURN_PCT] = _expected
+                    enrich_closed_trades([_pt_trade])
+        log.info(
+            f'[PT] Paper trading complete. '
+            f'Open: {paper_trading_summary.get("open_count")} | '
+            f'New: {paper_trading_summary.get("new_count")} | '
+            f'Closed: {paper_trading_summary.get("closed_count")}'
+        )
+    except Exception as _pt_err:
+        paper_trading_summary = {'pt_available': False}
+        log.warning(f'[PT] Paper trading failed (non-fatal): {_pt_err}')
+    # ── End Step 27k ───────────────────────────────────────────────────────
+
     # ── Step 28: Build reports ────────────────────────────────────────────
     from reports.report_builder import build_intraday_report
     html_files = build_intraday_report(
@@ -1450,6 +1526,7 @@ def run():
         rotation           = rotation,
         market_regime_dict = market_regime_dict,
         portfolio_summary  = portfolio_summary,
+        paper_trading_summary = paper_trading_summary,
     )
 
     # ── Pre-dashboard candidate enrichment ───────────────────────────────
@@ -1471,6 +1548,7 @@ def run():
             confirmed_sectors  = candidate_sectors,
             market_regime_dict = market_regime_dict,
             portfolio_summary  = portfolio_summary,
+            paper_trading_summary = paper_trading_summary,
         )
     except Exception as _dash_err:
         log.warning(f'Dashboard build skipped: {_dash_err}')

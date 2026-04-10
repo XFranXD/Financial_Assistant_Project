@@ -60,3 +60,9 @@ REGIME_VIX          = 'regime_vix'       # float | None — VIX value at run tim
 EXPECTATIONS_SIGNAL  = 'expectations_signal'  # 'BEATING' | 'INLINE' | 'MISSING' | 'UNAVAILABLE'
 EARNINGS_BEAT_RATE   = 'earnings_beat_rate'    # float | None — e.g. 0.75 = beat 3 of 4
 PEG_RATIO            = 'peg_ratio'             # float | None
+
+# ── Paper Trading Summary (Sub6) — run-level ─────────────────────────────
+PT_AVAILABLE    = 'pt_available'    # bool — False if Sheets unavailable
+PT_OPEN_COUNT   = 'pt_open_count'   # int — open trades after this run
+PT_NEW_COUNT    = 'pt_new_count'    # int — new trades opened this run
+PT_CLOSED_COUNT = 'pt_closed_count' # int — trades closed this run
