@@ -72,9 +72,12 @@ SHEET_NAME            = "trades"
 PT_SCHEMA_VERSION     = 1         # int — increment when schema changes
 COOLDOWN_TRADING_DAYS = 1         # int — min trading days after close before
                                   #        same ticker can re-enter.
-                                  #        Cooldown starts the day AFTER exit_date.
-                                  #        Exit on Monday → cooldown day = Tuesday
+                                  #        Uses days_since_close <= COOLDOWN check,
+                                  #        so a value of 1 blocks re-entry on the
+                                  #        first full trading day after exit.
+                                  #        Exit on Monday → blocked Tuesday
                                   #        → earliest re-entry = Wednesday.
+                                  #        Set to 0 to allow re-entry next day.
 TIMEOUT_TRADING_DAYS  = 20        # int — force-close after N trading days open
 FAILED_FETCH_LIMIT    = 3         # int — consecutive yfinance failures within
                                   #        one run before DROPPED is triggered.

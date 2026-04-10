@@ -3,7 +3,7 @@ from paper_trading.sheets_ledger import (
     ensure_headers, read_all_trades, write_rows, update_rows
 )
 from contracts.paper_trading_schema import (
-    PT_TICKER, PT_STATUS, PT_STATUS_OPEN, PT_STATUS_CLOSED, PT_STATUS_DROPPED,
+    PT_TICKER, PT_STATUS, PT_STATUS_OPEN,
     PT_LAST_UPDATED_RUN, PT_DATA_VALID, PT_VERSION,
     PT_SCHEMA_VERSION, PT_SAFE_DEFAULTS, SHEET_COLUMNS,
     PT_FLOAT_FIELDS, PT_INT_FIELDS, PT_BOOL_FIELDS,
@@ -68,24 +68,30 @@ def load_open_trades(current_run: str) -> list[dict]:
                 
     return open_trades
 
-def is_terminal(trade: dict) -> bool:
-    return trade.get(PT_STATUS) in (PT_STATUS_CLOSED, PT_STATUS_DROPPED)
-
 def commit_updates(updated_trades: list[dict], new_trades: list[dict], current_run: str) -> bool:
     """
     Safe batch write. Called once per run after all processing.
-    Atomicity note: Operations are NOT atomic. If update_rows succeeds but write_rows 
-    fails, the system will be in a partially updated state. Idempotency guard prevents 
-    double-processing on next run. Do NOT attempt rollback.
+
+    updated_trades contains all trades that were OPEN at load time. After
+    process_open_trades runs, some of those trades will have been mutated to
+    CLOSED or DROPPED in-place. Both the still-open trades (idempotency stamp
+    only) AND the freshly-closed/dropped trades (full exit fields) must be
+    written back to the sheet — the old is_terminal guard was incorrectly
+    skipping freshly-closed trades, so exits were never persisted.
+
+    Atomicity note: Operations are NOT atomic. If update_rows succeeds but
+    write_rows fails, the system will be in a partially updated state.
+    Idempotency guard prevents double-processing on next run.
+    Do NOT attempt rollback.
     """
-    valid_updated_trades = []
+    # All trades that were open at load time need to be written back:
+    # still-open → update idempotency stamp only
+    # freshly-closed/dropped → persist full exit fields
+    trades_to_update = []
     for trade in updated_trades:
-        if is_terminal(trade):
-            log.warning(f"Attempted to update terminal trade {trade.get('trade_id', 'unknown')}. Skipping.")
-            continue
         trade[PT_LAST_UPDATED_RUN] = current_run
         trade[PT_DATA_VALID] = True
-        valid_updated_trades.append(trade)
+        trades_to_update.append(trade)
 
     for trade in new_trades:
         trade[PT_LAST_UPDATED_RUN] = current_run
@@ -93,8 +99,8 @@ def commit_updates(updated_trades: list[dict], new_trades: list[dict], current_r
         trade[PT_VERSION] = PT_SCHEMA_VERSION
 
     success = True
-    if valid_updated_trades:
-        if not update_rows(valid_updated_trades):
+    if trades_to_update:
+        if not update_rows(trades_to_update):
             log.error("Failed to commit updates: update_rows failed")
             success = False
 

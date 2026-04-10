@@ -67,13 +67,43 @@ def _validate_trade_numerics(trade: dict) -> bool:
             float(val)
         except (TypeError, ValueError):
             return False
+
+    entry_price  = float(trade[PT_ENTRY_PRICE])
+    stop_loss    = float(trade[PT_STOP_LOSS])
+    price_target = float(trade[PT_PRICE_TARGET])
+
+    # All three must be strictly positive.
+    if entry_price <= 0 or stop_loss <= 0 or price_target <= 0:
+        log.warning(
+            f"[{trade.get(PT_TICKER, 'unknown')}] Invalid trade levels: "
+            f"entry={entry_price}, stop={stop_loss}, target={price_target} — "
+            f"all must be > 0"
+        )
+        return False
+
+    # Stop must be below entry, target must be above entry.
+    # An inverted stop (stop >= entry) would trigger immediately on any candle.
+    # An inverted target (target <= entry) would also trigger immediately.
+    if stop_loss >= entry_price:
+        log.warning(
+            f"[{trade.get(PT_TICKER, 'unknown')}] stop_loss ({stop_loss}) >= "
+            f"entry_price ({entry_price}) — invalid long trade setup"
+        )
+        return False
+    if price_target <= entry_price:
+        log.warning(
+            f"[{trade.get(PT_TICKER, 'unknown')}] price_target ({price_target}) <= "
+            f"entry_price ({entry_price}) — invalid long trade setup"
+        )
+        return False
+
     return True
 
 def _close_trade(trade: dict, exit_reason: str, exit_price: float, exit_run: str) -> dict:
     today_et = datetime.now(pytz.timezone('America/New_York'))
     today_et_str = today_et.strftime('%Y-%m-%d')
     entry_price = float(trade[PT_ENTRY_PRICE])
-    
+
     trade[PT_STATUS] = PT_STATUS_CLOSED
     trade[PT_EXIT_DATE] = today_et_str
     trade[PT_EXIT_RUN] = exit_run
@@ -84,12 +114,33 @@ def _close_trade(trade: dict, exit_reason: str, exit_price: float, exit_run: str
     trade[PT_CLOSED_AT_TIMESTAMP] = datetime.now(pytz.utc).isoformat()
     return trade
 
+def _drop_trade(trade: dict, exit_run: str) -> dict:
+    """
+    Mark a trade as DROPPED without computing PnL.
+    Used when entry_price or other numeric fields are invalid — computing
+    (exit_price - entry_price) / entry_price would produce a meaningless 0%
+    result or raise an exception. exit_price and live_pnl_pct are left None
+    so downstream analysis can distinguish DROPPED from a genuine 0% outcome.
+    """
+    today_et = datetime.now(pytz.timezone('America/New_York'))
+    today_et_str = today_et.strftime('%Y-%m-%d')
+
+    trade[PT_STATUS] = PT_STATUS_DROPPED
+    trade[PT_EXIT_DATE] = today_et_str
+    trade[PT_EXIT_RUN] = exit_run
+    trade[PT_EXIT_PRICE] = None
+    trade[PT_EXIT_REASON] = PT_EXIT_DROPPED
+    trade[PT_LIVE_PNL_PCT] = None
+    trade[PT_DAYS_HELD] = _trading_days_between(trade[PT_ENTRY_DATE], today_et_str)
+    trade[PT_CLOSED_AT_TIMESTAMP] = datetime.now(pytz.utc).isoformat()
+    return trade
+
 def process_open_trades(current_slot: str, open_trades: list[dict]) -> list[dict]:
     today_date = datetime.now(pytz.timezone('America/New_York')).strftime('%Y-%m-%d')
     for trade in open_trades:
         if not _validate_trade_numerics(trade):
-            log.warning(f"[{trade.get(PT_TICKER, 'unknown')}] Invalid numerics in trade")
-            _close_trade(trade, PT_EXIT_DROPPED, float(trade.get(PT_ENTRY_PRICE) or 0), current_slot)
+            log.warning(f"[{trade.get(PT_TICKER, 'unknown')}] Invalid numerics in trade — dropping")
+            _drop_trade(trade, current_slot)
             continue
             
         ticker = trade[PT_TICKER]
@@ -98,24 +149,37 @@ def process_open_trades(current_slot: str, open_trades: list[dict]) -> list[dict
         if ohlc is None:
             trade['_failed_fetch_count'] = trade.get('_failed_fetch_count', 0) + 1
             if trade['_failed_fetch_count'] >= FAILED_FETCH_LIMIT:
-                _close_trade(trade, PT_EXIT_DROPPED, float(trade[PT_ENTRY_PRICE]), current_slot)
+                log.warning(f"[PT] {trade.get(PT_TICKER, 'unknown')}: FAILED_FETCH_LIMIT reached — dropping")
+                _drop_trade(trade, current_slot)
             continue
         
         days_held = _trading_days_between(trade[PT_ENTRY_DATE], today_date)
+
+        # Check SL/TP first — even on the timeout day, an actual level hit takes
+        # priority over timeout. This matches replay engine's per-candle walk order.
+        reason, price = infer_exit(ohlc['low'], ohlc['high'], float(trade[PT_STOP_LOSS]), float(trade[PT_PRICE_TARGET]))
+        if reason:
+            _close_trade(trade, reason, price, current_slot)
+            continue
+
         if days_held >= TIMEOUT_TRADING_DAYS:
             _close_trade(trade, PT_EXIT_TIMEOUT, ohlc['close'], current_slot)
             continue
             
-        reason, price = infer_exit(ohlc['low'], ohlc['high'], float(trade[PT_STOP_LOSS]), float(trade[PT_PRICE_TARGET]))
-        if reason:
-            _close_trade(trade, reason, price, current_slot)
-            
     return open_trades
 
-def detect_new_entries(candidates: list[dict], open_trades: list[dict], all_trades_raw: list[dict], current_slot: str, market_regime: str) -> list[dict]:
+def detect_new_entries(candidates: list[dict], updated_trades: list[dict], all_trades_raw: list[dict], current_slot: str, market_regime: str) -> list[dict]:
     today_et_str = datetime.now(pytz.timezone('America/New_York')).strftime('%Y-%m-%d')
     new_entries = []
-    
+
+    # Build a set of tickers that closed THIS run so cooldown applies immediately,
+    # even though those exits haven't been written to the sheet yet.
+    tickers_closed_this_run = {
+        t.get(PT_TICKER)
+        for t in updated_trades
+        if t.get(PT_STATUS) in (PT_STATUS_CLOSED, PT_STATUS_DROPPED)
+    }
+
     for candidate in candidates:
         if (candidate.get('market_verdict') in ('RESEARCH NOW', 'WATCH')
             and candidate.get('entry_quality') == 'GOOD'
@@ -124,8 +188,13 @@ def detect_new_entries(candidates: list[dict], open_trades: list[dict], all_trad
             and candidate.get('price_target') is not None):
             
             ticker = candidate.get('ticker')
-            
-            is_open = any(t.get(PT_TICKER) == ticker and t.get(PT_STATUS) == PT_STATUS_OPEN for t in open_trades)
+
+            # Block re-entry for tickers that exited in this same run.
+            if ticker in tickers_closed_this_run:
+                log.info(f"[PT] {ticker}: skip — closed this run, cooldown applies")
+                continue
+
+            is_open = any(t.get(PT_TICKER) == ticker and t.get(PT_STATUS) == PT_STATUS_OPEN for t in updated_trades)
             if is_open:
                 log.info(f"[PT] {ticker}: skip — already has open trade")
                 continue
@@ -139,7 +208,7 @@ def detect_new_entries(candidates: list[dict], open_trades: list[dict], all_trad
                 exit_date = most_recent.get(PT_EXIT_DATE)
                 if exit_date:
                     days_since_close = _trading_days_between(exit_date, today_et_str)
-                    if days_since_close < COOLDOWN_TRADING_DAYS:
+                    if days_since_close <= COOLDOWN_TRADING_DAYS:
                         log.info(f"[PT] {ticker}: skip — cooldown active ({days_since_close} days since close)")
                         continue
             
@@ -157,7 +226,7 @@ def run_paper_trading(candidates: list[dict], current_slot: str, market_regime: 
         updated_trades = process_open_trades(current_slot, open_trades)
         
         new_trades = detect_new_entries(
-            candidates, open_trades, all_trades_raw,
+            candidates, updated_trades, all_trades_raw,
             current_slot, market_regime
         )
         
@@ -182,3 +251,4 @@ def run_paper_trading(candidates: list[dict], current_slot: str, market_regime: 
             'closed_count': 0,
             'trades': []
         }
+        

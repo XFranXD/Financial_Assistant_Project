@@ -1450,7 +1450,7 @@ def build_intraday_report(
     n_found         = len(companies)
     subject         = f'■ Stock Research — {slot} Update — {n_found} opportunit{"y" if n_found == 1 else "ies"} found'
     overflow_count  = len(overflow_companies)
-    overflow_notice = f'+ {overflow_count} more companies found today. View full report: [LINK]' if overflow_count else ''
+    overflow_notice = f'+ {overflow_count} more companies found today. View full report: <a href="{dashboard_url}" style="color:#00e5ff;text-decoration:underline;">{dashboard_url}</a>' if overflow_count else ''
 
     env = _get_jinja_env()
 

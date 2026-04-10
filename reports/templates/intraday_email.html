@@ -504,7 +504,7 @@
 
     <!-- Overflow notice -->
     {% if overflow_notice %}
-    <div class="overflow">{{ overflow_notice }}</div>
+    <div class="overflow">{{ overflow_notice | safe }}</div>
     {% endif %}
 
     <!-- Dashboard link -->

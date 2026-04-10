@@ -741,6 +741,7 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
         from paper_trading.live_engine import run_paper_trading
         from paper_trading.replay_engine import simulate_expected_return
         from paper_trading.comparison_engine import enrich_closed_trades
+        from paper_trading.sheets_ledger import update_rows
         from contracts.paper_trading_schema import (
             PT_EXPECTED_RETURN_PCT, PT_STATUS, PT_STATUS_CLOSED,
         )
@@ -750,6 +751,7 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
             current_slot  = slot,
             market_regime = _pt_regime,
         )
+        _replay_enriched = []
         for _pt_trade in paper_trading_summary.get('trades', []):
             if (
                 _pt_trade.get(PT_STATUS) == PT_STATUS_CLOSED
@@ -759,17 +761,23 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
                 if _expected is not None:
                     _pt_trade[PT_EXPECTED_RETURN_PCT] = _expected
                     enrich_closed_trades([_pt_trade])
+                    _replay_enriched.append(_pt_trade)
+        # Persist expected_return_pct, error_pct, direction_correct back to Sheets.
+        if _replay_enriched:
+            if not update_rows(_replay_enriched):
+                log.warning('[PT][DEBUG] Failed to persist replay enrichment to Sheets (non-fatal)')
         log.info(
             f'[PT][DEBUG] Paper trading complete. '
             f'Open: {paper_trading_summary.get("open_count")} | '
             f'New: {paper_trading_summary.get("new_count")} | '
-            f'Closed: {paper_trading_summary.get("closed_count")}'
+            f'Closed: {paper_trading_summary.get("closed_count")} | '
+            f'Replay enriched: {len(_replay_enriched)}'
         )
     except Exception as _pt_err:
         paper_trading_summary = {'pt_available': False}
         log.warning(f'[PT][DEBUG] Paper trading failed (non-fatal): {_pt_err}')
     # ── End Step 27k (Debug) ───────────────────────────────────────────────
-
+    
     # Build and send report
     from reports.report_builder import build_intraday_report
     html_files = build_intraday_report(
@@ -1484,6 +1492,7 @@ def run():
         from paper_trading.live_engine import run_paper_trading
         from paper_trading.replay_engine import simulate_expected_return
         from paper_trading.comparison_engine import enrich_closed_trades
+        from paper_trading.sheets_ledger import update_rows
         from contracts.paper_trading_schema import (
             PT_EXPECTED_RETURN_PCT, PT_STATUS, PT_STATUS_CLOSED,
         )
@@ -1493,6 +1502,7 @@ def run():
             current_slot  = slot,
             market_regime = _pt_regime,
         )
+        _replay_enriched = []
         for _pt_trade in paper_trading_summary.get('trades', []):
             if (
                 _pt_trade.get(PT_STATUS) == PT_STATUS_CLOSED
@@ -1502,11 +1512,18 @@ def run():
                 if _expected is not None:
                     _pt_trade[PT_EXPECTED_RETURN_PCT] = _expected
                     enrich_closed_trades([_pt_trade])
+                    _replay_enriched.append(_pt_trade)
+        # Persist expected_return_pct, error_pct, direction_correct back to Sheets.
+        # These fields are computed after commit_updates, so they need a second write.
+        if _replay_enriched:
+            if not update_rows(_replay_enriched):
+                log.warning('[PT] Failed to persist replay enrichment to Sheets (non-fatal)')
         log.info(
             f'[PT] Paper trading complete. '
             f'Open: {paper_trading_summary.get("open_count")} | '
             f'New: {paper_trading_summary.get("new_count")} | '
-            f'Closed: {paper_trading_summary.get("closed_count")}'
+            f'Closed: {paper_trading_summary.get("closed_count")} | '
+            f'Replay enriched: {len(_replay_enriched)}'
         )
     except Exception as _pt_err:
         paper_trading_summary = {'pt_available': False}
