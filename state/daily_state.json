@@ -1,6 +1,13 @@
 {
   "date": "2026-04-10",
-  "reported_companies": [],
+  "reported_companies": [
+    "WDC",
+    "CF",
+    "AMAT",
+    "LIN",
+    "NVDA",
+    "NEM"
+  ],
   "alpha_vantage_calls_today": 20,
   "runs": {
     "9:45-11:15": {
@@ -12,8 +19,15 @@
       "status": "pending"
     },
     "13:45-15:15": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "WDC",
+        "NEM",
+        "NVDA",
+        "AMAT",
+        "CF",
+        "LIN"
+      ],
+      "status": "complete"
     },
     "16:00-17:20": {
       "companies": [],
@@ -128,5 +142,12 @@
       "label": "Rising"
     }
   },
-  "today_scores": {}
+  "today_scores": {
+    "WDC": 61.2,
+    "NEM": 59.1,
+    "NVDA": 58.0,
+    "AMAT": 57.4,
+    "CF": 56.6,
+    "LIN": 51.4
+  }
 }
