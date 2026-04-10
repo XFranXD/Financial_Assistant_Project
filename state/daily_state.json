@@ -1,63 +1,48 @@
 {
-  "date": "2026-04-09",
-  "reported_companies": [
-    "NVDA",
-    "WDC",
-    "AMAT",
-    "REG",
-    "KIM",
-    "VICI"
-  ],
+  "date": "2026-04-10",
+  "reported_companies": [],
   "alpha_vantage_calls_today": 20,
   "runs": {
     "9:45-11:15": {
       "companies": [],
-      "status": "complete"
+      "status": "pending"
     },
     "11:45-13:15": {
       "companies": [],
-      "status": "complete"
+      "status": "pending"
     },
     "13:45-15:15": {
-      "companies": [
-        "REG",
-        "KIM",
-        "VICI"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     },
     "16:00-17:20": {
-      "companies": [
-        "WDC",
-        "AMAT",
-        "NVDA"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     }
   },
   "failed_tickers": [],
   "api_failures": {},
   "sector_scores_today": {
-    "technology": 4.127,
-    "healthcare": 0.639,
-    "financials": 3.133,
-    "consumer_discretionary": 1.666,
-    "consumer_staples": 1.671,
-    "industrials": 3.839,
-    "materials": 2.298,
-    "energy": -4.305,
-    "utilities": 2.085,
-    "real_estate": 4.122,
-    "communication_services": 1.916,
-    "semiconductors": 10.437,
-    "defense": 2.572
+    "technology": 5.087,
+    "healthcare": 0.526,
+    "financials": 2.42,
+    "consumer_discretionary": 3.666,
+    "consumer_staples": 0.514,
+    "industrials": 4.992,
+    "materials": 3.366,
+    "energy": -6.552,
+    "utilities": 1.942,
+    "real_estate": 3.31,
+    "communication_services": 2.413,
+    "semiconductors": 14.355,
+    "defense": 3.548
   },
-  "breadth_score_today": 0.723,
+  "breadth_score_today": 0.454,
   "sector_breadth_ma_today": {
     "technology": {
-      "breadth_ma_score": 0.4,
-      "pct": 40.0,
-      "label": "mixed signals"
+      "breadth_ma_score": 0.6,
+      "pct": 60.0,
+      "label": "healthy participation"
     },
     "semiconductors": {
       "breadth_ma_score": 0.9,
@@ -65,13 +50,13 @@
       "label": "sector is genuinely strong"
     },
     "healthcare": {
-      "breadth_ma_score": 0.4,
-      "pct": 40.0,
+      "breadth_ma_score": 0.3,
+      "pct": 30.0,
       "label": "mixed signals"
     },
     "financials": {
-      "breadth_ma_score": 0.7,
-      "pct": 70.0,
+      "breadth_ma_score": 0.6,
+      "pct": 60.0,
       "label": "healthy participation"
     },
     "consumer_discretionary": {
@@ -95,9 +80,9 @@
       "label": "sector is structurally weak"
     },
     "energy": {
-      "breadth_ma_score": 0.9,
-      "pct": 90.0,
-      "label": "sector is genuinely strong"
+      "breadth_ma_score": 0.7,
+      "pct": 70.0,
+      "label": "healthy participation"
     },
     "materials": {
       "breadth_ma_score": 0.7,
@@ -110,9 +95,9 @@
       "label": "sector is genuinely strong"
     },
     "real_estate": {
-      "breadth_ma_score": 0.7,
-      "pct": 70.0,
-      "label": "healthy participation"
+      "breadth_ma_score": 0.9,
+      "pct": 90.0,
+      "label": "sector is genuinely strong"
     },
     "communication_services": {
       "breadth_ma_score": 0.3,
@@ -120,40 +105,24 @@
       "label": "mixed signals"
     }
   },
-  "unusual_volume_flags": [
-    "NOW",
-    "SNOW",
-    "ZS",
-    "NET",
-    "TWLO"
-  ],
-  "event_scores_today": {
-    "energy": 2.7,
-    "materials": 1.9500000000000002,
-    "consumer_discretionary": 2.25,
-    "industrials": 1.9500000000000002,
-    "utilities": 1.7999999999999998
-  },
+  "unusual_volume_flags": [],
+  "event_scores_today": {},
   "indices_today": {
     "dow": {
-      "value": 48185.8,
-      "change_pct": 0.58,
-      "label": "Rising"
+      "value": 48105.94,
+      "change_pct": -0.17,
+      "label": "Falling"
     },
     "sp500": {
-      "value": 6824.66,
-      "change_pct": 0.62,
+      "value": 6840.26,
+      "change_pct": 0.23,
       "label": "Rising"
     },
     "nasdaq": {
-      "value": 22822.42,
-      "change_pct": 0.83,
+      "value": 22979.52,
+      "change_pct": 0.69,
       "label": "Rising"
     }
   },
-  "today_scores": {
-    "WDC": 69.5,
-    "AMAT": 63.8,
-    "NVDA": 62.5
-  }
+  "today_scores": {}
 }
