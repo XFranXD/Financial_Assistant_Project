@@ -17,23 +17,28 @@ on:
   workflow_dispatch:
     inputs:
       force_tickers:
-        description: 'Comma-separated tickers to test (e.g. AAPL,MSFT). Leave blank for normal run.'
+        description: |
+          Tickers to test — e.g. AAPL,MSFT,TSLA
+          Leave blank for a normal scheduled run.
         required: false
         default: ''
       subsystems:
         description: |
-          Which subsystems to run against the forced tickers.
-          Use "all" to run everything, or a range/list: "sub1-sub4", "sub2", "sub1,sub3,sub6".
-          Sub dependencies: sub2 needs sub1 data. sub3,sub4,sub5,sub6 are independent of each other but need sub1.
-          If sub1 is excluded, dependent subs receive no financials and will report UNAVAILABLE for data-dependent fields.
-          Leave blank = "all".
+          What to run (only applies when tickers are set above):
+            all          → run all subsystems
+            sub2         → run one subsystem
+            sub1,sub3    → run specific subsystems
+            sub1-sub4    → run a range
+          Note: sub1 supplies financial data. If excluded, other subs
+          that depend on it will return UNAVAILABLE for those fields.
+          Leave blank = all.
         required: false
         default: 'all'
       dry_run:
         description: |
-          If true (default for manual runs): suppresses paper trading writes, email send, and git commit.
-          Rank board IS updated but cards are tagged FORCE so they are visually distinct.
-          Set to false only when you explicitly want a manual run to behave like a scheduled one.
+          Safe mode — true by default for all manual runs.
+            true  → no trades saved, no email, no commit (rank still updates, cards tagged FORCE)
+            false → behaves exactly like a scheduled run (use only when intentional)
         required: false
         default: 'true'
 
@@ -93,4 +98,4 @@ jobs:
           git pull --rebase origin main
           git stash pop || true
           git push
-          
+        
