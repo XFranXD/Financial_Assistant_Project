@@ -72,6 +72,43 @@ DISCLAIMER = (
 )
 
 
+# ── Debug mode helpers ───────────────────────────────────────────────────────
+
+def _parse_subsystems(raw: str) -> set[str]:
+    """
+    Parse the FORCE_SUBSYSTEMS env var into a set of active sub keys.
+
+    Accepted formats (case-insensitive):
+      "all"           → all subs active
+      ""              → all subs active (default)
+      "sub2"          → only sub2
+      "sub1,sub3,sub6"→ sub1, sub3, sub6
+      "sub1-sub4"     → sub1, sub2, sub3, sub4
+
+    Always returns a set containing only valid keys from:
+      {'sub1', 'sub2', 'sub3', 'sub4', 'sub5', 'sub6'}
+    """
+    ALL_SUBS = {'sub1', 'sub2', 'sub3', 'sub4', 'sub5', 'sub6'}
+    raw = (raw or '').strip().lower()
+    if not raw or raw == 'all':
+        return set(ALL_SUBS)
+
+    # Range syntax: sub1-sub4
+    import re
+    range_match = re.fullmatch(r'sub(\d)-sub(\d)', raw)
+    if range_match:
+        lo, hi = int(range_match.group(1)), int(range_match.group(2))
+        return {f'sub{n}' for n in range(lo, hi + 1) if f'sub{n}' in ALL_SUBS}
+
+    # Comma list: sub1,sub3,sub6
+    parts = {p.strip() for p in raw.split(',') if p.strip()}
+    valid = parts & ALL_SUBS
+    if not valid:
+        log.warning(f'[DEBUG] FORCE_SUBSYSTEMS "{raw}" produced no valid subs — defaulting to all')
+        return set(ALL_SUBS)
+    return valid
+
+
 # ── Step helpers ────────────────────────────────────────────────────────────
 
 def _load_json(path: str, default=None):
@@ -279,18 +316,25 @@ def _enrich_for_dashboard(candidates: list) -> None:
 
 # ── Force-ticker pipeline (debug mode) ────────────────────────────────────
 
-def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> None:
+def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict,
+                               active_subs: set[str], dry_run: bool) -> None:
     """
     Debug mode: skip all sector/news gates and run the full per-company
     analysis pipeline directly against the provided ticker list.
     Triggered only when FORCE_TICKERS env var is set on a manual
     workflow_dispatch run. Never activates on scheduled runs.
 
-    Produces a full report and email identical to a normal run.
+    active_subs : set of sub keys to run, e.g. {'sub1','sub4'}.
+                  Parsed from FORCE_SUBSYSTEMS env var.
+    dry_run     : if True, suppresses paper trading writes, email, and git commit.
+                  Rank board IS updated but cards are tagged FORCE.
+
     Does NOT update state slot completion — debug runs are invisible
     to the score stability filter and daily dedup logic.
     """
     log.info(f'[DEBUG] Force-ticker mode active — tickers: {force_tickers}')
+    log.info(f'[DEBUG] Active subsystems: {sorted(active_subs)}')
+    log.info(f'[DEBUG] Dry run: {dry_run}')
     log.info(f'[DEBUG] Skipping all sector/news gates')
 
     # Fetch market context needed for scoring
@@ -377,72 +421,93 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
         ticker = ticker.strip().upper()
         log.info(f'[DEBUG] Processing forced ticker: {ticker}')
 
-        fin = get_financials(ticker)
+        # ── Sub1: financials + core scoring ──────────────────────────────
+        if 'sub1' in active_subs:
+            fin = get_financials(ticker)
 
-        # Map company industry to System 1 sector key for System 3 compatibility
-        _industry = fin.get('industry', '') or ''
-        _sector_map = _load_json('data/sector_tickers.json', {})
-        _sector_map.pop('_comment', None)
-        sector = 'unknown'
-        for _sec_key, _tickers in _sector_map.items():
-            for _entry in _tickers:
-                _t = _entry['ticker'] if isinstance(_entry, dict) else _entry
-                if _t == ticker:
-                    sector = _sec_key
+            # Map company industry to System 1 sector key for System 3 compatibility
+            _industry = fin.get('industry', '') or ''
+            _sector_map = _load_json('data/sector_tickers.json', {})
+            _sector_map.pop('_comment', None)
+            sector = 'unknown'
+            for _sec_key, _tickers in _sector_map.items():
+                for _entry in _tickers:
+                    _t = _entry['ticker'] if isinstance(_entry, dict) else _entry
+                    if _t == ticker:
+                        sector = _sec_key
+                        break
+                if sector != 'unknown':
                     break
-            if sector != 'unknown':
-                break
-        if sector == 'unknown':
-            sector = 'energy'  # fallback for force-ticker mode
-        sector_pe        = get_sector_pe('energy')       # neutral fallback
-        sector_median_ret = get_sector_median_return('energy')
-        etf_return       = None
-        bma_score        = 0.5
-        sector_momentum_val = 50
-        sector_rank      = 7
-        sector_data      = {'direction': 'positive', 'validation': {'confirmed': True}}
+            if sector == 'unknown':
+                sector = 'energy'  # fallback for force-ticker mode
+            sector_pe        = get_sector_pe('energy')       # neutral fallback
+            sector_median_ret = get_sector_median_return('energy')
+            etf_return       = None
+            bma_score        = 0.5
+            sector_momentum_val = 50
+            sector_rank      = 7
+            sector_data      = {'direction': 'positive', 'validation': {'confirmed': True}}
 
-        # AV enrichment if budget allows
-        av_data = _fetch_av_data(ticker, state)
-        if av_data:
-            state['alpha_vantage_calls_today'] = state.get('alpha_vantage_calls_today', 0) + 1
-            save_state(state)
-            fin = enrich_with_alpha_vantage(ticker, av_data, fin)
+            # AV enrichment if budget allows
+            av_data = _fetch_av_data(ticker, state)
+            if av_data:
+                state['alpha_vantage_calls_today'] = state.get('alpha_vantage_calls_today', 0) + 1
+                save_state(state)
+                fin = enrich_with_alpha_vantage(ticker, av_data, fin)
 
-        vol_result       = compute_volume_confirmation(ticker)
-        uv_result        = detect_unusual_volume(ticker, vol_result.get('volume_ratio'))
-        ram_result       = compute_risk_adjusted_momentum(ticker)
-        mtf_result       = compute_mtf_momentum(ticker)
-        stability_result = compute_trend_stability(ticker)
-        dd_result        = compute_drawdown_risk(ticker)
-        risk_result      = compute_risk_score(fin, regime, dd_result.get('drawdown_score'))
+            vol_result       = compute_volume_confirmation(ticker)
+            uv_result        = detect_unusual_volume(ticker, vol_result.get('volume_ratio'))
+            ram_result       = compute_risk_adjusted_momentum(ticker)
+            mtf_result       = compute_mtf_momentum(ticker)
+            stability_result = compute_trend_stability(ticker)
+            dd_result        = compute_drawdown_risk(ticker)
+            risk_result      = compute_risk_score(fin, regime, dd_result.get('drawdown_score'))
 
-        opp_result = compute_opportunity_score(
-            fin, regime, breadth, sector_pe, sector_median_ret,
-            ram_result.get('ram_score'), mtf_result.get('mtf_score'),
-            vol_result.get('volume_score'), bma_score, etf_return,
-        )
+            opp_result = compute_opportunity_score(
+                fin, regime, breadth, sector_pe, sector_median_ret,
+                ram_result.get('ram_score'), mtf_result.get('mtf_score'),
+                vol_result.get('volume_score'), bma_score, etf_return,
+            )
 
-        sec_str       = sector_rank_to_score(sector_rank)
-        norm_ev_score = 0.0   # no sector event context in force mode
-        agreement     = compute_signal_agreement(
-            momentum_score  = ram_result.get('ram_score', 0.5),
-            sector_strength = sec_str,
-            event_score     = norm_ev_score,
-            volume_score    = vol_result.get('volume_score', 0.5),
-        )
+            sec_str       = sector_rank_to_score(sector_rank)
+            norm_ev_score = 0.0   # no sector event context in force mode
+            agreement     = compute_signal_agreement(
+                momentum_score  = ram_result.get('ram_score', 0.5),
+                sector_strength = sec_str,
+                event_score     = norm_ev_score,
+                volume_score    = vol_result.get('volume_score', 0.5),
+            )
 
-        conf_result = compute_composite_confidence(
-            risk_score            = risk_result['risk_score'],
-            opportunity_score     = opp_result['opportunity_score'],
-            agreement_score       = agreement['agreement_score'],
-            sector_momentum_score = sector_momentum_val,
-        )
+            conf_result = compute_composite_confidence(
+                risk_score            = risk_result['risk_score'],
+                opportunity_score     = opp_result['opportunity_score'],
+                agreement_score       = agreement['agreement_score'],
+                sector_momentum_score = sector_momentum_val,
+            )
 
-        log.info(
-            f'[DEBUG] {ticker}: conf={conf_result["composite_confidence"]} '
-            f'risk={risk_result["risk_score"]} opp={opp_result["opportunity_score"]}'
-        )
+            log.info(
+                f'[DEBUG] {ticker}: conf={conf_result["composite_confidence"]} '
+                f'risk={risk_result["risk_score"]} opp={opp_result["opportunity_score"]}'
+            )
+        else:
+            # Sub1 excluded — build a minimal stub so downstream subs have a dict to work with.
+            # All data-dependent fields will show UNAVAILABLE in the report — this is expected.
+            log.info(f'[DEBUG] {ticker}: Sub1 excluded — using minimal stub (data-dependent fields will be UNAVAILABLE)')
+            fin              = {'company_name': ticker, 'current_price': None, 'industry': '', 'price_history': []}
+            sector           = 'unknown'
+            sector_data      = {'direction': 'positive', 'validation': {'confirmed': True}}
+            sector_momentum_val = 50
+            sector_rank      = 7
+            vol_result       = {'volume_score': 0.5, 'volume_ratio': None}
+            uv_result        = {'unusual_flag': False}
+            ram_result       = {'ram_score': 0.5, 'r1m': None, 'r3m': None, 'r6m': None}
+            mtf_result       = {'mtf_score': 0.5, 'r1m': None, 'r3m': None, 'r6m': None}
+            stability_result = {}
+            dd_result        = {'drawdown_score': 0.5}
+            risk_result      = {'risk_score': 50, 'risk_label': 'UNAVAILABLE', 'components': {}, 'earnings_warning': False, 'divergence_warning': False}
+            opp_result       = {'opportunity_score': 50, 'bucket_scores': {}}
+            agreement        = {'agreement_score': 0.5, 'label': 'UNAVAILABLE'}
+            conf_result      = {'composite_confidence': 50, 'confidence_label': 'UNAVAILABLE'}
 
         candidate = {
             'ticker':               ticker,
@@ -471,6 +536,7 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
             'sector_data':          sector_data,
             'rotation':             {},
             'disclaimer':           DISCLAIMER,
+            'force_debug':          True,   # marks this as a debug/test candidate
         }
         all_candidates.append(candidate)
 
@@ -478,319 +544,357 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
         log.warning('[DEBUG] No candidates built from forced tickers — check ticker symbols')
         return
 
-    # ── EQ enrichment ────────────────────────────────────────────────────
-    try:
-        eq_tickers = [c['ticker'] for c in all_candidates]
-        log.info(f'[DEBUG][EQ] Running EQ analysis on {len(eq_tickers)} forced tickers')
-        eq_results, _debug_eq_fetcher = run_eq_analyzer(eq_tickers)
-        eq_map = {
-            r.get('ticker'): r
-            for r in eq_results
-            if isinstance(r.get('ticker'), str) and r.get('ticker')
-        }
-        for candidate in all_candidates:
-            t         = candidate.get('ticker', '')
-            eq        = eq_map.get(t, {})
-            eq_result = eq.get('eq_result', {})
-            if (eq_result and isinstance(eq_result, dict)
-                    and not eq.get('error') and not eq.get('skipped')):
-                candidate[EQ_AVAILABLE]            = True
-                candidate[EQ_SCORE_FINAL]          = eq_result.get(EQ_SCORE_FINAL, 0)
-                candidate[EQ_LABEL]                = eq_result.get(EQ_LABEL, '')
-                candidate[PASS_TIER]               = eq_result.get(PASS_TIER, '')
-                candidate[FINAL_CLASSIFICATION]    = eq_result.get(FINAL_CLASSIFICATION, '')
-                candidate[TOP_RISKS]               = eq_result.get(TOP_RISKS, [])
-                candidate[TOP_STRENGTHS]           = eq_result.get(TOP_STRENGTHS, [])
-                candidate[WARNINGS]                = eq_result.get(WARNINGS, [])
-                candidate[DATA_CONFIDENCE]         = eq_result.get(DATA_CONFIDENCE, 0)
-                candidate[COMBINED_PRIORITY_SCORE] = eq.get(COMBINED_PRIORITY_SCORE, 0)
-                candidate[EQ_PERCENTILE]           = eq_result.get(EQ_PERCENTILE, 0)
-                candidate[BATCH_REGIME]            = eq_result.get(BATCH_REGIME, '')
-                candidate[FATAL_FLAW_REASON]       = eq_result.get(FATAL_FLAW_REASON, '')
-            else:
+    # ── Sub2: Earnings Quality enrichment ────────────────────────────────
+    _debug_eq_fetcher = None
+    if 'sub2' in active_subs:
+        try:
+            eq_tickers = [c['ticker'] for c in all_candidates]
+            log.info(f'[DEBUG][EQ] Running EQ analysis on {len(eq_tickers)} forced tickers')
+            eq_results, _debug_eq_fetcher = run_eq_analyzer(eq_tickers)
+            eq_map = {
+                r.get('ticker'): r
+                for r in eq_results
+                if isinstance(r.get('ticker'), str) and r.get('ticker')
+            }
+            for candidate in all_candidates:
+                t         = candidate.get('ticker', '')
+                eq        = eq_map.get(t, {})
+                eq_result = eq.get('eq_result', {})
+                if (eq_result and isinstance(eq_result, dict)
+                        and not eq.get('error') and not eq.get('skipped')):
+                    candidate[EQ_AVAILABLE]            = True
+                    candidate[EQ_SCORE_FINAL]          = eq_result.get(EQ_SCORE_FINAL, 0)
+                    candidate[EQ_LABEL]                = eq_result.get(EQ_LABEL, '')
+                    candidate[PASS_TIER]               = eq_result.get(PASS_TIER, '')
+                    candidate[FINAL_CLASSIFICATION]    = eq_result.get(FINAL_CLASSIFICATION, '')
+                    candidate[TOP_RISKS]               = eq_result.get(TOP_RISKS, [])
+                    candidate[TOP_STRENGTHS]           = eq_result.get(TOP_STRENGTHS, [])
+                    candidate[WARNINGS]                = eq_result.get(WARNINGS, [])
+                    candidate[DATA_CONFIDENCE]         = eq_result.get(DATA_CONFIDENCE, 0)
+                    candidate[COMBINED_PRIORITY_SCORE] = eq.get(COMBINED_PRIORITY_SCORE, 0)
+                    candidate[EQ_PERCENTILE]           = eq_result.get(EQ_PERCENTILE, 0)
+                    candidate[BATCH_REGIME]            = eq_result.get(BATCH_REGIME, '')
+                    candidate[FATAL_FLAW_REASON]       = eq_result.get(FATAL_FLAW_REASON, '')
+                else:
+                    candidate[EQ_AVAILABLE] = False
+                    log.info(f'[DEBUG][EQ] {t}: no EQ data — skipped or error')
+        except Exception as eq_err:
+            log.warning(f'[DEBUG][EQ] EQ analysis failed (non-fatal): {eq_err}')
+            for candidate in all_candidates:
                 candidate[EQ_AVAILABLE] = False
-                log.info(f'[DEBUG][EQ] {t}: no EQ data — skipped or error')
-    except Exception as eq_err:
-        log.warning(f'[DEBUG][EQ] EQ analysis failed (non-fatal): {eq_err}')
+            _debug_eq_fetcher = None
+    else:
+        log.info('[DEBUG][EQ] Sub2 excluded — EQ fields set to UNAVAILABLE')
         for candidate in all_candidates:
             candidate[EQ_AVAILABLE] = False
-        _debug_eq_fetcher = None
 
-    # ── Sector Rotation enrichment ────────────────────────────────────────
-    try:
-        rotation_candidates = [
-            {'ticker': c.get('ticker', ''), 'sector': c.get('sector', '')}
-            for c in all_candidates
-            if c.get('ticker') and c.get('sector')
-        ]
-        if rotation_candidates:
-            log.info(f'[ROT] Running rotation analysis on {len(rotation_candidates)} candidates')
-            rotation_results = run_rotation_analyzer(rotation_candidates)
-
-            if not rotation_results:
-                log.warning('[ROT] No results returned from System 3')
+    # ── Sub3: Sector Rotation enrichment ─────────────────────────────────
+    if 'sub3' in active_subs:
+        try:
+            rotation_candidates = [
+                {'ticker': c.get('ticker', ''), 'sector': c.get('sector', '')}
+                for c in all_candidates
+                if c.get('ticker') and c.get('sector')
+            ]
+            if rotation_candidates:
+                log.info(f'[ROT] Running rotation analysis on {len(rotation_candidates)} candidates')
+                rotation_results = run_rotation_analyzer(rotation_candidates)
+                if not rotation_results:
+                    log.warning('[ROT] No results returned from System 3')
+                else:
+                    rotation_map = {
+                        r.get('ticker'): r
+                        for r in rotation_results
+                        if isinstance(r.get('ticker'), str) and r.get('ticker')
+                    }
+                    for candidate in all_candidates:
+                        t   = candidate.get('ticker', '')
+                        rot = rotation_map.get(t, {})
+                        if (rot
+                                and rot.get('rotation_status') not in ('SKIP', None)
+                                and not rot.get('error')):
+                            candidate[ROTATION_AVAILABLE]  = True
+                            candidate[ROTATION_SCORE]      = rot.get(ROTATION_SCORE)
+                            candidate[ROTATION_STATUS]     = rot.get(ROTATION_STATUS, '')
+                            candidate[ROTATION_SIGNAL]     = rot.get(ROTATION_SIGNAL, 'UNKNOWN')
+                            candidate[SECTOR_ETF]          = rot.get(SECTOR_ETF, '')
+                            candidate[ROTATION_CONFIDENCE] = rot.get(ROTATION_CONFIDENCE, '')
+                            candidate[ROTATION_REASONING]  = rot.get(ROTATION_REASONING, '')
+                            candidate[TIMEFRAMES_USED]     = rot.get(TIMEFRAMES_USED, [])
+                        else:
+                            candidate[ROTATION_AVAILABLE] = False
+                            candidate[ROTATION_SIGNAL]    = 'UNKNOWN'
+                            log.info(f'[ROT] {t}: no rotation data — skipped or error')
+                    log.info(
+                        f'[ROT] Enrichment complete. '
+                        f'{sum(1 for c in all_candidates if c.get(ROTATION_AVAILABLE))} enriched / '
+                        f'{len(all_candidates)} total'
+                    )
             else:
-                rotation_map = {
-                    r.get('ticker'): r
-                    for r in rotation_results
-                    if isinstance(r.get('ticker'), str) and r.get('ticker')
-                }
-
-                for candidate in all_candidates:
-                    t   = candidate.get('ticker', '')
-                    rot = rotation_map.get(t, {})
-
-                    if (rot
-                            and rot.get('rotation_status') not in ('SKIP', None)
-                            and not rot.get('error')):
-                        candidate[ROTATION_AVAILABLE]  = True
-                        candidate[ROTATION_SCORE]      = rot.get(ROTATION_SCORE)
-                        candidate[ROTATION_STATUS]     = rot.get(ROTATION_STATUS, '')
-                        candidate[ROTATION_SIGNAL]     = rot.get(ROTATION_SIGNAL, 'UNKNOWN')
-                        candidate[SECTOR_ETF]          = rot.get(SECTOR_ETF, '')
-                        candidate[ROTATION_CONFIDENCE] = rot.get(ROTATION_CONFIDENCE, '')
-                        candidate[ROTATION_REASONING]  = rot.get(ROTATION_REASONING, '')
-                        candidate[TIMEFRAMES_USED]     = rot.get(TIMEFRAMES_USED, [])
-                    else:
-                        candidate[ROTATION_AVAILABLE]  = False
-                        candidate[ROTATION_SIGNAL]     = 'UNKNOWN'
-                        log.info(f'[ROT] {t}: no rotation data — skipped or error')
-
-                log.info(
-                    f'[ROT] Enrichment complete. '
-                    f'{sum(1 for c in all_candidates if c.get(ROTATION_AVAILABLE))} enriched / '
-                    f'{len(all_candidates)} total'
-                )
-        else:
-            log.info('[ROT] No candidates for rotation analysis')
-
-    except Exception as rot_err:
-        log.warning(f'[ROT] Rotation analysis failed (non-fatal): {rot_err}')
+                log.info('[ROT] No candidates for rotation analysis')
+        except Exception as rot_err:
+            log.warning(f'[ROT] Rotation analysis failed (non-fatal): {rot_err}')
+            for candidate in all_candidates:
+                candidate[ROTATION_AVAILABLE] = False
+                candidate[ROTATION_SIGNAL]    = 'UNKNOWN'
+    else:
+        log.info('[DEBUG][ROT] Sub3 excluded — rotation fields set to UNAVAILABLE')
         for candidate in all_candidates:
             candidate[ROTATION_AVAILABLE] = False
             candidate[ROTATION_SIGNAL]    = 'UNKNOWN'
 
-    # ── Step 27f: Price Structure enrichment (Debug) ──────────────────────
-    # Run System 4 (Price Structure Analyzer) against all forced candidates.
-    # analyze() is called per-ticker. Non-fatal — PS_AVAILABLE=False on any error.
-    try:
-        log.info(f'[PS] Running price structure analysis on {len(all_candidates)} forced tickers')
-        ps_enriched = 0
-        for candidate in all_candidates:
-            t = candidate.get('ticker', '')
-            try:
-                ps_result = ps_analyze(t)
-                if (ps_result
-                        and isinstance(ps_result, dict)
-                        and ps_result.get(PS_DATA_CONFIDENCE, 'UNAVAILABLE') != 'UNAVAILABLE'):
-                    candidate[PS_AVAILABLE]               = True
-                    candidate[PS_TREND_STRUCTURE]         = ps_result.get(PS_TREND_STRUCTURE,        PRICE_STRUCTURE_DEFAULTS[PS_TREND_STRUCTURE])
-                    candidate[PS_TREND_STRENGTH]          = ps_result.get(PS_TREND_STRENGTH,         PRICE_STRUCTURE_DEFAULTS[PS_TREND_STRENGTH])
-                    candidate[PS_KEY_LEVEL_POSITION]      = ps_result.get(PS_KEY_LEVEL_POSITION,     PRICE_STRUCTURE_DEFAULTS[PS_KEY_LEVEL_POSITION])
-                    candidate[PS_ENTRY_QUALITY]           = ps_result.get(PS_ENTRY_QUALITY,          PRICE_STRUCTURE_DEFAULTS[PS_ENTRY_QUALITY])
-                    candidate[PS_VOLATILITY_STATE]        = ps_result.get(PS_VOLATILITY_STATE,       PRICE_STRUCTURE_DEFAULTS[PS_VOLATILITY_STATE])
-                    candidate[PS_COMPRESSION_LOCATION]    = ps_result.get(PS_COMPRESSION_LOCATION,   PRICE_STRUCTURE_DEFAULTS[PS_COMPRESSION_LOCATION])
-                    candidate[PS_CONSOLIDATION_CONFIRMED] = ps_result.get(PS_CONSOLIDATION_CONFIRMED,PRICE_STRUCTURE_DEFAULTS[PS_CONSOLIDATION_CONFIRMED])
-                    candidate[PS_SUPPORT_REACTION]        = ps_result.get(PS_SUPPORT_REACTION,       PRICE_STRUCTURE_DEFAULTS[PS_SUPPORT_REACTION])
-                    candidate[PS_BASE_DURATION_DAYS]      = ps_result.get(PS_BASE_DURATION_DAYS,     PRICE_STRUCTURE_DEFAULTS[PS_BASE_DURATION_DAYS])
-                    candidate[PS_VOLUME_CONTRACTION]      = ps_result.get(PS_VOLUME_CONTRACTION,     PRICE_STRUCTURE_DEFAULTS[PS_VOLUME_CONTRACTION])
-                    candidate[PS_PRICE_ACTION_SCORE]      = ps_result.get(PS_PRICE_ACTION_SCORE,     PRICE_STRUCTURE_DEFAULTS[PS_PRICE_ACTION_SCORE])
-                    candidate[PS_MOVE_EXTENSION_PCT]      = ps_result.get(PS_MOVE_EXTENSION_PCT,     PRICE_STRUCTURE_DEFAULTS[PS_MOVE_EXTENSION_PCT])
-                    candidate[PS_DISTANCE_TO_SUPPORT_PCT] = ps_result.get(PS_DISTANCE_TO_SUPPORT_PCT,PRICE_STRUCTURE_DEFAULTS[PS_DISTANCE_TO_SUPPORT_PCT])
-                    candidate[PS_DISTANCE_TO_RESIST_PCT]  = ps_result.get(PS_DISTANCE_TO_RESIST_PCT, PRICE_STRUCTURE_DEFAULTS[PS_DISTANCE_TO_RESIST_PCT])
-                    candidate[PS_STRUCTURE_STATE]         = ps_result.get(PS_STRUCTURE_STATE,        PRICE_STRUCTURE_DEFAULTS[PS_STRUCTURE_STATE])
-                    candidate[PS_RECENT_CROSSOVER]        = ps_result.get(PS_RECENT_CROSSOVER,       PRICE_STRUCTURE_DEFAULTS[PS_RECENT_CROSSOVER])
-                    candidate[PS_DATA_CONFIDENCE]         = ps_result.get(PS_DATA_CONFIDENCE,        PRICE_STRUCTURE_DEFAULTS[PS_DATA_CONFIDENCE])
-                    candidate[PS_REASONING]               = ps_result.get(PS_REASONING,              PRICE_STRUCTURE_DEFAULTS[PS_REASONING])
-                    candidate[PS_ENTRY_PRICE]             = ps_result.get(PS_ENTRY_PRICE,             PRICE_STRUCTURE_DEFAULTS['entry_price'])
-                    candidate[PS_STOP_LOSS]               = ps_result.get(PS_STOP_LOSS,               PRICE_STRUCTURE_DEFAULTS['stop_loss'])
-                    candidate[PS_PRICE_TARGET]            = ps_result.get(PS_PRICE_TARGET,            PRICE_STRUCTURE_DEFAULTS['price_target'])
-                    candidate[PS_RISK_REWARD_RATIO]       = ps_result.get(PS_RISK_REWARD_RATIO,       PRICE_STRUCTURE_DEFAULTS['risk_reward_ratio'])
-                    candidate[PS_RR_OVERRIDE]             = ps_result.get(PS_RR_OVERRIDE,             False)
-                    ps_enriched += 1
-                else:
+    # ── Sub4: Price Structure enrichment (Debug) ──────────────────────────
+    if 'sub4' in active_subs:
+        try:
+            log.info(f'[PS] Running price structure analysis on {len(all_candidates)} forced tickers')
+            ps_enriched = 0
+            for candidate in all_candidates:
+                t = candidate.get('ticker', '')
+                try:
+                    ps_result = ps_analyze(t)
+                    if (ps_result
+                            and isinstance(ps_result, dict)
+                            and ps_result.get(PS_DATA_CONFIDENCE, 'UNAVAILABLE') != 'UNAVAILABLE'):
+                        candidate[PS_AVAILABLE]               = True
+                        candidate[PS_TREND_STRUCTURE]         = ps_result.get(PS_TREND_STRUCTURE,        PRICE_STRUCTURE_DEFAULTS[PS_TREND_STRUCTURE])
+                        candidate[PS_TREND_STRENGTH]          = ps_result.get(PS_TREND_STRENGTH,         PRICE_STRUCTURE_DEFAULTS[PS_TREND_STRENGTH])
+                        candidate[PS_KEY_LEVEL_POSITION]      = ps_result.get(PS_KEY_LEVEL_POSITION,     PRICE_STRUCTURE_DEFAULTS[PS_KEY_LEVEL_POSITION])
+                        candidate[PS_ENTRY_QUALITY]           = ps_result.get(PS_ENTRY_QUALITY,          PRICE_STRUCTURE_DEFAULTS[PS_ENTRY_QUALITY])
+                        candidate[PS_VOLATILITY_STATE]        = ps_result.get(PS_VOLATILITY_STATE,       PRICE_STRUCTURE_DEFAULTS[PS_VOLATILITY_STATE])
+                        candidate[PS_COMPRESSION_LOCATION]    = ps_result.get(PS_COMPRESSION_LOCATION,   PRICE_STRUCTURE_DEFAULTS[PS_COMPRESSION_LOCATION])
+                        candidate[PS_CONSOLIDATION_CONFIRMED] = ps_result.get(PS_CONSOLIDATION_CONFIRMED,PRICE_STRUCTURE_DEFAULTS[PS_CONSOLIDATION_CONFIRMED])
+                        candidate[PS_SUPPORT_REACTION]        = ps_result.get(PS_SUPPORT_REACTION,       PRICE_STRUCTURE_DEFAULTS[PS_SUPPORT_REACTION])
+                        candidate[PS_BASE_DURATION_DAYS]      = ps_result.get(PS_BASE_DURATION_DAYS,     PRICE_STRUCTURE_DEFAULTS[PS_BASE_DURATION_DAYS])
+                        candidate[PS_VOLUME_CONTRACTION]      = ps_result.get(PS_VOLUME_CONTRACTION,     PRICE_STRUCTURE_DEFAULTS[PS_VOLUME_CONTRACTION])
+                        candidate[PS_PRICE_ACTION_SCORE]      = ps_result.get(PS_PRICE_ACTION_SCORE,     PRICE_STRUCTURE_DEFAULTS[PS_PRICE_ACTION_SCORE])
+                        candidate[PS_MOVE_EXTENSION_PCT]      = ps_result.get(PS_MOVE_EXTENSION_PCT,     PRICE_STRUCTURE_DEFAULTS[PS_MOVE_EXTENSION_PCT])
+                        candidate[PS_DISTANCE_TO_SUPPORT_PCT] = ps_result.get(PS_DISTANCE_TO_SUPPORT_PCT,PRICE_STRUCTURE_DEFAULTS[PS_DISTANCE_TO_SUPPORT_PCT])
+                        candidate[PS_DISTANCE_TO_RESIST_PCT]  = ps_result.get(PS_DISTANCE_TO_RESIST_PCT, PRICE_STRUCTURE_DEFAULTS[PS_DISTANCE_TO_RESIST_PCT])
+                        candidate[PS_STRUCTURE_STATE]         = ps_result.get(PS_STRUCTURE_STATE,        PRICE_STRUCTURE_DEFAULTS[PS_STRUCTURE_STATE])
+                        candidate[PS_RECENT_CROSSOVER]        = ps_result.get(PS_RECENT_CROSSOVER,       PRICE_STRUCTURE_DEFAULTS[PS_RECENT_CROSSOVER])
+                        candidate[PS_DATA_CONFIDENCE]         = ps_result.get(PS_DATA_CONFIDENCE,        PRICE_STRUCTURE_DEFAULTS[PS_DATA_CONFIDENCE])
+                        candidate[PS_REASONING]               = ps_result.get(PS_REASONING,              PRICE_STRUCTURE_DEFAULTS[PS_REASONING])
+                        candidate[PS_ENTRY_PRICE]             = ps_result.get(PS_ENTRY_PRICE,             PRICE_STRUCTURE_DEFAULTS['entry_price'])
+                        candidate[PS_STOP_LOSS]               = ps_result.get(PS_STOP_LOSS,               PRICE_STRUCTURE_DEFAULTS['stop_loss'])
+                        candidate[PS_PRICE_TARGET]            = ps_result.get(PS_PRICE_TARGET,            PRICE_STRUCTURE_DEFAULTS['price_target'])
+                        candidate[PS_RISK_REWARD_RATIO]       = ps_result.get(PS_RISK_REWARD_RATIO,       PRICE_STRUCTURE_DEFAULTS['risk_reward_ratio'])
+                        candidate[PS_RR_OVERRIDE]             = ps_result.get(PS_RR_OVERRIDE,             False)
+                        ps_enriched += 1
+                    else:
+                        candidate[PS_AVAILABLE] = False
+                        log.info(f'[PS] {t}: UNAVAILABLE confidence — skipped')
+                except Exception as _ps_ticker_err:
                     candidate[PS_AVAILABLE] = False
-                    log.info(f'[PS] {t}: UNAVAILABLE confidence — skipped')
-            except Exception as _ps_ticker_err:
+                    log.info(f'[PS] {t}: error — {_ps_ticker_err}')
+            log.info(f'[PS] Enrichment complete. {ps_enriched} enriched / {len(all_candidates)} total')
+        except Exception as ps_err:
+            log.warning(f'[PS] Price structure analysis failed (non-fatal): {ps_err}')
+            for candidate in all_candidates:
                 candidate[PS_AVAILABLE] = False
-                log.info(f'[PS] {t}: error — {_ps_ticker_err}')
-
-        log.info(
-            f'[PS] Enrichment complete. '
-            f'{ps_enriched} enriched / {len(all_candidates)} total'
-        )
-    except Exception as ps_err:
-        log.warning(f'[PS] Price structure analysis failed (non-fatal): {ps_err}')
+    else:
+        log.info('[DEBUG][PS] Sub4 excluded — price structure fields set to UNAVAILABLE')
         for candidate in all_candidates:
             candidate[PS_AVAILABLE] = False
-    # ── End Step 27f (Debug) ─────────────────────────────────────────────
+    # ── End Sub4 (Debug) ─────────────────────────────────────────────────
 
-    # ── Step 27g: Event Risk enrichment (Debug) ───────────────────────────
-    try:
-        from eq_analyzer.event_risk import get_event_risk
-        from contracts.eq_schema import EVENT_RISK, EVENT_RISK_REASON, DAYS_TO_EARNINGS
-        finnhub_token = os.environ.get('FINNHUB_TOKEN', '')
-        er_enriched = 0
-        for candidate in all_candidates:
-            t = candidate.get('ticker', '')
-            try:
-                er_result = get_event_risk(t, finnhub_token)
-                candidate[EVENT_RISK]        = er_result.get('event_risk',        'NORMAL')
-                candidate[EVENT_RISK_REASON] = er_result.get('event_risk_reason', '')
-                candidate[DAYS_TO_EARNINGS]  = er_result.get('days_to_earnings',  None)
-                er_enriched += 1
-            except Exception as _er_ticker_err:
+    # ── 1A/1B: Event Risk + Insider enrichment (part of Sub2 scope) ──────
+    # These live in eq_analyzer but are independent of the EQ score itself.
+    # Gate them on sub2 since they share the same eq_fetcher dependency.
+    finnhub_token = os.environ.get('FINNHUB_TOKEN', '')
+    if 'sub2' in active_subs:
+        # Event Risk (1A)
+        try:
+            from eq_analyzer.event_risk import get_event_risk
+            from contracts.eq_schema import EVENT_RISK, EVENT_RISK_REASON, DAYS_TO_EARNINGS
+            er_enriched = 0
+            for candidate in all_candidates:
+                t = candidate.get('ticker', '')
+                try:
+                    er_result = get_event_risk(t, finnhub_token)
+                    candidate[EVENT_RISK]        = er_result.get('event_risk',        'NORMAL')
+                    candidate[EVENT_RISK_REASON] = er_result.get('event_risk_reason', '')
+                    candidate[DAYS_TO_EARNINGS]  = er_result.get('days_to_earnings',  None)
+                    er_enriched += 1
+                except Exception as _er_ticker_err:
+                    candidate[EVENT_RISK]        = 'NORMAL'
+                    candidate[EVENT_RISK_REASON] = ''
+                    candidate[DAYS_TO_EARNINGS]  = None
+                    log.info(f'[ER] {t}: error — {_er_ticker_err}')
+            log.info(f'[ER] Event risk enrichment complete. {er_enriched}/{len(all_candidates)} processed')
+        except Exception as er_err:
+            log.warning(f'[ER] Event risk enrichment failed (non-fatal): {er_err}')
+            for candidate in all_candidates:
                 candidate[EVENT_RISK]        = 'NORMAL'
                 candidate[EVENT_RISK_REASON] = ''
                 candidate[DAYS_TO_EARNINGS]  = None
-                log.info(f'[ER] {t}: error — {_er_ticker_err}')
-        log.info(f'[ER] Event risk enrichment complete. {er_enriched}/{len(all_candidates)} processed')
-    except Exception as er_err:
-        log.warning(f'[ER] Event risk enrichment failed (non-fatal): {er_err}')
-        for candidate in all_candidates:
-            candidate[EVENT_RISK]        = 'NORMAL'
-            candidate[EVENT_RISK_REASON] = ''
-            candidate[DAYS_TO_EARNINGS]  = None
-    # ── End Step 27g (Debug) ─────────────────────────────────────────────
 
-    # ── Step 27h: Insider Activity enrichment (Debug) ─────────────────────
-    try:
-        from eq_analyzer.insider_activity import get_insider_signal
-        from contracts.eq_schema import INSIDER_SIGNAL, INSIDER_NOTE
-        ins_enriched = 0
-        if _debug_eq_fetcher is None:
-            log.warning('[INS] eq_fetcher not available in debug mode — insider enrichment skipped')
-            raise RuntimeError('eq_fetcher unavailable')
-        for candidate in all_candidates:
-            t = candidate.get('ticker', '')
-            try:
-                ins_result = get_insider_signal(t, _debug_eq_fetcher)
-                candidate[INSIDER_SIGNAL] = ins_result.get('insider_signal', 'UNAVAILABLE')
-                candidate[INSIDER_NOTE]   = ins_result.get('insider_note',   '')
-                ins_enriched += 1
-            except Exception as _ins_ticker_err:
+        # Insider Activity (1B)
+        try:
+            from eq_analyzer.insider_activity import get_insider_signal
+            from contracts.eq_schema import INSIDER_SIGNAL, INSIDER_NOTE
+            ins_enriched = 0
+            if _debug_eq_fetcher is None:
+                log.warning('[INS] eq_fetcher not available in debug mode — insider enrichment skipped')
+                raise RuntimeError('eq_fetcher unavailable')
+            for candidate in all_candidates:
+                t = candidate.get('ticker', '')
+                try:
+                    ins_result = get_insider_signal(t, _debug_eq_fetcher)
+                    candidate[INSIDER_SIGNAL] = ins_result.get('insider_signal', 'UNAVAILABLE')
+                    candidate[INSIDER_NOTE]   = ins_result.get('insider_note',   '')
+                    ins_enriched += 1
+                except Exception as _ins_ticker_err:
+                    candidate[INSIDER_SIGNAL] = 'UNAVAILABLE'
+                    candidate[INSIDER_NOTE]   = ''
+                    log.info(f'[INS] {t}: error — {_ins_ticker_err}')
+            log.info(f'[INS] Insider enrichment complete. {ins_enriched}/{len(all_candidates)} processed')
+        except Exception as ins_err:
+            log.warning(f'[INS] Insider enrichment failed (non-fatal): {ins_err}')
+            for candidate in all_candidates:
                 candidate[INSIDER_SIGNAL] = 'UNAVAILABLE'
                 candidate[INSIDER_NOTE]   = ''
-                log.info(f'[INS] {t}: error — {_ins_ticker_err}')
-        log.info(f'[INS] Insider enrichment complete. {ins_enriched}/{len(all_candidates)} processed')
-    except Exception as ins_err:
-        log.warning(f'[INS] Insider enrichment failed (non-fatal): {ins_err}')
-        for candidate in all_candidates:
-            candidate[INSIDER_SIGNAL] = 'UNAVAILABLE'
-            candidate[INSIDER_NOTE]   = ''
-    # ── End Step 27h (Debug) ─────────────────────────────────────────────
 
-    # ── Step 27i: Expectations vs Reality enrichment (Debug) ──────────────
-    try:
-        from analyzers.expectations import get_expectations_signal
-        from contracts.eq_schema import EXPECTATIONS_SIGNAL, EARNINGS_BEAT_RATE, PEG_RATIO
-        exp_enriched = 0
-        for candidate in all_candidates:
-            t = candidate.get('ticker', '')
-            try:
-                exp_result = get_expectations_signal(
-                    ticker        = t,
-                    finnhub_token = finnhub_token,
-                    pe_ratio      = candidate.get('pe_ratio'),
-                    eps_quarterly = candidate.get('eps_quarterly', []),
-                )
-                candidate[EXPECTATIONS_SIGNAL] = exp_result.get('expectations_signal', 'UNAVAILABLE')
-                candidate[EARNINGS_BEAT_RATE]  = exp_result.get('earnings_beat_rate')
-                candidate[PEG_RATIO]           = exp_result.get('peg_ratio')
-                exp_enriched += 1
-            except Exception as _exp_ticker_err:
+        # Expectations vs Reality (1B)
+        try:
+            from analyzers.expectations import get_expectations_signal
+            from contracts.eq_schema import EXPECTATIONS_SIGNAL, EARNINGS_BEAT_RATE, PEG_RATIO
+            exp_enriched = 0
+            for candidate in all_candidates:
+                t = candidate.get('ticker', '')
+                try:
+                    exp_result = get_expectations_signal(
+                        ticker        = t,
+                        finnhub_token = finnhub_token,
+                        pe_ratio      = candidate.get('pe_ratio'),
+                        eps_quarterly = candidate.get('eps_quarterly', []),
+                    )
+                    candidate[EXPECTATIONS_SIGNAL] = exp_result.get('expectations_signal', 'UNAVAILABLE')
+                    candidate[EARNINGS_BEAT_RATE]  = exp_result.get('earnings_beat_rate')
+                    candidate[PEG_RATIO]           = exp_result.get('peg_ratio')
+                    exp_enriched += 1
+                except Exception as _exp_ticker_err:
+                    candidate[EXPECTATIONS_SIGNAL] = 'UNAVAILABLE'
+                    candidate[EARNINGS_BEAT_RATE]  = None
+                    candidate[PEG_RATIO]           = None
+                    log.info(f'[EXP] {t}: error — {_exp_ticker_err}')
+            log.info(f'[EXP] Expectations enrichment complete. {exp_enriched}/{len(all_candidates)} processed')
+        except Exception as exp_err:
+            log.warning(f'[EXP] Expectations enrichment failed (non-fatal): {exp_err}')
+            for candidate in all_candidates:
                 candidate[EXPECTATIONS_SIGNAL] = 'UNAVAILABLE'
                 candidate[EARNINGS_BEAT_RATE]  = None
                 candidate[PEG_RATIO]           = None
-                log.info(f'[EXP] {t}: error — {_exp_ticker_err}')
-        log.info(f'[EXP] Expectations enrichment complete. {exp_enriched}/{len(all_candidates)} processed')
-    except Exception as exp_err:
-        log.warning(f'[EXP] Expectations enrichment failed (non-fatal): {exp_err}')
+    else:
+        log.info('[DEBUG][1A/1B] Sub2 excluded — event risk, insider, expectations set to UNAVAILABLE')
+        from contracts.eq_schema import (
+            EVENT_RISK, EVENT_RISK_REASON, DAYS_TO_EARNINGS,
+            INSIDER_SIGNAL, INSIDER_NOTE,
+            EXPECTATIONS_SIGNAL, EARNINGS_BEAT_RATE, PEG_RATIO,
+        )
         for candidate in all_candidates:
+            candidate[EVENT_RISK]          = 'NORMAL'
+            candidate[EVENT_RISK_REASON]   = ''
+            candidate[DAYS_TO_EARNINGS]    = None
+            candidate[INSIDER_SIGNAL]      = 'UNAVAILABLE'
+            candidate[INSIDER_NOTE]        = ''
             candidate[EXPECTATIONS_SIGNAL] = 'UNAVAILABLE'
             candidate[EARNINGS_BEAT_RATE]  = None
             candidate[PEG_RATIO]           = None
-    # ── End Step 27i (Debug) ─────────────────────────────────────────────
 
-    # ── Step 27j: Portfolio & Correlation Layer (Sub5 — Debug) ───────────────
+    # ── Sub5: Portfolio & Correlation Layer (Debug) ───────────────────────
     portfolio_summary: dict = {}
-    try:
-        if len(all_candidates) >= 2:
-            from portfolio.portfolio_analyzer import analyze as pl_analyze
-            portfolio_summary = pl_analyze(all_candidates)
-            log.info(
-                f'[PL][DEBUG] Portfolio analysis complete. '
-                f'Selected: {portfolio_summary.get(PL_RECOMMENDED_SUBSET, [])} | '
-                f'Diversification: {portfolio_summary.get(PL_DIVERSIFICATION_SCORE)}'
-            )
-        else:
+    if 'sub5' in active_subs:
+        try:
+            if len(all_candidates) >= 2:
+                from portfolio.portfolio_analyzer import analyze as pl_analyze
+                portfolio_summary = pl_analyze(all_candidates)
+                log.info(
+                    f'[PL][DEBUG] Portfolio analysis complete. '
+                    f'Selected: {portfolio_summary.get(PL_RECOMMENDED_SUBSET, [])} | '
+                    f'Diversification: {portfolio_summary.get(PL_DIVERSIFICATION_SCORE)}'
+                )
+            else:
+                portfolio_summary = {PL_AVAILABLE: False}
+                for candidate in all_candidates:
+                    candidate[PL_AVAILABLE] = False
+                log.info('[PL][DEBUG] Portfolio analysis skipped — fewer than 2 candidates')
+        except Exception as pl_err:
             portfolio_summary = {PL_AVAILABLE: False}
             for candidate in all_candidates:
                 candidate[PL_AVAILABLE] = False
-            log.info('[PL][DEBUG] Portfolio analysis skipped — fewer than 2 candidates')
-    except Exception as pl_err:
+            log.warning(f'[PL][DEBUG] Portfolio analysis failed (non-fatal): {pl_err}')
+    else:
+        log.info('[DEBUG][PL] Sub5 excluded — portfolio analysis skipped')
         portfolio_summary = {PL_AVAILABLE: False}
         for candidate in all_candidates:
             candidate[PL_AVAILABLE] = False
-        log.warning(f'[PL][DEBUG] Portfolio analysis failed (non-fatal): {pl_err}')
-    # ── End Step 27j (Debug) ─────────────────────────────────────────────────
+    # ── End Sub5 (Debug) ─────────────────────────────────────────────────
 
-    # ── Step 27k: Paper Trading Engine (Sub6 — Debug) ─────────────────────
+    # ── Sub6: Paper Trading Engine (Debug) ───────────────────────────────
+    # Gated on BOTH sub6 being active AND dry_run being False.
+    # dry_run=True (default for all manual runs) fully suppresses paper
+    # trading writes so test tickers never pollute the ledger.
     paper_trading_summary: dict = {}
-    try:
-        from paper_trading.live_engine import run_paper_trading
-        from paper_trading.replay_engine import simulate_expected_return
-        from paper_trading.comparison_engine import enrich_closed_trades
-        from paper_trading.sheets_ledger import update_rows
-        from contracts.paper_trading_schema import (
-            PT_EXPECTED_RETURN_PCT, PT_STATUS, PT_STATUS_CLOSED,
-        )
-        _pt_regime = market_regime_dict.get('market_regime', 'NEUTRAL')
-        paper_trading_summary = run_paper_trading(
-            candidates    = all_candidates,
-            current_slot  = slot,
-            market_regime = _pt_regime,
-        )
-        _replay_enriched = []
-        for _pt_trade in paper_trading_summary.get('trades', []):
-            if (
-                _pt_trade.get(PT_STATUS) == PT_STATUS_CLOSED
-                and _pt_trade.get(PT_EXPECTED_RETURN_PCT) is None
-            ):
-                _expected = simulate_expected_return(_pt_trade)
-                if _expected is not None:
-                    _pt_trade[PT_EXPECTED_RETURN_PCT] = _expected
-                    enrich_closed_trades([_pt_trade])
-                    _replay_enriched.append(_pt_trade)
-        # Persist expected_return_pct, error_pct, direction_correct back to Sheets.
-        if _replay_enriched:
-            if not update_rows(_replay_enriched):
-                log.warning('[PT][DEBUG] Failed to persist replay enrichment to Sheets (non-fatal)')
-        log.info(
-            f'[PT][DEBUG] Paper trading complete. '
-            f'Open: {paper_trading_summary.get("open_count")} | '
-            f'New: {paper_trading_summary.get("new_count")} | '
-            f'Closed: {paper_trading_summary.get("closed_count")} | '
-            f'Replay enriched: {len(_replay_enriched)}'
-        )
-    except Exception as _pt_err:
+    if 'sub6' in active_subs and not dry_run:
+        try:
+            from paper_trading.live_engine import run_paper_trading
+            from paper_trading.replay_engine import simulate_expected_return
+            from paper_trading.comparison_engine import enrich_closed_trades
+            from paper_trading.sheets_ledger import update_rows
+            from contracts.paper_trading_schema import (
+                PT_EXPECTED_RETURN_PCT, PT_STATUS, PT_STATUS_CLOSED,
+            )
+            _pt_regime = market_regime_dict.get('market_regime', 'NEUTRAL')
+            paper_trading_summary = run_paper_trading(
+                candidates    = all_candidates,
+                current_slot  = slot,
+                market_regime = _pt_regime,
+            )
+            _replay_enriched = []
+            for _pt_trade in paper_trading_summary.get('trades', []):
+                if (
+                    _pt_trade.get(PT_STATUS) == PT_STATUS_CLOSED
+                    and _pt_trade.get(PT_EXPECTED_RETURN_PCT) is None
+                ):
+                    _expected = simulate_expected_return(_pt_trade)
+                    if _expected is not None:
+                        _pt_trade[PT_EXPECTED_RETURN_PCT] = _expected
+                        enrich_closed_trades([_pt_trade])
+                        _replay_enriched.append(_pt_trade)
+            if _replay_enriched:
+                if not update_rows(_replay_enriched):
+                    log.warning('[PT][DEBUG] Failed to persist replay enrichment to Sheets (non-fatal)')
+            log.info(
+                f'[PT][DEBUG] Paper trading complete. '
+                f'Open: {paper_trading_summary.get("open_count")} | '
+                f'New: {paper_trading_summary.get("new_count")} | '
+                f'Closed: {paper_trading_summary.get("closed_count")} | '
+                f'Replay enriched: {len(_replay_enriched)}'
+            )
+        except Exception as _pt_err:
+            paper_trading_summary = {'pt_available': False}
+            log.warning(f'[PT][DEBUG] Paper trading failed (non-fatal): {_pt_err}')
+    else:
+        if dry_run:
+            log.info('[DEBUG][PT] Sub6 suppressed — dry_run=True protects ledger from test tickers')
+        else:
+            log.info('[DEBUG][PT] Sub6 excluded — paper trading skipped')
         paper_trading_summary = {'pt_available': False}
-        log.warning(f'[PT][DEBUG] Paper trading failed (non-fatal): {_pt_err}')
-    # ── End Step 27k (Debug) ───────────────────────────────────────────────
-    
-    # Build and send report
+    # ── End Sub6 (Debug) ─────────────────────────────────────────────────
+
+    # ── Build report ──────────────────────────────────────────────────────
     from reports.report_builder import build_intraday_report
     html_files = build_intraday_report(
-        companies          = all_candidates,
-        slot               = slot,
-        indices            = indices,
-        breadth            = breadth,
-        regime             = regime,
-        all_articles       = articles,
-        sector_scores      = sector_scores,
-        rotation           = rotation,
-        market_regime_dict = market_regime_dict,
-        portfolio_summary  = portfolio_summary,
+        companies             = all_candidates,
+        slot                  = slot,
+        indices               = indices,
+        breadth               = breadth,
+        regime                = regime,
+        all_articles          = articles,
+        sector_scores         = sector_scores,
+        rotation              = rotation,
+        market_regime_dict    = market_regime_dict,
+        portfolio_summary     = portfolio_summary,
         paper_trading_summary = paper_trading_summary,
     )
 
@@ -800,33 +904,47 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict) -> N
     try:
         from reports.dashboard_builder import build_dashboard
         build_dashboard(
-            companies          = all_candidates,
-            slot               = slot,
-            indices            = indices,
-            breadth            = breadth,
-            regime             = regime,
-            prompt_text        = html_files.get('prompt', ''),
-            full_url           = html_files.get('full_url', ''),
-            is_debug           = True,
-            index_history      = _index_history,
-            confirmed_sectors  = candidate_sectors,
-            market_regime_dict = market_regime_dict,
-            portfolio_summary  = portfolio_summary,
+            companies             = all_candidates,
+            slot                  = slot,
+            indices               = indices,
+            breadth               = breadth,
+            regime                = regime,
+            prompt_text           = html_files.get('prompt', ''),
+            full_url              = html_files.get('full_url', ''),
+            is_debug              = True,
+            index_history         = _index_history,
+            confirmed_sectors     = candidate_sectors,
+            market_regime_dict    = market_regime_dict,
+            portfolio_summary     = portfolio_summary,
             paper_trading_summary = paper_trading_summary,
         )
     except Exception as _dash_err:
         log.warning(f'[DEBUG] Dashboard build skipped: {_dash_err}')
 
-    from reports.email_sender import send_email
-    send_email(
-        companies = all_candidates,
-        slot      = slot,
-        indices   = indices,
-        html_path = html_files.get('email'),
-    )
+    # ── Email: suppressed in dry_run ──────────────────────────────────────
+    if not dry_run:
+        from reports.email_sender import send_email
+        send_email(
+            companies = all_candidates,
+            slot      = slot,
+            indices   = indices,
+            html_path = html_files.get('email'),
+        )
+    else:
+        log.info('[DEBUG] dry_run=True — email suppressed')
 
-    _commit_outputs()
-    log.info(f'[DEBUG] Force-ticker run complete. Tickers: {force_tickers}')
+    # ── Commit: suppressed in dry_run ─────────────────────────────────────
+    if not dry_run:
+        _commit_outputs()
+    else:
+        log.info('[DEBUG] dry_run=True — git commit suppressed')
+
+    log.info(
+        f'[DEBUG] Force-ticker run complete. '
+        f'Tickers: {force_tickers} | '
+        f'Subs: {sorted(active_subs)} | '
+        f'dry_run: {dry_run}'
+    )
 
 
 # ── Main pipeline ──────────────────────────────────────────────────────────
@@ -846,8 +964,10 @@ def run():
         _check_validated_file()
         state = load_state()
         slot  = _determine_slot() or RUN_SLOTS[0]
+        active_subs = _parse_subsystems(os.environ.get('FORCE_SUBSYSTEMS', 'all'))
+        dry_run     = os.environ.get('DRY_RUN', 'true').strip().lower() != 'false'
         log.info(f'[DEBUG] Using slot: {slot}')
-        _run_force_ticker_pipeline(force_tickers, slot, state)
+        _run_force_ticker_pipeline(force_tickers, slot, state, active_subs, dry_run)
         sys.exit(0)
 
     # ── Time gate ─────────────────────────────────────────────────────────

@@ -1,432 +1,597 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="description" content="MRE Weekly Rank Board"><title>MRE // Weekly Rankings</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet"><script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script><link rel="stylesheet" href="assets/style.css"><style>#mre-loader{position:fixed;inset:0;z-index:9999;background:#0a0a12;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity 0.4s ease;}#mre-loader.done{opacity:0;pointer-events:none;}.mre-bar-shell{position:relative;width:280px;height:40px;border:2px solid #c850c0;border-radius:6px;padding:5px;box-shadow:0 0 8px #c850c080,0 0 20px #c850c040,inset 0 0 6px #c850c020;overflow:hidden;}.mre-bar-shell::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent calc(100% / 10 - 3px),#0a0a12 calc(100% / 10 - 3px),#0a0a12 calc(100% / 10));pointer-events:none;z-index:2;}.mre-bar-fill{height:100%;width:0%;border-radius:2px;background:linear-gradient(90deg,#5c6fff,#9b59ff,#c850c0);box-shadow:0 0 12px #9b59ff80;position:relative;z-index:1;transition:width 0.05s linear;}#mre-loader-text{font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:0.25em;color:#9b59ff;text-shadow:0 0 10px #9b59ff80;min-width:130px;text-align:center;}</style><style>.exp-chart canvas{width:100%!important;height:100%!important;}.est-divider{width:100%;height:1px;background:var(--rim);margin:6px 0;grid-column:1/-1;}.est-ps{font-weight:bold;}.est-ps-good{color:var(--up);}.est-ps-extended{color:var(--dn);}.est-ps-early{color:var(--nt);}.est-ps-weak{color:var(--dn);}.est-ps-unavailable{color:var(--slate);}</style></head><body><div id="mre-loader"><div class="mre-bar-shell"><div class="mre-bar-fill" id="mre-bar-fill"></div></div><div id="mre-loader-text">LOADING</div></div><script>(function(){var _li=0,_ls=["LOADING","LOADING.","LOADING..","LOADING..."];var _lt=document.getElementById("mre-loader-text");var _lp=setInterval(function(){_li=(_li+1)%4;if(_lt)_lt.textContent=_ls[_li];},420);var _bf=document.getElementById("mre-bar-fill");var _bt=null;function _bStep(ts){if(!_bt)_bt=ts;var prog=Math.min((ts-_bt)/1800,1);var ease=1-Math.pow(1-prog,3);if(_bf)_bf.style.width=(ease*100)+"%";if(prog<1)requestAnimationFrame(_bStep);}requestAnimationFrame(_bStep);window.dismissLoader=function(){clearInterval(_lp);if(_bf)_bf.style.width="100%";setTimeout(function(){var el=document.getElementById("mre-loader");if(el){el.classList.add("done");setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},450);}},120);};})();</script><div class="scanlines"></div><nav><div class="brand"><div class="brand-pulse"></div><span>MRE // System</span></div><div class="nav-tabs"><a href="index.html" class="tab">Home</a><a href="rank.html" class="tab on">Rank</a><a href="trades.html" class="tab">Paper Trading</a><a href="news.html" class="tab">News</a><a href="archive.html" class="tab">Archive</a><a href="guide.html" class="tab">Guide</a></div></nav><div class="pages"><div id="p-rank" class="page on"><div class="pg-eyebrow">Rank Board &middot; Active</div><div class="pg-title">Weekly <span class="hi">Rankings</span></div><div class="pg-sub">2026- — week 14 &middot; Resets Monday &middot; Click row to expand</div><div class="rank-wrap"><div id="rank-board-mount"></div></div></div></div><footer><span>MRE</span> &middot; Free-tier data only &middot; Not investment advice</footer><script>
-const DAYS = Array.from({length:30},(_,i)=>{
-  const d=new Date(); d.setDate(d.getDate()-(29-i));
-  return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
-});
+<!DOCTYPE html>
+<html lang="en">
 
-function easeOutExpo(t)  { return t===1?1:1-Math.pow(2,-10*t); }
-function easeOutCubic(t) { return 1-Math.pow(1-t,3); }
-
-function rafExpandRow(el,innerSel,duration,onDone){
-  el.style.display='block'; el.style.overflow='hidden'; el.style.height='0px';
-  const inner=el.querySelector(innerSel);
-  if(inner){
-    inner.style.opacity='0';
-    inner.style.transform='translateY(-10px)';
-    inner.style.transition='none';
-    inner.querySelectorAll('.est').forEach(function(t){
-      t.style.opacity='0'; t.style.transform='translateY(8px) scale(0.96)';
-    });
-  }
-  const toH=el.scrollHeight;
-  const start=performance.now();
-  function frame(now){
-    const raw=Math.min((now-start)/duration,1);
-    const eH=easeOutExpo(raw), eO=easeOutCubic(Math.min(raw*2.5,1));
-    el.style.height=(toH*eH).toFixed(1)+'px';
-    if(inner){
-      inner.style.opacity=eO.toFixed(3);
-      inner.style.transform=`translateY(${(-10*(1-eH)).toFixed(2)}px)`;
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="description" content="MRE Weekly Rank Board">
+  <title>MRE // Weekly Rankings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap"
+    rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    #mre-loader {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #0a0a12;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      transition: opacity 0.4s ease;
     }
-    if(raw<1){requestAnimationFrame(frame);}
-    else{
-      el.classList.add('open');
-      el.style.height=''; el.style.overflow='';
-      if(inner){
-        inner.style.opacity=''; inner.style.transform=''; inner.style.transition='';
-        inner.querySelectorAll('.est').forEach(function(t,i){
-          t.style.opacity='0'; t.style.transform='translateY(8px) scale(0.96)';
-          t.style.transition='none';
-          setTimeout(function(){
-            t.style.transition='opacity 0.22s ease, transform 0.22s ease';
-            t.style.opacity='1'; t.style.transform='translateY(0) scale(1)';
-            setTimeout(function(){t.style.transition='';},240);
-          }, 30+i*45);
+
+    #mre-loader.done {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .mre-bar-shell {
+      position: relative;
+      width: 280px;
+      height: 40px;
+      border: 2px solid #c850c0;
+      border-radius: 6px;
+      padding: 5px;
+      box-shadow: 0 0 8px #c850c080, 0 0 20px #c850c040, inset 0 0 6px #c850c020;
+      overflow: hidden;
+    }
+
+    .mre-bar-shell::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(90deg, transparent, transparent calc(100% / 10 - 3px), #0a0a12 calc(100% / 10 - 3px), #0a0a12 calc(100% / 10));
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .mre-bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 2px;
+      background: linear-gradient(90deg, #5c6fff, #9b59ff, #c850c0);
+      box-shadow: 0 0 12px #9b59ff80;
+      position: relative;
+      z-index: 1;
+      transition: width 0.05s linear;
+    }
+
+    #mre-loader-text {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.25em;
+      color: #9b59ff;
+      text-shadow: 0 0 10px #9b59ff80;
+      min-width: 130px;
+      text-align: center;
+    }
+  </style>
+  <style>
+    .exp-chart canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    .est-divider {
+      width: 100%;
+      height: 1px;
+      background: var(--rim);
+      margin: 6px 0;
+      grid-column: 1/-1;
+    }
+
+    .est-ps {
+      font-weight: bold;
+    }
+
+    .est-ps-good {
+      color: var(--up);
+    }
+
+    .est-ps-extended {
+      color: var(--dn);
+    }
+
+    .est-ps-early {
+      color: var(--nt);
+    }
+
+    .est-ps-weak {
+      color: var(--dn);
+    }
+
+    .est-ps-unavailable {
+      color: var(--slate);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="mre-loader">
+    <div class="mre-bar-shell">
+      <div class="mre-bar-fill" id="mre-bar-fill"></div>
+    </div>
+    <div id="mre-loader-text">LOADING</div>
+  </div>
+  <script>(function () { var _li = 0, _ls = ["LOADING", "LOADING.", "LOADING..", "LOADING..."]; var _lt = document.getElementById("mre-loader-text"); var _lp = setInterval(function () { _li = (_li + 1) % 4; if (_lt) _lt.textContent = _ls[_li]; }, 420); var _bf = document.getElementById("mre-bar-fill"); var _bt = null; function _bStep(ts) { if (!_bt) _bt = ts; var prog = Math.min((ts - _bt) / 1800, 1); var ease = 1 - Math.pow(1 - prog, 3); if (_bf) _bf.style.width = (ease * 100) + "%"; if (prog < 1) requestAnimationFrame(_bStep); } requestAnimationFrame(_bStep); window.dismissLoader = function () { clearInterval(_lp); if (_bf) _bf.style.width = "100%"; setTimeout(function () { var el = document.getElementById("mre-loader"); if (el) { el.classList.add("done"); setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 450); } }, 120); }; })();</script>
+  <div class="scanlines"></div>
+  <nav>
+    <div class="brand">
+      <div class="brand-pulse"></div><span>MRE // System</span>
+    </div>
+    <div class="nav-tabs"><a href="index.html" class="tab">Home</a><a href="rank.html" class="tab on">Rank</a><a
+        href="trades.html" class="tab">Paper Trading</a><a href="news.html" class="tab">News</a><a href="archive.html"
+        class="tab">Archive</a><a href="guide.html" class="tab">Guide</a></div>
+  </nav>
+  <div class="pages">
+    <div id="p-rank" class="page on">
+      <div class="pg-eyebrow">Rank Board &middot; Active</div>
+      <div class="pg-title">Weekly <span class="hi">Rankings</span></div>
+      <div class="pg-sub">2026- — week 14 &middot; Resets Monday &middot; Click row to expand</div>
+      <div class="rank-wrap">
+        <div id="rank-board-mount"></div>
+      </div>
+    </div>
+  </div>
+  <footer><span>MRE</span> &middot; Free-tier data only &middot; Not investment advice</footer>
+  <script>
+    const DAYS = Array.from({ length: 30 }, (_, i) => {
+      const d = new Date(); d.setDate(d.getDate() - (29 - i));
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    });
+
+    function easeOutExpo(t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }
+    function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+    function rafExpandRow(el, innerSel, duration, onDone) {
+      el.style.display = 'block'; el.style.overflow = 'hidden'; el.style.height = '0px';
+      const inner = el.querySelector(innerSel);
+      if (inner) {
+        inner.style.opacity = '0';
+        inner.style.transform = 'translateY(-10px)';
+        inner.style.transition = 'none';
+        inner.querySelectorAll('.est').forEach(function (t) {
+          t.style.opacity = '0'; t.style.transform = 'translateY(8px) scale(0.96)';
         });
       }
-      if(onDone)onDone();
-    }
-  }
-  requestAnimationFrame(frame);
-}
-function rafCollapseRow(el,innerSel,duration,onDone){
-  const fromH=el.offsetHeight;
-  if(fromH===0){el.style.display='none';if(onDone)onDone();return;}
-  const inner=el.querySelector(innerSel);
-  el.style.height=fromH+'px'; el.style.overflow='hidden';
-  const start=performance.now();
-  function frame(now){
-    const raw=Math.min((now-start)/duration,1);
-    const eH=easeOutCubic(raw), eO=Math.max(1-raw*2.2,0);
-    el.style.height=(fromH*(1-eH)).toFixed(1)+'px';
-    if(inner){
-      inner.style.opacity=eO.toFixed(3);
-      inner.style.transform=`translateY(${(-8*eH).toFixed(2)}px)`;
-    }
-    if(raw<1){requestAnimationFrame(frame);}
-    else{
-      el.classList.remove('open'); el.style.display='none';
-      el.style.height=''; el.style.overflow='';
-      if(inner){inner.style.opacity=''; inner.style.transform='';
-        inner.querySelectorAll('.est').forEach(function(t){t.style.opacity='';t.style.transform='';t.style.transition='';});
-      }
-      if(onDone)onDone();
-    }
-  }
-  requestAnimationFrame(frame);
-}
-function closeRpExp(el){if(!el.classList.contains('open'))return;rafCollapseRow(el,'.rp-exp-inner',380,null);}
-function closeRpExpInstant(el){
-  if(!el.classList.contains('open'))return;
-  el.classList.remove('open'); el.style.display='none'; el.style.height='';
-  const inner=el.querySelector('.rp-exp-inner');
-  if(inner){inner.style.opacity='';inner.style.transform='';inner.style.transformOrigin='';}
-}
-function rpT(id){
-  const el=document.getElementById(id),was=el.classList.contains('open');
-  const anyOpen=!!document.querySelector('.rp-exp.open');
-  document.querySelectorAll('.rp-exp').forEach(e=>{if(e!==el)closeRpExpInstant(e);});
-  if(!was){
-    function fireItems(){
-      el.querySelectorAll('.pex-item').forEach(function(item,i){
-        item.style.opacity='';
-        item.style.animation='none'; item.offsetHeight;
-        item.style.animation='pex-spark 0.22s ease both '+(0.04+i*0.06)+'s';
-      });
-    }
-    if(anyOpen){
-      el.style.display='block'; el.style.height='';
-      const inner=el.querySelector('.rp-exp-inner');
-      if(inner){inner.style.opacity='1';inner.style.transform='';}
-      el.classList.add('open');
-      requestAnimationFrame(fireItems);
-    } else {
-      el.style.display='block'; el.style.overflow='hidden'; el.style.height='0px';
-      const inner=el.querySelector('.rp-exp-inner');
-      if(inner){inner.style.opacity='1';inner.style.transform='';}
-      el.querySelectorAll('.pex-item').forEach(function(item){
-        item.style.opacity='0'; item.style.animation='none';
-      });
-      const toH=el.scrollHeight;
-      const start=performance.now(),dur=380;
-      function frame(now){
-        const raw=Math.min((now-start)/dur,1);
-        const ease=1-Math.pow(1-raw,3);
-        el.style.height=(toH*ease).toFixed(1)+'px';
-        if(raw<1){requestAnimationFrame(frame);}
-        else{
+      const toH = el.scrollHeight;
+      const start = performance.now();
+      function frame(now) {
+        const raw = Math.min((now - start) / duration, 1);
+        const eH = easeOutExpo(raw), eO = easeOutCubic(Math.min(raw * 2.5, 1));
+        el.style.height = (toH * eH).toFixed(1) + 'px';
+        if (inner) {
+          inner.style.opacity = eO.toFixed(3);
+          inner.style.transform = `translateY(${(-10 * (1 - eH)).toFixed(2)}px)`;
+        }
+        if (raw < 1) { requestAnimationFrame(frame); }
+        else {
           el.classList.add('open');
-          el.style.height=''; el.style.overflow='';
-          requestAnimationFrame(fireItems);
+          el.style.height = ''; el.style.overflow = '';
+          if (inner) {
+            inner.style.opacity = ''; inner.style.transform = ''; inner.style.transition = '';
+            inner.querySelectorAll('.est').forEach(function (t, i) {
+              t.style.opacity = '0'; t.style.transform = 'translateY(8px) scale(0.96)';
+              t.style.transition = 'none';
+              setTimeout(function () {
+                t.style.transition = 'opacity 0.22s ease, transform 0.22s ease';
+                t.style.opacity = '1'; t.style.transform = 'translateY(0) scale(1)';
+                setTimeout(function () { t.style.transition = ''; }, 240);
+              }, 30 + i * 45);
+            });
+          }
+          if (onDone) onDone();
         }
       }
       requestAnimationFrame(frame);
     }
-  } else { closeRpExp(el); }
-}
-function closeExpRow(row){
-  if(!row.classList.contains('open'))return;
-  const card=row.closest('.rank-card'),cid=card?card.dataset.cid:null;
-  if(cid&&window._mreCharts&&window._mreCharts[cid]){
-    window._mreCharts[cid].destroy();delete window._mreCharts[cid];
-    const _oc=document.getElementById(cid);
-    if(_oc){const _octx=_oc.getContext('2d');_octx.clearRect(0,0,_oc.width,_oc.height);}
-  }
-  rafCollapseRow(row,'.exp-inner',380,null);
-}
-function closeExpRowInstant(row){
-  if(!row.classList.contains('open'))return;
-  const card=row.closest('.rank-card'),cid=card?card.dataset.cid:null;
-  if(cid&&window._mreCharts&&window._mreCharts[cid]){
-    window._mreCharts[cid].destroy();delete window._mreCharts[cid];
-    const _oc=document.getElementById(cid);
-    if(_oc){const _octx=_oc.getContext('2d');_octx.clearRect(0,0,_oc.width,_oc.height);}
-  }
-  row.classList.remove('open'); row.style.display='none'; row.style.height='';
-  const inner=row.querySelector('.exp-inner');
-  if(inner){inner.style.opacity='';inner.style.transform='';inner.style.transformOrigin='';}
-}
+    function rafCollapseRow(el, innerSel, duration, onDone) {
+      const fromH = el.offsetHeight;
+      if (fromH === 0) { el.style.display = 'none'; if (onDone) onDone(); return; }
+      const inner = el.querySelector(innerSel);
+      el.style.height = fromH + 'px'; el.style.overflow = 'hidden';
+      const start = performance.now();
+      function frame(now) {
+        const raw = Math.min((now - start) / duration, 1);
+        const eH = easeOutCubic(raw), eO = Math.max(1 - raw * 2.2, 0);
+        el.style.height = (fromH * (1 - eH)).toFixed(1) + 'px';
+        if (inner) {
+          inner.style.opacity = eO.toFixed(3);
+          inner.style.transform = `translateY(${(-8 * eH).toFixed(2)}px)`;
+        }
+        if (raw < 1) { requestAnimationFrame(frame); }
+        else {
+          el.classList.remove('open'); el.style.display = 'none';
+          el.style.height = ''; el.style.overflow = '';
+          if (inner) {
+            inner.style.opacity = ''; inner.style.transform = '';
+            inner.querySelectorAll('.est').forEach(function (t) { t.style.opacity = ''; t.style.transform = ''; t.style.transition = ''; });
+          }
+          if (onDone) onDone();
+        }
+      }
+      requestAnimationFrame(frame);
+    }
+    function closeRpExp(el) { if (!el.classList.contains('open')) return; rafCollapseRow(el, '.rp-exp-inner', 380, null); }
+    function closeRpExpInstant(el) {
+      if (!el.classList.contains('open')) return;
+      el.classList.remove('open'); el.style.display = 'none'; el.style.height = '';
+      const inner = el.querySelector('.rp-exp-inner');
+      if (inner) { inner.style.opacity = ''; inner.style.transform = ''; inner.style.transformOrigin = ''; }
+    }
+    function rpT(id) {
+      const el = document.getElementById(id), was = el.classList.contains('open');
+      const anyOpen = !!document.querySelector('.rp-exp.open');
+      document.querySelectorAll('.rp-exp').forEach(e => { if (e !== el) closeRpExpInstant(e); });
+      if (!was) {
+        function fireItems() {
+          el.querySelectorAll('.pex-item').forEach(function (item, i) {
+            item.style.opacity = '';
+            item.style.animation = 'none'; item.offsetHeight;
+            item.style.animation = 'pex-spark 0.22s ease both ' + (0.04 + i * 0.06) + 's';
+          });
+        }
+        if (anyOpen) {
+          el.style.display = 'block'; el.style.height = '';
+          const inner = el.querySelector('.rp-exp-inner');
+          if (inner) { inner.style.opacity = '1'; inner.style.transform = ''; }
+          el.classList.add('open');
+          requestAnimationFrame(fireItems);
+        } else {
+          el.style.display = 'block'; el.style.overflow = 'hidden'; el.style.height = '0px';
+          const inner = el.querySelector('.rp-exp-inner');
+          if (inner) { inner.style.opacity = '1'; inner.style.transform = ''; }
+          el.querySelectorAll('.pex-item').forEach(function (item) {
+            item.style.opacity = '0'; item.style.animation = 'none';
+          });
+          const toH = el.scrollHeight;
+          const start = performance.now(), dur = 380;
+          function frame(now) {
+            const raw = Math.min((now - start) / dur, 1);
+            const ease = 1 - Math.pow(1 - raw, 3);
+            el.style.height = (toH * ease).toFixed(1) + 'px';
+            if (raw < 1) { requestAnimationFrame(frame); }
+            else {
+              el.classList.add('open');
+              el.style.height = ''; el.style.overflow = '';
+              requestAnimationFrame(fireItems);
+            }
+          }
+          requestAnimationFrame(frame);
+        }
+      } else { closeRpExp(el); }
+    }
+    function closeExpRow(row) {
+      if (!row.classList.contains('open')) return;
+      const card = row.closest('.rank-card'), cid = card ? card.dataset.cid : null;
+      if (cid && window._mreCharts && window._mreCharts[cid]) {
+        window._mreCharts[cid].destroy(); delete window._mreCharts[cid];
+        const _oc = document.getElementById(cid);
+        if (_oc) { const _octx = _oc.getContext('2d'); _octx.clearRect(0, 0, _oc.width, _oc.height); }
+      }
+      rafCollapseRow(row, '.exp-inner', 380, null);
+    }
+    function closeExpRowInstant(row) {
+      if (!row.classList.contains('open')) return;
+      const card = row.closest('.rank-card'), cid = card ? card.dataset.cid : null;
+      if (cid && window._mreCharts && window._mreCharts[cid]) {
+        window._mreCharts[cid].destroy(); delete window._mreCharts[cid];
+        const _oc = document.getElementById(cid);
+        if (_oc) { const _octx = _oc.getContext('2d'); _octx.clearRect(0, 0, _oc.width, _oc.height); }
+      }
+      row.classList.remove('open'); row.style.display = 'none'; row.style.height = '';
+      const inner = row.querySelector('.exp-inner');
+      if (inner) { inner.style.opacity = ''; inner.style.transform = ''; inner.style.transformOrigin = ''; }
+    }
 
-window._mreCharts=window._mreCharts||{};
-function mkC(cid,data){
-  if(typeof Chart==='undefined')return;
-  const cv=document.getElementById(cid);if(!cv)return;
-  if(window._mreCharts[cid]){window._mreCharts[cid].destroy();delete window._mreCharts[cid];const _oc=document.getElementById(cid);if(_oc){const _octx=_oc.getContext('2d');_octx.clearRect(0,0,_oc.width,_oc.height);}}
-  const up=data[data.length-1]>=data[0],col=up?'#39e8a0':'#ff4d6d';
-  const labels=DAYS.slice(-data.length);
-  window._mreCharts[cid]=new Chart(cv.getContext('2d'),{
-    type:'line',
-    data:{labels:labels,datasets:[{data:data,borderColor:col,borderWidth:1.8,fill:true,tension:0.38,
-      backgroundColor:ctx=>{const{ctx:c,chartArea:a}=ctx.chart;if(!a)return 'transparent';
-        const g=c.createLinearGradient(0,a.top,0,a.bottom);
-        g.addColorStop(0,up?'rgba(57,232,160,.18)':'rgba(255,77,109,.18)');
-        g.addColorStop(1,'transparent');return g;},
-      pointRadius:0,pointHoverRadius:3,pointHoverBackgroundColor:col,
-      pointHoverBorderColor:'#0a0610',pointHoverBorderWidth:2,hitRadius:20}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,
-        backgroundColor:'#1a1430',borderColor:'rgba(155,89,255,0.25)',borderWidth:1,
-        titleColor:'#9b59ff',bodyColor:'#f0eaff',
-        titleFont:{family:'Share Tech Mono',size:10},bodyFont:{family:'Share Tech Mono',size:11},
-        callbacks:{title:i=>labels[i[0].dataIndex],label:i=>' $'+i.raw.toFixed(2)}}},
-      scales:{x:{display:false},y:{display:false}},
-      interaction:{mode:'index',intersect:false},
-      animation:{duration:700,easing:'easeInOutCubic'}}
-  });
-}
-function countUp(el,target,prefix,suffix,duration){
-  const start=performance.now();
-  function step(now){
-    const p=Math.min((now-start)/duration,1),ease=1-Math.pow(1-p,3);
-    el.textContent=prefix+(target*ease).toFixed(target%1===0?0:1)+suffix;
-    if(p<1)requestAnimationFrame(step);
-    else el.textContent=prefix+(Number.isInteger(target)?target:target.toFixed(1))+suffix;
-  }
-  requestAnimationFrame(step);
-}
-function expT(btn){
-  var el=document.getElementById(btn.dataset.ref);
-  if(!el)return;
-  var data;
-  try{data=JSON.parse(el.textContent);}catch(e){data=[];}
-  var cid=btn.dataset.cid,eid=btn.dataset.eid;
-  var row=document.getElementById(eid);if(!row)return;
-  var card=btn.closest('.rank-card');
-  var was=row.classList.contains('open');
-  document.querySelectorAll('.rank-card').forEach(function(c){
-    c.classList.remove('selected','dimmed','closing');
-  });
-  var anyOpen=!!document.querySelector('.exp-row.open');
-  document.querySelectorAll('.exp-row').forEach(r=>{if(r!==row)closeExpRowInstant(r);});
-  if(!was){
-    document.querySelectorAll('.rank-card').forEach(function(c){
-      if(c!==card){c.classList.add('dimmed');}
-    });
-    if(card){card.classList.add('selected');}
-    function runContent(){
-      if(data&&data.length>=2){mkC(cid,data);}
-      row.querySelectorAll('.est-v').forEach(function(ev,i){
-        var stored=ev.dataset.raw||'';
-        if(!stored)return;
-        var parts=stored.split('|');
-        if(parts.length!==3)return;
-        var prefix=parts[0],num=parseFloat(parts[1]),suffix=parts[2];
-        if(!isNaN(num)&&num>0){
-          setTimeout(function(){countUp(ev,num,prefix,suffix,420);},i*50);
+    window._mreCharts = window._mreCharts || {};
+    function mkC(cid, data) {
+      if (typeof Chart === 'undefined') return;
+      const cv = document.getElementById(cid); if (!cv) return;
+      if (window._mreCharts[cid]) { window._mreCharts[cid].destroy(); delete window._mreCharts[cid]; const _oc = document.getElementById(cid); if (_oc) { const _octx = _oc.getContext('2d'); _octx.clearRect(0, 0, _oc.width, _oc.height); } }
+      const up = data[data.length - 1] >= data[0], col = up ? '#39e8a0' : '#ff4d6d';
+      const labels = DAYS.slice(-data.length);
+      window._mreCharts[cid] = new Chart(cv.getContext('2d'), {
+        type: 'line',
+        data: {
+          labels: labels, datasets: [{
+            data: data, borderColor: col, borderWidth: 1.8, fill: true, tension: 0.38,
+            backgroundColor: ctx => {
+              const { ctx: c, chartArea: a } = ctx.chart; if (!a) return 'transparent';
+              const g = c.createLinearGradient(0, a.top, 0, a.bottom);
+              g.addColorStop(0, up ? 'rgba(57,232,160,.18)' : 'rgba(255,77,109,.18)');
+              g.addColorStop(1, 'transparent'); return g;
+            },
+            pointRadius: 0, pointHoverRadius: 3, pointHoverBackgroundColor: col,
+            pointHoverBorderColor: '#0a0610', pointHoverBorderWidth: 2, hitRadius: 20
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }, tooltip: {
+              mode: 'index', intersect: false,
+              backgroundColor: '#1a1430', borderColor: 'rgba(155,89,255,0.25)', borderWidth: 1,
+              titleColor: '#9b59ff', bodyColor: '#f0eaff',
+              titleFont: { family: 'Share Tech Mono', size: 10 }, bodyFont: { family: 'Share Tech Mono', size: 11 },
+              callbacks: { title: i => labels[i[0].dataIndex], label: i => ' $' + i.raw.toFixed(2) }
+            }
+          },
+          scales: { x: { display: false }, y: { display: false } },
+          interaction: { mode: 'index', intersect: false },
+          animation: { duration: 700, easing: 'easeInOutCubic' }
         }
       });
     }
-    if(anyOpen){
-      row.style.display='block'; row.style.height=''; row.style.overflow='';
-      var inner=row.querySelector('.exp-inner');
-      if(inner){
-        inner.style.opacity='1'; inner.style.transform='';
-        inner.querySelectorAll('.est').forEach(function(t,i){
-          t.style.opacity='0'; t.style.transform='translateY(8px) scale(0.96)';
-          t.style.transition='none';
-          setTimeout(function(){
-            t.style.transition='opacity 0.22s ease, transform 0.22s ease';
-            t.style.opacity='1'; t.style.transform='translateY(0) scale(1)';
-            setTimeout(function(){t.style.transition='';},240);
-          },30+i*45);
-        });
+    function countUp(el, target, prefix, suffix, duration) {
+      const start = performance.now();
+      function step(now) {
+        const p = Math.min((now - start) / duration, 1), ease = 1 - Math.pow(1 - p, 3);
+        el.textContent = prefix + (target * ease).toFixed(target % 1 === 0 ? 0 : 1) + suffix;
+        if (p < 1) requestAnimationFrame(step);
+        else el.textContent = prefix + (Number.isInteger(target) ? target : target.toFixed(1)) + suffix;
       }
-      row.classList.add('open');
-      requestAnimationFrame(runContent);
-    } else {
-      rafExpandRow(row,'.exp-inner',400,runContent);
+      requestAnimationFrame(step);
     }
-  } else {
-    if(card){card.classList.remove('selected');}
-    document.querySelectorAll('.rank-card').forEach(function(c){c.classList.remove('dimmed');});
-    closeExpRow(row);
-  }
-}
+    function expT(btn) {
+      var el = document.getElementById(btn.dataset.ref);
+      if (!el) return;
+      var data;
+      try { data = JSON.parse(el.textContent); } catch (e) { data = []; }
+      var cid = btn.dataset.cid, eid = btn.dataset.eid;
+      var row = document.getElementById(eid); if (!row) return;
+      var card = btn.closest('.rank-card');
+      var was = row.classList.contains('open');
+      document.querySelectorAll('.rank-card').forEach(function (c) {
+        c.classList.remove('selected', 'dimmed', 'closing');
+      });
+      var anyOpen = !!document.querySelector('.exp-row.open');
+      document.querySelectorAll('.exp-row').forEach(r => { if (r !== row) closeExpRowInstant(r); });
+      if (!was) {
+        document.querySelectorAll('.rank-card').forEach(function (c) {
+          if (c !== card) { c.classList.add('dimmed'); }
+        });
+        if (card) { card.classList.add('selected'); }
+        function runContent() {
+          if (data && data.length >= 2) { mkC(cid, data); }
+          row.querySelectorAll('.est-v').forEach(function (ev, i) {
+            var stored = ev.dataset.raw || '';
+            if (!stored) return;
+            var parts = stored.split('|');
+            if (parts.length !== 3) return;
+            var prefix = parts[0], num = parseFloat(parts[1]), suffix = parts[2];
+            if (!isNaN(num) && num > 0) {
+              setTimeout(function () { countUp(ev, num, prefix, suffix, 420); }, i * 50);
+            }
+          });
+        }
+        if (anyOpen) {
+          row.style.display = 'block'; row.style.height = ''; row.style.overflow = '';
+          var inner = row.querySelector('.exp-inner');
+          if (inner) {
+            inner.style.opacity = '1'; inner.style.transform = '';
+            inner.querySelectorAll('.est').forEach(function (t, i) {
+              t.style.opacity = '0'; t.style.transform = 'translateY(8px) scale(0.96)';
+              t.style.transition = 'none';
+              setTimeout(function () {
+                t.style.transition = 'opacity 0.22s ease, transform 0.22s ease';
+                t.style.opacity = '1'; t.style.transform = 'translateY(0) scale(1)';
+                setTimeout(function () { t.style.transition = ''; }, 240);
+              }, 30 + i * 45);
+            });
+          }
+          row.classList.add('open');
+          requestAnimationFrame(runContent);
+        } else {
+          rafExpandRow(row, '.exp-inner', 400, runContent);
+        }
+      } else {
+        if (card) { card.classList.remove('selected'); }
+        document.querySelectorAll('.rank-card').forEach(function (c) { c.classList.remove('dimmed'); });
+        closeExpRow(row);
+      }
+    }
 
-document.addEventListener('click', function(e) {
-  var btn = e.target.closest('.copy-prompt-btn');
-  if (!btn) return;
-  e.stopPropagation();
-  var el = document.getElementById(btn.dataset.ref);
-  if (!el) return;
-  var text;
-  try { text = JSON.parse(el.textContent); } catch(err) {
-    btn.textContent = 'Error';
-    btn.style.color = 'var(--dn)';
-    setTimeout(function() {
-      btn.textContent = '⎉ Copy AI Prompt';
-      btn.style.color = '';
-    }, 1800);
-    return;
-  }
-  function onCopied() {
-    var orig = btn.textContent;
-    btn.textContent = 'Copied ✓';
-    btn.style.color = 'var(--up)';
-    btn.style.borderColor = 'rgba(57,232,160,.5)';
-    setTimeout(function() {
-      btn.textContent = orig;
-      btn.style.color = '';
-      btn.style.borderColor = '';
-    }, 1800);
-  }
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(text).then(onCopied).catch(function() {
-      var ta = document.createElement('textarea');
-      ta.value = text;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-      onCopied();
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest('.copy-prompt-btn');
+      if (!btn) return;
+      e.stopPropagation();
+      var el = document.getElementById(btn.dataset.ref);
+      if (!el) return;
+      var text;
+      try { text = JSON.parse(el.textContent); } catch (err) {
+        btn.textContent = 'Error';
+        btn.style.color = 'var(--dn)';
+        setTimeout(function () {
+          btn.textContent = '⎉ Copy AI Prompt';
+          btn.style.color = '';
+        }, 1800);
+        return;
+      }
+      function onCopied() {
+        var orig = btn.textContent;
+        btn.textContent = 'Copied ✓';
+        btn.style.color = 'var(--up)';
+        btn.style.borderColor = 'rgba(57,232,160,.5)';
+        setTimeout(function () {
+          btn.textContent = orig;
+          btn.style.color = '';
+          btn.style.borderColor = '';
+        }, 1800);
+      }
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(onCopied).catch(function () {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          onCopied();
+        });
+      } else {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        onCopied();
+      }
     });
-  } else {
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    onCopied();
-  }
-});
-</script><script>fetch('assets/data/rank.json?v='+Date.now())
-  .then(function(r){ return r.ok ? r.json() : Promise.reject(r.status); })
-  .then(function(rankData) {
-    var stocks = rankData.stocks || {};
-    var arr = Array.isArray(stocks) ? stocks : Object.values(stocks);
-    arr = arr.filter(function(s){ return s && typeof s === 'object'; });
-    arr.sort(function(a,b){
-      var ca = typeof a.confidence === 'number' ? a.confidence : -1;
-      var cb = typeof b.confidence === 'number' ? b.confidence : -1;
-      return cb - ca;
-    });
-    var html    = '';
-    var scripts = '';
-    arr.forEach(function(stock, idx) {
-      var i    = idx + 1;
-      var conf = typeof stock.confidence === 'number' ? stock.confidence : null;
-      var risk = typeof stock.risk_score  === 'number' ? stock.risk_score  : null;
-      var cCls   = conf === null ? 'nt' : conf >= 70 ? 'up' : conf >= 50 ? 'nt' : 'dn';
-      var eqV    = stock.eq_verdict_display  || '';
-      var eqCls  = eqV  === 'STRONG'  ? 'up' : eqV  === 'WEAK'    ? 'dn' : 'nt';
-      var rotS   = stock.rotation_signal_display || '';
-      var rotCls = rotS === 'LEADING' ? 'up' : rotS === 'LAGGING' ? 'dn' : 'nt';
-      var psV    = stock.ps_verdict_display  || '';
-      var psCls  = psV  === 'GOOD'     ? 'up' : psV  === 'EXTENDED' ? 'dn' : psV === 'WEAK' ? 'dn' : psV === 'EARLY' ? 'nt' : 'pu';
-      var verdict  = stock.market_verdict_display || stock.market_verdict || '\u2014';
-      var confStr  = conf !== null ? Math.round(conf) : '\u2014';
-      var riskStr  = risk !== null ? Math.round(risk)  : '\u2014';
-      var price    = typeof stock.price === 'number' ? '$' + stock.price.toFixed(2) : '\u2014';
-      var alignVal = stock.alignment || '';
-      var aCls     = alignVal === 'ALIGNED' ? 'up' : alignVal === 'MIXED' ? 'nt' : 'dn';
-      var sector    = (stock.sector || '').replace(/_/g,' ').replace(/\b\w/g, function(c){ return c.toUpperCase(); });
-      var _sMap={'Energy':'#f4a44a','Technology':'#7dd8ff','Healthcare':'#7be8b0','Financials':'#c9b8ff',
-        'Consumer Discretionary':'#ff9ec4','Consumer Staples':'#b8e8c8','Industrials':'#ffd27a',
-        'Materials':'#a8e6cf','Real Estate':'#ffb8a0','Utilities':'#9ecfff',
-        'Communication Services':'#d4b8ff'};
-      var _sKey=_sMap[sector]?sector:Object.keys(_sMap).find(function(k){return sector.toLowerCase().indexOf(k.toLowerCase())!==-1;})||'';
-      var sectorColor=_sMap[_sKey]||'#a89bc2';
-      var ret1m = typeof stock.return_1m === 'number' ? (stock.return_1m >= 0 ? '\u25b2' : '\u25bc') + ' ' + Math.abs(stock.return_1m).toFixed(1) + '%' : '\u2014';
-      var ret3m = typeof stock.return_3m === 'number' ? (stock.return_3m >= 0 ? '\u25b2' : '\u25bc') + ' ' + Math.abs(stock.return_3m).toFixed(1) + '%' : '\u2014';
-      var ret6m = typeof stock.return_6m === 'number' ? (stock.return_6m >= 0 ? '\u25b2' : '\u25bc') + ' ' + Math.abs(stock.return_6m).toFixed(1) + '%' : '\u2014';
-      var raw1m = typeof stock.return_1m === 'number' ? (stock.return_1m >= 0 ? '\u25b2' : '\u25bc') + '|' + Math.abs(stock.return_1m).toFixed(1) + '|%' : '';
-      var raw3m = typeof stock.return_3m === 'number' ? (stock.return_3m >= 0 ? '\u25b2' : '\u25bc') + '|' + Math.abs(stock.return_3m).toFixed(1) + '|%' : '';
-      var raw6m = typeof stock.return_6m === 'number' ? (stock.return_6m >= 0 ? '\u25b2' : '\u25bc') + '|' + Math.abs(stock.return_6m).toFixed(1) + '|%' : '';
-      var phUid  = 'ph-' + i;
-      var rawPh  = Array.isArray(stock.price_history) ? stock.price_history : [];
-      var phList = rawPh.filter(function(v){ return typeof v === 'number' && isFinite(v); });
-      var hasCh  = phList.length > 1;
-      var chartEl = hasCh
-        ? '<canvas id="ec' + i + '" height="92"></canvas>'
-        : '<div style="color:var(--mist);font-size:11px;padding:8px 0;">Price history unavailable</div>';
-      scripts += '<script type="application/json" id="' + phUid + '">'
-              + JSON.stringify(phList).replace(/<\/script>/gi,'<\\/script>')
-              + '<\/script>';
-      var confVal    = typeof stock.confidence === 'number' ? stock.confidence : null;
-      var riskVal    = typeof stock.risk_score === 'number' ? stock.risk_score : null;
-      var confCls    = confVal !== null ? (confVal >= 70 ? 'rpill-cup' : confVal >= 50 ? 'rpill-cnt' : 'rpill-cdn') : 'rpill-una';
-      var riskCls    = riskVal !== null ? (riskVal <= 30 ? 'rpill-rlo' : riskVal <= 55 ? 'rpill-rmd' : 'rpill-rhi') : 'rpill-una';
-      var eqMap      = {'SUPPORTIVE':'rpill-eq-sup','NEUTRAL':'rpill-eq-neu','WEAK':'rpill-eq-wk','RISKY':'rpill-eq-rsk','UNAVAILABLE':'rpill-eq-una'};
-      var rotMap     = {'SUPPORT':'rpill-rt-sup','WAIT':'rpill-rt-wt','WEAKEN':'rpill-rt-wk','UNKNOWN':'rpill-rt-unk'};
-      var eqPillCls  = eqMap[eqV]  || 'rpill-una';
-      var rotPillCls = rotMap[rotS] || 'rpill-una';
-      var psMap      = {'GOOD':'rpill-ps-gd','EXTENDED':'rpill-ps-ex','EARLY':'rpill-ps-ea','WEAK':'rpill-ps-wk','UNAVAILABLE':'rpill-eq-una'};
-      var psPillCls  = psMap[psV]  || 'rpill-una';
-      var evMap      = {'NORMAL':'rpill-ev-ok','HIGH RISK':'rpill-ev-hr'};
-      var insMap     = {'ACCUMULATING':'rpill-ins-ac','DISTRIBUTING':'rpill-ins-di','NEUTRAL':'rpill-ins-nt','UNAVAILABLE':'rpill-ins-na'};
-      var expMap     = {'BEATING':'rpill-exp-bt','INLINE':'rpill-exp-in','MISSING':'rpill-exp-ms','UNAVAILABLE':'rpill-exp-na'};
-      var evV        = stock.event_risk        || 'NORMAL';
-      var insV       = stock.insider_signal    || 'UNAVAILABLE';
-      var evPillCls  = evMap[evV]  || 'rpill-ev-ok';
-      var insPillCls = insMap[insV] || 'rpill-ins-na';
-      var confDisp   = confVal !== null ? Math.round(confVal) : '\u2014';
-      var riskDisp   = riskVal !== null ? Math.round(riskVal) : '\u2014';
-      var priceDisp  = typeof stock.price === 'number' ? '$' + stock.price.toFixed(2) : '\u2014';
-      var psKeyLvl   = stock.ps_key_level_display || stock.ps_key_level_position || '\u2014';
-      var psPaScore  = typeof stock.ps_price_action_score === 'number' ? stock.ps_price_action_score + '/100' : '\u2014';
-      var psMoveExt  = typeof stock.ps_move_extension_pct === 'number' ? stock.ps_move_extension_pct.toFixed(1) + '%' : '\u2014';
-      var psTrend    = stock.ps_trend_structure || '\u2014';
-      var psDistSup  = typeof stock.ps_distance_to_support_pct === 'number' ? stock.ps_distance_to_support_pct.toFixed(1) + '%' : '\u2014';
-      var psDistRes  = typeof stock.ps_distance_to_resistance_pct === 'number' ? stock.ps_distance_to_resistance_pct.toFixed(1) + '%' : '\u2014';
-      var psAvail    = stock.ps_available === true;
-      html += '<div class="rank-card" data-ref="' + phUid + '" data-eid="e' + i + '" data-cid="ec' + i + '">'
-           + '<div class="rank-card-main" onclick="expT(this.closest(\'.rank-card\'))">'  
-           + '<div class="rck-n">#' + i + '</div>'
-           + '<div class="rck-t">' + (stock.ticker || '\u2014') + '</div>'
-           + '<div class="rck-s" style="color:' + sectorColor + '">' + sector + '</div>'
-           + '<div class="rck-pills">'
-           + '<span class="rpill rpill-price"><span class="rpill-lbl">Price</span>' + priceDisp + '</span>'
-           + '<span class="rpill ' + confCls + '"><span class="rpill-lbl">Conf</span>' + confDisp + '/100</span>'
-           + '<span class="rpill ' + riskCls + '"><span class="rpill-lbl">Risk</span>' + riskDisp + '</span>'
-           + '<span class="rpill ' + eqPillCls + '"><span class="rpill-lbl">EQ</span>' + (eqV || '\u2014') + '</span>'
-           + '<span class="rpill ' + rotPillCls + '"><span class="rpill-lbl">Rotation</span>' + (rotS || '\u2014') + '</span>'
-           + '<span class="rpill ' + psPillCls + '"><span class="rpill-lbl">Entry</span>' + (psV || '\u2014') + '</span>'
-           + '<span class="rpill ' + evPillCls + '"><span class="rpill-lbl">Event</span>' + evV + '</span>'
-           + '<span class="rpill ' + insPillCls + '"><span class="rpill-lbl">Insider</span>' + insV + '</span>'
-           + '</div>'
-           + '</div>'
-           + '<div class="exp-row" id="e' + i + '" onclick="event.stopPropagation()"><div class="exp-inner">'
-           + '<div class="exp-stats">'
-           + '<div class="est"><div class="est-k">1M</div><div class="est-v" data-raw="' + raw1m + '">' + ret1m + '</div></div>'
-           + '<div class="est"><div class="est-k">3M</div><div class="est-v" data-raw="' + raw3m + '">' + ret3m + '</div></div>'
-           + '<div class="est"><div class="est-k">6M</div><div class="est-v" data-raw="' + raw6m + '">' + ret6m + '</div></div>'
-           + '<div class="est"><div class="est-k">Verdict</div><div class="est-v ' + cCls + '">' + verdict + '</div></div>'
-           + '<div class="est"><div class="est-k">Align</div><div class="est-v ' + aCls + '">' + (alignVal || '\u2014') + '</div></div>'
-           + (psAvail ? ('<div class="est est-divider"></div>'
-           + '<div class="est"><div class="est-k">Entry</div><div class="est-v est-ps est-ps-' + psV.toLowerCase() + '">' + (psV || '\u2014') + '</div></div>'
-           + '<div class="est"><div class="est-k">Key Level</div><div class="est-v">' + psKeyLvl + '</div></div>'
-           + '<div class="est"><div class="est-k">PA Score</div><div class="est-v">' + psPaScore + '</div></div>'
-           + '<div class="est"><div class="est-k">Move Ext.</div><div class="est-v">' + psMoveExt + '</div></div>'
-           + '<div class="est"><div class="est-k">Trend</div><div class="est-v">' + psTrend + '</div></div>'
-           + '<div class="est"><div class="est-k">Dist Sup.</div><div class="est-v">' + psDistSup + '</div></div>'
-           + '<div class="est"><div class="est-k">Dist Res.</div><div class="est-v">' + psDistRes + '</div></div>'
-           + '<div class="est"><div class="est-k">Entry $</div><div class="est-v">' + (typeof stock.ps_entry_price==='number' ? '$'+stock.ps_entry_price.toFixed(2) : '\u2014') + '</div></div>'
-           + '<div class="est"><div class="est-k">Stop $</div><div class="est-v">' + (typeof stock.ps_stop_loss==='number' ? '$'+stock.ps_stop_loss.toFixed(2) : '\u2014') + '</div></div>'
-           + '<div class="est"><div class="est-k">Target $</div><div class="est-v">' + (typeof stock.ps_price_target==='number' ? '$'+stock.ps_price_target.toFixed(2) : '\u2014') + '</div></div>'
-           + '<div class="est"><div class="est-k">R/R</div><div class="est-v">' + (typeof stock.ps_risk_reward_ratio==='number' ? stock.ps_risk_reward_ratio.toFixed(2)+'x' : '\u2014') + '</div></div>'
-           + '<div class="est est-divider"></div>') : '')
-           + '<div class="est"><div class="est-k">Event Risk</div><div class="est-v">' + (stock.event_risk || 'NORMAL') + '</div></div>'
-           + '<div class="est"><div class="est-k">Insider</div><div class="est-v">' + (stock.insider_signal || 'N/A') + '</div></div>'
-           + '<div class="est"><div class="est-k">Expect.</div><div class="est-v">' + (stock.expectations_signal || 'N/A') + '</div></div>'
-           + '<div class="est"><div class="est-k">Portfolio</div>'
-           + '<div class="est-v">'
-           + (stock.pl_selected
-               ? (stock.pl_position_weight != null ? stock.pl_position_weight.toFixed(1) + '%' : 'Selected')
-               : (stock.pl_exclusion_reason || 'Excluded')) + '</div></div>'
-           + '</div>'
-           + '<div class="exp-chart">' + chartEl + '</div>'
-           + '</div></div>'
-           + '</div>';
-    });
-    if (!html) html = '<div style="color:var(--mist);font-family:var(--ff-mono);padding:28px;">No candidates this week.</div>';
-    // Inject script blocks first (before HTML) so they exist when onclick handlers fire
-    document.getElementById('rank-board-mount').innerHTML = scripts + html;
-    if (window.dismissLoader) window.dismissLoader();
-  })
-  .catch(function() {
-    document.getElementById('rank-board-mount').innerHTML =
-      '<div style="color:var(--dn);font-family:var(--ff-mono);font-size:11px;padding:28px;">Error loading rank data. Try refreshing.</div>';
-    if (window.dismissLoader) window.dismissLoader();
-  });
-</script></body></html>
+  </script>
+  <script>fetch('assets/data/rank.json?v=' + Date.now())
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+      .then(function (rankData) {
+        var stocks = rankData.stocks || {};
+        var arr = Array.isArray(stocks) ? stocks : Object.values(stocks);
+        arr = arr.filter(function (s) { return s && typeof s === 'object'; });
+        arr.sort(function (a, b) {
+          var ca = typeof a.confidence === 'number' ? a.confidence : -1;
+          var cb = typeof b.confidence === 'number' ? b.confidence : -1;
+          return cb - ca;
+        });
+        var html = '';
+        var scripts = '';
+        arr.forEach(function (stock, idx) {
+          var i = idx + 1;
+          var conf = typeof stock.confidence === 'number' ? stock.confidence : null;
+          var risk = typeof stock.risk_score === 'number' ? stock.risk_score : null;
+          var cCls = conf === null ? 'nt' : conf >= 70 ? 'up' : conf >= 50 ? 'nt' : 'dn';
+          var eqV = stock.eq_verdict_display || '';
+          var eqCls = eqV === 'STRONG' ? 'up' : eqV === 'WEAK' ? 'dn' : 'nt';
+          var rotS = stock.rotation_signal_display || '';
+          var rotCls = rotS === 'LEADING' ? 'up' : rotS === 'LAGGING' ? 'dn' : 'nt';
+          var psV = stock.ps_verdict_display || '';
+          var psCls = psV === 'GOOD' ? 'up' : psV === 'EXTENDED' ? 'dn' : psV === 'WEAK' ? 'dn' : psV === 'EARLY' ? 'nt' : 'pu';
+          var verdict = stock.market_verdict_display || stock.market_verdict || '\u2014';
+          var confStr = conf !== null ? Math.round(conf) : '\u2014';
+          var riskStr = risk !== null ? Math.round(risk) : '\u2014';
+          var price = typeof stock.price === 'number' ? '$' + stock.price.toFixed(2) : '\u2014';
+          var alignVal = stock.alignment || '';
+          var aCls = alignVal === 'ALIGNED' ? 'up' : alignVal === 'MIXED' ? 'nt' : 'dn';
+          var sector = (stock.sector || '').replace(/_/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+          var _sMap = {
+            'Energy': '#f4a44a', 'Technology': '#7dd8ff', 'Healthcare': '#7be8b0', 'Financials': '#c9b8ff',
+            'Consumer Discretionary': '#ff9ec4', 'Consumer Staples': '#b8e8c8', 'Industrials': '#ffd27a',
+            'Materials': '#a8e6cf', 'Real Estate': '#ffb8a0', 'Utilities': '#9ecfff',
+            'Communication Services': '#d4b8ff'
+          };
+          var _sKey = _sMap[sector] ? sector : Object.keys(_sMap).find(function (k) { return sector.toLowerCase().indexOf(k.toLowerCase()) !== -1; }) || '';
+          var sectorColor = _sMap[_sKey] || '#a89bc2';
+          var ret1m = typeof stock.return_1m === 'number' ? (stock.return_1m >= 0 ? '\u25b2' : '\u25bc') + ' ' + Math.abs(stock.return_1m).toFixed(1) + '%' : '\u2014';
+          var ret3m = typeof stock.return_3m === 'number' ? (stock.return_3m >= 0 ? '\u25b2' : '\u25bc') + ' ' + Math.abs(stock.return_3m).toFixed(1) + '%' : '\u2014';
+          var ret6m = typeof stock.return_6m === 'number' ? (stock.return_6m >= 0 ? '\u25b2' : '\u25bc') + ' ' + Math.abs(stock.return_6m).toFixed(1) + '%' : '\u2014';
+          var raw1m = typeof stock.return_1m === 'number' ? (stock.return_1m >= 0 ? '\u25b2' : '\u25bc') + '|' + Math.abs(stock.return_1m).toFixed(1) + '|%' : '';
+          var raw3m = typeof stock.return_3m === 'number' ? (stock.return_3m >= 0 ? '\u25b2' : '\u25bc') + '|' + Math.abs(stock.return_3m).toFixed(1) + '|%' : '';
+          var raw6m = typeof stock.return_6m === 'number' ? (stock.return_6m >= 0 ? '\u25b2' : '\u25bc') + '|' + Math.abs(stock.return_6m).toFixed(1) + '|%' : '';
+          var phUid = 'ph-' + i;
+          var rawPh = Array.isArray(stock.price_history) ? stock.price_history : [];
+          var phList = rawPh.filter(function (v) { return typeof v === 'number' && isFinite(v); });
+          var hasCh = phList.length > 1;
+          var chartEl = hasCh
+            ? '<canvas id="ec' + i + '" height="92"></canvas>'
+            : '<div style="color:var(--mist);font-size:11px;padding:8px 0;">Price history unavailable</div>';
+          scripts += '<script type="application/json" id="' + phUid + '">'
+            + JSON.stringify(phList).replace(/<\/script>/gi, '<\\/script>')
+            + '<\/script>';
+          var confVal = typeof stock.confidence === 'number' ? stock.confidence : null;
+          var riskVal = typeof stock.risk_score === 'number' ? stock.risk_score : null;
+          var confCls = confVal !== null ? (confVal >= 70 ? 'rpill-cup' : confVal >= 50 ? 'rpill-cnt' : 'rpill-cdn') : 'rpill-una';
+          var riskCls = riskVal !== null ? (riskVal <= 30 ? 'rpill-rlo' : riskVal <= 55 ? 'rpill-rmd' : 'rpill-rhi') : 'rpill-una';
+          var eqMap = { 'SUPPORTIVE': 'rpill-eq-sup', 'NEUTRAL': 'rpill-eq-neu', 'WEAK': 'rpill-eq-wk', 'RISKY': 'rpill-eq-rsk', 'UNAVAILABLE': 'rpill-eq-una' };
+          var rotMap = { 'SUPPORT': 'rpill-rt-sup', 'WAIT': 'rpill-rt-wt', 'WEAKEN': 'rpill-rt-wk', 'UNKNOWN': 'rpill-rt-unk' };
+          var eqPillCls = eqMap[eqV] || 'rpill-una';
+          var rotPillCls = rotMap[rotS] || 'rpill-una';
+          var psMap = { 'GOOD': 'rpill-ps-gd', 'EXTENDED': 'rpill-ps-ex', 'EARLY': 'rpill-ps-ea', 'WEAK': 'rpill-ps-wk', 'UNAVAILABLE': 'rpill-eq-una' };
+          var psPillCls = psMap[psV] || 'rpill-una';
+          var evMap = { 'NORMAL': 'rpill-ev-ok', 'HIGH RISK': 'rpill-ev-hr' };
+          var insMap = { 'ACCUMULATING': 'rpill-ins-ac', 'DISTRIBUTING': 'rpill-ins-di', 'NEUTRAL': 'rpill-ins-nt', 'UNAVAILABLE': 'rpill-ins-na' };
+          var expMap = { 'BEATING': 'rpill-exp-bt', 'INLINE': 'rpill-exp-in', 'MISSING': 'rpill-exp-ms', 'UNAVAILABLE': 'rpill-exp-na' };
+          var evV = stock.event_risk || 'NORMAL';
+          var insV = stock.insider_signal || 'UNAVAILABLE';
+          var evPillCls = evMap[evV] || 'rpill-ev-ok';
+          var insPillCls = insMap[insV] || 'rpill-ins-na';
+          var confDisp = confVal !== null ? Math.round(confVal) : '\u2014';
+          var riskDisp = riskVal !== null ? Math.round(riskVal) : '\u2014';
+          var priceDisp = typeof stock.price === 'number' ? '$' + stock.price.toFixed(2) : '\u2014';
+          var psKeyLvl = stock.ps_key_level_display || stock.ps_key_level_position || '\u2014';
+          var psPaScore = typeof stock.ps_price_action_score === 'number' ? stock.ps_price_action_score + '/100' : '\u2014';
+          var psMoveExt = typeof stock.ps_move_extension_pct === 'number' ? stock.ps_move_extension_pct.toFixed(1) + '%' : '\u2014';
+          var psTrend = stock.ps_trend_structure || '\u2014';
+          var psDistSup = typeof stock.ps_distance_to_support_pct === 'number' ? stock.ps_distance_to_support_pct.toFixed(1) + '%' : '\u2014';
+          var psDistRes = typeof stock.ps_distance_to_resistance_pct === 'number' ? stock.ps_distance_to_resistance_pct.toFixed(1) + '%' : '\u2014';
+          var psAvail = stock.ps_available === true;
+          var forceDebug = stock.force_debug === true;
+          var forceBadge = forceDebug
+            ? '<span class="rpill rpill-force" style="margin-left:6px;vertical-align:middle;">FORCE</span>'
+            : '';
+          html += '<div class="rank-card" data-ref="' + phUid + '" data-eid="e' + i + '" data-cid="ec' + i + '">'
+            + '<div class="rank-card-main" onclick="expT(this.closest(\'.rank-card\'))">'
+            + '<div class="rck-n">#' + i + '</div>'
+            + '<div class="rck-t">' + (stock.ticker || '\u2014') + forceBadge + '</div>'
+            + '<div class="rck-s" style="color:' + sectorColor + '">' + sector + '</div>'
+            + '<div class="rck-pills">'
+            + '<span class="rpill rpill-price"><span class="rpill-lbl">Price</span>' + priceDisp + '</span>'
+            + '<span class="rpill ' + confCls + '"><span class="rpill-lbl">Conf</span>' + confDisp + '/100</span>'
+            + '<span class="rpill ' + riskCls + '"><span class="rpill-lbl">Risk</span>' + riskDisp + '</span>'
+            + '<span class="rpill ' + eqPillCls + '"><span class="rpill-lbl">EQ</span>' + (eqV || '\u2014') + '</span>'
+            + '<span class="rpill ' + rotPillCls + '"><span class="rpill-lbl">Rotation</span>' + (rotS || '\u2014') + '</span>'
+            + '<span class="rpill ' + psPillCls + '"><span class="rpill-lbl">Entry</span>' + (psV || '\u2014') + '</span>'
+            + '<span class="rpill ' + evPillCls + '"><span class="rpill-lbl">Event</span>' + evV + '</span>'
+            + '<span class="rpill ' + insPillCls + '"><span class="rpill-lbl">Insider</span>' + insV + '</span>'
+            + '</div>'
+            + '</div>'
+            + '<div class="exp-row" id="e' + i + '" onclick="event.stopPropagation()"><div class="exp-inner">'
+            + '<div class="exp-stats">'
+            + '<div class="est"><div class="est-k">1M</div><div class="est-v" data-raw="' + raw1m + '">' + ret1m + '</div></div>'
+            + '<div class="est"><div class="est-k">3M</div><div class="est-v" data-raw="' + raw3m + '">' + ret3m + '</div></div>'
+            + '<div class="est"><div class="est-k">6M</div><div class="est-v" data-raw="' + raw6m + '">' + ret6m + '</div></div>'
+            + '<div class="est"><div class="est-k">Verdict</div><div class="est-v ' + cCls + '">' + verdict + '</div></div>'
+            + '<div class="est"><div class="est-k">Align</div><div class="est-v ' + aCls + '">' + (alignVal || '\u2014') + '</div></div>'
+            + (psAvail ? ('<div class="est est-divider"></div>'
+              + '<div class="est"><div class="est-k">Entry</div><div class="est-v est-ps est-ps-' + psV.toLowerCase() + '">' + (psV || '\u2014') + '</div></div>'
+              + '<div class="est"><div class="est-k">Key Level</div><div class="est-v">' + psKeyLvl + '</div></div>'
+              + '<div class="est"><div class="est-k">PA Score</div><div class="est-v">' + psPaScore + '</div></div>'
+              + '<div class="est"><div class="est-k">Move Ext.</div><div class="est-v">' + psMoveExt + '</div></div>'
+              + '<div class="est"><div class="est-k">Trend</div><div class="est-v">' + psTrend + '</div></div>'
+              + '<div class="est"><div class="est-k">Dist Sup.</div><div class="est-v">' + psDistSup + '</div></div>'
+              + '<div class="est"><div class="est-k">Dist Res.</div><div class="est-v">' + psDistRes + '</div></div>'
+              + '<div class="est"><div class="est-k">Entry $</div><div class="est-v">' + (typeof stock.ps_entry_price === 'number' ? '$' + stock.ps_entry_price.toFixed(2) : '\u2014') + '</div></div>'
+              + '<div class="est"><div class="est-k">Stop $</div><div class="est-v">' + (typeof stock.ps_stop_loss === 'number' ? '$' + stock.ps_stop_loss.toFixed(2) : '\u2014') + '</div></div>'
+              + '<div class="est"><div class="est-k">Target $</div><div class="est-v">' + (typeof stock.ps_price_target === 'number' ? '$' + stock.ps_price_target.toFixed(2) : '\u2014') + '</div></div>'
+              + '<div class="est"><div class="est-k">R/R</div><div class="est-v">' + (typeof stock.ps_risk_reward_ratio === 'number' ? stock.ps_risk_reward_ratio.toFixed(2) + 'x' : '\u2014') + '</div></div>'
+              + '<div class="est est-divider"></div>') : '')
+            + '<div class="est"><div class="est-k">Event Risk</div><div class="est-v">' + (stock.event_risk || 'NORMAL') + '</div></div>'
+            + '<div class="est"><div class="est-k">Insider</div><div class="est-v">' + (stock.insider_signal || 'N/A') + '</div></div>'
+            + '<div class="est"><div class="est-k">Expect.</div><div class="est-v">' + (stock.expectations_signal || 'N/A') + '</div></div>'
+            + '<div class="est"><div class="est-k">Portfolio</div>'
+            + '<div class="est-v">'
+            + (stock.pl_selected
+              ? (stock.pl_position_weight != null ? stock.pl_position_weight.toFixed(1) + '%' : 'Selected')
+              : (stock.pl_exclusion_reason || 'Excluded')) + '</div></div>'
+            + '</div>'
+            + '<div class="exp-chart">' + chartEl + '</div>'
+            + '</div></div>'
+            + '</div>';
+        });
+        if (!html) html = '<div style="color:var(--mist);font-family:var(--ff-mono);padding:28px;">No candidates this week.</div>';
+        // Inject script blocks first (before HTML) so they exist when onclick handlers fire
+        document.getElementById('rank-board-mount').innerHTML = scripts + html;
+        if (window.dismissLoader) window.dismissLoader();
+      })
+      .catch(function () {
+        document.getElementById('rank-board-mount').innerHTML =
+          '<div style="color:var(--dn);font-family:var(--ff-mono);font-size:11px;padding:28px;">Error loading rank data. Try refreshing.</div>';
+        if (window.dismissLoader) window.dismissLoader();
+      });
+  </script>
+</body>
+
+</html>

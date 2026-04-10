@@ -1483,6 +1483,15 @@ nav::before {
   border-image: linear-gradient(90deg, rgba(40, 40, 50, .9), rgba(200, 200, 220, .75)) 1;
 }
 
+.rpill-force {
+  color: #fff5a0;
+  background: linear-gradient(90deg, rgba(60, 50, 10, .85), rgba(180, 150, 20, .3));
+  border-image: linear-gradient(90deg, rgba(180, 150, 20, .9), rgba(220, 190, 40, .7)) 1;
+  font-size: 7px;
+  letter-spacing: 0.12em;
+  padding: 2px 5px;
+}
+
 .rank-head {
   display: grid;
   grid-template-columns: 36px 76px 1fr 84px 72px 60px 90px 90px;

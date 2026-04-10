@@ -1328,6 +1328,8 @@ def _update_rank_board(companies):
                 'pl_cluster_id':        c.get('pl_cluster_id'),
                 'pl_correlation_flags': c.get('pl_correlation_flags', []),
                 'pl_exclusion_reason':  c.get('pl_exclusion_reason'),
+                # ── Debug tag — set True only on force-ticker runs ───────────
+                'force_debug':          bool(c.get('force_debug', False)),
             }
     try:
         tmp = rank_path + '.tmp'
@@ -1935,7 +1937,7 @@ def write_trades_json(paper_trading_summary: dict) -> None:
 def build_trades_page(paper_trading_summary: dict) -> None:
     html_content = (
         '<!DOCTYPE html><html lang="en"><head>'
-        '<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Paper Trading | MRE</title>'
+        '<meta charset="UTF-8"><title>Paper Trading | MRE</title>'
         f'{_FONTS_LINK}'
         '<link rel="stylesheet" href="assets/style.css">'
         f'{_LOADER_CSS}'

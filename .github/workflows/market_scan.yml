@@ -17,9 +17,25 @@ on:
   workflow_dispatch:
     inputs:
       force_tickers:
-        description: 'Debug mode — comma-separated tickers to force-run (skips all gates and market checks). Leave blank for normal run.'
+        description: 'Comma-separated tickers to test (e.g. AAPL,MSFT). Leave blank for normal run.'
         required: false
         default: ''
+      subsystems:
+        description: |
+          Which subsystems to run against the forced tickers.
+          Use "all" to run everything, or a range/list: "sub1-sub4", "sub2", "sub1,sub3,sub6".
+          Sub dependencies: sub2 needs sub1 data. sub3,sub4,sub5,sub6 are independent of each other but need sub1.
+          If sub1 is excluded, dependent subs receive no financials and will report UNAVAILABLE for data-dependent fields.
+          Leave blank = "all".
+        required: false
+        default: 'all'
+      dry_run:
+        description: |
+          If true (default for manual runs): suppresses paper trading writes, email send, and git commit.
+          Rank board IS updated but cards are tagged FORCE so they are visually distinct.
+          Set to false only when you explicitly want a manual run to behave like a scheduled one.
+        required: false
+        default: 'true'
 
 
 jobs:
@@ -60,6 +76,8 @@ jobs:
           GMAIL_APP_PASSWORD:    ${{ secrets.GMAIL_APP_PASSWORD }}
           GITHUB_PAGES_URL:      ${{ secrets.PAGES_URL }}
           FORCE_TICKERS:         ${{ github.event.inputs.force_tickers }}
+          FORCE_SUBSYSTEMS:      ${{ github.event.inputs.subsystems }}
+          DRY_RUN:               ${{ github.event.inputs.dry_run }}
           GOOGLE_SHEETS_ID:            ${{ secrets.GOOGLE_SHEETS_ID }}
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
         run: python main.py
@@ -75,3 +93,4 @@ jobs:
           git pull --rebase origin main
           git stash pop || true
           git push
+          
