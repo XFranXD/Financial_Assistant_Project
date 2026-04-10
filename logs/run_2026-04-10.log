@@ -1189,3 +1189,1158 @@
 2026-04-10T19:32:01 UTC | INFO     | main | DISCLAIMER: This system does NOT perform trading, does NOT give investment advice, and does NOT make price predictions. It is a research data aggregation and scoring tool only.
 2026-04-10T19:32:01 UTC | INFO     | main | ============================================================
 2026-04-10T19:32:01 UTC | INFO     | main | [SCHEDULER] Current ET time 15:32 is outside all scheduled windows — exiting.
+2026-04-10T20:54:35 UTC | INFO     | main | ============================================================
+2026-04-10T20:54:35 UTC | INFO     | main | AUTOMATED STOCK RESEARCH SYSTEM — starting run
+2026-04-10T20:54:35 UTC | INFO     | main | DISCLAIMER: This system does NOT perform trading, does NOT give investment advice, and does NOT make price predictions. It is a research data aggregation and scoring tool only.
+2026-04-10T20:54:35 UTC | INFO     | main | ============================================================
+2026-04-10T20:54:35 UTC | INFO     | main | [SCHEDULER] Time gate passed — matched slot 16:00-17:20
+2026-04-10T20:54:35 UTC | WARNING  | main | Validated tickers file is 31 days old (limit 30). Consider re-running validate_tickers.py.
+2026-04-10T20:54:35 UTC | INFO     | main | Run slot: 16:00-17:20
+2026-04-10T20:54:35 UTC | INFO     | market_collector | Index dow: 47916.57 Falling (-0.56%)
+2026-04-10T20:54:35 UTC | INFO     | market_collector | Index sp500: 6816.89 Falling (-0.11%)
+2026-04-10T20:54:35 UTC | INFO     | market_collector | Index nasdaq: 22902.89 Rising (+0.35%)
+2026-04-10T20:54:35 UTC | INFO     | market_regime | VIX fetched: 19.23
+2026-04-10T20:54:35 UTC | INFO     | market_regime | Regime: normal vix=19.23 risk_mult=1.0 opp_mult=1.0
+2026-04-10T20:54:35 UTC | INFO     | main | Regime: normal vix=19.23
+2026-04-10T20:54:57 UTC | INFO     | market_breadth | Market breadth: 40/130 advancing (0.31) — weak breadth — most stocks declining
+2026-04-10T20:54:58 UTC | INFO     | spy_sma | [SPY] price=679.46 sma200=660.97 above=True
+2026-04-10T20:55:02 UTC | INFO     | market_breadth | [B200] 83/125 above 200d SMA = 66.4%
+2026-04-10T20:55:02 UTC | INFO     | market_regime_classifier | [MRC] regime=BULL score=3 spy_above=True vix=19.23 breadth_pct=66.4
+2026-04-10T20:55:02 UTC | INFO     | main | [MR] market_regime=BULL score=3 breadth_pct=66.4
+2026-04-10T20:55:02 UTC | INFO     | sector_breadth_ma | Sector breadth MA technology: 4/10 = 0.40 (mixed signals)
+2026-04-10T20:55:03 UTC | INFO     | sector_breadth_ma | Sector breadth MA semiconductors: 9/10 = 0.90 (sector is genuinely strong)
+2026-04-10T20:55:04 UTC | INFO     | sector_breadth_ma | Sector breadth MA healthcare: 2/10 = 0.20 (sector is structurally weak)
+2026-04-10T20:55:05 UTC | INFO     | sector_breadth_ma | Sector breadth MA financials: 6/10 = 0.60 (healthy participation)
+2026-04-10T20:55:06 UTC | INFO     | sector_breadth_ma | Sector breadth MA consumer_discretionary: 5/10 = 0.50 (mixed signals)
+2026-04-10T20:55:07 UTC | INFO     | sector_breadth_ma | Sector breadth MA consumer_staples: 5/10 = 0.50 (mixed signals)
+2026-04-10T20:55:08 UTC | INFO     | sector_breadth_ma | Sector breadth MA industrials: 8/10 = 0.80 (sector is genuinely strong)
+2026-04-10T20:55:09 UTC | INFO     | sector_breadth_ma | Sector breadth MA defense: 1/10 = 0.10 (sector is structurally weak)
+2026-04-10T20:55:10 UTC | INFO     | sector_breadth_ma | Sector breadth MA energy: 7/10 = 0.70 (healthy participation)
+2026-04-10T20:55:11 UTC | INFO     | sector_breadth_ma | Sector breadth MA materials: 7/10 = 0.70 (healthy participation)
+2026-04-10T20:55:13 UTC | INFO     | sector_breadth_ma | Sector breadth MA utilities: 10/10 = 1.00 (sector is genuinely strong)
+2026-04-10T20:55:13 UTC | INFO     | sector_breadth_ma | Sector breadth MA real_estate: 8/10 = 0.80 (sector is genuinely strong)
+2026-04-10T20:55:14 UTC | INFO     | sector_breadth_ma | Sector breadth MA communication_services: 2/10 = 0.20 (sector is structurally weak)
+2026-04-10T20:55:16 UTC | INFO     | sector_momentum | Top 5 sectors: ['semiconductors', 'technology', 'industrials', 'consumer_discretionary', 'real_estate']
+2026-04-10T20:55:16 UTC | INFO     | sector_momentum | Sector momentum history updated (5 entries)
+2026-04-10T20:55:16 UTC | INFO     | sector_rotation_speed | Rotation technology: rank 4 -> 2 speed=2 (gaining momentum)
+2026-04-10T20:55:16 UTC | INFO     | sector_rotation_speed | Rotation healthcare: rank 7 -> 12 speed=-5 (rapidly losing strength)
+2026-04-10T20:55:16 UTC | INFO     | sector_rotation_speed | Rotation financials: rank 3 -> 9 speed=-6 (rapidly losing strength)
+2026-04-10T20:55:16 UTC | INFO     | sector_rotation_speed | Rotation consumer_discretionary: rank 8 -> 4 speed=4 (rapidly gaining strength)
+2026-04-10T20:55:16 UTC | INFO     | sector_rotation_speed | Rotation consumer_staples: rank 10 -> 11 speed=-1 (stable)
+2026-04-10T20:55:16 UTC | INFO     | sector_rotation_speed | Rotation industrials: rank 6 -> 3 speed=3 (gaining momentum)
+2026-04-10T20:55:16 UTC | INFO     | sector_rotation_speed | Rotation materials: rank 13 -> 6 speed=7 (rapidly gaining strength)
+2026-04-10T20:55:16 UTC | INFO     | sector_rotation_speed | Rotation energy: rank 1 -> 13 speed=-12 (rapidly losing strength)
+2026-04-10T20:55:16 UTC | INFO     | sector_rotation_speed | Rotation utilities: rank 12 -> 10 speed=2 (gaining momentum)
+2026-04-10T20:55:16 UTC | INFO     | sector_rotation_speed | Rotation real_estate: rank 9 -> 5 speed=4 (rapidly gaining strength)
+2026-04-10T20:55:16 UTC | INFO     | sector_rotation_speed | Rotation communication_services: rank 5 -> 8 speed=-3 (losing momentum)
+2026-04-10T20:55:16 UTC | INFO     | sector_rotation_speed | Rotation semiconductors: rank 2 -> 1 speed=1 (stable)
+2026-04-10T20:55:16 UTC | INFO     | sector_rotation_speed | Rotation defense: rank 11 -> 7 speed=4 (rapidly gaining strength)
+2026-04-10T20:55:17 UTC | INFO     | news_collector | reuters RSS: fetched 0 articles
+2026-04-10T20:55:17 UTC | INFO     | news_collector | ft RSS: fetched 11 articles
+2026-04-10T20:55:17 UTC | INFO     | news_collector | Finnhub: fetched 100 articles
+2026-04-10T20:55:17 UTC | INFO     | news_collector | Filter: 111 raw → 38 passed
+2026-04-10T20:55:17 UTC | INFO     | news_collector | Dedup: 38 → 38 articles
+2026-04-10T20:55:17 UTC | INFO     | news_collector | Sector confirmed: defense score=8.1 headlines=2
+2026-04-10T20:55:17 UTC | INFO     | news_collector | Sector confirmed: energy score=17.2 headlines=4
+2026-04-10T20:55:17 UTC | INFO     | news_collector | Sector confirmed: materials score=15.6 headlines=4
+2026-04-10T20:55:17 UTC | INFO     | news_collector | Sector confirmed: technology score=28.4 headlines=8
+2026-04-10T20:55:17 UTC | INFO     | news_collector | Sector confirmed: consumer_discretionary score=39.1 headlines=11
+2026-04-10T20:55:17 UTC | INFO     | news_collector | Sector confirmed: consumer_staples score=16.9 headlines=5
+2026-04-10T20:55:17 UTC | INFO     | news_collector | Sector gated: semiconductors score=6.3 headlines=1 (need score>=4, headlines>=2)
+2026-04-10T20:55:17 UTC | INFO     | news_collector | Sector gated: communication_services score=5.2 headlines=1 (need score>=4, headlines>=2)
+2026-04-10T20:55:17 UTC | INFO     | news_collector | Sector confirmed: industrials score=11.7 headlines=3
+2026-04-10T20:55:17 UTC | INFO     | news_collector | Sector confirmed: utilities score=16.1 headlines=6
+2026-04-10T20:55:17 UTC | INFO     | news_collector | Sector confirmed: financials score=24.2 headlines=7
+2026-04-10T20:55:17 UTC | INFO     | news_collector | Sector confirmed: real_estate score=14.3 headlines=5
+2026-04-10T20:55:17 UTC | INFO     | news_collector | Confirmed sectors: ['defense', 'energy', 'materials', 'technology', 'consumer_discretionary', 'consumer_staples', 'industrials', 'utilities', 'financials', 'real_estate']
+2026-04-10T20:55:17 UTC | INFO     | market_collector | get_index_history dow: 30 points
+2026-04-10T20:55:17 UTC | INFO     | market_collector | get_index_history sp500: 30 points
+2026-04-10T20:55:17 UTC | INFO     | market_collector | get_index_history nasdaq: 30 points
+2026-04-10T20:55:17 UTC | INFO     | main | News: 38 articles, 10 candidate sectors
+2026-04-10T20:55:17 UTC | INFO     | news_impact_scorer | SPY day move: 0.07%
+2026-04-10T20:55:17 UTC | INFO     | news_impact_scorer | Impact [defense]: sources=2 kw=8.1 spy=0.07% → impact=0.398 ✗ below threshold
+2026-04-10T20:55:17 UTC | INFO     | news_impact_scorer | Sector dropped by impact gate: defense (sources=2 kw=8.1 spy=0.07% → impact=0.398 ✗ below threshold)
+2026-04-10T20:55:17 UTC | INFO     | news_impact_scorer | Impact [energy]: sources=4 kw=17.1 spy=0.07% → impact=0.667 ✓ passes
+2026-04-10T20:55:17 UTC | INFO     | news_impact_scorer | Impact [materials]: sources=4 kw=15.6 spy=0.07% → impact=0.644 ✓ passes
+2026-04-10T20:55:17 UTC | INFO     | news_impact_scorer | Impact [technology]: sources=8 kw=28.4 spy=0.07% → impact=0.710 ✓ passes
+2026-04-10T20:55:17 UTC | INFO     | news_impact_scorer | Impact [consumer_discretionary]: sources=11 kw=39.1 spy=0.07% → impact=0.710 ✓ passes
+2026-04-10T20:55:17 UTC | INFO     | news_impact_scorer | Impact [consumer_staples]: sources=5 kw=16.9 spy=0.07% → impact=0.663 ✓ passes
+2026-04-10T20:55:17 UTC | INFO     | news_impact_scorer | Impact [industrials]: sources=3 kw=11.7 spy=0.07% → impact=0.585 ✗ below threshold
+2026-04-10T20:55:17 UTC | INFO     | news_impact_scorer | Sector dropped by impact gate: industrials (sources=3 kw=11.7 spy=0.07% → impact=0.585 ✗ below threshold)
+2026-04-10T20:55:17 UTC | INFO     | news_impact_scorer | Impact [utilities]: sources=6 kw=16.1 spy=0.07% → impact=0.651 ✓ passes
+2026-04-10T20:55:17 UTC | INFO     | news_impact_scorer | Impact [financials]: sources=7 kw=24.2 spy=0.07% → impact=0.710 ✓ passes
+2026-04-10T20:55:17 UTC | INFO     | news_impact_scorer | Impact [real_estate]: sources=5 kw=14.3 spy=0.07% → impact=0.624 ✓ passes
+2026-04-10T20:55:17 UTC | INFO     | news_impact_scorer | Impact gate: 10 → 8 sectors passed
+2026-04-10T20:55:17 UTC | INFO     | main | Momentum gate: 8 → 3 sectors
+2026-04-10T20:55:17 UTC | INFO     | sector_mapper | Mapped 0 events → 0 sectors
+2026-04-10T20:55:17 UTC | INFO     | sector_validator | Sector technology/XLK: sig1=True sig2=True sig3=False tf_ok=True → CONFIRMED
+2026-04-10T20:55:17 UTC | INFO     | sector_validator | Sector consumer_discretionary/XLY: sig1=True sig2=True sig3=False tf_ok=True → CONFIRMED
+2026-04-10T20:55:17 UTC | INFO     | sector_validator | Sector real_estate/XLRE: sig1=True sig2=True sig3=False tf_ok=True → CONFIRMED
+2026-04-10T20:55:17 UTC | INFO     | main | Confirmed sectors: ['technology', 'consumer_discretionary', 'real_estate']
+2026-04-10T20:55:18 UTC | INFO     | financial_parser | AAPL: using cached financials (2d old)
+2026-04-10T20:55:18 UTC | INFO     | main | DEBUG filter AAPL: ok=True reason=
+2026-04-10T20:55:18 UTC | INFO     | main | AV budget exhausted — skipping AV for AAPL
+2026-04-10T20:55:18 UTC | INFO     | volume_confirmation | AAPL volume ratio=0.68 score=0.23 label=lower activity than usual
+2026-04-10T20:55:18 UTC | INFO     | risk_adjusted_momentum | AAPL RAM raw=0.33 score=0.52
+2026-04-10T20:55:18 UTC | INFO     | multi_timeframe_momentum | AAPL MTF 1m=-0.12652374347401693 3m=0.6499897173303548 6m=1.1301508147370198 score=0.51
+2026-04-10T20:55:18 UTC | INFO     | trend_stability | AAPL trend stability: dev=0.0223 score=0.78
+2026-04-10T20:55:18 UTC | INFO     | drawdown_risk | AAPL drawdown=8.9% score=0.78
+2026-04-10T20:55:18 UTC | INFO     | risk_model | Risk score: raw=15.2 penalty=0 mult=1.0 final=15.2
+2026-04-10T20:55:18 UTC | INFO     | opportunity_model | Opp score: b1=52.9 b2=53.0 b3=41.7 raw=50.7 x1.0 x0.85 = 43.1
+2026-04-10T20:55:18 UTC | INFO     | signal_agreement | Signal agreement: m=0.52 s=0.92 e=0.50 v=0.23 -> 0.054
+2026-04-10T20:55:18 UTC | INFO     | opportunity_model | Composite confidence: 55.8 (Moderate confidence)
+2026-04-10T20:55:18 UTC | INFO     | main | DEBUG confidence AAPL: conf=55.8 min=35 risk=15.2 opp=43.1
+2026-04-10T20:55:18 UTC | INFO     | financial_parser | MSFT: using cached financials (2d old)
+2026-04-10T20:55:18 UTC | INFO     | main | DEBUG filter MSFT: ok=True reason=
+2026-04-10T20:55:18 UTC | INFO     | main | AV budget exhausted — skipping AV for MSFT
+2026-04-10T20:55:18 UTC | INFO     | volume_confirmation | MSFT volume ratio=0.80 score=0.27 label=normal trading activity
+2026-04-10T20:55:19 UTC | INFO     | risk_adjusted_momentum | MSFT RAM raw=-11.09 score=0.00
+2026-04-10T20:55:19 UTC | INFO     | multi_timeframe_momentum | MSFT MTF 1m=-8.400022069617584 3m=-22.25293392355245 6m=-29.044067331096564 score=0.14
+2026-04-10T20:55:19 UTC | INFO     | trend_stability | MSFT trend stability: dev=0.0874 score=0.13
+2026-04-10T20:55:19 UTC | INFO     | drawdown_risk | MSFT drawdown=24.5% score=0.39
+2026-04-10T20:55:19 UTC | INFO     | risk_model | Risk score: raw=14.7 penalty=0 mult=1.0 final=14.7
+2026-04-10T20:55:19 UTC | INFO     | opportunity_model | Opp score: b1=63.3 b2=27.0 b3=43.3 raw=44.8 x1.0 x0.85 = 38.1
+2026-04-10T20:55:19 UTC | INFO     | signal_agreement | Signal agreement: m=0.50 s=0.92 e=0.50 v=0.27 -> 0.061
+2026-04-10T20:55:19 UTC | INFO     | opportunity_model | Composite confidence: 54.4 (Moderate confidence)
+2026-04-10T20:55:19 UTC | INFO     | main | DEBUG confidence MSFT: conf=54.4 min=35 risk=14.7 opp=38.1
+2026-04-10T20:55:19 UTC | INFO     | financial_parser | NVDA: using cached financials (3d old)
+2026-04-10T20:55:19 UTC | INFO     | main | DEBUG filter NVDA: ok=False reason=already reported today
+2026-04-10T20:55:19 UTC | INFO     | financial_parser | AVGO: using cached financials (2d old)
+2026-04-10T20:55:19 UTC | INFO     | main | DEBUG filter AVGO: ok=True reason=
+2026-04-10T20:55:19 UTC | INFO     | main | AV budget exhausted — skipping AV for AVGO
+2026-04-10T20:55:19 UTC | INFO     | volume_confirmation | AVGO volume ratio=1.04 score=0.35 label=normal trading activity
+2026-04-10T20:55:19 UTC | INFO     | risk_adjusted_momentum | AVGO RAM raw=2.92 score=0.65
+2026-04-10T20:55:19 UTC | INFO     | multi_timeframe_momentum | AVGO MTF 1m=9.005298171675948 3m=11.985495818163875 6m=7.971581231012332 score=0.67
+2026-04-10T20:55:19 UTC | INFO     | trend_stability | AVGO trend stability: dev=0.0597 score=0.40
+2026-04-10T20:55:19 UTC | INFO     | drawdown_risk | AVGO drawdown=9.7% score=0.76
+2026-04-10T20:55:19 UTC | INFO     | risk_model | Risk score: raw=15.8 penalty=0 mult=1.0 final=15.8
+2026-04-10T20:55:19 UTC | INFO     | opportunity_model | Opp score: b1=47.2 b2=60.2 b3=46.5 raw=52.2 x1.0 x0.85 = 44.4
+2026-04-10T20:55:19 UTC | INFO     | signal_agreement | Signal agreement: m=0.65 s=0.92 e=0.50 v=0.35 -> 0.102
+2026-04-10T20:55:19 UTC | INFO     | opportunity_model | Composite confidence: 57.0 (Moderate confidence)
+2026-04-10T20:55:19 UTC | INFO     | main | DEBUG confidence AVGO: conf=57.0 min=35 risk=15.8 opp=44.4
+2026-04-10T20:55:19 UTC | INFO     | financial_parser | ORCL: using cached financials (2d old)
+2026-04-10T20:55:19 UTC | INFO     | main | DEBUG filter ORCL: ok=False reason=debt-to-equity 4.15 above 2.5 threshold
+2026-04-10T20:55:19 UTC | INFO     | financial_parser | ADBE: using cached financials (2d old)
+2026-04-10T20:55:19 UTC | INFO     | main | DEBUG filter ADBE: ok=True reason=
+2026-04-10T20:55:19 UTC | INFO     | main | AV budget exhausted — skipping AV for ADBE
+2026-04-10T20:55:19 UTC | INFO     | volume_confirmation | ADBE volume ratio=1.00 score=0.33 label=normal trading activity
+2026-04-10T20:55:19 UTC | INFO     | risk_adjusted_momentum | ADBE RAM raw=-13.99 score=0.00
+2026-04-10T20:55:20 UTC | INFO     | multi_timeframe_momentum | ADBE MTF 1m=-17.668330298968808 3m=-33.53291634498724 6m=-35.38721415199464 score=0.00
+2026-04-10T20:55:20 UTC | INFO     | trend_stability | ADBE trend stability: dev=0.1033 score=0.00
+2026-04-10T20:55:20 UTC | INFO     | drawdown_risk | ADBE drawdown=37.0% score=0.08
+2026-04-10T20:55:20 UTC | INFO     | risk_model | Risk score: raw=31.5 penalty=0 mult=1.0 final=31.5
+2026-04-10T20:55:20 UTC | INFO     | opportunity_model | Opp score: b1=54.8 b2=23.5 b3=45.9 raw=40.5 x1.0 x0.85 = 34.4
+2026-04-10T20:55:20 UTC | INFO     | signal_agreement | Signal agreement: m=0.50 s=0.92 e=0.50 v=0.33 -> 0.076
+2026-04-10T20:55:20 UTC | INFO     | opportunity_model | Composite confidence: 47.5 (Weak confidence)
+2026-04-10T20:55:20 UTC | INFO     | main | DEBUG confidence ADBE: conf=47.5 min=35 risk=31.5 opp=34.4
+2026-04-10T20:55:20 UTC | INFO     | financial_parser | CRM: using cached financials (2d old)
+2026-04-10T20:55:20 UTC | INFO     | main | DEBUG filter CRM: ok=True reason=
+2026-04-10T20:55:20 UTC | INFO     | main | AV budget exhausted — skipping AV for CRM
+2026-04-10T20:55:20 UTC | INFO     | volume_confirmation | CRM volume ratio=1.29 score=0.43 label=higher activity than usual
+2026-04-10T20:55:20 UTC | INFO     | risk_adjusted_momentum | CRM RAM raw=-13.81 score=0.00
+2026-04-10T20:55:20 UTC | INFO     | multi_timeframe_momentum | CRM MTF 1m=-14.813496270713388 3m=-36.524555855274734 6m=-31.10696977048633 score=0.00
+2026-04-10T20:55:20 UTC | INFO     | trend_stability | CRM trend stability: dev=0.0798 score=0.20
+2026-04-10T20:55:20 UTC | INFO     | drawdown_risk | CRM drawdown=37.9% score=0.05
+2026-04-10T20:55:20 UTC | INFO     | risk_model | Risk score: raw=21.6 penalty=0 mult=1.0 final=21.6
+2026-04-10T20:55:20 UTC | INFO     | opportunity_model | Opp score: b1=52.3 b2=23.5 b3=49.8 raw=40.3 x1.0 x0.85 = 34.2
+2026-04-10T20:55:20 UTC | INFO     | signal_agreement | Signal agreement: m=0.50 s=0.92 e=0.50 v=0.43 -> 0.099
+2026-04-10T20:55:20 UTC | INFO     | opportunity_model | Composite confidence: 51.4 (Moderate confidence)
+2026-04-10T20:55:20 UTC | INFO     | main | DEBUG confidence CRM: conf=51.4 min=35 risk=21.6 opp=34.2
+2026-04-10T20:55:20 UTC | INFO     | financial_parser | AMD: using cached financials (2d old)
+2026-04-10T20:55:20 UTC | INFO     | main | DEBUG filter AMD: ok=True reason=
+2026-04-10T20:55:20 UTC | INFO     | main | AV budget exhausted — skipping AV for AMD
+2026-04-10T20:55:20 UTC | INFO     | volume_confirmation | AMD volume ratio=1.06 score=0.35 label=normal trading activity
+2026-04-10T20:55:20 UTC | INFO     | risk_adjusted_momentum | AMD RAM raw=5.07 score=0.75
+2026-04-10T20:55:20 UTC | INFO     | multi_timeframe_momentum | AMD MTF 1m=19.63090909321166 3m=19.718586112264973 6m=4.024450596787337 score=0.75
+2026-04-10T20:55:20 UTC | INFO     | trend_stability | AMD trend stability: dev=0.0645 score=0.36
+2026-04-10T20:55:20 UTC | INFO     | drawdown_risk | AMD drawdown=5.6% score=0.86
+2026-04-10T20:55:20 UTC | INFO     | risk_model | Risk score: raw=22.4 penalty=0 mult=1.0 final=22.4
+2026-04-10T20:55:20 UTC | INFO     | opportunity_model | Opp score: b1=55.9 b2=64.9 b3=46.7 raw=57.6 x1.0 x0.85 = 49.0
+2026-04-10T20:55:20 UTC | INFO     | signal_agreement | Signal agreement: m=0.75 s=0.92 e=0.50 v=0.35 -> 0.122
+2026-04-10T20:55:20 UTC | INFO     | opportunity_model | Composite confidence: 56.7 (Moderate confidence)
+2026-04-10T20:55:20 UTC | INFO     | main | DEBUG confidence AMD: conf=56.7 min=35 risk=22.4 opp=49.0
+2026-04-10T20:55:20 UTC | INFO     | financial_parser | INTC: using cached financials (2d old)
+2026-04-10T20:55:20 UTC | INFO     | main | DEBUG filter INTC: ok=True reason=
+2026-04-10T20:55:20 UTC | INFO     | main | AV budget exhausted — skipping AV for INTC
+2026-04-10T20:55:20 UTC | INFO     | volume_confirmation | INTC volume ratio=1.04 score=0.35 label=normal trading activity
+2026-04-10T20:55:20 UTC | INFO     | risk_adjusted_momentum | INTC RAM raw=7.26 score=0.86
+2026-04-10T20:55:21 UTC | INFO     | multi_timeframe_momentum | INTC MTF 1m=30.01250867708476 3m=51.739236540920544 6m=66.65776264898773 score=1.00
+2026-04-10T20:55:21 UTC | INFO     | trend_stability | INTC trend stability: dev=0.1249 score=0.00
+2026-04-10T20:55:21 UTC | INFO     | drawdown_risk | INTC drawdown=0.0% score=1.00
+2026-04-10T20:55:21 UTC | INFO     | risk_model | Risk score: raw=32.7 penalty=0 mult=1.0 final=32.7
+2026-04-10T20:55:21 UTC | INFO     | opportunity_model | Opp score: b1=11.2 b2=73.8 b3=46.5 raw=43.3 x1.0 x0.85 = 36.8
+2026-04-10T20:55:21 UTC | INFO     | signal_agreement | Signal agreement: m=0.86 s=0.92 e=0.50 v=0.35 -> 0.137
+2026-04-10T20:55:21 UTC | INFO     | opportunity_model | Composite confidence: 49.2 (Weak confidence)
+2026-04-10T20:55:21 UTC | INFO     | main | DEBUG confidence INTC: conf=49.2 min=35 risk=32.7 opp=36.8
+2026-04-10T20:55:21 UTC | INFO     | financial_parser | QCOM: using cached financials (2d old)
+2026-04-10T20:55:21 UTC | INFO     | main | DEBUG filter QCOM: ok=True reason=
+2026-04-10T20:55:21 UTC | INFO     | main | AV budget exhausted — skipping AV for QCOM
+2026-04-10T20:55:21 UTC | INFO     | volume_confirmation | QCOM volume ratio=0.67 score=0.22 label=lower activity than usual
+2026-04-10T20:55:21 UTC | INFO     | risk_adjusted_momentum | QCOM RAM raw=-14.98 score=0.00
+2026-04-10T20:55:21 UTC | INFO     | multi_timeframe_momentum | QCOM MTF 1m=-4.518340127658684 3m=-29.134986546899665 6m=-22.78670537387249 score=0.13
+2026-04-10T20:55:21 UTC | INFO     | trend_stability | QCOM trend stability: dev=0.0828 score=0.17
+2026-04-10T20:55:21 UTC | INFO     | drawdown_risk | QCOM drawdown=29.4% score=0.27
+2026-04-10T20:55:21 UTC | INFO     | risk_model | Risk score: raw=35.2 penalty=0 mult=1.0 final=35.2
+2026-04-10T20:55:21 UTC | INFO     | opportunity_model | Opp score: b1=47.1 b2=26.7 b3=41.6 raw=37.8 x1.0 x0.85 = 32.1
+2026-04-10T20:55:21 UTC | INFO     | signal_agreement | Signal agreement: m=0.50 s=0.92 e=0.50 v=0.22 -> 0.051
+2026-04-10T20:55:21 UTC | INFO     | opportunity_model | Composite confidence: 44.9 (Weak confidence)
+2026-04-10T20:55:21 UTC | INFO     | main | DEBUG confidence QCOM: conf=44.9 min=35 risk=35.2 opp=32.1
+2026-04-10T20:55:21 UTC | INFO     | financial_parser | TXN: using cached financials (2d old)
+2026-04-10T20:55:21 UTC | INFO     | main | DEBUG filter TXN: ok=True reason=
+2026-04-10T20:55:21 UTC | INFO     | main | AV budget exhausted — skipping AV for TXN
+2026-04-10T20:55:21 UTC | INFO     | volume_confirmation | TXN volume ratio=0.67 score=0.22 label=lower activity than usual
+2026-04-10T20:55:21 UTC | INFO     | risk_adjusted_momentum | TXN RAM raw=6.11 score=0.81
+2026-04-10T20:55:22 UTC | INFO     | multi_timeframe_momentum | TXN MTF 1m=8.083755829572526 3m=14.689097981380533 6m=20.077489303559616 score=0.75
+2026-04-10T20:55:22 UTC | INFO     | trend_stability | TXN trend stability: dev=0.0482 score=0.52
+2026-04-10T20:55:22 UTC | INFO     | drawdown_risk | TXN drawdown=5.2% score=0.87
+2026-04-10T20:55:22 UTC | INFO     | risk_model | Risk score: raw=18.3 penalty=0 mult=1.0 final=18.3
+2026-04-10T20:55:22 UTC | INFO     | opportunity_model | Opp score: b1=53.8 b2=66.2 b3=41.5 raw=56.3 x1.0 x0.85 = 47.9
+2026-04-10T20:55:22 UTC | INFO     | signal_agreement | Signal agreement: m=0.81 s=0.92 e=0.50 v=0.22 -> 0.082
+2026-04-10T20:55:22 UTC | INFO     | opportunity_model | Composite confidence: 57.0 (Moderate confidence)
+2026-04-10T20:55:22 UTC | INFO     | main | DEBUG confidence TXN: conf=57.0 min=35 risk=18.3 opp=47.9
+2026-04-10T20:55:22 UTC | INFO     | financial_parser | NOW: using cached financials (2d old)
+2026-04-10T20:55:22 UTC | INFO     | main | DEBUG filter NOW: ok=True reason=
+2026-04-10T20:55:22 UTC | INFO     | main | AV budget exhausted — skipping AV for NOW
+2026-04-10T20:55:22 UTC | INFO     | volume_confirmation | NOW volume ratio=3.33 score=1.00 label=unusually high trading activity
+2026-04-10T20:55:22 UTC | INFO     | unusual_volume | NOW UNUSUAL VOLUME: ratio=3.3x — very unusual trading volume
+2026-04-10T20:55:22 UTC | INFO     | risk_adjusted_momentum | NOW RAM raw=-12.39 score=0.00
+2026-04-10T20:55:22 UTC | INFO     | multi_timeframe_momentum | NOW MTF 1m=-28.21931854059042 3m=-43.22457171223672 6m=-54.611076690719216 score=0.00
+2026-04-10T20:55:22 UTC | INFO     | trend_stability | NOW trend stability: dev=0.1067 score=0.00
+2026-04-10T20:55:22 UTC | INFO     | drawdown_risk | NOW drawdown=52.2% score=0.00
+2026-04-10T20:55:22 UTC | INFO     | risk_model | Risk score: raw=20.6 penalty=0 mult=1.0 final=20.6
+2026-04-10T20:55:22 UTC | INFO     | opportunity_model | Opp score: b1=37.3 b2=23.5 b3=72.6 raw=38.8 x1.0 x0.85 = 33.0
+2026-04-10T20:55:22 UTC | INFO     | signal_agreement | Signal agreement: m=0.50 s=0.92 e=0.50 v=1.00 -> 0.229
+2026-04-10T20:55:22 UTC | INFO     | opportunity_model | Composite confidence: 53.9 (Moderate confidence)
+2026-04-10T20:55:22 UTC | INFO     | main | DEBUG confidence NOW: conf=53.9 min=35 risk=20.6 opp=33.0
+2026-04-10T20:55:22 UTC | INFO     | financial_parser | SNOW: using cached financials (2d old)
+2026-04-10T20:55:22 UTC | INFO     | main | DEBUG filter SNOW: ok=True reason=
+2026-04-10T20:55:22 UTC | INFO     | main | AV budget exhausted — skipping AV for SNOW
+2026-04-10T20:55:22 UTC | INFO     | volume_confirmation | SNOW volume ratio=3.79 score=1.00 label=unusually high trading activity
+2026-04-10T20:55:22 UTC | INFO     | unusual_volume | SNOW UNUSUAL VOLUME: ratio=3.8x — very unusual trading volume
+2026-04-10T20:55:22 UTC | INFO     | risk_adjusted_momentum | SNOW RAM raw=-11.76 score=0.00
+2026-04-10T20:55:22 UTC | INFO     | multi_timeframe_momentum | SNOW MTF 1m=-32.50292283676913 3m=-45.88229847457788 6m=-51.59665986147013 score=0.00
+2026-04-10T20:55:22 UTC | INFO     | trend_stability | SNOW trend stability: dev=0.1509 score=0.00
+2026-04-10T20:55:22 UTC | INFO     | drawdown_risk | SNOW drawdown=54.3% score=0.00
+2026-04-10T20:55:22 UTC | INFO     | risk_model | Risk score: raw=43.8 penalty=0 mult=1.0 final=43.8
+2026-04-10T20:55:22 UTC | INFO     | opportunity_model | Opp score: b1=35.9 b2=23.5 b3=72.6 raw=38.3 x1.0 x0.85 = 32.6
+2026-04-10T20:55:22 UTC | INFO     | signal_agreement | Signal agreement: m=0.50 s=0.92 e=0.50 v=1.00 -> 0.229
+2026-04-10T20:55:22 UTC | INFO     | opportunity_model | Composite confidence: 45.6 (Weak confidence)
+2026-04-10T20:55:22 UTC | INFO     | main | DEBUG confidence SNOW: conf=45.6 min=35 risk=43.8 opp=32.6
+2026-04-10T20:55:22 UTC | INFO     | financial_parser | PLTR: using cached financials (2d old)
+2026-04-10T20:55:22 UTC | INFO     | main | DEBUG filter PLTR: ok=True reason=
+2026-04-10T20:55:22 UTC | INFO     | main | AV budget exhausted — skipping AV for PLTR
+2026-04-10T20:55:23 UTC | INFO     | volume_confirmation | PLTR volume ratio=2.42 score=0.81 label=unusually high trading activity
+2026-04-10T20:55:23 UTC | INFO     | unusual_volume | PLTR UNUSUAL VOLUME: ratio=2.4x — significantly more active than normal
+2026-04-10T20:55:23 UTC | INFO     | risk_adjusted_momentum | PLTR RAM raw=-7.95 score=0.10
+2026-04-10T20:55:23 UTC | INFO     | multi_timeframe_momentum | PLTR MTF 1m=-15.527709496824341 3m=-27.592447632786882 6m=-30.23534579329245 score=0.07
+2026-04-10T20:55:23 UTC | INFO     | trend_stability | PLTR trend stability: dev=0.0377 score=0.62
+2026-04-10T20:55:23 UTC | INFO     | drawdown_risk | PLTR drawdown=34.0% score=0.15
+2026-04-10T20:55:23 UTC | INFO     | risk_model | Risk score: raw=23.6 penalty=0 mult=1.0 final=23.6
+2026-04-10T20:55:23 UTC | INFO     | opportunity_model | Opp score: b1=77.5 b2=27.8 b3=64.9 raw=55.1 x1.0 x0.85 = 46.8
+2026-04-10T20:55:23 UTC | INFO     | signal_agreement | Signal agreement: m=0.10 s=0.92 e=0.50 v=0.81 -> 0.038
+2026-04-10T20:55:23 UTC | INFO     | opportunity_model | Composite confidence: 53.9 (Moderate confidence)
+2026-04-10T20:55:23 UTC | INFO     | main | DEBUG confidence PLTR: conf=53.9 min=35 risk=23.6 opp=46.8
+2026-04-10T20:55:23 UTC | INFO     | financial_parser | PANW: using cached financials (2d old)
+2026-04-10T20:55:23 UTC | INFO     | main | DEBUG filter PANW: ok=True reason=
+2026-04-10T20:55:23 UTC | INFO     | main | AV budget exhausted — skipping AV for PANW
+2026-04-10T20:55:23 UTC | INFO     | volume_confirmation | PANW volume ratio=1.85 score=0.62 label=higher activity than usual
+2026-04-10T20:55:23 UTC | INFO     | risk_adjusted_momentum | PANW RAM raw=-6.38 score=0.18
+2026-04-10T20:55:23 UTC | INFO     | multi_timeframe_momentum | PANW MTF 1m=-5.578122450006717 3m=-18.380506689355453 6m=-28.49533930471233 score=0.19
+2026-04-10T20:55:23 UTC | INFO     | trend_stability | PANW trend stability: dev=0.0454 score=0.55
+2026-04-10T20:55:23 UTC | INFO     | drawdown_risk | PANW drawdown=21.7% score=0.46
+2026-04-10T20:55:23 UTC | INFO     | risk_model | Risk score: raw=16.7 penalty=0 mult=1.0 final=16.7
+2026-04-10T20:55:23 UTC | INFO     | opportunity_model | Opp score: b1=32.1 b2=32.7 b3=57.2 raw=37.3 x1.0 x0.85 = 31.7
+2026-04-10T20:55:23 UTC | INFO     | signal_agreement | Signal agreement: m=0.18 s=0.92 e=0.50 v=0.61 -> 0.051
+2026-04-10T20:55:23 UTC | INFO     | opportunity_model | Composite confidence: 51.3 (Moderate confidence)
+2026-04-10T20:55:23 UTC | INFO     | main | DEBUG confidence PANW: conf=51.3 min=35 risk=16.7 opp=31.7
+2026-04-10T20:55:23 UTC | INFO     | financial_parser | CRWD: using cached financials (2d old)
+2026-04-10T20:55:23 UTC | INFO     | main | DEBUG filter CRWD: ok=True reason=
+2026-04-10T20:55:23 UTC | INFO     | main | AV budget exhausted — skipping AV for CRWD
+2026-04-10T20:55:23 UTC | INFO     | volume_confirmation | CRWD volume ratio=2.14 score=0.71 label=unusually high trading activity
+2026-04-10T20:55:23 UTC | INFO     | unusual_volume | CRWD UNUSUAL VOLUME: ratio=2.1x — significantly more active than normal
+2026-04-10T20:55:23 UTC | INFO     | risk_adjusted_momentum | CRWD RAM raw=-5.67 score=0.22
+2026-04-10T20:55:23 UTC | INFO     | multi_timeframe_momentum | CRWD MTF 1m=-14.254690844429668 3m=-18.291764286689844 6m=-25.675070116520356 score=0.17
+2026-04-10T20:55:23 UTC | INFO     | trend_stability | CRWD trend stability: dev=0.0596 score=0.40
+2026-04-10T20:55:23 UTC | INFO     | drawdown_risk | CRWD drawdown=27.7% score=0.31
+2026-04-10T20:55:23 UTC | INFO     | risk_model | Risk score: raw=41.9 penalty=0 mult=1.0 final=41.9
+2026-04-10T20:55:23 UTC | INFO     | opportunity_model | Opp score: b1=47.5 b2=33.2 b3=61.2 raw=44.5 x1.0 x0.85 = 37.8
+2026-04-10T20:55:23 UTC | INFO     | signal_agreement | Signal agreement: m=0.22 s=0.92 e=0.50 v=0.71 -> 0.071
+2026-04-10T20:55:23 UTC | INFO     | opportunity_model | Composite confidence: 45.0 (Weak confidence)
+2026-04-10T20:55:23 UTC | INFO     | main | DEBUG confidence CRWD: conf=45.0 min=35 risk=41.9 opp=37.8
+2026-04-10T20:55:23 UTC | INFO     | financial_parser | ZS: using cached financials (2d old)
+2026-04-10T20:55:23 UTC | INFO     | main | DEBUG filter ZS: ok=True reason=
+2026-04-10T20:55:23 UTC | INFO     | main | AV budget exhausted — skipping AV for ZS
+2026-04-10T20:55:23 UTC | INFO     | volume_confirmation | ZS volume ratio=1.74 score=0.58 label=higher activity than usual
+2026-04-10T20:55:24 UTC | INFO     | risk_adjusted_momentum | ZS RAM raw=-11.89 score=0.00
+2026-04-10T20:55:24 UTC | INFO     | multi_timeframe_momentum | ZS MTF 1m=-23.24946042159139 3m=-46.418845711984 6m=-62.3912843535415 score=0.00
+2026-04-10T20:55:24 UTC | INFO     | trend_stability | ZS trend stability: dev=0.1858 score=0.00
+2026-04-10T20:55:24 UTC | INFO     | drawdown_risk | ZS drawdown=51.8% score=0.00
+2026-04-10T20:55:24 UTC | INFO     | risk_model | Risk score: raw=48.6 penalty=0 mult=1.0 final=48.6
+2026-04-10T20:55:24 UTC | INFO     | opportunity_model | Opp score: b1=30.2 b2=23.5 b3=55.8 raw=32.6 x1.0 x0.85 = 27.7
+2026-04-10T20:55:24 UTC | INFO     | signal_agreement | Signal agreement: m=0.50 s=0.92 e=0.50 v=0.58 -> 0.133
+2026-04-10T20:55:24 UTC | INFO     | opportunity_model | Composite confidence: 40.3 (Weak confidence)
+2026-04-10T20:55:24 UTC | INFO     | main | DEBUG confidence ZS: conf=40.3 min=35 risk=48.6 opp=27.7
+2026-04-10T20:55:24 UTC | INFO     | financial_parser | FTNT: using cached financials (2d old)
+2026-04-10T20:55:24 UTC | INFO     | main | DEBUG filter FTNT: ok=True reason=
+2026-04-10T20:55:24 UTC | INFO     | main | AV budget exhausted — skipping AV for FTNT
+2026-04-10T20:55:24 UTC | INFO     | volume_confirmation | FTNT volume ratio=2.03 score=0.68 label=unusually high trading activity
+2026-04-10T20:55:24 UTC | INFO     | unusual_volume | FTNT UNUSUAL VOLUME: ratio=2.0x — significantly more active than normal
+2026-04-10T20:55:24 UTC | INFO     | risk_adjusted_momentum | FTNT RAM raw=-1.39 score=0.43
+2026-04-10T20:55:24 UTC | INFO     | multi_timeframe_momentum | FTNT MTF 1m=-8.121713148120376 3m=-1.72966822643221 6m=-11.288459680290774 score=0.40
+2026-04-10T20:55:24 UTC | INFO     | trend_stability | FTNT trend stability: dev=0.0201 score=0.80
+2026-04-10T20:55:24 UTC | INFO     | drawdown_risk | FTNT drawdown=12.7% score=0.68
+2026-04-10T20:55:24 UTC | INFO     | risk_model | Risk score: raw=21.4 penalty=0 mult=1.0 final=21.4
+2026-04-10T20:55:24 UTC | INFO     | opportunity_model | Opp score: b1=56.1 b2=44.3 b3=59.7 raw=52.1 x1.0 x0.85 = 44.3
+2026-04-10T20:55:24 UTC | INFO     | signal_agreement | Signal agreement: m=0.43 s=0.92 e=0.50 v=0.68 -> 0.134
+2026-04-10T20:55:24 UTC | INFO     | opportunity_model | Composite confidence: 55.7 (Moderate confidence)
+2026-04-10T20:55:24 UTC | INFO     | main | DEBUG confidence FTNT: conf=55.7 min=35 risk=21.4 opp=44.3
+2026-04-10T20:55:24 UTC | INFO     | financial_parser | DDOG: using cached financials (2d old)
+2026-04-10T20:55:24 UTC | INFO     | main | DEBUG filter DDOG: ok=True reason=
+2026-04-10T20:55:24 UTC | INFO     | main | AV budget exhausted — skipping AV for DDOG
+2026-04-10T20:55:24 UTC | INFO     | volume_confirmation | DDOG volume ratio=1.68 score=0.56 label=higher activity than usual
+2026-04-10T20:55:24 UTC | INFO     | risk_adjusted_momentum | DDOG RAM raw=-3.86 score=0.31
+2026-04-10T20:55:24 UTC | INFO     | multi_timeframe_momentum | DDOG MTF 1m=-17.35037688276064 3m=-19.367915019702846 6m=-35.79697423745101 score=0.10
+2026-04-10T20:55:24 UTC | INFO     | trend_stability | DDOG trend stability: dev=0.0436 score=0.56
+2026-04-10T20:55:24 UTC | INFO     | drawdown_risk | DDOG drawdown=33.3% score=0.17
+2026-04-10T20:55:24 UTC | INFO     | risk_model | Risk score: raw=38.7 penalty=0 mult=1.0 final=38.7
+2026-04-10T20:55:24 UTC | INFO     | opportunity_model | Opp score: b1=26.0 b2=33.7 b3=55.1 raw=34.9 x1.0 x0.85 = 29.7
+2026-04-10T20:55:24 UTC | INFO     | signal_agreement | Signal agreement: m=0.31 s=0.92 e=0.50 v=0.56 -> 0.079
+2026-04-10T20:55:24 UTC | INFO     | opportunity_model | Composite confidence: 43.4 (Weak confidence)
+2026-04-10T20:55:24 UTC | INFO     | main | DEBUG confidence DDOG: conf=43.4 min=35 risk=38.7 opp=29.7
+2026-04-10T20:55:24 UTC | INFO     | financial_parser | MDB: using cached financials (2d old)
+2026-04-10T20:55:24 UTC | INFO     | main | DEBUG filter MDB: ok=True reason=
+2026-04-10T20:55:24 UTC | INFO     | main | AV budget exhausted — skipping AV for MDB
+2026-04-10T20:55:24 UTC | INFO     | volume_confirmation | MDB volume ratio=1.36 score=0.45 label=higher activity than usual
+2026-04-10T20:55:24 UTC | INFO     | risk_adjusted_momentum | MDB RAM raw=-9.68 score=0.02
+2026-04-10T20:55:24 UTC | INFO     | multi_timeframe_momentum | MDB MTF 1m=-16.491114745955297 3m=-45.35935312651312 6m=-30.855622194660086 score=0.00
+2026-04-10T20:55:24 UTC | INFO     | trend_stability | MDB trend stability: dev=0.2240 score=0.00
+2026-04-10T20:55:25 UTC | INFO     | drawdown_risk | MDB drawdown=48.7% score=0.00
+2026-04-10T20:55:25 UTC | INFO     | risk_model | Risk score: raw=58.3 penalty=0 mult=1.0 final=58.3
+2026-04-10T20:55:25 UTC | INFO     | opportunity_model | Opp score: b1=29.8 b2=23.9 b3=50.7 raw=31.6 x1.0 x0.85 = 26.9
+2026-04-10T20:55:25 UTC | INFO     | signal_agreement | Signal agreement: m=0.02 s=0.92 e=0.50 v=0.45 -> 0.003
+2026-04-10T20:55:25 UTC | INFO     | opportunity_model | Composite confidence: 34.1 (Excluded)
+2026-04-10T20:55:25 UTC | INFO     | main | DEBUG confidence MDB: conf=34.1 min=35 risk=58.3 opp=26.9
+2026-04-10T20:55:25 UTC | INFO     | main | MDB: confidence 34.1 < 35 — excluded
+2026-04-10T20:55:25 UTC | INFO     | financial_parser | NET: using cached financials (2d old)
+2026-04-10T20:55:25 UTC | INFO     | main | DEBUG filter NET: ok=True reason=
+2026-04-10T20:55:25 UTC | INFO     | main | AV budget exhausted — skipping AV for NET
+2026-04-10T20:55:25 UTC | INFO     | volume_confirmation | NET volume ratio=3.60 score=1.00 label=unusually high trading activity
+2026-04-10T20:55:25 UTC | INFO     | unusual_volume | NET UNUSUAL VOLUME: ratio=3.6x — very unusual trading volume
+2026-04-10T20:55:25 UTC | INFO     | risk_adjusted_momentum | NET RAM raw=-1.95 score=0.40
+2026-04-10T20:55:25 UTC | INFO     | multi_timeframe_momentum | NET MTF 1m=-21.600936388185886 3m=-10.681429452057198 6m=-24.09545204856179 score=0.22
+2026-04-10T20:55:25 UTC | INFO     | trend_stability | NET trend stability: dev=0.0908 score=0.09
+2026-04-10T20:55:25 UTC | INFO     | drawdown_risk | NET drawdown=25.9% score=0.35
+2026-04-10T20:55:25 UTC | INFO     | risk_model | Risk score: raw=58.9 penalty=0 mult=1.0 final=58.9
+2026-04-10T20:55:25 UTC | INFO     | opportunity_model | Opp score: b1=37.0 b2=39.1 b3=72.6 raw=44.9 x1.0 x0.85 = 38.2
+2026-04-10T20:55:25 UTC | INFO     | signal_agreement | Signal agreement: m=0.40 s=0.92 e=0.50 v=1.00 -> 0.185
+2026-04-10T20:55:25 UTC | INFO     | opportunity_model | Composite confidence: 41.4 (Weak confidence)
+2026-04-10T20:55:25 UTC | INFO     | main | DEBUG confidence NET: conf=41.4 min=35 risk=58.9 opp=38.2
+2026-04-10T20:55:25 UTC | INFO     | financial_parser | TWLO: using cached financials (2d old)
+2026-04-10T20:55:25 UTC | INFO     | main | DEBUG filter TWLO: ok=True reason=
+2026-04-10T20:55:25 UTC | INFO     | main | AV budget exhausted — skipping AV for TWLO
+2026-04-10T20:55:25 UTC | INFO     | volume_confirmation | TWLO volume ratio=1.68 score=0.56 label=higher activity than usual
+2026-04-10T20:55:25 UTC | INFO     | risk_adjusted_momentum | TWLO RAM raw=-3.34 score=0.33
+2026-04-10T20:55:25 UTC | INFO     | multi_timeframe_momentum | TWLO MTF 1m=-7.128196051107789 3m=-14.392776107153276 6m=3.1565088801333516 score=0.37
+2026-04-10T20:55:25 UTC | INFO     | trend_stability | TWLO trend stability: dev=0.0450 score=0.55
+2026-04-10T20:55:25 UTC | INFO     | drawdown_risk | TWLO drawdown=18.4% score=0.54
+2026-04-10T20:55:25 UTC | INFO     | risk_model | Risk score: raw=49.8 penalty=0 mult=1.0 final=49.8
+2026-04-10T20:55:25 UTC | INFO     | opportunity_model | Opp score: b1=11.9 b2=41.1 b3=55.1 raw=32.2 x1.0 x0.85 = 27.4
+2026-04-10T20:55:25 UTC | INFO     | signal_agreement | Signal agreement: m=0.33 s=0.92 e=0.50 v=0.56 -> 0.086
+2026-04-10T20:55:25 UTC | INFO     | opportunity_model | Composite confidence: 38.9 (Weak confidence)
+2026-04-10T20:55:25 UTC | INFO     | main | DEBUG confidence TWLO: conf=38.9 min=35 risk=49.8 opp=27.4
+2026-04-10T20:55:25 UTC | INFO     | financial_parser | HPE: using cached financials (2d old)
+2026-04-10T20:55:25 UTC | INFO     | main | DEBUG filter HPE: ok=True reason=
+2026-04-10T20:55:25 UTC | INFO     | main | AV budget exhausted — skipping AV for HPE
+2026-04-10T20:55:25 UTC | INFO     | volume_confirmation | HPE volume ratio=0.53 score=0.18 label=lower activity than usual
+2026-04-10T20:55:25 UTC | INFO     | risk_adjusted_momentum | HPE RAM raw=4.44 score=0.72
+2026-04-10T20:55:25 UTC | INFO     | multi_timeframe_momentum | HPE MTF 1m=16.894499749138017 3m=13.762450355714487 6m=-3.3698127335499115 score=0.65
+2026-04-10T20:55:25 UTC | INFO     | trend_stability | HPE trend stability: dev=0.1081 score=0.00
+2026-04-10T20:55:25 UTC | INFO     | drawdown_risk | HPE drawdown=3.5% score=0.91
+2026-04-10T20:55:25 UTC | INFO     | risk_model | Risk score: raw=35.1 penalty=0 mult=1.0 final=35.1
+2026-04-10T20:55:25 UTC | INFO     | opportunity_model | Opp score: b1=22.5 b2=61.7 b3=39.7 raw=41.6 x1.0 x0.85 = 35.4
+2026-04-10T20:55:25 UTC | INFO     | signal_agreement | Signal agreement: m=0.72 s=0.92 e=0.50 v=0.18 -> 0.059
+2026-04-10T20:55:25 UTC | INFO     | opportunity_model | Composite confidence: 46.3 (Weak confidence)
+2026-04-10T20:55:25 UTC | INFO     | main | DEBUG confidence HPE: conf=46.3 min=35 risk=35.1 opp=35.4
+2026-04-10T20:55:25 UTC | INFO     | financial_parser | STX: using cached financials (2d old)
+2026-04-10T20:55:25 UTC | INFO     | main | DEBUG filter STX: ok=False reason=debt-to-equity 10.47 above 2.5 threshold
+2026-04-10T20:55:25 UTC | INFO     | financial_parser | WDC: using cached financials (2d old)
+2026-04-10T20:55:25 UTC | INFO     | main | DEBUG filter WDC: ok=False reason=already reported today
+2026-04-10T20:55:25 UTC | INFO     | financial_parser | AMAT: using cached financials (2d old)
+2026-04-10T20:55:25 UTC | INFO     | main | DEBUG filter AMAT: ok=False reason=already reported today
+2026-04-10T20:55:25 UTC | INFO     | financial_parser | KLAC: using cached financials (2d old)
+2026-04-10T20:55:25 UTC | INFO     | main | DEBUG filter KLAC: ok=True reason=
+2026-04-10T20:55:25 UTC | INFO     | main | AV budget exhausted — skipping AV for KLAC
+2026-04-10T20:55:26 UTC | INFO     | volume_confirmation | KLAC volume ratio=0.69 score=0.23 label=lower activity than usual
+2026-04-10T20:55:26 UTC | INFO     | risk_adjusted_momentum | KLAC RAM raw=6.41 score=0.82
+2026-04-10T20:55:26 UTC | INFO     | multi_timeframe_momentum | KLAC MTF 1m=18.58566752879693 3m=31.325497430525544 6m=63.98198430926391 score=1.00
+2026-04-10T20:55:26 UTC | INFO     | trend_stability | KLAC trend stability: dev=0.0641 score=0.36
+2026-04-10T20:55:26 UTC | INFO     | drawdown_risk | KLAC drawdown=0.0% score=1.00
+2026-04-10T20:55:26 UTC | INFO     | risk_model | Risk score: raw=31.9 penalty=0 mult=1.0 final=31.9
+2026-04-10T20:55:26 UTC | INFO     | opportunity_model | Opp score: b1=60.5 b2=72.8 b3=41.9 raw=61.7 x1.0 x0.85 = 52.4
+2026-04-10T20:55:26 UTC | INFO     | signal_agreement | Signal agreement: m=0.82 s=0.92 e=0.50 v=0.23 -> 0.087
+2026-04-10T20:55:26 UTC | INFO     | opportunity_model | Composite confidence: 53.9 (Moderate confidence)
+2026-04-10T20:55:26 UTC | INFO     | main | DEBUG confidence KLAC: conf=53.9 min=35 risk=31.9 opp=52.4
+2026-04-10T20:55:26 UTC | INFO     | financial_parser | TSLA: using cached financials (2d old)
+2026-04-10T20:55:26 UTC | INFO     | main | DEBUG filter TSLA: ok=True reason=
+2026-04-10T20:55:26 UTC | INFO     | main | AV budget exhausted — skipping AV for TSLA
+2026-04-10T20:55:26 UTC | INFO     | volume_confirmation | TSLA volume ratio=0.79 score=0.26 label=lower activity than usual
+2026-04-10T20:55:26 UTC | INFO     | risk_adjusted_momentum | TSLA RAM raw=-9.44 score=0.03
+2026-04-10T20:55:26 UTC | INFO     | multi_timeframe_momentum | TSLA MTF 1m=-14.435288622410717 3m=-19.92886140859565 6m=-20.45635636439222 score=0.18
+2026-04-10T20:55:26 UTC | INFO     | trend_stability | TSLA trend stability: dev=0.1039 score=0.00
+2026-04-10T20:55:26 UTC | INFO     | drawdown_risk | TSLA drawdown=28.8% score=0.28
+2026-04-10T20:55:26 UTC | INFO     | risk_model | Risk score: raw=32.5 penalty=0 mult=1.0 final=32.5
+2026-04-10T20:55:26 UTC | INFO     | opportunity_model | Opp score: b1=4.5 b2=28.8 b3=45.2 raw=22.4 x1.0 x0.85 = 19.0
+2026-04-10T20:55:26 UTC | INFO     | signal_agreement | Signal agreement: m=0.03 s=0.75 e=0.50 v=0.26 -> 0.003
+2026-04-10T20:55:26 UTC | INFO     | opportunity_model | Composite confidence: 38.8 (Weak confidence)
+2026-04-10T20:55:26 UTC | INFO     | main | DEBUG confidence TSLA: conf=38.8 min=35 risk=32.5 opp=19.0
+2026-04-10T20:55:27 UTC | INFO     | financial_parser | HD: financials fetched OK (price=337.34)
+2026-04-10T20:55:27 UTC | INFO     | main | DEBUG filter HD: ok=False reason=debt-to-equity 5.14 above 2.5 threshold
+2026-04-10T20:55:28 UTC | INFO     | financial_parser | MCD: financials fetched OK (price=305.68)
+2026-04-10T20:55:28 UTC | INFO     | candidate_filter | MCD: D/E missing — will be flagged in report but not excluded
+2026-04-10T20:55:28 UTC | INFO     | main | DEBUG filter MCD: ok=True reason=
+2026-04-10T20:55:28 UTC | INFO     | main | AV budget exhausted — skipping AV for MCD
+2026-04-10T20:55:28 UTC | INFO     | volume_confirmation | MCD volume ratio=0.68 score=0.23 label=lower activity than usual
+2026-04-10T20:55:28 UTC | INFO     | risk_adjusted_momentum | MCD RAM raw=0.02 score=0.50
+2026-04-10T20:55:28 UTC | INFO     | multi_timeframe_momentum | MCD MTF 1m=-6.00535017141212 3m=-0.48317194153214155 6m=5.038105788497668 score=0.50
+2026-04-10T20:55:28 UTC | INFO     | trend_stability | MCD trend stability: dev=0.0382 score=0.62
+2026-04-10T20:55:28 UTC | INFO     | drawdown_risk | MCD drawdown=9.9% score=0.75
+2026-04-10T20:55:28 UTC | INFO     | risk_model | Risk score: raw=27.6 penalty=0 mult=1.0 final=27.6
+2026-04-10T20:55:28 UTC | INFO     | opportunity_model | Opp score: b1=62.1 b2=52.3 b3=43.7 raw=54.5 x1.0 x0.85 = 46.3
+2026-04-10T20:55:28 UTC | INFO     | signal_agreement | Signal agreement: m=0.50 s=0.75 e=0.50 v=0.23 -> 0.043
+2026-04-10T20:55:28 UTC | INFO     | opportunity_model | Composite confidence: 50.9 (Moderate confidence)
+2026-04-10T20:55:28 UTC | INFO     | main | DEBUG confidence MCD: conf=50.9 min=35 risk=27.6 opp=46.3
+2026-04-10T20:55:29 UTC | INFO     | financial_parser | NKE: financials fetched OK (price=42.62)
+2026-04-10T20:55:29 UTC | INFO     | main | DEBUG filter NKE: ok=True reason=
+2026-04-10T20:55:29 UTC | INFO     | main | AV budget exhausted — skipping AV for NKE
+2026-04-10T20:55:29 UTC | INFO     | volume_confirmation | NKE volume ratio=0.99 score=0.33 label=normal trading activity
+2026-04-10T20:55:29 UTC | INFO     | risk_adjusted_momentum | NKE RAM raw=-13.34 score=0.00
+2026-04-10T20:55:29 UTC | INFO     | multi_timeframe_momentum | NKE MTF 1m=-23.482947310402185 3m=-34.258524826187156 6m=-37.50644228767411 score=0.00
+2026-04-10T20:55:29 UTC | INFO     | trend_stability | NKE trend stability: dev=0.1920 score=0.00
+2026-04-10T20:55:29 UTC | INFO     | drawdown_risk | NKE drawdown=36.7% score=0.08
+2026-04-10T20:55:29 UTC | INFO     | risk_model | Risk score: raw=31.1 penalty=0 mult=1.0 final=31.1
+2026-04-10T20:55:29 UTC | INFO     | opportunity_model | Opp score: b1=27.9 b2=23.5 b3=47.8 raw=30.1 x1.0 x0.85 = 25.6
+2026-04-10T20:55:29 UTC | INFO     | signal_agreement | Signal agreement: m=0.50 s=0.75 e=0.50 v=0.33 -> 0.062
+2026-04-10T20:55:29 UTC | INFO     | opportunity_model | Composite confidence: 42.8 (Weak confidence)
+2026-04-10T20:55:29 UTC | INFO     | main | DEBUG confidence NKE: conf=42.8 min=35 risk=31.1 opp=25.6
+2026-04-10T20:55:30 UTC | INFO     | financial_parser | SBUX: financials fetched OK (price=96.6)
+2026-04-10T20:55:30 UTC | INFO     | candidate_filter | SBUX: D/E missing — will be flagged in report but not excluded
+2026-04-10T20:55:30 UTC | INFO     | main | DEBUG filter SBUX: ok=True reason=
+2026-04-10T20:55:30 UTC | INFO     | main | AV budget exhausted — skipping AV for SBUX
+2026-04-10T20:55:30 UTC | INFO     | volume_confirmation | SBUX volume ratio=0.55 score=0.18 label=lower activity than usual
+2026-04-10T20:55:30 UTC | INFO     | risk_adjusted_momentum | SBUX RAM raw=4.87 score=0.74
+2026-04-10T20:55:30 UTC | INFO     | multi_timeframe_momentum | SBUX MTF 1m=-4.7712971715284 3m=10.255123055207 6m=22.345496422075296 score=0.68
+2026-04-10T20:55:30 UTC | INFO     | trend_stability | SBUX trend stability: dev=0.0406 score=0.59
+2026-04-10T20:55:30 UTC | INFO     | drawdown_risk | SBUX drawdown=4.8% score=0.88
+2026-04-10T20:55:30 UTC | INFO     | risk_model | Risk score: raw=32.8 penalty=0 mult=1.0 final=32.8
+2026-04-10T20:55:30 UTC | INFO     | opportunity_model | Opp score: b1=6.3 b2=62.9 b3=42.0 raw=36.1 x1.0 x0.85 = 30.7
+2026-04-10T20:55:30 UTC | INFO     | signal_agreement | Signal agreement: m=0.74 s=0.75 e=0.50 v=0.18 -> 0.052
+2026-04-10T20:55:30 UTC | INFO     | opportunity_model | Composite confidence: 43.8 (Weak confidence)
+2026-04-10T20:55:30 UTC | INFO     | main | DEBUG confidence SBUX: conf=43.8 min=35 risk=32.8 opp=30.7
+2026-04-10T20:55:31 UTC | INFO     | financial_parser | LOW: financials fetched OK (price=244.22)
+2026-04-10T20:55:31 UTC | INFO     | candidate_filter | LOW: D/E missing — will be flagged in report but not excluded
+2026-04-10T20:55:31 UTC | INFO     | main | DEBUG filter LOW: ok=True reason=
+2026-04-10T20:55:31 UTC | INFO     | main | AV budget exhausted — skipping AV for LOW
+2026-04-10T20:55:31 UTC | INFO     | volume_confirmation | LOW volume ratio=0.51 score=0.17 label=lower activity than usual
+2026-04-10T20:55:31 UTC | INFO     | risk_adjusted_momentum | LOW RAM raw=-4.22 score=0.29
+2026-04-10T20:55:31 UTC | INFO     | multi_timeframe_momentum | LOW MTF 1m=-1.0774479947746312 3m=-4.251663056731714 6m=3.759811353364829 score=0.48
+2026-04-10T20:55:31 UTC | INFO     | trend_stability | LOW trend stability: dev=0.0893 score=0.11
+2026-04-10T20:55:32 UTC | INFO     | drawdown_risk | LOW drawdown=15.0% score=0.62
+2026-04-10T20:55:32 UTC | INFO     | risk_model | Risk score: raw=41.6 penalty=0 mult=1.0 final=41.6
+2026-04-10T20:55:32 UTC | INFO     | opportunity_model | Opp score: b1=33.7 b2=42.7 b3=41.5 raw=38.9 x1.0 x0.85 = 33.0
+2026-04-10T20:55:32 UTC | INFO     | signal_agreement | Signal agreement: m=0.29 s=0.75 e=0.50 v=0.17 -> 0.019
+2026-04-10T20:55:32 UTC | INFO     | opportunity_model | Composite confidence: 40.8 (Weak confidence)
+2026-04-10T20:55:32 UTC | INFO     | main | DEBUG confidence LOW: conf=40.8 min=35 risk=41.6 opp=33.0
+2026-04-10T20:55:32 UTC | INFO     | financial_parser | TJX: financials fetched OK (price=161.6)
+2026-04-10T20:55:32 UTC | INFO     | main | DEBUG filter TJX: ok=True reason=
+2026-04-10T20:55:32 UTC | INFO     | main | AV budget exhausted — skipping AV for TJX
+2026-04-10T20:55:32 UTC | INFO     | volume_confirmation | TJX volume ratio=0.59 score=0.20 label=lower activity than usual
+2026-04-10T20:55:32 UTC | INFO     | risk_adjusted_momentum | TJX RAM raw=2.14 score=0.61
+2026-04-10T20:55:32 UTC | INFO     | multi_timeframe_momentum | TJX MTF 1m=2.356220614171073 3m=2.405618036957278 6m=15.503341058190983 score=0.61
+2026-04-10T20:55:33 UTC | INFO     | trend_stability | TJX trend stability: dev=0.0256 score=0.74
+2026-04-10T20:55:33 UTC | INFO     | drawdown_risk | TJX drawdown=2.1% score=0.95
+2026-04-10T20:55:33 UTC | INFO     | risk_model | Risk score: raw=27.5 penalty=0 mult=1.0 final=27.5
+2026-04-10T20:55:33 UTC | INFO     | opportunity_model | Opp score: b1=40.0 b2=57.5 b3=42.5 raw=47.5 x1.0 x0.85 = 40.4
+2026-04-10T20:55:33 UTC | INFO     | signal_agreement | Signal agreement: m=0.61 s=0.75 e=0.50 v=0.20 -> 0.045
+2026-04-10T20:55:33 UTC | INFO     | opportunity_model | Composite confidence: 48.9 (Weak confidence)
+2026-04-10T20:55:33 UTC | INFO     | main | DEBUG confidence TJX: conf=48.9 min=35 risk=27.5 opp=40.4
+2026-04-10T20:55:33 UTC | INFO     | financial_parser | MAR: financials fetched OK (price=354.1)
+2026-04-10T20:55:33 UTC | INFO     | candidate_filter | MAR: D/E missing — will be flagged in report but not excluded
+2026-04-10T20:55:33 UTC | INFO     | main | DEBUG filter MAR: ok=True reason=
+2026-04-10T20:55:33 UTC | INFO     | main | AV budget exhausted — skipping AV for MAR
+2026-04-10T20:55:33 UTC | INFO     | volume_confirmation | MAR volume ratio=0.72 score=0.24 label=lower activity than usual
+2026-04-10T20:55:33 UTC | INFO     | risk_adjusted_momentum | MAR RAM raw=4.06 score=0.70
+2026-04-10T20:55:33 UTC | INFO     | multi_timeframe_momentum | MAR MTF 1m=8.493167720447843 3m=9.19459784003945 6m=32.70489078091988 score=0.77
+2026-04-10T20:55:34 UTC | INFO     | trend_stability | MAR trend stability: dev=0.0252 score=0.75
+2026-04-10T20:55:34 UTC | INFO     | drawdown_risk | MAR drawdown=1.4% score=0.96
+2026-04-10T20:55:34 UTC | INFO     | risk_model | Risk score: raw=34.1 penalty=0 mult=1.0 final=34.1
+2026-04-10T20:55:34 UTC | INFO     | opportunity_model | Opp score: b1=43.6 b2=64.0 b3=44.2 raw=51.9 x1.0 x0.85 = 44.1
+2026-04-10T20:55:34 UTC | INFO     | signal_agreement | Signal agreement: m=0.70 s=0.75 e=0.50 v=0.24 -> 0.063
+2026-04-10T20:55:34 UTC | INFO     | opportunity_model | Composite confidence: 48.2 (Weak confidence)
+2026-04-10T20:55:34 UTC | INFO     | main | DEBUG confidence MAR: conf=48.2 min=35 risk=34.1 opp=44.1
+2026-04-10T20:55:34 UTC | INFO     | financial_parser | HLT: financials fetched OK (price=323.43)
+2026-04-10T20:55:34 UTC | INFO     | candidate_filter | HLT: D/E missing — will be flagged in report but not excluded
+2026-04-10T20:55:34 UTC | INFO     | main | DEBUG filter HLT: ok=True reason=
+2026-04-10T20:55:34 UTC | INFO     | main | AV budget exhausted — skipping AV for HLT
+2026-04-10T20:55:34 UTC | INFO     | volume_confirmation | HLT volume ratio=0.54 score=0.18 label=lower activity than usual
+2026-04-10T20:55:34 UTC | INFO     | risk_adjusted_momentum | HLT RAM raw=5.01 score=0.75
+2026-04-10T20:55:35 UTC | INFO     | multi_timeframe_momentum | HLT MTF 1m=8.954012472883974 3m=8.464698262614826 6m=24.4968335880481 score=0.72
+2026-04-10T20:55:35 UTC | INFO     | trend_stability | HLT trend stability: dev=0.0204 score=0.80
+2026-04-10T20:55:35 UTC | INFO     | drawdown_risk | HLT drawdown=0.5% score=0.99
+2026-04-10T20:55:35 UTC | INFO     | risk_model | Risk score: raw=33.4 penalty=0 mult=1.0 final=33.4
+2026-04-10T20:55:35 UTC | INFO     | opportunity_model | Opp score: b1=34.7 b2=64.1 b3=41.8 raw=47.9 x1.0 x0.85 = 40.7
+2026-04-10T20:55:35 UTC | INFO     | signal_agreement | Signal agreement: m=0.75 s=0.75 e=0.50 v=0.18 -> 0.051
+2026-04-10T20:55:35 UTC | INFO     | opportunity_model | Composite confidence: 47.0 (Weak confidence)
+2026-04-10T20:55:35 UTC | INFO     | main | DEBUG confidence HLT: conf=47.0 min=35 risk=33.4 opp=40.7
+2026-04-10T20:55:35 UTC | INFO     | financial_parser | RCL: financials fetched OK (price=276.94)
+2026-04-10T20:55:35 UTC | INFO     | main | DEBUG filter RCL: ok=True reason=
+2026-04-10T20:55:35 UTC | INFO     | main | AV budget exhausted — skipping AV for RCL
+2026-04-10T20:55:36 UTC | INFO     | volume_confirmation | RCL volume ratio=0.68 score=0.23 label=lower activity than usual
+2026-04-10T20:55:36 UTC | INFO     | risk_adjusted_momentum | RCL RAM raw=-2.80 score=0.36
+2026-04-10T20:55:36 UTC | INFO     | multi_timeframe_momentum | RCL MTF 1m=-3.343566571129701 3m=-8.515299250764157 6m=-9.38820862588204 score=0.37
+2026-04-10T20:55:36 UTC | INFO     | trend_stability | RCL trend stability: dev=0.0827 score=0.17
+2026-04-10T20:55:36 UTC | INFO     | drawdown_risk | RCL drawdown=20.0% score=0.50
+2026-04-10T20:55:36 UTC | INFO     | risk_model | Risk score: raw=47.5 penalty=0 mult=1.0 final=47.5
+2026-04-10T20:55:36 UTC | INFO     | opportunity_model | Opp score: b1=54.3 b2=41.8 b3=43.7 raw=47.2 x1.0 x0.85 = 40.1
+2026-04-10T20:55:36 UTC | INFO     | signal_agreement | Signal agreement: m=0.36 s=0.75 e=0.50 v=0.23 -> 0.031
+2026-04-10T20:55:36 UTC | INFO     | opportunity_model | Composite confidence: 41.5 (Weak confidence)
+2026-04-10T20:55:36 UTC | INFO     | main | DEBUG confidence RCL: conf=41.5 min=35 risk=47.5 opp=40.1
+2026-04-10T20:55:37 UTC | INFO     | financial_parser | CCL: financials fetched OK (price=27.98)
+2026-04-10T20:55:37 UTC | INFO     | main | DEBUG filter CCL: ok=True reason=
+2026-04-10T20:55:37 UTC | INFO     | main | AV budget exhausted — skipping AV for CCL
+2026-04-10T20:55:37 UTC | INFO     | volume_confirmation | CCL volume ratio=0.55 score=0.18 label=lower activity than usual
+2026-04-10T20:55:37 UTC | INFO     | risk_adjusted_momentum | CCL RAM raw=-3.38 score=0.33
+2026-04-10T20:55:37 UTC | INFO     | multi_timeframe_momentum | CCL MTF 1m=7.7397007394152615 3m=-11.299032502795491 6m=-2.8031206992704987 score=0.42
+2026-04-10T20:55:37 UTC | INFO     | trend_stability | CCL trend stability: dev=0.0950 score=0.05
+2026-04-10T20:55:37 UTC | INFO     | drawdown_risk | CCL drawdown=17.3% score=0.57
+2026-04-10T20:55:37 UTC | INFO     | risk_model | Risk score: raw=46.9 penalty=0 mult=1.0 final=46.9
+2026-04-10T20:55:37 UTC | INFO     | opportunity_model | Opp score: b1=46.0 b2=42.2 b3=42.0 raw=43.7 x1.0 x0.85 = 37.1
+2026-04-10T20:55:37 UTC | INFO     | signal_agreement | Signal agreement: m=0.33 s=0.75 e=0.50 v=0.18 -> 0.023
+2026-04-10T20:55:37 UTC | INFO     | opportunity_model | Composite confidence: 40.5 (Weak confidence)
+2026-04-10T20:55:37 UTC | INFO     | main | DEBUG confidence CCL: conf=40.5 min=35 risk=46.9 opp=37.1
+2026-04-10T20:55:38 UTC | INFO     | financial_parser | LVS: financials fetched OK (price=53.45)
+2026-04-10T20:55:38 UTC | INFO     | main | DEBUG filter LVS: ok=False reason=debt-to-equity 8.29 above 2.5 threshold
+2026-04-10T20:55:39 UTC | INFO     | financial_parser | MGM: financials fetched OK (price=37.32)
+2026-04-10T20:55:39 UTC | INFO     | main | DEBUG filter MGM: ok=False reason=debt-to-equity 9.63 above 2.5 threshold
+2026-04-10T20:55:39 UTC | INFO     | financial_parser | WYNN: financials fetched OK (price=104.0)
+2026-04-10T20:55:39 UTC | INFO     | candidate_filter | WYNN: D/E missing — will be flagged in report but not excluded
+2026-04-10T20:55:39 UTC | INFO     | main | DEBUG filter WYNN: ok=True reason=
+2026-04-10T20:55:39 UTC | INFO     | main | AV budget exhausted — skipping AV for WYNN
+2026-04-10T20:55:39 UTC | INFO     | volume_confirmation | WYNN volume ratio=0.40 score=0.13 label=lower activity than usual
+2026-04-10T20:55:39 UTC | INFO     | risk_adjusted_momentum | WYNN RAM raw=-4.79 score=0.26
+2026-04-10T20:55:40 UTC | INFO     | multi_timeframe_momentum | WYNN MTF 1m=3.9272512412918967 3m=-11.87381967123666 6m=-14.088090745341535 score=0.34
+2026-04-10T20:55:40 UTC | INFO     | trend_stability | WYNN trend stability: dev=0.0534 score=0.47
+2026-04-10T20:55:40 UTC | INFO     | drawdown_risk | WYNN drawdown=21.7% score=0.46
+2026-04-10T20:55:40 UTC | INFO     | risk_model | Risk score: raw=50.2 penalty=0 mult=1.0 final=50.2
+2026-04-10T20:55:40 UTC | INFO     | opportunity_model | Opp score: b1=25.8 b2=38.6 b3=40.0 raw=33.8 x1.0 x0.85 = 28.7
+2026-04-10T20:55:40 UTC | INFO     | signal_agreement | Signal agreement: m=0.26 s=0.75 e=0.50 v=0.14 -> 0.013
+2026-04-10T20:55:40 UTC | INFO     | opportunity_model | Composite confidence: 36.2 (Weak confidence)
+2026-04-10T20:55:40 UTC | INFO     | main | DEBUG confidence WYNN: conf=36.2 min=35 risk=50.2 opp=28.7
+2026-04-10T20:55:41 UTC | INFO     | financial_parser | F: financials fetched OK (price=12.13)
+2026-04-10T20:55:41 UTC | INFO     | main | DEBUG filter F: ok=False reason=debt-to-equity 4.61 above 2.5 threshold
+2026-04-10T20:55:41 UTC | INFO     | financial_parser | GM: financials fetched OK (price=76.42)
+2026-04-10T20:55:41 UTC | INFO     | main | DEBUG filter GM: ok=True reason=
+2026-04-10T20:55:41 UTC | INFO     | main | AV budget exhausted — skipping AV for GM
+2026-04-10T20:55:41 UTC | INFO     | volume_confirmation | GM volume ratio=0.33 score=0.11 label=lower activity than usual
+2026-04-10T20:55:41 UTC | INFO     | risk_adjusted_momentum | GM RAM raw=-3.35 score=0.33
+2026-04-10T20:55:41 UTC | INFO     | multi_timeframe_momentum | GM MTF 1m=2.179432054371804 3m=-10.018854990311093 6m=36.08840013502157 score=0.60
+2026-04-10T20:55:41 UTC | INFO     | trend_stability | GM trend stability: dev=0.0488 score=0.51
+2026-04-10T20:55:42 UTC | INFO     | drawdown_risk | GM drawdown=11.3% score=0.72
+2026-04-10T20:55:42 UTC | INFO     | risk_model | Risk score: raw=39.1 penalty=0 mult=1.0 final=39.1
+2026-04-10T20:55:42 UTC | INFO     | opportunity_model | Opp score: b1=35.4 b2=46.9 b3=39.0 raw=40.7 x1.0 x0.85 = 34.6
+2026-04-10T20:55:42 UTC | INFO     | signal_agreement | Signal agreement: m=0.33 s=0.75 e=0.50 v=0.11 -> 0.014
+2026-04-10T20:55:42 UTC | INFO     | opportunity_model | Composite confidence: 42.2 (Weak confidence)
+2026-04-10T20:55:42 UTC | INFO     | main | DEBUG confidence GM: conf=42.2 min=35 risk=39.1 opp=34.6
+2026-04-10T20:55:42 UTC | INFO     | financial_parser | APTV: financials fetched OK (price=59.65)
+2026-04-10T20:55:42 UTC | INFO     | main | DEBUG filter APTV: ok=True reason=
+2026-04-10T20:55:42 UTC | INFO     | main | AV budget exhausted — skipping AV for APTV
+2026-04-10T20:55:42 UTC | INFO     | volume_confirmation | APTV volume ratio=0.71 score=0.24 label=lower activity than usual
+2026-04-10T20:55:42 UTC | INFO     | risk_adjusted_momentum | APTV RAM raw=-11.84 score=0.00
+2026-04-10T20:55:42 UTC | INFO     | multi_timeframe_momentum | APTV MTF 1m=-15.17349006719444 3m=-31.000574168219465 6m=-29.374849428757432 score=0.04
+2026-04-10T20:55:42 UTC | INFO     | trend_stability | APTV trend stability: dev=0.1438 score=0.00
+2026-04-10T20:55:42 UTC | INFO     | drawdown_risk | APTV drawdown=32.7% score=0.18
+2026-04-10T20:55:42 UTC | INFO     | risk_model | Risk score: raw=59.1 penalty=0 mult=1.0 final=59.1
+2026-04-10T20:55:42 UTC | INFO     | opportunity_model | Opp score: b1=3.7 b2=24.6 b3=44.1 raw=20.1 x1.0 x0.85 = 17.1
+2026-04-10T20:55:42 UTC | INFO     | signal_agreement | Signal agreement: m=0.50 s=0.75 e=0.50 v=0.24 -> 0.044
+2026-04-10T20:55:42 UTC | INFO     | opportunity_model | Composite confidence: 29.6 (Excluded)
+2026-04-10T20:55:42 UTC | INFO     | main | DEBUG confidence APTV: conf=29.6 min=35 risk=59.1 opp=17.1
+2026-04-10T20:55:42 UTC | INFO     | main | APTV: confidence 29.6 < 35 — excluded
+2026-04-10T20:55:43 UTC | INFO     | financial_parser | LKQ: financials fetched OK (price=30.38)
+2026-04-10T20:55:43 UTC | INFO     | main | DEBUG filter LKQ: ok=True reason=
+2026-04-10T20:55:43 UTC | INFO     | main | AV budget exhausted — skipping AV for LKQ
+2026-04-10T20:55:43 UTC | INFO     | volume_confirmation | LKQ volume ratio=0.44 score=0.15 label=lower activity than usual
+2026-04-10T20:55:43 UTC | INFO     | risk_adjusted_momentum | LKQ RAM raw=-4.61 score=0.27
+2026-04-10T20:55:43 UTC | INFO     | multi_timeframe_momentum | LKQ MTF 1m=-0.8809212126281034 3m=-7.038316076994011 6m=4.348344209811603 score=0.46
+2026-04-10T20:55:43 UTC | INFO     | trend_stability | LKQ trend stability: dev=0.0742 score=0.26
+2026-04-10T20:55:43 UTC | INFO     | drawdown_risk | LKQ drawdown=11.8% score=0.70
+2026-04-10T20:55:43 UTC | INFO     | risk_model | Risk score: raw=38.1 penalty=0 mult=1.0 final=38.1
+2026-04-10T20:55:43 UTC | INFO     | opportunity_model | Opp score: b1=27.5 b2=41.7 b3=40.4 raw=35.8 x1.0 x0.85 = 30.4
+2026-04-10T20:55:43 UTC | INFO     | signal_agreement | Signal agreement: m=0.27 s=0.75 e=0.50 v=0.15 -> 0.015
+2026-04-10T20:55:43 UTC | INFO     | opportunity_model | Composite confidence: 41.1 (Weak confidence)
+2026-04-10T20:55:43 UTC | INFO     | main | DEBUG confidence LKQ: conf=41.1 min=35 risk=38.1 opp=30.4
+2026-04-10T20:55:44 UTC | INFO     | financial_parser | ORLY: financials fetched OK (price=93.01)
+2026-04-10T20:55:44 UTC | INFO     | candidate_filter | ORLY: D/E missing — will be flagged in report but not excluded
+2026-04-10T20:55:44 UTC | INFO     | main | DEBUG filter ORLY: ok=True reason=
+2026-04-10T20:55:44 UTC | INFO     | main | AV budget exhausted — skipping AV for ORLY
+2026-04-10T20:55:44 UTC | INFO     | volume_confirmation | ORLY volume ratio=0.74 score=0.25 label=lower activity than usual
+2026-04-10T20:55:44 UTC | INFO     | risk_adjusted_momentum | ORLY RAM raw=-0.53 score=0.47
+2026-04-10T20:55:44 UTC | INFO     | multi_timeframe_momentum | ORLY MTF 1m=-1.4620163813342606 3m=1.5060623422216934 6m=-7.691544100526887 score=0.47
+2026-04-10T20:55:44 UTC | INFO     | trend_stability | ORLY trend stability: dev=0.0231 score=0.77
+2026-04-10T20:55:44 UTC | INFO     | drawdown_risk | ORLY drawdown=8.2% score=0.79
+2026-04-10T20:55:44 UTC | INFO     | risk_model | Risk score: raw=28.0 penalty=0 mult=1.0 final=28.0
+2026-04-10T20:55:44 UTC | INFO     | opportunity_model | Opp score: b1=44.4 b2=47.1 b3=44.5 raw=45.5 x1.0 x0.85 = 38.7
+2026-04-10T20:55:44 UTC | INFO     | signal_agreement | Signal agreement: m=0.47 s=0.75 e=0.50 v=0.25 -> 0.044
+2026-04-10T20:55:44 UTC | INFO     | opportunity_model | Composite confidence: 48.1 (Weak confidence)
+2026-04-10T20:55:44 UTC | INFO     | main | DEBUG confidence ORLY: conf=48.1 min=35 risk=28.0 opp=38.7
+2026-04-10T20:55:45 UTC | INFO     | financial_parser | BBY: financials fetched OK (price=62.37)
+2026-04-10T20:55:45 UTC | INFO     | main | DEBUG filter BBY: ok=True reason=
+2026-04-10T20:55:45 UTC | INFO     | main | AV budget exhausted — skipping AV for BBY
+2026-04-10T20:55:45 UTC | INFO     | volume_confirmation | BBY volume ratio=0.42 score=0.14 label=lower activity than usual
+2026-04-10T20:55:45 UTC | INFO     | risk_adjusted_momentum | BBY RAM raw=-4.93 score=0.25
+2026-04-10T20:55:45 UTC | INFO     | multi_timeframe_momentum | BBY MTF 1m=0.268635383886918 3m=-11.823358304791288 6m=-16.626623455762076 score=0.32
+2026-04-10T20:55:45 UTC | INFO     | trend_stability | BBY trend stability: dev=0.0154 score=0.85
+2026-04-10T20:55:45 UTC | INFO     | drawdown_risk | BBY drawdown=16.9% score=0.58
+2026-04-10T20:55:45 UTC | INFO     | risk_model | Risk score: raw=44.1 penalty=0 mult=1.0 final=44.1
+2026-04-10T20:55:45 UTC | INFO     | opportunity_model | Opp score: b1=48.2 b2=37.8 b3=40.2 raw=42.5 x1.0 x0.85 = 36.1
+2026-04-10T20:55:45 UTC | INFO     | signal_agreement | Signal agreement: m=0.25 s=0.75 e=0.50 v=0.14 -> 0.013
+2026-04-10T20:55:45 UTC | INFO     | opportunity_model | Composite confidence: 40.9 (Weak confidence)
+2026-04-10T20:55:45 UTC | INFO     | main | DEBUG confidence BBY: conf=40.9 min=35 risk=44.1 opp=36.1
+2026-04-10T20:55:46 UTC | INFO     | financial_parser | ROST: financials fetched OK (price=221.16)
+2026-04-10T20:55:46 UTC | INFO     | main | DEBUG filter ROST: ok=True reason=
+2026-04-10T20:55:46 UTC | INFO     | main | AV budget exhausted — skipping AV for ROST
+2026-04-10T20:55:46 UTC | INFO     | volume_confirmation | ROST volume ratio=0.99 score=0.33 label=normal trading activity
+2026-04-10T20:55:46 UTC | INFO     | risk_adjusted_momentum | ROST RAM raw=9.88 score=0.99
+2026-04-10T20:55:46 UTC | INFO     | multi_timeframe_momentum | ROST MTF 1m=4.115195800780444 3m=17.097271915107935 6m=46.122147272236205 score=0.89
+2026-04-10T20:55:46 UTC | INFO     | trend_stability | ROST trend stability: dev=0.0789 score=0.21
+2026-04-10T20:55:46 UTC | INFO     | drawdown_risk | ROST drawdown=1.7% score=0.96
+2026-04-10T20:55:46 UTC | INFO     | risk_model | Risk score: raw=29.6 penalty=0 mult=1.0 final=29.6
+2026-04-10T20:55:46 UTC | INFO     | opportunity_model | Opp score: b1=48.7 b2=74.3 b3=47.8 raw=58.7 x1.0 x0.85 = 49.9
+2026-04-10T20:55:46 UTC | INFO     | signal_agreement | Signal agreement: m=0.99 s=0.75 e=0.50 v=0.33 -> 0.123
+2026-04-10T20:55:46 UTC | INFO     | opportunity_model | Composite confidence: 53.0 (Moderate confidence)
+2026-04-10T20:55:46 UTC | INFO     | main | DEBUG confidence ROST: conf=53.0 min=35 risk=29.6 opp=49.9
+2026-04-10T20:55:47 UTC | INFO     | financial_parser | ULTA: financials fetched OK (price=520.38)
+2026-04-10T20:55:47 UTC | INFO     | main | DEBUG filter ULTA: ok=True reason=
+2026-04-10T20:55:47 UTC | INFO     | main | AV budget exhausted — skipping AV for ULTA
+2026-04-10T20:55:47 UTC | INFO     | volume_confirmation | ULTA volume ratio=0.84 score=0.28 label=normal trading activity
+2026-04-10T20:55:47 UTC | INFO     | risk_adjusted_momentum | ULTA RAM raw=-8.77 score=0.06
+2026-04-10T20:55:47 UTC | INFO     | multi_timeframe_momentum | ULTA MTF 1m=-20.266607612556157 3m=-20.84993954134977 6m=-8.029195820470925 score=0.22
+2026-04-10T20:55:47 UTC | INFO     | trend_stability | ULTA trend stability: dev=0.1635 score=0.00
+2026-04-10T20:55:47 UTC | INFO     | drawdown_risk | ULTA drawdown=26.4% score=0.34
+2026-04-10T20:55:47 UTC | INFO     | risk_model | Risk score: raw=39.1 penalty=0 mult=1.0 final=39.1
+2026-04-10T20:55:47 UTC | INFO     | opportunity_model | Opp score: b1=40.9 b2=30.5 b3=45.8 raw=37.7 x1.0 x0.85 = 32.0
+2026-04-10T20:55:47 UTC | INFO     | signal_agreement | Signal agreement: m=0.06 s=0.75 e=0.50 v=0.28 -> 0.006
+2026-04-10T20:55:47 UTC | INFO     | opportunity_model | Composite confidence: 41.1 (Weak confidence)
+2026-04-10T20:55:47 UTC | INFO     | main | DEBUG confidence ULTA: conf=41.1 min=35 risk=39.1 opp=32.0
+2026-04-10T20:55:48 UTC | INFO     | financial_parser | ETSY: financials fetched OK (price=52.69)
+2026-04-10T20:55:48 UTC | INFO     | candidate_filter | ETSY: D/E missing — will be flagged in report but not excluded
+2026-04-10T20:55:48 UTC | INFO     | main | DEBUG filter ETSY: ok=True reason=
+2026-04-10T20:55:48 UTC | INFO     | main | AV budget exhausted — skipping AV for ETSY
+2026-04-10T20:55:48 UTC | INFO     | volume_confirmation | ETSY volume ratio=0.50 score=0.17 label=lower activity than usual
+2026-04-10T20:55:48 UTC | INFO     | risk_adjusted_momentum | ETSY RAM raw=-4.32 score=0.28
+2026-04-10T20:55:48 UTC | INFO     | multi_timeframe_momentum | ETSY MTF 1m=0.0 3m=-13.947412999140182 6m=-24.878815105200587 score=0.26
+2026-04-10T20:55:48 UTC | INFO     | trend_stability | ETSY trend stability: dev=0.0615 score=0.38
+2026-04-10T20:55:48 UTC | INFO     | drawdown_risk | ETSY drawdown=17.2% score=0.57
+2026-04-10T20:55:48 UTC | INFO     | risk_model | Risk score: raw=61.5 penalty=0 mult=1.0 final=61.5
+2026-04-10T20:55:48 UTC | INFO     | opportunity_model | Opp score: b1=33.5 b2=37.1 b3=41.3 raw=36.5 x1.0 x0.85 = 31.0
+2026-04-10T20:55:48 UTC | INFO     | signal_agreement | Signal agreement: m=0.28 s=0.75 e=0.50 v=0.17 -> 0.018
+2026-04-10T20:55:48 UTC | INFO     | opportunity_model | Composite confidence: 33.2 (Excluded)
+2026-04-10T20:55:48 UTC | INFO     | main | DEBUG confidence ETSY: conf=33.2 min=35 risk=61.5 opp=31.0
+2026-04-10T20:55:48 UTC | INFO     | main | ETSY: confidence 33.2 < 35 — excluded
+2026-04-10T20:55:49 UTC | INFO     | financial_parser | EBAY: financials fetched OK (price=95.4)
+2026-04-10T20:55:49 UTC | INFO     | main | DEBUG filter EBAY: ok=True reason=
+2026-04-10T20:55:49 UTC | INFO     | main | AV budget exhausted — skipping AV for EBAY
+2026-04-10T20:55:49 UTC | INFO     | volume_confirmation | EBAY volume ratio=0.84 score=0.28 label=normal trading activity
+2026-04-10T20:55:49 UTC | INFO     | risk_adjusted_momentum | EBAY RAM raw=2.29 score=0.61
+2026-04-10T20:55:49 UTC | INFO     | multi_timeframe_momentum | EBAY MTF 1m=4.05759294101258 3m=5.3245271658827305 6m=4.318661292669286 score=0.58
+2026-04-10T20:55:49 UTC | INFO     | trend_stability | EBAY trend stability: dev=0.0415 score=0.59
+2026-04-10T20:55:49 UTC | INFO     | drawdown_risk | EBAY drawdown=2.4% score=0.94
+2026-04-10T20:55:49 UTC | INFO     | risk_model | Risk score: raw=30.9 penalty=0 mult=1.0 final=30.9
+2026-04-10T20:55:49 UTC | INFO     | opportunity_model | Opp score: b1=49.5 b2=57.1 b3=45.8 raw=51.8 x1.0 x0.85 = 44.0
+2026-04-10T20:55:49 UTC | INFO     | signal_agreement | Signal agreement: m=0.61 s=0.75 e=0.50 v=0.28 -> 0.064
+2026-04-10T20:55:49 UTC | INFO     | opportunity_model | Composite confidence: 49.3 (Weak confidence)
+2026-04-10T20:55:49 UTC | INFO     | main | DEBUG confidence EBAY: conf=49.3 min=35 risk=30.9 opp=44.0
+2026-04-10T20:55:50 UTC | INFO     | financial_parser | ABNB: financials fetched OK (price=128.96)
+2026-04-10T20:55:50 UTC | INFO     | main | DEBUG filter ABNB: ok=True reason=
+2026-04-10T20:55:50 UTC | INFO     | main | AV budget exhausted — skipping AV for ABNB
+2026-04-10T20:55:50 UTC | INFO     | volume_confirmation | ABNB volume ratio=0.85 score=0.28 label=normal trading activity
+2026-04-10T20:55:50 UTC | INFO     | risk_adjusted_momentum | ABNB RAM raw=-3.11 score=0.34
+2026-04-10T20:55:50 UTC | INFO     | multi_timeframe_momentum | ABNB MTF 1m=-3.3210830617374105 3m=-6.995526245534664 6m=7.475630477368407 score=0.47
+2026-04-10T20:55:50 UTC | INFO     | trend_stability | ABNB trend stability: dev=0.0215 score=0.78
+2026-04-10T20:55:50 UTC | INFO     | drawdown_risk | ABNB drawdown=7.9% score=0.80
+2026-04-10T20:55:50 UTC | INFO     | risk_model | Risk score: raw=28.1 penalty=0 mult=1.0 final=28.1
+2026-04-10T20:55:50 UTC | INFO     | opportunity_model | Opp score: b1=52.2 b2=43.8 b3=46.0 raw=47.6 x1.0 x0.85 = 40.4
+2026-04-10T20:55:50 UTC | INFO     | signal_agreement | Signal agreement: m=0.34 s=0.75 e=0.50 v=0.28 -> 0.037
+2026-04-10T20:55:50 UTC | INFO     | opportunity_model | Composite confidence: 48.5 (Weak confidence)
+2026-04-10T20:55:50 UTC | INFO     | main | DEBUG confidence ABNB: conf=48.5 min=35 risk=28.1 opp=40.4
+2026-04-10T20:55:50 UTC | INFO     | financial_parser | PLD: using cached financials (2d old)
+2026-04-10T20:55:50 UTC | INFO     | main | DEBUG filter PLD: ok=True reason=
+2026-04-10T20:55:50 UTC | INFO     | main | AV budget exhausted — skipping AV for PLD
+2026-04-10T20:55:50 UTC | INFO     | volume_confirmation | PLD volume ratio=0.67 score=0.22 label=lower activity than usual
+2026-04-10T20:55:50 UTC | INFO     | risk_adjusted_momentum | PLD RAM raw=4.96 score=0.75
+2026-04-10T20:55:50 UTC | INFO     | multi_timeframe_momentum | PLD MTF 1m=2.8971100314017053 3m=7.713769995248001 6m=20.157820265450503 score=0.67
+2026-04-10T20:55:50 UTC | INFO     | trend_stability | PLD trend stability: dev=0.0193 score=0.81
+2026-04-10T20:55:50 UTC | INFO     | drawdown_risk | PLD drawdown=3.1% score=0.92
+2026-04-10T20:55:50 UTC | INFO     | risk_model | Risk score: raw=27.2 penalty=0 mult=1.0 final=27.2
+2026-04-10T20:55:50 UTC | INFO     | opportunity_model | Opp score: b1=58.0 b2=62.8 b3=49.5 raw=58.2 x1.0 x0.85 = 49.5
+2026-04-10T20:55:50 UTC | INFO     | signal_agreement | Signal agreement: m=0.75 s=0.67 e=0.50 v=0.22 -> 0.056
+2026-04-10T20:55:50 UTC | INFO     | opportunity_model | Composite confidence: 52.1 (Moderate confidence)
+2026-04-10T20:55:50 UTC | INFO     | main | DEBUG confidence PLD: conf=52.1 min=35 risk=27.2 opp=49.5
+2026-04-10T20:55:50 UTC | INFO     | financial_parser | AMT: using cached financials (2d old)
+2026-04-10T20:55:50 UTC | INFO     | main | DEBUG filter AMT: ok=False reason=debt-to-equity 4.34 above 2.5 threshold
+2026-04-10T20:55:50 UTC | INFO     | financial_parser | EQIX: using cached financials (2d old)
+2026-04-10T20:55:50 UTC | INFO     | main | DEBUG filter EQIX: ok=True reason=
+2026-04-10T20:55:50 UTC | INFO     | main | AV budget exhausted — skipping AV for EQIX
+2026-04-10T20:55:51 UTC | INFO     | volume_confirmation | EQIX volume ratio=0.53 score=0.18 label=lower activity than usual
+2026-04-10T20:55:51 UTC | INFO     | risk_adjusted_momentum | EQIX RAM raw=15.96 score=1.00
+2026-04-10T20:55:51 UTC | INFO     | multi_timeframe_momentum | EQIX MTF 1m=5.836064019604886 3m=32.48261246612381 6m=29.679191076737155 score=0.94
+2026-04-10T20:55:51 UTC | INFO     | trend_stability | EQIX trend stability: dev=0.0852 score=0.15
+2026-04-10T20:55:51 UTC | INFO     | drawdown_risk | EQIX drawdown=0.1% score=1.00
+2026-04-10T20:55:51 UTC | INFO     | risk_model | Risk score: raw=38.4 penalty=0 mult=1.0 final=38.4
+2026-04-10T20:55:51 UTC | INFO     | opportunity_model | Opp score: b1=32.4 b2=75.7 b3=47.6 raw=52.8 x1.0 x0.85 = 44.9
+2026-04-10T20:55:51 UTC | INFO     | signal_agreement | Signal agreement: m=1.00 s=0.67 e=0.50 v=0.18 -> 0.059
+2026-04-10T20:55:51 UTC | INFO     | opportunity_model | Composite confidence: 46.7 (Weak confidence)
+2026-04-10T20:55:51 UTC | INFO     | main | DEBUG confidence EQIX: conf=46.7 min=35 risk=38.4 opp=44.9
+2026-04-10T20:55:51 UTC | INFO     | financial_parser | CCI: using cached financials (2d old)
+2026-04-10T20:55:51 UTC | INFO     | candidate_filter | CCI: D/E missing — will be flagged in report but not excluded
+2026-04-10T20:55:51 UTC | INFO     | main | DEBUG filter CCI: ok=True reason=
+2026-04-10T20:55:51 UTC | INFO     | main | AV budget exhausted — skipping AV for CCI
+2026-04-10T20:55:51 UTC | INFO     | volume_confirmation | CCI volume ratio=0.52 score=0.17 label=lower activity than usual
+2026-04-10T20:55:51 UTC | INFO     | risk_adjusted_momentum | CCI RAM raw=1.92 score=0.60
+2026-04-10T20:55:51 UTC | INFO     | multi_timeframe_momentum | CCI MTF 1m=-0.21866805516970508 3m=3.370257757474148 6m=-8.316077042619938 score=0.49
+2026-04-10T20:55:51 UTC | INFO     | trend_stability | CCI trend stability: dev=0.0442 score=0.56
+2026-04-10T20:55:51 UTC | INFO     | drawdown_risk | CCI drawdown=4.9% score=0.88
+2026-04-10T20:55:51 UTC | INFO     | risk_model | Risk score: raw=48.7 penalty=0 mult=1.0 final=48.7
+2026-04-10T20:55:51 UTC | INFO     | opportunity_model | Opp score: b1=56.2 b2=54.3 b3=47.5 raw=53.7 x1.0 x0.85 = 45.6
+2026-04-10T20:55:51 UTC | INFO     | signal_agreement | Signal agreement: m=0.60 s=0.67 e=0.50 v=0.17 -> 0.035
+2026-04-10T20:55:51 UTC | INFO     | opportunity_model | Composite confidence: 42.8 (Weak confidence)
+2026-04-10T20:55:51 UTC | INFO     | main | DEBUG confidence CCI: conf=42.8 min=35 risk=48.7 opp=45.6
+2026-04-10T20:55:51 UTC | INFO     | financial_parser | SBAC: using cached financials (2d old)
+2026-04-10T20:55:51 UTC | INFO     | candidate_filter | SBAC: D/E missing — will be flagged in report but not excluded
+2026-04-10T20:55:51 UTC | INFO     | main | DEBUG filter SBAC: ok=True reason=
+2026-04-10T20:55:51 UTC | INFO     | main | AV budget exhausted — skipping AV for SBAC
+2026-04-10T20:55:51 UTC | INFO     | volume_confirmation | SBAC volume ratio=1.00 score=0.33 label=normal trading activity
+2026-04-10T20:55:51 UTC | INFO     | risk_adjusted_momentum | SBAC RAM raw=7.71 score=0.89
+2026-04-10T20:55:51 UTC | INFO     | multi_timeframe_momentum | SBAC MTF 1m=19.470907661410234 3m=24.213904671032658 6m=20.740568192943424 score=0.87
+2026-04-10T20:55:52 UTC | INFO     | trend_stability | SBAC trend stability: dev=0.1179 score=0.00
+2026-04-10T20:55:52 UTC | INFO     | drawdown_risk | SBAC drawdown=0.0% score=1.00
+2026-04-10T20:55:52 UTC | INFO     | risk_model | Risk score: raw=33.2 penalty=0 mult=1.0 final=33.2
+2026-04-10T20:55:52 UTC | INFO     | opportunity_model | Opp score: b1=60.0 b2=71.1 b3=53.8 raw=63.2 x1.0 x0.85 = 53.7
+2026-04-10T20:55:52 UTC | INFO     | signal_agreement | Signal agreement: m=0.89 s=0.67 e=0.50 v=0.33 -> 0.098
+2026-04-10T20:55:52 UTC | INFO     | opportunity_model | Composite confidence: 52.3 (Moderate confidence)
+2026-04-10T20:55:52 UTC | INFO     | main | DEBUG confidence SBAC: conf=52.3 min=35 risk=33.2 opp=53.7
+2026-04-10T20:55:52 UTC | INFO     | financial_parser | WELL: using cached financials (2d old)
+2026-04-10T20:55:52 UTC | INFO     | main | DEBUG filter WELL: ok=True reason=
+2026-04-10T20:55:52 UTC | INFO     | main | AV budget exhausted — skipping AV for WELL
+2026-04-10T20:55:52 UTC | INFO     | volume_confirmation | WELL volume ratio=0.52 score=0.17 label=lower activity than usual
+2026-04-10T20:55:52 UTC | INFO     | risk_adjusted_momentum | WELL RAM raw=8.66 score=0.93
+2026-04-10T20:55:52 UTC | INFO     | multi_timeframe_momentum | WELL MTF 1m=1.1006645335227039 3m=11.817157499278983 6m=23.64906310823664 score=0.72
+2026-04-10T20:55:52 UTC | INFO     | trend_stability | WELL trend stability: dev=0.0134 score=0.87
+2026-04-10T20:55:52 UTC | INFO     | drawdown_risk | WELL drawdown=3.3% score=0.92
+2026-04-10T20:55:52 UTC | INFO     | risk_model | Risk score: raw=28.9 penalty=0 mult=1.0 final=28.9
+2026-04-10T20:55:52 UTC | INFO     | opportunity_model | Opp score: b1=38.8 b2=68.6 b3=47.5 raw=52.5 x1.0 x0.85 = 44.6
+2026-04-10T20:55:52 UTC | INFO     | signal_agreement | Signal agreement: m=0.93 s=0.67 e=0.50 v=0.17 -> 0.054
+2026-04-10T20:55:52 UTC | INFO     | opportunity_model | Composite confidence: 49.8 (Weak confidence)
+2026-04-10T20:55:52 UTC | INFO     | main | DEBUG confidence WELL: conf=49.8 min=35 risk=28.9 opp=44.6
+2026-04-10T20:55:52 UTC | INFO     | financial_parser | DLR: using cached financials (2d old)
+2026-04-10T20:55:52 UTC | INFO     | main | DEBUG filter DLR: ok=True reason=
+2026-04-10T20:55:52 UTC | INFO     | main | AV budget exhausted — skipping AV for DLR
+2026-04-10T20:55:52 UTC | INFO     | volume_confirmation | DLR volume ratio=0.43 score=0.14 label=lower activity than usual
+2026-04-10T20:55:52 UTC | INFO     | risk_adjusted_momentum | DLR RAM raw=13.76 score=1.00
+2026-04-10T20:55:52 UTC | INFO     | multi_timeframe_momentum | DLR MTF 1m=5.297067453569972 3m=24.34184216186199 6m=10.033373283132065 score=0.77
+2026-04-10T20:55:52 UTC | INFO     | trend_stability | DLR trend stability: dev=0.0394 score=0.61
+2026-04-10T20:55:53 UTC | INFO     | drawdown_risk | DLR drawdown=0.0% score=1.00
+2026-04-10T20:55:53 UTC | INFO     | risk_model | Risk score: raw=36.1 penalty=0 mult=1.0 final=36.1
+2026-04-10T20:55:53 UTC | INFO     | opportunity_model | Opp score: b1=40.2 b2=71.5 b3=46.2 raw=54.0 x1.0 x0.85 = 45.9
+2026-04-10T20:55:53 UTC | INFO     | signal_agreement | Signal agreement: m=1.00 s=0.67 e=0.50 v=0.14 -> 0.047
+2026-04-10T20:55:53 UTC | INFO     | opportunity_model | Composite confidence: 47.6 (Weak confidence)
+2026-04-10T20:55:53 UTC | INFO     | main | DEBUG confidence DLR: conf=47.6 min=35 risk=36.1 opp=45.9
+2026-04-10T20:55:53 UTC | INFO     | financial_parser | PSA: using cached financials (2d old)
+2026-04-10T20:55:53 UTC | INFO     | main | DEBUG filter PSA: ok=True reason=
+2026-04-10T20:55:53 UTC | INFO     | main | AV budget exhausted — skipping AV for PSA
+2026-04-10T20:55:53 UTC | INFO     | volume_confirmation | PSA volume ratio=0.65 score=0.22 label=lower activity than usual
+2026-04-10T20:55:53 UTC | INFO     | risk_adjusted_momentum | PSA RAM raw=4.42 score=0.72
+2026-04-10T20:55:53 UTC | INFO     | multi_timeframe_momentum | PSA MTF 1m=-0.6359097835373951 3m=9.915482778574294 6m=2.780243349442365 score=0.59
+2026-04-10T20:55:53 UTC | INFO     | trend_stability | PSA trend stability: dev=0.0447 score=0.55
+2026-04-10T20:55:53 UTC | INFO     | drawdown_risk | PSA drawdown=4.2% score=0.90
+2026-04-10T20:55:53 UTC | INFO     | risk_model | Risk score: raw=29.4 penalty=0 mult=1.0 final=29.4
+2026-04-10T20:55:53 UTC | INFO     | opportunity_model | Opp score: b1=47.2 b2=60.1 b3=49.2 raw=52.8 x1.0 x0.85 = 44.9
+2026-04-10T20:55:53 UTC | INFO     | signal_agreement | Signal agreement: m=0.72 s=0.67 e=0.50 v=0.22 -> 0.052
+2026-04-10T20:55:53 UTC | INFO     | opportunity_model | Composite confidence: 49.7 (Weak confidence)
+2026-04-10T20:55:53 UTC | INFO     | main | DEBUG confidence PSA: conf=49.7 min=35 risk=29.4 opp=44.9
+2026-04-10T20:55:53 UTC | INFO     | financial_parser | EQR: using cached financials (2d old)
+2026-04-10T20:55:53 UTC | INFO     | main | DEBUG filter EQR: ok=True reason=
+2026-04-10T20:55:53 UTC | INFO     | main | AV budget exhausted — skipping AV for EQR
+2026-04-10T20:55:53 UTC | INFO     | volume_confirmation | EQR volume ratio=0.54 score=0.18 label=lower activity than usual
+2026-04-10T20:55:53 UTC | INFO     | risk_adjusted_momentum | EQR RAM raw=1.80 score=0.59
+2026-04-10T20:55:53 UTC | INFO     | multi_timeframe_momentum | EQR MTF 1m=2.8598038246108155 3m=-1.573952440903935 6m=0.38227034702581647 score=0.50
+2026-04-10T20:55:53 UTC | INFO     | trend_stability | EQR trend stability: dev=0.0267 score=0.73
+2026-04-10T20:55:54 UTC | INFO     | drawdown_risk | EQR drawdown=5.6% score=0.86
+2026-04-10T20:55:54 UTC | INFO     | risk_model | Risk score: raw=24.0 penalty=0 mult=1.0 final=24.0
+2026-04-10T20:55:54 UTC | INFO     | opportunity_model | Opp score: b1=48.1 b2=54.5 b3=47.8 raw=50.6 x1.0 x0.85 = 43.0
+2026-04-10T20:55:54 UTC | INFO     | signal_agreement | Signal agreement: m=0.59 s=0.67 e=0.50 v=0.18 -> 0.036
+2026-04-10T20:55:54 UTC | INFO     | opportunity_model | Composite confidence: 50.6 (Moderate confidence)
+2026-04-10T20:55:54 UTC | INFO     | main | DEBUG confidence EQR: conf=50.6 min=35 risk=24.0 opp=43.0
+2026-04-10T20:55:54 UTC | INFO     | financial_parser | AVB: using cached financials (2d old)
+2026-04-10T20:55:54 UTC | INFO     | main | DEBUG filter AVB: ok=True reason=
+2026-04-10T20:55:54 UTC | INFO     | main | AV budget exhausted — skipping AV for AVB
+2026-04-10T20:55:54 UTC | INFO     | volume_confirmation | AVB volume ratio=0.46 score=0.15 label=lower activity than usual
+2026-04-10T20:55:54 UTC | INFO     | risk_adjusted_momentum | AVB RAM raw=-3.18 score=0.34
+2026-04-10T20:55:54 UTC | INFO     | multi_timeframe_momentum | AVB MTF 1m=-0.08649165874514898 3m=-6.740878117615584 6m=-7.032063475564912 score=0.41
+2026-04-10T20:55:54 UTC | INFO     | trend_stability | AVB trend stability: dev=0.0406 score=0.59
+2026-04-10T20:55:54 UTC | INFO     | drawdown_risk | AVB drawdown=6.7% score=0.83
+2026-04-10T20:55:54 UTC | INFO     | risk_model | Risk score: raw=26.9 penalty=0 mult=1.0 final=26.9
+2026-04-10T20:55:54 UTC | INFO     | opportunity_model | Opp score: b1=48.5 b2=42.2 b3=46.7 raw=45.6 x1.0 x0.85 = 38.8
+2026-04-10T20:55:54 UTC | INFO     | signal_agreement | Signal agreement: m=0.34 s=0.67 e=0.50 v=0.15 -> 0.017
+2026-04-10T20:55:54 UTC | INFO     | opportunity_model | Composite confidence: 47.7 (Weak confidence)
+2026-04-10T20:55:54 UTC | INFO     | main | DEBUG confidence AVB: conf=47.7 min=35 risk=26.9 opp=38.8
+2026-04-10T20:55:54 UTC | INFO     | financial_parser | VTR: using cached financials (2d old)
+2026-04-10T20:55:54 UTC | INFO     | main | DEBUG filter VTR: ok=True reason=
+2026-04-10T20:55:54 UTC | INFO     | main | AV budget exhausted — skipping AV for VTR
+2026-04-10T20:55:54 UTC | INFO     | volume_confirmation | VTR volume ratio=0.74 score=0.25 label=lower activity than usual
+2026-04-10T20:55:54 UTC | INFO     | risk_adjusted_momentum | VTR RAM raw=12.53 score=1.00
+2026-04-10T20:55:55 UTC | INFO     | multi_timeframe_momentum | VTR MTF 1m=-0.3557293225116933 3m=13.884849854625447 6m=26.512414338186552 score=0.75
+2026-04-10T20:55:55 UTC | INFO     | trend_stability | VTR trend stability: dev=0.0086 score=0.91
+2026-04-10T20:55:55 UTC | INFO     | drawdown_risk | VTR drawdown=2.8% score=0.93
+2026-04-10T20:55:55 UTC | INFO     | risk_model | Risk score: raw=30.7 penalty=0 mult=1.0 final=30.7
+2026-04-10T20:55:55 UTC | INFO     | opportunity_model | Opp score: b1=21.6 b2=70.9 b3=50.5 raw=47.1 x1.0 x0.85 = 40.0
+2026-04-10T20:55:55 UTC | INFO     | signal_agreement | Signal agreement: m=1.00 s=0.67 e=0.50 v=0.25 -> 0.083
+2026-04-10T20:55:55 UTC | INFO     | opportunity_model | Composite confidence: 48.1 (Weak confidence)
+2026-04-10T20:55:55 UTC | INFO     | main | DEBUG confidence VTR: conf=48.1 min=35 risk=30.7 opp=40.0
+2026-04-10T20:55:55 UTC | INFO     | financial_parser | O: using cached financials (2d old)
+2026-04-10T20:55:55 UTC | INFO     | main | DEBUG filter O: ok=True reason=
+2026-04-10T20:55:55 UTC | INFO     | main | AV budget exhausted — skipping AV for O
+2026-04-10T20:55:55 UTC | INFO     | volume_confirmation | O volume ratio=0.47 score=0.16 label=lower activity than usual
+2026-04-10T20:55:55 UTC | INFO     | risk_adjusted_momentum | O RAM raw=10.82 score=1.00
+2026-04-10T20:55:55 UTC | INFO     | multi_timeframe_momentum | O MTF 1m=-1.04500418695652 3m=10.793144138528026 6m=11.001508233311943 score=0.64
+2026-04-10T20:55:55 UTC | INFO     | trend_stability | O trend stability: dev=0.0244 score=0.76
+2026-04-10T20:55:55 UTC | INFO     | drawdown_risk | O drawdown=5.2% score=0.87
+2026-04-10T20:55:55 UTC | INFO     | risk_model | Risk score: raw=20.5 penalty=0 mult=1.0 final=20.5
+2026-04-10T20:55:55 UTC | INFO     | opportunity_model | Opp score: b1=40.1 b2=68.3 b3=46.8 raw=52.7 x1.0 x0.85 = 44.8
+2026-04-10T20:55:55 UTC | INFO     | signal_agreement | Signal agreement: m=1.00 s=0.67 e=0.50 v=0.15 -> 0.052
+2026-04-10T20:55:55 UTC | INFO     | opportunity_model | Composite confidence: 52.7 (Moderate confidence)
+2026-04-10T20:55:55 UTC | INFO     | main | DEBUG confidence O: conf=52.7 min=35 risk=20.5 opp=44.8
+2026-04-10T20:55:55 UTC | INFO     | financial_parser | NNN: using cached financials (2d old)
+2026-04-10T20:55:55 UTC | INFO     | main | DEBUG filter NNN: ok=True reason=
+2026-04-10T20:55:55 UTC | INFO     | main | AV budget exhausted — skipping AV for NNN
+2026-04-10T20:55:55 UTC | INFO     | volume_confirmation | NNN volume ratio=0.54 score=0.18 label=lower activity than usual
+2026-04-10T20:55:56 UTC | INFO     | risk_adjusted_momentum | NNN RAM raw=8.86 score=0.94
+2026-04-10T20:55:56 UTC | INFO     | multi_timeframe_momentum | NNN MTF 1m=-2.2611404211100994 3m=8.598634907337303 6m=8.066536782819428 score=0.60
+2026-04-10T20:55:56 UTC | INFO     | trend_stability | NNN trend stability: dev=0.0210 score=0.79
+2026-04-10T20:55:56 UTC | INFO     | drawdown_risk | NNN drawdown=3.8% score=0.91
+2026-04-10T20:55:56 UTC | INFO     | risk_model | Risk score: raw=29.0 penalty=0 mult=1.0 final=29.0
+2026-04-10T20:55:56 UTC | INFO     | opportunity_model | Opp score: b1=50.3 b2=65.9 b3=47.8 raw=56.1 x1.0 x0.85 = 47.6
+2026-04-10T20:55:56 UTC | INFO     | signal_agreement | Signal agreement: m=0.94 s=0.67 e=0.50 v=0.18 -> 0.057
+2026-04-10T20:55:56 UTC | INFO     | opportunity_model | Composite confidence: 50.8 (Moderate confidence)
+2026-04-10T20:55:56 UTC | INFO     | main | DEBUG confidence NNN: conf=50.8 min=35 risk=29.0 opp=47.6
+2026-04-10T20:55:56 UTC | INFO     | financial_parser | SPG: using cached financials (2d old)
+2026-04-10T20:55:56 UTC | INFO     | main | DEBUG filter SPG: ok=False reason=debt-to-equity 4.35 above 2.5 threshold
+2026-04-10T20:55:56 UTC | INFO     | financial_parser | SLG: using cached financials (2d old)
+2026-04-10T20:55:56 UTC | INFO     | main | DEBUG filter SLG: ok=True reason=
+2026-04-10T20:55:56 UTC | INFO     | main | AV budget exhausted — skipping AV for SLG
+2026-04-10T20:55:56 UTC | INFO     | volume_confirmation | SLG volume ratio=0.51 score=0.17 label=lower activity than usual
+2026-04-10T20:55:56 UTC | INFO     | risk_adjusted_momentum | SLG RAM raw=-7.80 score=0.11
+2026-04-10T20:55:56 UTC | INFO     | multi_timeframe_momentum | SLG MTF 1m=3.366852355852432 3m=-20.054510027703497 6m=-31.932819054646444 score=0.18
+2026-04-10T20:55:56 UTC | INFO     | trend_stability | SLG trend stability: dev=0.0648 score=0.35
+2026-04-10T20:55:56 UTC | INFO     | drawdown_risk | SLG drawdown=20.8% score=0.48
+2026-04-10T20:55:56 UTC | INFO     | risk_model | Earnings proximity penalty: 5 days away
+2026-04-10T20:55:56 UTC | INFO     | risk_model | Risk score: raw=68.5 penalty=10 mult=1.0 final=78.5
+2026-04-10T20:55:56 UTC | INFO     | opportunity_model | Opp score: b1=18.1 b2=30.9 b3=47.3 raw=29.0 x1.0 x0.85 = 24.7
+2026-04-10T20:55:56 UTC | INFO     | signal_agreement | Signal agreement: m=0.11 s=0.67 e=0.50 v=0.17 -> 0.006
+2026-04-10T20:55:56 UTC | INFO     | opportunity_model | Composite confidence: 24.5 (Excluded)
+2026-04-10T20:55:56 UTC | INFO     | main | DEBUG confidence SLG: conf=24.5 min=35 risk=78.5 opp=24.7
+2026-04-10T20:55:56 UTC | INFO     | main | SLG: confidence 24.5 < 35 — excluded
+2026-04-10T20:55:56 UTC | INFO     | financial_parser | KIM: using cached financials (2d old)
+2026-04-10T20:55:56 UTC | INFO     | main | DEBUG filter KIM: ok=True reason=
+2026-04-10T20:55:56 UTC | INFO     | main | AV budget exhausted — skipping AV for KIM
+2026-04-10T20:55:57 UTC | INFO     | volume_confirmation | KIM volume ratio=0.76 score=0.25 label=lower activity than usual
+2026-04-10T20:55:57 UTC | INFO     | risk_adjusted_momentum | KIM RAM raw=13.05 score=1.00
+2026-04-10T20:55:57 UTC | INFO     | multi_timeframe_momentum | KIM MTF 1m=0.0 3m=13.623201229490142 6m=11.470960251737893 score=0.67
+2026-04-10T20:55:57 UTC | INFO     | trend_stability | KIM trend stability: dev=0.0136 score=0.86
+2026-04-10T20:55:57 UTC | INFO     | drawdown_risk | KIM drawdown=0.9% score=0.98
+2026-04-10T20:55:57 UTC | INFO     | risk_model | Risk score: raw=19.7 penalty=0 mult=1.0 final=19.7
+2026-04-10T20:55:57 UTC | INFO     | opportunity_model | Opp score: b1=49.1 b2=69.0 b3=50.7 raw=57.4 x1.0 x0.85 = 48.8
+2026-04-10T20:55:57 UTC | INFO     | signal_agreement | Signal agreement: m=1.00 s=0.67 e=0.50 v=0.25 -> 0.084
+2026-04-10T20:55:57 UTC | INFO     | opportunity_model | Composite confidence: 55.1 (Moderate confidence)
+2026-04-10T20:55:57 UTC | INFO     | main | DEBUG confidence KIM: conf=55.1 min=35 risk=19.7 opp=48.8
+2026-04-10T20:55:57 UTC | INFO     | financial_parser | REG: using cached financials (2d old)
+2026-04-10T20:55:57 UTC | INFO     | main | DEBUG filter REG: ok=True reason=
+2026-04-10T20:55:57 UTC | INFO     | main | AV budget exhausted — skipping AV for REG
+2026-04-10T20:55:57 UTC | INFO     | volume_confirmation | REG volume ratio=0.98 score=0.33 label=normal trading activity
+2026-04-10T20:55:57 UTC | INFO     | risk_adjusted_momentum | REG RAM raw=13.75 score=1.00
+2026-04-10T20:55:57 UTC | INFO     | multi_timeframe_momentum | REG MTF 1m=0.9398781693617575 3m=12.099553480067181 6m=12.344540260735275 score=0.67
+2026-04-10T20:55:57 UTC | INFO     | trend_stability | REG trend stability: dev=0.0146 score=0.85
+2026-04-10T20:55:57 UTC | INFO     | drawdown_risk | REG drawdown=0.7% score=0.98
+2026-04-10T20:55:57 UTC | INFO     | risk_model | Risk score: raw=26.5 penalty=0 mult=1.0 final=26.5
+2026-04-10T20:55:57 UTC | INFO     | opportunity_model | Opp score: b1=63.5 b2=68.9 b3=53.7 raw=63.7 x1.0 x0.85 = 54.1
+2026-04-10T20:55:57 UTC | INFO     | signal_agreement | Signal agreement: m=1.00 s=0.67 e=0.50 v=0.33 -> 0.109
+2026-04-10T20:55:57 UTC | INFO     | opportunity_model | Composite confidence: 55.0 (Moderate confidence)
+2026-04-10T20:55:57 UTC | INFO     | main | DEBUG confidence REG: conf=55.0 min=35 risk=26.5 opp=54.1
+2026-04-10T20:55:57 UTC | INFO     | financial_parser | FRT: using cached financials (2d old)
+2026-04-10T20:55:57 UTC | INFO     | main | DEBUG filter FRT: ok=True reason=
+2026-04-10T20:55:57 UTC | INFO     | main | AV budget exhausted — skipping AV for FRT
+2026-04-10T20:55:58 UTC | INFO     | volume_confirmation | FRT volume ratio=2.14 score=0.71 label=unusually high trading activity
+2026-04-10T20:55:58 UTC | INFO     | unusual_volume | FRT UNUSUAL VOLUME: ratio=2.1x — significantly more active than normal
+2026-04-10T20:55:58 UTC | INFO     | risk_adjusted_momentum | FRT RAM raw=7.80 score=0.89
+2026-04-10T20:55:58 UTC | INFO     | multi_timeframe_momentum | FRT MTF 1m=3.0118645891521965 3m=7.220516987444007 6m=14.27199760029958 score=0.64
+2026-04-10T20:55:58 UTC | INFO     | trend_stability | FRT trend stability: dev=0.0204 score=0.80
+2026-04-10T20:55:58 UTC | INFO     | drawdown_risk | FRT drawdown=0.3% score=0.99
+2026-04-10T20:55:58 UTC | INFO     | risk_model | Risk score: raw=34.7 penalty=0 mult=1.0 final=34.7
+2026-04-10T20:55:58 UTC | INFO     | opportunity_model | Opp score: b1=58.5 b2=65.6 b3=69.1 raw=63.4 x1.0 x0.85 = 53.9
+2026-04-10T20:55:58 UTC | INFO     | signal_agreement | Signal agreement: m=0.89 s=0.67 e=0.50 v=0.71 -> 0.212
+2026-04-10T20:55:58 UTC | INFO     | opportunity_model | Composite confidence: 54.2 (Moderate confidence)
+2026-04-10T20:55:58 UTC | INFO     | main | DEBUG confidence FRT: conf=54.2 min=35 risk=34.7 opp=53.9
+2026-04-10T20:55:58 UTC | INFO     | financial_parser | UDR: using cached financials (2d old)
+2026-04-10T20:55:58 UTC | INFO     | main | DEBUG filter UDR: ok=True reason=
+2026-04-10T20:55:58 UTC | INFO     | main | AV budget exhausted — skipping AV for UDR
+2026-04-10T20:55:58 UTC | INFO     | volume_confirmation | UDR volume ratio=0.84 score=0.28 label=normal trading activity
+2026-04-10T20:55:58 UTC | INFO     | risk_adjusted_momentum | UDR RAM raw=-2.67 score=0.37
+2026-04-10T20:55:58 UTC | INFO     | multi_timeframe_momentum | UDR MTF 1m=-2.634500074209929 3m=-4.810082489731834 6m=-0.8239032698920309 score=0.45
+2026-04-10T20:55:59 UTC | INFO     | trend_stability | UDR trend stability: dev=0.0632 score=0.37
+2026-04-10T20:55:59 UTC | INFO     | drawdown_risk | UDR drawdown=11.7% score=0.71
+2026-04-10T20:55:59 UTC | INFO     | risk_model | Risk score: raw=34.3 penalty=0 mult=1.0 final=34.3
+2026-04-10T20:55:59 UTC | INFO     | opportunity_model | Opp score: b1=69.5 b2=43.9 b3=51.7 raw=55.7 x1.0 x0.85 = 47.3
+2026-04-10T20:55:59 UTC | INFO     | signal_agreement | Signal agreement: m=0.37 s=0.67 e=0.50 v=0.28 -> 0.034
+2026-04-10T20:55:59 UTC | INFO     | opportunity_model | Composite confidence: 48.4 (Weak confidence)
+2026-04-10T20:55:59 UTC | INFO     | main | DEBUG confidence UDR: conf=48.4 min=35 risk=34.3 opp=47.3
+2026-04-10T20:55:59 UTC | INFO     | financial_parser | CPT: using cached financials (2d old)
+2026-04-10T20:55:59 UTC | INFO     | main | DEBUG filter CPT: ok=True reason=
+2026-04-10T20:55:59 UTC | INFO     | main | AV budget exhausted — skipping AV for CPT
+2026-04-10T20:55:59 UTC | INFO     | volume_confirmation | CPT volume ratio=0.56 score=0.19 label=lower activity than usual
+2026-04-10T20:55:59 UTC | INFO     | risk_adjusted_momentum | CPT RAM raw=-4.24 score=0.29
+2026-04-10T20:55:59 UTC | INFO     | multi_timeframe_momentum | CPT MTF 1m=1.2044679714217659 3m=-7.455666772557941 6m=1.0126291582377913 score=0.45
+2026-04-10T20:55:59 UTC | INFO     | trend_stability | CPT trend stability: dev=0.0507 score=0.49
+2026-04-10T20:55:59 UTC | INFO     | drawdown_risk | CPT drawdown=7.5% score=0.81
+2026-04-10T20:55:59 UTC | INFO     | risk_model | Risk score: raw=31.7 penalty=0 mult=1.0 final=31.7
+2026-04-10T20:55:59 UTC | INFO     | opportunity_model | Opp score: b1=66.1 b2=41.9 b3=48.0 raw=52.8 x1.0 x0.85 = 44.9
+2026-04-10T20:55:59 UTC | INFO     | signal_agreement | Signal agreement: m=0.29 s=0.67 e=0.50 v=0.19 -> 0.018
+2026-04-10T20:55:59 UTC | INFO     | opportunity_model | Composite confidence: 48.2 (Weak confidence)
+2026-04-10T20:55:59 UTC | INFO     | main | DEBUG confidence CPT: conf=48.2 min=35 risk=31.7 opp=44.9
+2026-04-10T20:55:59 UTC | INFO     | financial_parser | IRM: using cached financials (2d old)
+2026-04-10T20:55:59 UTC | INFO     | candidate_filter | IRM: D/E missing — will be flagged in report but not excluded
+2026-04-10T20:55:59 UTC | INFO     | main | DEBUG filter IRM: ok=True reason=
+2026-04-10T20:55:59 UTC | INFO     | main | AV budget exhausted — skipping AV for IRM
+2026-04-10T20:55:59 UTC | INFO     | volume_confirmation | IRM volume ratio=0.43 score=0.14 label=lower activity than usual
+2026-04-10T20:55:59 UTC | INFO     | risk_adjusted_momentum | IRM RAM raw=10.83 score=1.00
+2026-04-10T20:56:00 UTC | INFO     | multi_timeframe_momentum | IRM MTF 1m=2.483200773234477 3m=26.273105726583157 6m=5.718382446642816 score=0.76
+2026-04-10T20:56:00 UTC | INFO     | trend_stability | IRM trend stability: dev=0.0244 score=0.76
+2026-04-10T20:56:00 UTC | INFO     | drawdown_risk | IRM drawdown=2.6% score=0.93
+2026-04-10T20:56:00 UTC | INFO     | risk_model | Risk score: raw=50.0 penalty=0 mult=1.0 final=50.0
+2026-04-10T20:56:00 UTC | INFO     | opportunity_model | Opp score: b1=12.3 b2=71.2 b3=46.2 raw=42.6 x1.0 x0.85 = 36.2
+2026-04-10T20:56:00 UTC | INFO     | signal_agreement | Signal agreement: m=1.00 s=0.67 e=0.50 v=0.14 -> 0.047
+2026-04-10T20:56:00 UTC | INFO     | opportunity_model | Composite confidence: 39.3 (Weak confidence)
+2026-04-10T20:56:00 UTC | INFO     | main | DEBUG confidence IRM: conf=39.3 min=35 risk=50.0 opp=36.2
+2026-04-10T20:56:00 UTC | INFO     | financial_parser | WY: using cached financials (2d old)
+2026-04-10T20:56:00 UTC | INFO     | main | DEBUG filter WY: ok=True reason=
+2026-04-10T20:56:00 UTC | INFO     | main | AV budget exhausted — skipping AV for WY
+2026-04-10T20:56:00 UTC | INFO     | volume_confirmation | WY volume ratio=0.65 score=0.22 label=lower activity than usual
+2026-04-10T20:56:00 UTC | INFO     | risk_adjusted_momentum | WY RAM raw=-1.95 score=0.40
+2026-04-10T20:56:00 UTC | INFO     | multi_timeframe_momentum | WY MTF 1m=6.069736871274902 3m=3.599269906749513 6m=1.57961018962116 score=0.56
+2026-04-10T20:56:00 UTC | INFO     | trend_stability | WY trend stability: dev=0.0314 score=0.69
+2026-04-10T20:56:00 UTC | INFO     | drawdown_risk | WY drawdown=8.3% score=0.79
+2026-04-10T20:56:00 UTC | INFO     | risk_model | Risk score: raw=26.0 penalty=0 mult=1.0 final=26.0
+2026-04-10T20:56:00 UTC | INFO     | opportunity_model | Opp score: b1=12.1 b2=47.5 b3=49.2 raw=33.7 x1.0 x0.85 = 28.7
+2026-04-10T20:56:00 UTC | INFO     | signal_agreement | Signal agreement: m=0.40 s=0.67 e=0.50 v=0.22 -> 0.029
+2026-04-10T20:56:00 UTC | INFO     | opportunity_model | Composite confidence: 44.7 (Weak confidence)
+2026-04-10T20:56:00 UTC | INFO     | main | DEBUG confidence WY: conf=44.7 min=35 risk=26.0 opp=28.7
+2026-04-10T20:56:00 UTC | INFO     | financial_parser | LAMR: using cached financials (2d old)
+2026-04-10T20:56:00 UTC | INFO     | main | DEBUG filter LAMR: ok=False reason=debt-to-equity 4.80 above 2.5 threshold
+2026-04-10T20:56:00 UTC | INFO     | financial_parser | GLPI: using cached financials (2d old)
+2026-04-10T20:56:00 UTC | INFO     | main | DEBUG filter GLPI: ok=True reason=
+2026-04-10T20:56:00 UTC | INFO     | main | AV budget exhausted — skipping AV for GLPI
+2026-04-10T20:56:01 UTC | INFO     | volume_confirmation | GLPI volume ratio=0.61 score=0.20 label=lower activity than usual
+2026-04-10T20:56:01 UTC | INFO     | risk_adjusted_momentum | GLPI RAM raw=5.61 score=0.78
+2026-04-10T20:56:01 UTC | INFO     | multi_timeframe_momentum | GLPI MTF 1m=-0.8033935556410141 3m=5.902668292647903 6m=6.82122748745112 score=0.58
+2026-04-10T20:56:01 UTC | INFO     | trend_stability | GLPI trend stability: dev=0.0220 score=0.78
+2026-04-10T20:56:01 UTC | INFO     | drawdown_risk | GLPI drawdown=4.7% score=0.88
+2026-04-10T20:56:01 UTC | INFO     | risk_model | Risk score: raw=27.4 penalty=0 mult=1.0 final=27.4
+2026-04-10T20:56:01 UTC | INFO     | opportunity_model | Opp score: b1=50.8 b2=61.3 b3=48.8 raw=54.6 x1.0 x0.85 = 46.4
+2026-04-10T20:56:01 UTC | INFO     | signal_agreement | Signal agreement: m=0.78 s=0.67 e=0.50 v=0.20 -> 0.053
+2026-04-10T20:56:01 UTC | INFO     | opportunity_model | Composite confidence: 50.9 (Moderate confidence)
+2026-04-10T20:56:01 UTC | INFO     | main | DEBUG confidence GLPI: conf=50.9 min=35 risk=27.4 opp=46.4
+2026-04-10T20:56:01 UTC | INFO     | financial_parser | VICI: using cached financials (2d old)
+2026-04-10T20:56:01 UTC | INFO     | main | DEBUG filter VICI: ok=True reason=
+2026-04-10T20:56:01 UTC | INFO     | main | AV budget exhausted — skipping AV for VICI
+2026-04-10T20:56:01 UTC | INFO     | volume_confirmation | VICI volume ratio=0.42 score=0.14 label=lower activity than usual
+2026-04-10T20:56:01 UTC | INFO     | risk_adjusted_momentum | VICI RAM raw=2.47 score=0.62
+2026-04-10T20:56:01 UTC | INFO     | multi_timeframe_momentum | VICI MTF 1m=0.518952540740813 3m=2.539430519559583 6m=-7.639470626437832 score=0.48
+2026-04-10T20:56:01 UTC | INFO     | trend_stability | VICI trend stability: dev=0.0318 score=0.68
+2026-04-10T20:56:01 UTC | INFO     | drawdown_risk | VICI drawdown=5.9% score=0.85
+2026-04-10T20:56:01 UTC | INFO     | risk_model | Risk score: raw=12.4 penalty=0 mult=1.0 final=12.4
+2026-04-10T20:56:01 UTC | INFO     | opportunity_model | Opp score: b1=48.3 b2=55.0 b3=46.2 raw=50.6 x1.0 x0.85 = 43.0
+2026-04-10T20:56:01 UTC | INFO     | signal_agreement | Signal agreement: m=0.62 s=0.67 e=0.50 v=0.14 -> 0.029
+2026-04-10T20:56:01 UTC | INFO     | opportunity_model | Composite confidence: 54.5 (Moderate confidence)
+2026-04-10T20:56:01 UTC | INFO     | main | DEBUG confidence VICI: conf=54.5 min=35 risk=12.4 opp=43.0
+2026-04-10T20:56:01 UTC | INFO     | financial_parser | MAA: using cached financials (2d old)
+2026-04-10T20:56:01 UTC | INFO     | main | DEBUG filter MAA: ok=True reason=
+2026-04-10T20:56:01 UTC | INFO     | main | AV budget exhausted — skipping AV for MAA
+2026-04-10T20:56:01 UTC | INFO     | volume_confirmation | MAA volume ratio=0.48 score=0.16 label=lower activity than usual
+2026-04-10T20:56:01 UTC | INFO     | risk_adjusted_momentum | MAA RAM raw=-5.11 score=0.24
+2026-04-10T20:56:02 UTC | INFO     | multi_timeframe_momentum | MAA MTF 1m=-1.1960591003731795 3m=-7.734085175511527 6m=-4.829193743731616 score=0.41
+2026-04-10T20:56:02 UTC | INFO     | trend_stability | MAA trend stability: dev=0.0565 score=0.43
+2026-04-10T20:56:02 UTC | INFO     | drawdown_risk | MAA drawdown=8.6% score=0.78
+2026-04-10T20:56:02 UTC | INFO     | risk_model | Risk score: raw=31.2 penalty=0 mult=1.0 final=31.2
+2026-04-10T20:56:02 UTC | INFO     | opportunity_model | Opp score: b1=45.2 b2=39.8 b3=47.0 raw=43.4 x1.0 x0.85 = 36.9
+2026-04-10T20:56:02 UTC | INFO     | signal_agreement | Signal agreement: m=0.24 s=0.67 e=0.50 v=0.16 -> 0.013
+2026-04-10T20:56:02 UTC | INFO     | opportunity_model | Composite confidence: 45.5 (Weak confidence)
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG confidence MAA: conf=45.5 min=35 risk=31.2 opp=36.9
+2026-04-10T20:56:02 UTC | INFO     | financial_parser | TWO: using cached financials (2d old)
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG filter TWO: ok=False reason=debt-to-equity 4.79 above 2.5 threshold
+2026-04-10T20:56:02 UTC | INFO     | financial_parser | NLY: using cached financials (2d old)
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG filter NLY: ok=False reason=debt-to-equity 7.20 above 2.5 threshold
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: AAPL risk=15.2 opp=43.1 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: MSFT risk=14.7 opp=38.1 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: AVGO risk=15.8 opp=44.4 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: ADBE risk=31.5 opp=34.4 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: CRM risk=21.6 opp=34.2 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: AMD risk=22.4 opp=49.0 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: INTC risk=32.7 opp=36.8 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: QCOM risk=35.2 opp=32.1 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: TXN risk=18.3 opp=47.9 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: NOW risk=20.6 opp=33.0 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: SNOW risk=43.8 opp=32.6 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: PLTR risk=23.6 opp=46.8 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: PANW risk=16.7 opp=31.7 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: CRWD risk=41.9 opp=37.8 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: ZS risk=48.6 opp=27.7 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: FTNT risk=21.4 opp=44.3 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: DDOG risk=38.7 opp=29.7 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: NET risk=58.9 opp=38.2 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: TWLO risk=49.8 opp=27.4 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: HPE risk=35.1 opp=35.4 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: KLAC risk=31.9 opp=52.4 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: TSLA risk=32.5 opp=19.0 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: MCD risk=27.6 opp=46.3 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: NKE risk=31.1 opp=25.6 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: SBUX risk=32.8 opp=30.7 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: LOW risk=41.6 opp=33.0 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: TJX risk=27.5 opp=40.4 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: MAR risk=34.1 opp=44.1 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: HLT risk=33.4 opp=40.7 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: RCL risk=47.5 opp=40.1 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: CCL risk=46.9 opp=37.1 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: WYNN risk=50.2 opp=28.7 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: GM risk=39.1 opp=34.6 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: LKQ risk=38.1 opp=30.4 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: ORLY risk=28.0 opp=38.7 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: BBY risk=44.1 opp=36.1 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: ROST risk=29.6 opp=49.9 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: ULTA risk=39.1 opp=32.0 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: EBAY risk=30.9 opp=44.0 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: ABNB risk=28.1 opp=40.4 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: PLD risk=27.2 opp=49.5 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: EQIX risk=38.4 opp=44.9 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: CCI risk=48.7 opp=45.6 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: SBAC risk=33.2 opp=53.7 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: WELL risk=28.9 opp=44.6 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: DLR risk=36.1 opp=45.9 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: PSA risk=29.4 opp=44.9 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: EQR risk=24.0 opp=43.0 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: AVB risk=26.9 opp=38.8 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: VTR risk=30.7 opp=40.0 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: O risk=20.5 opp=44.8 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: NNN risk=29.0 opp=47.6 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: KIM risk=19.7 opp=48.8 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: REG risk=26.5 opp=54.1 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: FRT risk=34.7 opp=53.9 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: UDR risk=34.3 opp=47.3 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: CPT risk=31.7 opp=44.9 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: IRM risk=50.0 opp=36.2 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: WY risk=26.0 opp=28.7 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: GLPI risk=27.4 opp=46.4 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: VICI risk=12.4 opp=43.0 cap=70
+2026-04-10T20:56:02 UTC | INFO     | main | DEBUG candidate: MAA risk=31.2 opp=36.9 cap=70
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped AAPL (technology)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped PLTR (technology)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped FTNT (technology)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped FRT (real_estate)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped O (real_estate)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped PLD (real_estate)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped SBAC (real_estate)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped KLAC (technology)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped MSFT (technology)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped GLPI (real_estate)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped NNN (real_estate)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped EQR (real_estate)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped WELL (real_estate)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped PSA (real_estate)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped UDR (real_estate)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped CPT (real_estate)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped NOW (technology)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped TJX (consumer_discretionary)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped PANW (technology)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped ABNB (consumer_discretionary)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped DLR (real_estate)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped AVB (real_estate)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped MAR (consumer_discretionary)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped CRM (technology)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped ORLY (consumer_discretionary)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped VTR (real_estate)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped EQIX (real_estate)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped HLT (consumer_discretionary)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped MAA (real_estate)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped INTC (technology)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped ADBE (technology)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped WY (real_estate)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped HPE (technology)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped CCI (real_estate)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped CRWD (technology)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped SBUX (consumer_discretionary)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped QCOM (technology)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped GM (consumer_discretionary)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped RCL (consumer_discretionary)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped BBY (consumer_discretionary)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped ULTA (consumer_discretionary)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped NKE (consumer_discretionary)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped SNOW (technology)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped LKQ (consumer_discretionary)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped CCL (consumer_discretionary)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped LOW (consumer_discretionary)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped DDOG (technology)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped IRM (real_estate)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped NET (technology)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped TSLA (consumer_discretionary)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped ZS (technology)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped WYNN (consumer_discretionary)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Sector cap (3): skipped TWLO (technology)
+2026-04-10T20:56:02 UTC | INFO     | zscore_ranker | Z-score ranking complete: 62 → 62 eligible → 9 final (max 25, cap 3/sector)
+2026-04-10T20:56:02 UTC | INFO     | main | Post-ranking count: 9
+2026-04-10T20:56:02 UTC | INFO     | main | Industry dedup [Semiconductors]: kept=['TXN', 'AVGO'] dropped=['AMD']
+2026-04-10T20:56:02 UTC | INFO     | main | Final company count after industry dedup: 8
+2026-04-10T20:56:02 UTC | INFO     | main | Final company count after score stability filter: 8
+2026-04-10T20:56:02 UTC | INFO     | main | [EQ] Running earnings quality analysis on 8 tickers
+2026-04-10T20:56:11 UTC | INFO     | main | [EQ] AVGO: no EQ data — skipped or error
+2026-04-10T20:56:11 UTC | INFO     | main | [EQ] KIM: no EQ data — skipped or error
+2026-04-10T20:56:11 UTC | INFO     | main | [EQ] EBAY: no EQ data — skipped or error
+2026-04-10T20:56:11 UTC | INFO     | main | [EQ] Enrichment complete. 5 enriched / 8 total
+2026-04-10T20:56:11 UTC | INFO     | main | [ROT] Running rotation analysis on 8 candidates
+2026-04-10T20:56:18 UTC | INFO     | main | [ROT] Enrichment complete. 8 enriched / 8 total
+2026-04-10T20:56:18 UTC | INFO     | main | [PS] Running price structure analysis on 8 tickers
+2026-04-10T20:56:19 UTC | INFO     | main | [PS] Enrichment complete. 8 enriched / 8 total
+2026-04-10T20:56:19 UTC | INFO     | main | [ER] Event risk enrichment complete. 8/8 processed
+2026-04-10T20:59:01 UTC | INFO     | main | [INS] Insider enrichment complete. 8/8 processed
+2026-04-10T20:59:01 UTC | INFO     | expectations | [EXP] TXN: no Finnhub token — skipping beat streak
+2026-04-10T20:59:01 UTC | INFO     | expectations | [EXP] AVGO: no Finnhub token — skipping beat streak
+2026-04-10T20:59:01 UTC | INFO     | expectations | [EXP] KIM: no Finnhub token — skipping beat streak
+2026-04-10T20:59:01 UTC | INFO     | expectations | [EXP] REG: no Finnhub token — skipping beat streak
+2026-04-10T20:59:01 UTC | INFO     | expectations | [EXP] VICI: no Finnhub token — skipping beat streak
+2026-04-10T20:59:01 UTC | INFO     | expectations | [EXP] ROST: no Finnhub token — skipping beat streak
+2026-04-10T20:59:01 UTC | INFO     | expectations | [EXP] MCD: no Finnhub token — skipping beat streak
+2026-04-10T20:59:01 UTC | INFO     | expectations | [EXP] EBAY: no Finnhub token — skipping beat streak
+2026-04-10T20:59:01 UTC | INFO     | main | [EXP] Expectations enrichment complete. 8/8 processed
+2026-04-10T20:59:01 UTC | INFO     | main | [PL] Portfolio analysis complete. Selected: [] | Diversification: None
+2026-04-10T20:59:02 UTC | ERROR    | paper_trading.sheets_ledger | Failed to authenticate or open sheet: trades
+2026-04-10T20:59:03 UTC | ERROR    | paper_trading.sheets_ledger | Failed to authenticate or open sheet: trades
+2026-04-10T20:59:03 UTC | INFO     | main | [PT] Paper trading complete. Open: 0 | New: 0 | Closed: 0
+2026-04-10T20:59:03 UTC | INFO     | report_builder | Email report written: /home/runner/work/Financial_Assistant_Project/Financial_Assistant_Project/reports/output/intraday_email_1600_1720_20260410T205903Z.html
+2026-04-10T20:59:03 UTC | INFO     | report_builder | Full report written: /home/runner/work/Financial_Assistant_Project/Financial_Assistant_Project/reports/output/intraday_full_1600_1720_20260410T205903Z.html
+2026-04-10T20:59:03 UTC | INFO     | report_builder | Full report served at docs/reports/intraday_full_1600_1720_20260410T205903Z.html
+2026-04-10T20:59:03 UTC | INFO     | dashboard_builder | News JSON written: 10 sectors
+2026-04-10T20:59:03 UTC | INFO     | dashboard_builder | index.html written
+2026-04-10T20:59:03 UTC | INFO     | dashboard_builder | rank.html written
+2026-04-10T20:59:03 UTC | INFO     | dashboard_builder | archive.html written
+2026-04-10T20:59:03 UTC | INFO     | dashboard_builder | news.html written
+2026-04-10T20:59:03 UTC | INFO     | dashboard_builder | trades.html written
+2026-04-10T20:59:03 UTC | INFO     | dashboard_builder | build_dashboard complete
+2026-04-10T20:59:03 UTC | INFO     | email_sender | Using pre-built HTML: /home/runner/work/Financial_Assistant_Project/Financial_Assistant_Project/reports/output/intraday_email_1600_1720_20260410T205903Z.html
+2026-04-10T20:59:05 UTC | INFO     | email_sender | Email sent to francisco.ale.caballero01+stocks@gmail.com: ■ Stock Research — 16:00-17:20 Update — 8 opportunities found
+2026-04-10T20:59:05 UTC | INFO     | summary_builder | Closing email written: /home/runner/work/Financial_Assistant_Project/Financial_Assistant_Project/reports/output/closing_email_20260410T205905Z.html
+2026-04-10T20:59:05 UTC | INFO     | summary_builder | Closing full report written: /home/runner/work/Financial_Assistant_Project/Financial_Assistant_Project/reports/output/closing_full_20260410T205905Z.html
