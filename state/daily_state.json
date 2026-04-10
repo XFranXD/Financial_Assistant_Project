@@ -1,17 +1,22 @@
 {
   "date": "2026-04-10",
   "reported_companies": [
-    "MRVL",
+    "AVGO",
     "LRCX",
-    "WDC",
-    "ETN",
-    "ROST",
-    "NVDA",
-    "AMAT",
-    "AME",
     "MCD",
     "TJX",
-    "CSX"
+    "CF",
+    "WDC",
+    "CSX",
+    "LIN",
+    "TXN",
+    "NVDA",
+    "ETN",
+    "NEM",
+    "ROST",
+    "AME",
+    "AMAT",
+    "MRVL"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -32,8 +37,14 @@
       "status": "complete"
     },
     "11:45-13:15": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "NEM",
+        "AVGO",
+        "TXN",
+        "CF",
+        "LIN"
+      ],
+      "status": "complete"
     },
     "13:45-15:15": {
       "companies": [],
@@ -153,16 +164,10 @@
     }
   },
   "today_scores": {
-    "MRVL": 65.2,
-    "WDC": 64.5,
-    "LRCX": 62.3,
-    "NVDA": 62.2,
-    "AMAT": 59.5,
-    "CSX": 58.7,
-    "ETN": 55.8,
-    "AME": 55.6,
-    "ROST": 53.3,
-    "MCD": 53.0,
-    "TJX": 50.5
+    "NEM": 58.5,
+    "AVGO": 58.3,
+    "TXN": 57.2,
+    "CF": 55.9,
+    "LIN": 51.0
   }
 }
