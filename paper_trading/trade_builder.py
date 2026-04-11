@@ -5,7 +5,7 @@ from contracts.paper_trading_schema import (
     PT_MARKET_VERDICT, PT_ENTRY_QUALITY, PT_EQ_VERDICT,
     PT_ROTATION_SIGNAL, PT_ALIGNMENT, PT_COMPOSITE_SCORE,
     PT_MARKET_REGIME, PT_INSIDER_SIGNAL, PT_EVENT_RISK,
-    PT_EXPECTATIONS_SIGNAL, PT_STATUS_OPEN,
+    PT_EXPECTATIONS_SIGNAL, PT_STATUS_OPEN, PT_IS_TEST,
 )
 from paper_trading.state_manager import build_empty_trade
 from utils.logger import get_logger
@@ -14,7 +14,7 @@ from datetime import datetime
 
 log = get_logger(__name__)
 
-def build_trade(candidate: dict, slot: str, market_regime: str) -> dict:
+def build_trade(candidate: dict, slot: str, market_regime: str, is_test: bool = False) -> dict:
     ticker = candidate.get('ticker')
     if not ticker:
         log.error("Cannot build trade without ticker")
@@ -28,7 +28,10 @@ def build_trade(candidate: dict, slot: str, market_regime: str) -> dict:
         entry_date_str = now_et.strftime('%Y-%m-%d')
         run_tag = slot.replace(':', '').replace('-', '')
         
-        base[PT_TRADE_ID] = f"{ticker}-{entry_date_str}-{run_tag}"
+        trade_id = f"{ticker}-{entry_date_str}-{run_tag}"
+        if is_test and not trade_id.startswith('TEST_'):
+            trade_id = f'TEST_{trade_id}'
+        base[PT_TRADE_ID] = trade_id
         base[PT_ENTRY_DATE] = entry_date_str
         base[PT_ENTRY_RUN] = slot
         base[PT_ENTRY_TIMESTAMP] = now_utc.isoformat()
@@ -49,6 +52,7 @@ def build_trade(candidate: dict, slot: str, market_regime: str) -> dict:
         base[PT_INSIDER_SIGNAL] = candidate.get('insider_signal', '')
         base[PT_EVENT_RISK] = candidate.get('event_risk', '')
         base[PT_EXPECTATIONS_SIGNAL] = candidate.get('expectations_signal', '')
+        base[PT_IS_TEST] = is_test
         
         return base
     except Exception as e:

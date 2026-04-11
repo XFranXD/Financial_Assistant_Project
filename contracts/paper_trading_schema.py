@@ -41,6 +41,7 @@ PT_ALPHA               = "alpha"
 PT_LAST_UPDATED_RUN    = "last_updated_run"
 PT_DATA_VALID          = "data_valid"
 PT_VERSION             = "version"
+PT_IS_TEST             = "is_test"
 
 
 PT_STATUS_OPEN    = "OPEN"
@@ -64,12 +65,12 @@ SHEET_COLUMNS = [
     PT_EXPECTED_RETURN_PCT,
     PT_ERROR_PCT, PT_DIRECTION_CORRECT,
     PT_BENCHMARK_RETURN, PT_ALPHA,
-    PT_LAST_UPDATED_RUN, PT_DATA_VALID, PT_VERSION
+    PT_LAST_UPDATED_RUN, PT_DATA_VALID, PT_VERSION, PT_IS_TEST
 ]
 
 
 SHEET_NAME            = "trades"
-PT_SCHEMA_VERSION     = 1         # int — increment when schema changes
+PT_SCHEMA_VERSION     = 2         # int — increment when schema changes
 COOLDOWN_TRADING_DAYS = 1         # int — min trading days after close before
                                   #        same ticker can re-enter.
                                   #        Uses days_since_close <= COOLDOWN check,
@@ -132,6 +133,7 @@ PT_SAFE_DEFAULTS = {
     PT_LAST_UPDATED_RUN: "",
     PT_DATA_VALID: True,
     PT_VERSION: PT_SCHEMA_VERSION,
+    PT_IS_TEST: False,
 }
 
 
@@ -151,5 +153,5 @@ PT_INT_FIELDS = [
 
 
 PT_BOOL_FIELDS = [
-    PT_DIRECTION_CORRECT, PT_DATA_VALID,
+    PT_DIRECTION_CORRECT, PT_DATA_VALID, PT_IS_TEST,
 ]

@@ -10,6 +10,7 @@ from contracts.paper_trading_schema import (
     PT_DAYS_HELD, PT_CLOSED_AT_TIMESTAMP, PT_LAST_UPDATED_RUN,
     PT_EXIT_TARGET, PT_EXIT_STOP, PT_EXIT_TIMEOUT, PT_EXIT_DROPPED,
     TIMEOUT_TRADING_DAYS, FAILED_FETCH_LIMIT, COOLDOWN_TRADING_DAYS,
+    PT_IS_TEST,
 )
 from paper_trading.state_manager import load_open_trades, commit_updates
 from paper_trading.trade_builder import build_trade
@@ -229,7 +230,7 @@ def detect_new_entries(candidates: list[dict], updated_trades: list[dict], all_t
                     log.info(f"[PT] {ticker}: skip — cooldown active ({days_since_close} days since close)")
                     continue
 
-        new_trade = build_trade(candidate, current_slot, market_regime)
+        new_trade = build_trade(candidate, current_slot, market_regime, is_test=debug_mode)
         new_entries.append(new_trade)
             
     return new_entries
@@ -248,26 +249,26 @@ def run_paper_trading(candidates: list[dict], current_slot: str, market_regime: 
             debug_mode=debug_mode,
         )
 
-        # In debug mode, tag all new trade IDs with TEST_ prefix BEFORE
-        # commit_updates writes them to Sheets — so the sheet rows are
-        # immediately identifiable and deletable via the delete_tests cleanup.
-        if debug_mode:
-            for _t in new_trades:
-                _tid = _t.get(PT_TRADE_ID, '')
-                if _tid and not str(_tid).startswith('TEST_'):
-                    _t[PT_TRADE_ID] = f'TEST_{_tid}'
-                _t['is_test'] = True
-
         commit_updates(updated_trades, new_trades, current_slot)
         
-        open_count = sum(1 for t in updated_trades if t.get(PT_STATUS) == PT_STATUS_OPEN)
-        closed_count = sum(1 for t in updated_trades if t.get(PT_STATUS) in (PT_STATUS_CLOSED, PT_STATUS_DROPPED))
-        
+        real_open   = sum(1 for t in updated_trades if t.get(PT_STATUS) == PT_STATUS_OPEN    and not t.get(PT_IS_TEST))
+        test_open   = sum(1 for t in updated_trades if t.get(PT_STATUS) == PT_STATUS_OPEN    and t.get(PT_IS_TEST))
+        real_closed = sum(1 for t in updated_trades if t.get(PT_STATUS) in (PT_STATUS_CLOSED, PT_STATUS_DROPPED) and not t.get(PT_IS_TEST))
+        test_closed = sum(1 for t in updated_trades if t.get(PT_STATUS) in (PT_STATUS_CLOSED, PT_STATUS_DROPPED) and t.get(PT_IS_TEST))
+        real_new    = sum(1 for t in new_trades if not t.get(PT_IS_TEST))
+        test_new    = sum(1 for t in new_trades if t.get(PT_IS_TEST))
+
         return {
-            'pt_available': True,
-            'open_count': open_count,
-            'new_count': len(new_trades),
-            'closed_count': closed_count,
+            'pt_available':   True,
+            'open_count':     real_open + test_open,
+            'new_count':      real_new  + test_new,
+            'closed_count':   real_closed + test_closed,
+            'real_open_count':   real_open,
+            'real_new_count':    real_new,
+            'real_closed_count': real_closed,
+            'test_open_count':   test_open,
+            'test_new_count':    test_new,
+            'test_closed_count': test_closed,
             'trades': updated_trades + new_trades
         }
     except Exception as e:

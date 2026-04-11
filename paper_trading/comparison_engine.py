@@ -1,7 +1,7 @@
 from contracts.paper_trading_schema import (
     PT_LIVE_PNL_PCT, PT_EXPECTED_RETURN_PCT,
     PT_ERROR_PCT, PT_DIRECTION_CORRECT,
-    PT_STATUS, PT_STATUS_CLOSED,
+    PT_STATUS, PT_STATUS_CLOSED, PT_IS_TEST,
 )
 from utils.logger import get_logger
 
@@ -31,6 +31,8 @@ def compute_comparison(trade: dict) -> dict:
 
 def enrich_closed_trades(trades: list[dict]) -> list[dict]:
     for trade in trades:
+        if trade.get(PT_IS_TEST):
+            continue  # test trades are never counted in signal accuracy stats
         if trade.get(PT_STATUS) == PT_STATUS_CLOSED:
             if trade.get(PT_LIVE_PNL_PCT) is not None and trade.get(PT_EXPECTED_RETURN_PCT) is not None:
                 comp_result = compute_comparison(trade)

@@ -1875,7 +1875,8 @@ def write_trades_json(paper_trading_summary: dict) -> None:
             PT_EXIT_PRICE, PT_EXIT_REASON, PT_LIVE_PNL_PCT, PT_DAYS_HELD,
             PT_CLOSED_AT_TIMESTAMP, PT_EXPECTED_RETURN_PCT, PT_ERROR_PCT,
             PT_DIRECTION_CORRECT, PT_BENCHMARK_RETURN, PT_ALPHA,
-            PT_LAST_UPDATED_RUN, PT_DATA_VALID, PT_VERSION
+            PT_LAST_UPDATED_RUN, PT_DATA_VALID, PT_VERSION, PT_IS_TEST,
+            PT_STATUS_OPEN, PT_STATUS_CLOSED, PT_STATUS_DROPPED,
         )
 
         pt_avail = paper_trading_summary.get('pt_available', False)
@@ -1884,10 +1885,16 @@ def write_trades_json(paper_trading_summary: dict) -> None:
         output = {
             "generated_at": datetime.now(pytz.utc).isoformat(),
             "pt_available": pt_avail,
-            "open_count": paper_trading_summary.get('open_count', 0),
-            "new_count": paper_trading_summary.get('new_count', 0),
+            "open_count":   paper_trading_summary.get('open_count', 0),
+            "new_count":    paper_trading_summary.get('new_count', 0),
             "closed_count": paper_trading_summary.get('closed_count', 0),
-            "total_count": len(trades_list),
+            "total_count":  len(trades_list),
+            "real_open_count":   paper_trading_summary.get('real_open_count', 0),
+            "real_new_count":    paper_trading_summary.get('real_new_count', 0),
+            "real_closed_count": paper_trading_summary.get('real_closed_count', 0),
+            "test_open_count":   paper_trading_summary.get('test_open_count', 0),
+            "test_new_count":    paper_trading_summary.get('test_new_count', 0),
+            "test_closed_count": paper_trading_summary.get('test_closed_count', 0),
             "trades": []
         }
         
@@ -1929,6 +1936,7 @@ def write_trades_json(paper_trading_summary: dict) -> None:
                 PT_LAST_UPDATED_RUN: t.get(PT_LAST_UPDATED_RUN),
                 PT_DATA_VALID: t.get(PT_DATA_VALID),
                 PT_VERSION: t.get(PT_VERSION),
+                PT_IS_TEST: bool(t.get(PT_IS_TEST, False)),
             })
             
         out_path = os.path.join(DATA_DIR, 'trades.json')
@@ -2010,71 +2018,108 @@ def build_trades_page(paper_trading_summary: dict) -> None:
         '    return;'
         '  }'
         
+        '  var realOpen   = data.real_open_count   || 0;'
+        '  var realNew    = data.real_new_count    || 0;'
+        '  var realClosed = data.real_closed_count || 0;'
+        '  var testOpen   = data.test_open_count   || 0;'
+        '  var testNew    = data.test_new_count    || 0;'
         '  var hc = "<div class=\\"pt-scorecard stagger-1\\">";'
-        '  hc += "<div class=\\"pt-stat-tile\\"><span class=\\"pt-stat-value\\">" + (data.open_count || 0) + "</span><span class=\\"pt-stat-label\\">Open Trades</span></div>";'
-        '  hc += "<div class=\\"pt-stat-tile\\"><span class=\\"pt-stat-value\\">" + (data.new_count || 0) + "</span><span class=\\"pt-stat-label\\">New This Run</span></div>";'
-        '  hc += "<div class=\\"pt-stat-tile\\"><span class=\\"pt-stat-value\\">" + (data.closed_count || 0) + "</span><span class=\\"pt-stat-label\\">Closed This Run</span></div>";'
-        '  hc += "<div class=\\"pt-stat-tile\\"><span class=\\"pt-stat-value\\">" + (data.total_count || 0) + "</span><span class=\\"pt-stat-label\\">Total Trades</span></div>";'
+        '  hc += "<div class=\\"pt-stat-tile\\"><span class=\\"pt-stat-value\\">" + realOpen + "</span><span class=\\"pt-stat-label\\">Open Trades</span></div>";'
+        '  hc += "<div class=\\"pt-stat-tile\\"><span class=\\"pt-stat-value\\">" + realNew + "</span><span class=\\"pt-stat-label\\">New This Run</span></div>";'
+        '  hc += "<div class=\\"pt-stat-tile\\"><span class=\\"pt-stat-value\\">" + realClosed + "</span><span class=\\"pt-stat-label\\">Closed This Run</span></div>";'
+        '  var realTotal = realOpen + realClosed;'
+        '  hc += "<div class=\\"pt-stat-tile\\"><span class=\\"pt-stat-value\\">" + realTotal + "</span><span class=\\"pt-stat-label\\">Total Trades</span></div>";'
+        '  if (testOpen > 0 || testNew > 0) {'
+        '    hc += "<div class=\\"pt-stat-tile pt-stat-tile-test\\"><span class=\\"pt-stat-value\\">" + testOpen + "</span><span class=\\"pt-stat-label\\">TEST Open</span></div>";'
+        '    hc += "<div class=\\"pt-stat-tile pt-stat-tile-test\\"><span class=\\"pt-stat-value\\">" + testNew + "</span><span class=\\"pt-stat-label\\">TEST New</span></div>";'
+        '  }'
         '  hc += "</div>";'
         
         '  var allTrades = Array.isArray(data.trades) ? data.trades : [];'
-        '  var op = allTrades.filter(function(t) { return t.status === "OPEN"; });'
-        '  var cl = allTrades.filter(function(t) { return t.status === "CLOSED" || t.status === "DROPPED"; });'
+        '  var realOp = allTrades.filter(function(t) { return t.status === "OPEN" && !t.is_test; });'
+        '  var realCl = allTrades.filter(function(t) { return (t.status === "CLOSED" || t.status === "DROPPED") && !t.is_test; });'
+        '  var testOp = allTrades.filter(function(t) { return t.status === "OPEN" && t.is_test; });'
+        '  var testCl = allTrades.filter(function(t) { return (t.status === "CLOSED" || t.status === "DROPPED") && t.is_test; });'
+        
+        '  function openRow(t) {'
+        '    var reg = t.market_regime || "";'
+        '    var regCol = reg === "BULL" ? "var(--up)" : reg === "BEAR" ? "var(--dn)" : "var(--nt)";'
+        '    var badge = t.is_test ? " <span class=\\"pt-test-badge\\">TEST</span>" : "";'
+        '    var row = "<tr>";'
+        '    row += "<td style=\\"color:#fff;font-weight:700;\\">" + (t.ticker || "\\u2014") + badge + "</td>";'
+        '    row += "<td>" + (t.entry_date || "\\u2014") + "</td>";'
+        '    row += "<td>" + fmtPrice(t.entry_price) + "</td>";'
+        '    row += "<td>" + fmtPrice(t.stop_loss) + "</td>";'
+        '    row += "<td>" + fmtPrice(t.price_target) + "</td>";'
+        '    row += "<td>" + (t.risk_reward_ratio !== null && t.risk_reward_ratio !== undefined ? t.risk_reward_ratio.toFixed(2)+"x" : "\\u2014") + "</td>";'
+        '    row += "<td><span style=\\"color:" + regCol + "\\">" + reg + "</span></td>";'
+        '    row += "<td>" + (t.entry_quality || "\\u2014") + "</td>";'
+        '    row += "<td>" + calcDaysOpen(t.entry_date) + "</td>";'
+        '    row += "<td>" + fmtNum(t.composite_score, 1) + "</td>";'
+        '    row += "</tr>";'
+        '    return row;'
+        '  }'
+        
+        '  function closedRow(t) {'
+        '    var dir = t.direction_correct;'
+        '    var dirH = dir === true ? "<span style=\\"color:#00f0ff;font-weight:bold;\\">\\u2713</span>" : dir === false ? "<span style=\\"color:#ff2d78;font-weight:bold;\\">\\u2717</span>" : "\\u2014";'
+        '    var res = t.exit_reason || "DROPPED";'
+        '    var resH = "<span class=\\"" + getPillClass(res) + "\\">" + res + "</span>";'
+        '    var badge = t.is_test ? " <span class=\\"pt-test-badge\\">TEST</span>" : "";'
+        '    var row = "<tr>";'
+        '    row += "<td style=\\"color:#fff;font-weight:700;\\">" + (t.ticker || "\\u2014") + badge + "</td>";'
+        '    row += "<td>" + (t.entry_date || "\\u2014") + "</td>";'
+        '    row += "<td>" + (t.exit_date || "\\u2014") + "</td>";'
+        '    row += "<td>" + fmtPnl(t.live_pnl_pct) + "</td>";'
+        '    row += "<td>" + resH + "</td>";'
+        '    row += "<td>" + fmtPct(t.expected_return_pct) + "</td>";'
+        '    row += "<td>" + fmtErrPct(t.error_pct) + "</td>";'
+        '    row += "<td style=\\"text-align:center;\\">" + dirH + "</td>";'
+        '    row += "<td>" + (t.days_held !== null && t.days_held !== undefined ? t.days_held : "\\u2014") + "</td>";'
+        '    row += "<td>" + (t.market_verdict || "\\u2014") + "</td>";'
+        '    row += "</tr>";'
+        '    return row;'
+        '  }'
+        
+        '  function openTable(rows) {'
+        '    rows.sort(function(a,b) { var da = a.entry_date || ""; var db = b.entry_date || ""; return da < db ? 1 : da > db ? -1 : 0; });'
+        '    var tbl = "<div class=\\"pt-table\\"><table><thead><tr>";'
+        '    tbl += "<th>Ticker</th><th>Entry Date</th><th>Entry $</th><th>Stop $</th><th>Target $</th><th>R/R</th><th>Regime</th><th>Quality</th><th>Days Open (cal.)</th><th>Score</th>";'
+        '    tbl += "</tr></thead><tbody>";'
+        '    rows.forEach(function(t) { tbl += openRow(t); });'
+        '    tbl += "</tbody></table></div>";'
+        '    return tbl;'
+        '  }'
+        
+        '  function closedTable(rows) {'
+        '    rows.sort(function(a,b) { var da = a.exit_date || "0000"; var db = b.exit_date || "0000"; return da < db ? 1 : da > db ? -1 : 0; });'
+        '    var tbl = "<div class=\\"pt-table\\"><table><thead><tr>";'
+        '    tbl += "<th>Ticker</th><th>Entry</th><th>Exit</th><th>P&L %</th><th>Exit Reason</th><th>Expected %</th><th>Error %</th><th>Direction</th><th>Days</th><th>Verdict</th>";'
+        '    tbl += "</tr></thead><tbody>";'
+        '    rows.forEach(function(t) { tbl += closedRow(t); });'
+        '    tbl += "</tbody></table></div>";'
+        '    return tbl;'
+        '  }'
         
         '  hc += "<div class=\\"sl stagger-2\\">OPEN TRADES</div>";'
-        '  if (op.length === 0) {'
+        '  if (realOp.length === 0) {'
         '    hc += "<div class=\\"stagger-2\\" style=\\"margin-bottom:2rem;color:var(--mist);font-size:0.9rem;\\">No open trades.</div>";'
         '  } else {'
-        '    op.sort(function(a,b) { var da = a.entry_date || ""; var db = b.entry_date || ""; return da < db ? 1 : da > db ? -1 : 0; });'
-        '    hc += "<div class=\\"pt-table stagger-2\\"><table><thead><tr>";'
-        '    hc += "<th>Ticker</th><th>Entry Date</th><th>Entry $</th><th>Stop $</th><th>Target $</th><th>R/R</th><th>Regime</th><th>Quality</th><th>Days Open (cal.)</th><th>Score</th>";'
-        '    hc += "</tr></thead><tbody>";'
-        '    op.forEach(function(t) {'
-        '      var reg = t.market_regime || "";'
-        '      var regCol = reg === "BULL" ? "var(--up)" : reg === "BEAR" ? "var(--dn)" : "var(--nt)";'
-        '      hc += "<tr>";'
-        '      hc += "<td style=\\"color:#fff;font-weight:700;\\">" + (t.ticker || "\\u2014") + "</td>";'
-        '      hc += "<td>" + (t.entry_date || "\\u2014") + "</td>";'
-        '      hc += "<td>" + fmtPrice(t.entry_price) + "</td>";'
-        '      hc += "<td>" + fmtPrice(t.stop_loss) + "</td>";'
-        '      hc += "<td>" + fmtPrice(t.price_target) + "</td>";'
-        '      hc += "<td>" + (t.risk_reward_ratio !== null ? t.risk_reward_ratio.toFixed(2)+"x" : "\\u2014") + "</td>";'
-        '      hc += "<td><span style=\\"color:" + regCol + "\\">" + reg + "</span></td>";'
-        '      hc += "<td>" + (t.entry_quality || "\\u2014") + "</td>";'
-        '      hc += "<td>" + calcDaysOpen(t.entry_date) + "</td>";'
-        '      hc += "<td>" + fmtNum(t.composite_score, 1) + "</td>";'
-        '      hc += "</tr>";'
-        '    });'
-        '    hc += "</tbody></table></div>";'
+        '    hc += openTable(realOp);'
         '  }'
         
         '  hc += "<div class=\\"sl stagger-3\\">CLOSED TRADES</div>";'
-        '  if (cl.length === 0) {'
+        '  if (realCl.length === 0) {'
         '    hc += "<div class=\\"stagger-3\\" style=\\"margin-bottom:2rem;color:var(--mist);font-size:0.9rem;\\">No closed trades.</div>";'
         '  } else {'
-        '    cl.sort(function(a,b) { var da = a.exit_date || "0000"; var db = b.exit_date || "0000"; return da < db ? 1 : da > db ? -1 : 0; });'
-        '    hc += "<div class=\\"pt-table stagger-3\\"><table><thead><tr>";'
-        '    hc += "<th>Ticker</th><th>Entry</th><th>Exit</th><th>P&L %</th><th>Exit Reason</th><th>Expected %</th><th>Error %</th><th>Direction</th><th>Days</th><th>Verdict</th>";'
-        '    hc += "</tr></thead><tbody>";'
-        '    cl.forEach(function(t) {'
-        '      var dir = t.direction_correct;'
-        '      var dirH = dir === true ? "<span style=\\"color:#00f0ff;font-weight:bold;\\">\\u2713</span>" : dir === false ? "<span style=\\"color:#ff2d78;font-weight:bold;\\">\\u2717</span>" : "\\u2014";'
-        '      var res = t.exit_reason || "DROPPED";'
-        '      var resH = "<span class=\\"" + getPillClass(res) + "\\">" + res + "</span>";'
-        '      hc += "<tr>";'
-        '      hc += "<td style=\\"color:#fff;font-weight:700;\\">" + (t.ticker || "\\u2014") + "</td>";'
-        '      hc += "<td>" + (t.entry_date || "\\u2014") + "</td>";'
-        '      hc += "<td>" + (t.exit_date || "\\u2014") + "</td>";'
-        '      hc += "<td>" + fmtPnl(t.live_pnl_pct) + "</td>";'
-        '      hc += "<td>" + resH + "</td>";'
-        '      hc += "<td>" + fmtPct(t.expected_return_pct) + "</td>";'
-        '      hc += "<td>" + fmtErrPct(t.error_pct) + "</td>";'
-        '      hc += "<td style=\\"text-align:center;\\">" + dirH + "</td>";'
-        '      hc += "<td>" + (t.days_held !== null ? t.days_held : "\\u2014") + "</td>";'
-        '      hc += "<td>" + (t.market_verdict || "\\u2014") + "</td>";'
-        '      hc += "</tr>";'
-        '    });'
-        '    hc += "</tbody></table></div>";'
+        '    hc += closedTable(realCl);'
+        '  }'
+        
+        '  if (testOp.length > 0 || testCl.length > 0) {'
+        '    hc += "<div class=\\"sl stagger-4 pt-test-section-label\\">TEST TRADES \\u2014 debug only, excluded from all strategy metrics</div>";'
+        '    hc += "<div class=\\"pt-test-notice\\">These trades were generated during a debug run. They are financially realistic but do not reflect strategy decisions and will be removed by the cleanup workflow.</div>";'
+        '    if (testOp.length > 0) { hc += openTable(testOp); }'
+        '    if (testCl.length > 0) { hc += closedTable(testCl); }'
         '  }'
         
         '  document.getElementById("pt-mount").innerHTML = hc;'
@@ -2550,6 +2595,15 @@ def build_dashboard(
             log.info('tests.html written (test run)')
         except Exception as e:
             log.error(f'tests.html write failed: {e}')
+        # Update the paper trading frontend even in debug mode so test trades
+        # are visible in trades.html immediately after the run.
+        try:
+            _pt_summary = paper_trading_summary or {}
+            write_trades_json(_pt_summary)
+            build_trades_page(_pt_summary)
+            log.info('trades.html written (test run)')
+        except Exception as e:
+            log.error(f'trades update failed (test run): {e}')
         log.info(
             f'[DEBUG] build_dashboard complete (test path). '
             f'Subs: {_subs_label} | Tickers: {[c.get("ticker") for c in companies]}'
