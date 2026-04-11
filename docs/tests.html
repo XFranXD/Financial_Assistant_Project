@@ -1,56 +1,255 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="description" content="MRE Debug Test Layer"><title>MRE // Debug Tests</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet"><link rel="stylesheet" href="assets/style.css"><style>#mre-loader{position:fixed;inset:0;z-index:9999;background:#0a0a12;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity 0.4s ease;}#mre-loader.done{opacity:0;pointer-events:none;}.mre-bar-shell{position:relative;width:280px;height:40px;border:2px solid #c850c0;border-radius:6px;padding:5px;box-shadow:0 0 8px #c850c080,0 0 20px #c850c040,inset 0 0 6px #c850c020;overflow:hidden;}.mre-bar-shell::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent calc(100% / 10 - 3px),#0a0a12 calc(100% / 10 - 3px),#0a0a12 calc(100% / 10));pointer-events:none;z-index:2;}.mre-bar-fill{height:100%;width:0%;border-radius:2px;background:linear-gradient(90deg,#5c6fff,#9b59ff,#c850c0);box-shadow:0 0 12px #9b59ff80;position:relative;z-index:1;transition:width 0.05s linear;}#mre-loader-text{font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:0.25em;color:#9b59ff;text-shadow:0 0 10px #9b59ff80;min-width:130px;text-align:center;}</style><style>
-.tst-empty{color:var(--mist);font-family:var(--ff-mono);font-size:11px;padding:32px 0;}
-.tst-card{margin-bottom:2rem;border:1px solid var(--rim);border-radius:4px;background:rgba(20,20,35,.6);overflow:hidden;}
-.tst-hdr{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(155,89,255,.08);border-bottom:1px solid var(--rim);flex-wrap:wrap;}
-.tst-badge{font-family:var(--ff-mono);font-size:9px;letter-spacing:.15em;color:#fff5a0;background:rgba(180,150,20,.25);border:1px solid rgba(180,150,20,.5);padding:2px 6px;border-radius:2px;flex-shrink:0;}
-.tst-label{font-family:var(--ff-mono);font-size:11px;color:var(--pu);letter-spacing:.08em;flex:1;min-width:0;}
-.tst-ts{font-family:var(--ff-mono);font-size:10px;color:var(--mist);margin-left:auto;white-space:nowrap;}
-.tst-meta{display:flex;flex-wrap:wrap;gap:18px;padding:8px 14px;border-bottom:1px solid var(--rim);background:rgba(0,0,0,.2);}
-.tst-meta-item{font-family:var(--ff-mono);font-size:10px;color:var(--fg);}
-.tst-meta-k{color:var(--mist);margin-right:6px;}
-.tst-log{margin:0;padding:14px;font-family:var(--ff-mono);font-size:11px;line-height:1.65;color:var(--fg);white-space:pre;overflow-x:auto;background:rgba(0,0,0,.35);tab-size:2;user-select:text;cursor:text;border:none;outline:none;max-height:700px;overflow-y:auto;}
-.tst-log::-webkit-scrollbar{width:6px;height:6px;}
-.tst-log::-webkit-scrollbar-track{background:transparent;}
-.tst-log::-webkit-scrollbar-thumb{background:var(--rim);border-radius:3px;}
-</style>
-</head><body><div id="mre-loader"><div class="mre-bar-shell"><div class="mre-bar-fill" id="mre-bar-fill"></div></div><div id="mre-loader-text">LOADING</div></div><script>(function(){var _li=0,_ls=["LOADING","LOADING.","LOADING..","LOADING..."];var _lt=document.getElementById("mre-loader-text");var _lp=setInterval(function(){_li=(_li+1)%4;if(_lt)_lt.textContent=_ls[_li];},420);var _bf=document.getElementById("mre-bar-fill");var _bt=null;function _bStep(ts){if(!_bt)_bt=ts;var prog=Math.min((ts-_bt)/1800,1);var ease=1-Math.pow(1-prog,3);if(_bf)_bf.style.width=(ease*100)+"%";if(prog<1)requestAnimationFrame(_bStep);}requestAnimationFrame(_bStep);window.dismissLoader=function(){clearInterval(_lp);if(_bf)_bf.style.width="100%";setTimeout(function(){var el=document.getElementById("mre-loader");if(el){el.classList.add("done");setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},450);}},120);};})();</script><div class="scanlines"></div><nav><div class="brand"><div class="brand-pulse"></div><span>MRE // System</span></div><div class="nav-tabs"><a href="index.html" class="tab">Home</a><a href="rank.html" class="tab">Rank</a><a href="trades.html" class="tab">Paper Trading</a><a href="news.html" class="tab">News</a><a href="archive.html" class="tab">Archive</a><a href="tests.html" class="tab on">Tests</a><a href="guide.html" class="tab">Guide</a></div></nav><div class="pages"><div id="p-tests" class="page on"><div class="pg-eyebrow">Debug Layer &middot; Manual Runs</div><div class="pg-title">Test <span class="hi">Outputs</span></div><div class="pg-sub">Force-ticker runs only &middot; Not mixed with scheduled data &middot; Clean with <code style="font-family:var(--ff-mono);font-size:10px;">--delete-tests</code></div><div id="tests-mount"></div></div></div><footer><span>MRE</span> &middot; Free-tier data only &middot; Not investment advice</footer><script>fetch('assets/data/tests.json?v=' + Date.now())
-  .then(function(r){ return r.json(); })
-  .then(function(data){
-    var tests = Array.isArray(data.tests) ? data.tests : [];
-    var mount = document.getElementById('tests-mount');
-    if (!tests.length) {
-      mount.innerHTML = '<div class="tst-empty">No test runs recorded yet. Trigger a workflow_dispatch run with FORCE_TICKERS set.</div>';
-      if (window.dismissLoader) window.dismissLoader();
-      return;
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="description" content="MRE Debug Test Layer">
+  <title>MRE // Debug Tests</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    #mre-loader {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #0a0a12;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      transition: opacity 0.4s ease;
     }
-    var html = '';
-    tests.forEach(function(t, i){
-      var ts    = t.timestamp_et || '';
-      var subs  = Array.isArray(t.active_subs) ? t.active_subs.join(', ') : (t.active_subs || 'all');
-      var ticks = Array.isArray(t.tickers) ? t.tickers.join(', ') : '';
-      var log   = t.log || '';
-      var label = 'TEST — ' + (t.active_subs_label || subs);
-      html += '<div class="tst-card">';
-      html += '<div class="tst-hdr">';
-      html += '<span class="tst-badge">TEST</span>';
-      html += '<span class="tst-label">' + label + '</span>';
-      html += '<span class="tst-ts">' + ts + ' ET</span>';
-      html += '</div>';
-      html += '<div class="tst-meta">';
-      html += '<span class="tst-meta-item"><span class="tst-meta-k">Tickers</span>' + ticks + '</span>';
-      html += '<span class="tst-meta-item"><span class="tst-meta-k">Slot</span>' + (t.slot||'—') + '</span>';
-      html += '</div>';
-      html += '<pre class="tst-log" spellcheck="false">' + _esc(log) + '</pre>';
-      html += '</div>';
-    });
-    mount.innerHTML = html;
-    if (window.dismissLoader) window.dismissLoader();
-  })
-  .catch(function(){
-    document.getElementById('tests-mount').innerHTML = '<div class="tst-empty" style="color:var(--dn);">Error loading test data.</div>';
-    if (window.dismissLoader) window.dismissLoader();
-  });
-function _esc(s){
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-}
-</script></body></html>
+
+    #mre-loader.done {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .mre-bar-shell {
+      position: relative;
+      width: 280px;
+      height: 40px;
+      border: 2px solid #c850c0;
+      border-radius: 6px;
+      padding: 5px;
+      box-shadow: 0 0 8px #c850c080, 0 0 20px #c850c040, inset 0 0 6px #c850c020;
+      overflow: hidden;
+    }
+
+    .mre-bar-shell::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(90deg, transparent, transparent calc(100% / 10 - 3px), #0a0a12 calc(100% / 10 - 3px), #0a0a12 calc(100% / 10));
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .mre-bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 2px;
+      background: linear-gradient(90deg, #5c6fff, #9b59ff, #c850c0);
+      box-shadow: 0 0 12px #9b59ff80;
+      position: relative;
+      z-index: 1;
+      transition: width 0.05s linear;
+    }
+
+    #mre-loader-text {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.25em;
+      color: #9b59ff;
+      text-shadow: 0 0 10px #9b59ff80;
+      min-width: 130px;
+      text-align: center;
+    }
+  </style>
+  <style>
+    .tst-empty {
+      color: var(--mist);
+      font-family: var(--ff-mono);
+      font-size: 11px;
+      padding: 32px 0;
+    }
+
+    .tst-card {
+      margin-bottom: 2rem;
+      border: 1px solid var(--rim);
+      border-radius: 4px;
+      background: rgba(20, 20, 35, .6);
+      overflow: hidden;
+    }
+
+    .tst-hdr {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      background: rgba(155, 89, 255, .08);
+      border-bottom: 1px solid var(--rim);
+      flex-wrap: wrap;
+    }
+
+    .tst-badge {
+      font-family: var(--ff-mono);
+      font-size: 9px;
+      letter-spacing: .15em;
+      color: #fff5a0;
+      background: rgba(180, 150, 20, .25);
+      border: 1px solid rgba(180, 150, 20, .5);
+      padding: 2px 6px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .tst-label {
+      font-family: var(--ff-mono);
+      font-size: 11px;
+      color: var(--pu);
+      letter-spacing: .08em;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .tst-ts {
+      font-family: var(--ff-mono);
+      font-size: 10px;
+      color: var(--mist);
+      margin-left: auto;
+      white-space: nowrap;
+    }
+
+    .tst-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--rim);
+      background: rgba(0, 0, 0, .2);
+    }
+
+    .tst-meta-item {
+      font-family: var(--ff-mono);
+      font-size: 10px;
+      color: var(--fg);
+    }
+
+    .tst-meta-k {
+      color: var(--mist);
+      margin-right: 6px;
+    }
+
+    .tst-log {
+      margin: 0;
+      padding: 14px;
+      font-family: var(--ff-mono);
+      font-size: 11px;
+      line-height: 1.65;
+      color: var(--fg);
+      white-space: pre;
+      overflow-x: auto;
+      background: rgba(0, 0, 0, .35);
+      tab-size: 2;
+      user-select: text;
+      cursor: text;
+      border: none;
+      outline: none;
+      max-height: 700px;
+      overflow-y: auto;
+    }
+
+    .tst-log::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    .tst-log::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .tst-log::-webkit-scrollbar-thumb {
+      background: var(--rim);
+      border-radius: 3px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="mre-loader">
+    <div class="mre-bar-shell">
+      <div class="mre-bar-fill" id="mre-bar-fill"></div>
+    </div>
+    <div id="mre-loader-text">LOADING</div>
+  </div>
+  <script>(function () { var _li = 0, _ls = ["LOADING", "LOADING.", "LOADING..", "LOADING..."]; var _lt = document.getElementById("mre-loader-text"); var _lp = setInterval(function () { _li = (_li + 1) % 4; if (_lt) _lt.textContent = _ls[_li]; }, 420); var _bf = document.getElementById("mre-bar-fill"); var _bt = null; function _bStep(ts) { if (!_bt) _bt = ts; var prog = Math.min((ts - _bt) / 1800, 1); var ease = 1 - Math.pow(1 - prog, 3); if (_bf) _bf.style.width = (ease * 100) + "%"; if (prog < 1) requestAnimationFrame(_bStep); } requestAnimationFrame(_bStep); window.dismissLoader = function () { clearInterval(_lp); if (_bf) _bf.style.width = "100%"; setTimeout(function () { var el = document.getElementById("mre-loader"); if (el) { el.classList.add("done"); setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 450); } }, 120); }; })();</script>
+  <div class="scanlines"></div>
+  <nav>
+    <div class="brand">
+      <div class="brand-pulse"></div><span>MRE // System</span>
+    </div>
+    <div class="nav-tabs"><a href="index.html" class="tab">Home</a><a href="rank.html" class="tab">Rank</a><a
+        href="trades.html" class="tab">Paper Trading</a><a href="news.html" class="tab">News</a><a href="archive.html"
+        class="tab">Archive</a><a href="tests.html" class="tab on">Tests</a><a href="guide.html" class="tab">Guide</a>
+    </div>
+  </nav>
+  <div class="pages">
+    <div id="p-tests" class="page on">
+      <div class="pg-eyebrow">Debug Layer &middot; Manual Runs</div>
+      <div class="pg-title">Test <span class="hi">Outputs</span></div>
+      <div class="pg-sub">Force-ticker runs only &middot; Not mixed with scheduled data &middot; Clean with <code
+          style="font-family:var(--ff-mono);font-size:10px;">--delete-tests</code></div>
+      <div id="tests-mount"></div>
+    </div>
+  </div>
+  <footer><span>MRE</span> &middot; Free-tier data only &middot; Not investment advice</footer>
+  <script>fetch('assets/data/tests.json?v=' + Date.now())
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        var tests = Array.isArray(data.tests) ? data.tests : [];
+        var mount = document.getElementById('tests-mount');
+        if (!tests.length) {
+          mount.innerHTML = '<div class="tst-empty">No test runs recorded yet. Trigger a workflow_dispatch run with FORCE_TICKERS set.</div>';
+          if (window.dismissLoader) window.dismissLoader();
+          return;
+        }
+        var html = '';
+        tests.forEach(function (t, i) {
+          var ts = t.timestamp_et || '';
+          var subs = Array.isArray(t.active_subs) ? t.active_subs.join(', ') : (t.active_subs || 'all');
+          var ticks = Array.isArray(t.tickers) ? t.tickers.join(', ') : '';
+          var log = t.log || '';
+          var label = 'TEST — ' + (t.active_subs_label || subs);
+          html += '<div class="tst-card">';
+          html += '<div class="tst-hdr">';
+          html += '<span class="tst-badge">TEST</span>';
+          html += '<span class="tst-label">' + label + '</span>';
+          html += '<span class="tst-ts">' + ts + ' ET</span>';
+          html += '</div>';
+          html += '<div class="tst-meta">';
+          html += '<span class="tst-meta-item"><span class="tst-meta-k">Tickers</span>' + ticks + '</span>';
+          html += '<span class="tst-meta-item"><span class="tst-meta-k">Slot</span>' + (t.slot || '—') + '</span>';
+          html += '</div>';
+          html += '<pre class="tst-log" spellcheck="false">' + _esc(log) + '</pre>';
+          html += '</div>';
+        });
+        mount.innerHTML = html;
+        if (window.dismissLoader) window.dismissLoader();
+      })
+      .catch(function () {
+        document.getElementById('tests-mount').innerHTML = '<div class="tst-empty" style="color:var(--dn);">Error loading test data.</div>';
+        if (window.dismissLoader) window.dismissLoader();
+      });
+    function _esc(s) {
+      return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+  </script>
+</body>
+
+</html>
