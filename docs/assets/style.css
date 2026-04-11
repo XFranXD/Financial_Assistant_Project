@@ -2053,6 +2053,27 @@ a:hover {
   .pt-scorecard {
     grid-template-columns: repeat(2, 1fr);
   }
+
+  /* PT tables — horizontal scroll with larger touch targets */
+  .pt-table {
+    border-radius: 6px;
+  }
+
+  .pt-table th,
+  .pt-table td {
+    padding: 0.55rem 0.65rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+
+  /* PT section label and notice */
+  .pt-test-section-label {
+    font-size: 0.72rem;
+  }
+
+  .pt-test-notice {
+    font-size: 0.75rem;
+  }
 }
 
 /* ── Sub6 Paper Trading Page ─────────────────────────────────────── */
@@ -2195,6 +2216,108 @@ a:hover {
   background: #12121a;
   border: 1px solid #1e1e2e;
   border-radius: 8px;
+}
+
+/* ── Paper Trading — responsive table columns ────────────────────────── */
+/*
+  Open trades table column order:
+  1=Ticker 2=Entry Date 3=Entry$ 4=Stop$ 5=Target$ 6=R/R 7=Regime 8=Quality 9=Days 10=Score
+
+  Closed trades table column order:
+  1=Ticker 2=Entry 3=Exit 4=P&L% 5=Exit Reason 6=Expected% 7=Error% 8=Direction 9=Days 10=Verdict
+
+  Strategy: always show the most actionable columns; hide less critical ones as screen narrows.
+*/
+
+/* 600px and below — hide low-priority columns, keep core data readable */
+@media (max-width: 600px) {
+
+  /* Open trades: hide R/R(6), Regime(7), Score(10) */
+  .pt-table.pt-open-table th:nth-child(6),
+  .pt-table.pt-open-table td:nth-child(6),
+  .pt-table.pt-open-table th:nth-child(7),
+  .pt-table.pt-open-table td:nth-child(7),
+  .pt-table.pt-open-table th:nth-child(10),
+  .pt-table.pt-open-table td:nth-child(10) {
+    display: none;
+  }
+
+  /* Closed trades: hide Expected%(6), Error%(7), Direction(8) */
+  .pt-table.pt-closed-table th:nth-child(6),
+  .pt-table.pt-closed-table td:nth-child(6),
+  .pt-table.pt-closed-table th:nth-child(7),
+  .pt-table.pt-closed-table td:nth-child(7),
+  .pt-table.pt-closed-table th:nth-child(8),
+  .pt-table.pt-closed-table td:nth-child(8) {
+    display: none;
+  }
+}
+
+/* 420px and below — card mode: each row stacks vertically */
+@media (max-width: 420px) {
+  .pt-table {
+    overflow-x: visible;
+  }
+
+  .pt-table table,
+  .pt-table thead,
+  .pt-table tbody,
+  .pt-table th,
+  .pt-table td,
+  .pt-table tr {
+    display: block;
+  }
+
+  .pt-table thead tr {
+    display: none;
+    /* hide header row — labels come from data-label */
+  }
+
+  .pt-table tr {
+    border: 1px solid #1e1e2e;
+    border-radius: 6px;
+    margin-bottom: 0.75rem;
+    background: #12121a;
+    padding: 0.5rem 0;
+  }
+
+  .pt-table tr:last-child {
+    margin-bottom: 0;
+  }
+
+  .pt-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.4rem 0.85rem;
+    border-bottom: 1px solid rgba(30, 30, 46, 0.6);
+    font-size: 0.8rem;
+    white-space: normal;
+  }
+
+  .pt-table td:last-child {
+    border-bottom: none;
+  }
+
+  /* Label pulled from data-label attribute set by JS */
+  .pt-table td::before {
+    content: attr(data-label);
+    font-size: 0.68rem;
+    color: #666680;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    font-family: 'Share Tech Mono', monospace;
+    flex-shrink: 0;
+    margin-right: 0.75rem;
+  }
+
+  .pt-table td:empty {
+    display: none;
+  }
+
+  .pt-stat-value {
+    font-size: 1.5rem;
+  }
 }
 
 /* ── TEST trade styling ─────────────────────────────────────────────── */
