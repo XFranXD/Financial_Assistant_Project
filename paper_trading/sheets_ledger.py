@@ -49,13 +49,21 @@ def ensure_headers() -> bool:
         
     try:
         rows = sheet.get_all_values()
-        if not rows:
+        # Treat sheet as empty if there are no rows, or if the first row is
+        # entirely blank (e.g. a stray empty row left from manual editing).
+        first_row = rows[0] if rows else []
+        is_empty = not rows or all(v == '' for v in first_row)
+
+        if is_empty:
+            # Clear any stray blank rows before writing headers so headers
+            # land on row 1 cleanly.
+            if rows:
+                sheet.clear()
             sheet.append_row(SHEET_COLUMNS, value_input_option="RAW")
             return True
             
-        header_row = rows[0]
-        if header_row != SHEET_COLUMNS:
-            log.error(f"Header mismatch detected. Expected: {SHEET_COLUMNS}, Found: {header_row}")
+        if first_row != SHEET_COLUMNS:
+            log.error(f"Header mismatch detected. Expected: {SHEET_COLUMNS}, Found: {first_row}")
             return False
             
         return True
@@ -144,3 +152,4 @@ def update_rows(rows: list[dict]) -> bool:
     except Exception as e:
         log.error(f"Failed to update rows: {e}")
         return False
+        
