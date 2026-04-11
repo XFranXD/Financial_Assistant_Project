@@ -2362,7 +2362,11 @@ def _write_tests_page() -> None:
         "      html += '<span class=\"tst-meta-item\"><span class=\"tst-meta-k\">Tickers</span>' + ticks + '</span>';\n"
         "      html += '<span class=\"tst-meta-item\"><span class=\"tst-meta-k\">Slot</span>' + (t.slot||'—') + '</span>';\n"
         "      html += '</div>';\n"
-        "      html += '<pre class=\"tst-log\" spellcheck=\"false\">' + _esc(log) + '</pre>';\n"
+        "      var logId = 'tst-log-' + i;\n"
+        "      html += '<div class=\"tst-log-wrap\">';\n"
+        "      html += '<button class=\"tst-copy-btn\" data-log-id=\"' + logId + '\" onclick=\"tstCopy(this)\">&#x2398; Copy Log</button>';\n"
+        "      html += '<pre class=\"tst-log\" id=\"' + logId + '\" spellcheck=\"false\">' + _esc(log) + '</pre>';\n"
+        "      html += '</div>';\n"
         "      html += '</div>';\n"
         "    });\n"
         "    mount.innerHTML = html;\n"
@@ -2400,6 +2404,16 @@ def _write_tests_page() -> None:
         '.tst-log::-webkit-scrollbar{width:6px;height:6px;}\n'
         '.tst-log::-webkit-scrollbar-track{background:transparent;}\n'
         '.tst-log::-webkit-scrollbar-thumb{background:var(--rim);border-radius:3px;}\n'
+        '.tst-log-wrap{position:relative;}\n'
+        '.tst-copy-btn{'
+        'position:absolute;top:8px;right:10px;z-index:2;'
+        'font-family:var(--ff-mono);font-size:9px;letter-spacing:.1em;'
+        'color:var(--pu);background:rgba(155,89,255,.12);'
+        'border:1px solid rgba(155,89,255,.35);border-radius:3px;'
+        'padding:3px 9px;cursor:pointer;transition:all .2s;'
+        '}\n'
+        '.tst-copy-btn:hover{background:rgba(155,89,255,.25);border-color:rgba(155,89,255,.7);color:#fff;}\n'
+        '.tst-copy-btn.copied{color:var(--up);border-color:rgba(57,232,160,.5);background:rgba(57,232,160,.1);}\n'
         '</style>\n'
     )
 
@@ -2427,6 +2441,27 @@ def _write_tests_page() -> None:
         '</div></div>'
         '<footer><span>MRE</span> &middot; Free-tier data only &middot; Not investment advice</footer>'
         '<script>'
+        'function tstCopy(btn){'
+        '  var pre=document.getElementById(btn.dataset.logId);'
+        '  if(!pre)return;'
+        '  var text=pre.textContent||pre.innerText;'
+        '  function onCopied(){'
+        '    btn.textContent=\'Copied \u2713\';'
+        '    btn.classList.add(\'copied\');'
+        '    setTimeout(function(){btn.textContent=\'\u2398 Copy Log\';btn.classList.remove(\'copied\');},1800);'
+        '  }'
+        '  if(navigator.clipboard){'
+        '    navigator.clipboard.writeText(text).then(onCopied).catch(function(){'
+        '      var ta=document.createElement(\'textarea\');ta.value=text;'
+        '      document.body.appendChild(ta);ta.select();document.execCommand(\'copy\');'
+        '      document.body.removeChild(ta);onCopied();'
+        '    });'
+        '  } else {'
+        '    var ta=document.createElement(\'textarea\');ta.value=text;'
+        '    document.body.appendChild(ta);ta.select();document.execCommand(\'copy\');'
+        '    document.body.removeChild(ta);onCopied();'
+        '  }'
+        '}'
         f'{_TESTS_FETCH_JS}'
         '</script>'
         '</body></html>'
