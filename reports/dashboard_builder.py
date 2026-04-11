@@ -2114,7 +2114,7 @@ def build_trades_page(paper_trading_summary: dict) -> None:
 _TESTS_MAX_ENTRIES = 50  # hard cap — oldest entries dropped first
 
 
-def _build_test_log(companies: list, active_subs: set, slot: str) -> str:
+def _build_test_log(companies: list, active_subs: set, slot: str, paper_trading_summary: dict | None = None) -> str:
     """
     Build a plain-text log block for one test run.
     Shows per-ticker outputs for each active subsystem in a format
@@ -2264,7 +2264,35 @@ def _build_test_log(companies: list, active_subs: set, slot: str) -> str:
         # ── Sub6: Paper Trading ─────────────────────────────────────────
         if 'sub6' in active_subs:
             lines.append('\n[SUB6] Paper Trading Engine')
-            lines.append('  (paper trading suppressed on test runs — see is_test flag)')
+            pt = paper_trading_summary or {}
+            if not pt.get('pt_available', False):
+                lines.append('  pt_available         : False')
+            else:
+                lines.append(f'  pt_available         : True')
+                lines.append(f'  open_count           : {pt.get("open_count", 0)}')
+                lines.append(f'  new_count            : {pt.get("new_count", 0)}')
+                lines.append(f'  closed_count         : {pt.get("closed_count", 0)}')
+                # Per-ticker trade detail — match trades to this candidate by ticker
+                ticker_trades = [
+                    tr for tr in pt.get('trades', [])
+                    if tr.get('ticker') == c.get('ticker')
+                ]
+                if ticker_trades:
+                    for tr in ticker_trades:
+                        lines.append(f'  trade_id             : {tr.get("trade_id")}')
+                        lines.append(f'  status               : {tr.get("status")}')
+                        lines.append(f'  entry_price          : {tr.get("entry_price")}')
+                        lines.append(f'  stop_loss            : {tr.get("stop_loss")}')
+                        lines.append(f'  price_target         : {tr.get("price_target")}')
+                        lines.append(f'  risk_reward_ratio    : {tr.get("risk_reward_ratio")}')
+                        lines.append(f'  entry_date           : {tr.get("entry_date")}')
+                        lines.append(f'  exit_date            : {tr.get("exit_date")}')
+                        lines.append(f'  exit_reason          : {tr.get("exit_reason")}')
+                        lines.append(f'  live_pnl_pct         : {tr.get("live_pnl_pct")}')
+                        lines.append(f'  days_held            : {tr.get("days_held")}')
+                        lines.append(f'  is_test              : {tr.get("is_test")}')
+                else:
+                    lines.append('  (no trade for this ticker this run)')
 
     lines.append(f'\n{"─"*72}')
     lines.append('END OF TEST LOG')
@@ -2466,7 +2494,7 @@ def build_dashboard(
             _c['is_test'] = True
         _subs_label = ', '.join(sorted(active_subs)) if active_subs else 'all'
         try:
-            _log_text = _build_test_log(companies, active_subs or set(), slot)
+            _log_text = _build_test_log(companies, active_subs or set(), slot, paper_trading_summary=paper_trading_summary or {})
         except Exception as _log_err:
             _log_text = f'[log build failed: {_log_err}]'
         test_entry = {
@@ -2568,4 +2596,3 @@ def build_dashboard(
         log.error(f'trades update failed: {e}')
 
     log.info('build_dashboard complete')
-    
