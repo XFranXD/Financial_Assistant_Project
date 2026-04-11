@@ -856,8 +856,10 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict,
                 market_regime = _pt_regime,
                 debug_mode    = True,
             )
-            # Tag every trade ID with TEST_ prefix so cleanup can identify
-            # and delete them from Google Sheets without touching real trades.
+            # TEST_ tagging already applied inside run_paper_trading (debug_mode=True)
+            # before commit_updates writes to Sheets. This loop is a safety net to
+            # ensure the in-memory dicts returned here also carry the TEST_ prefix
+            # and is_test flag for dashboard_builder display purposes.
             for _pt_trade in paper_trading_summary.get('trades', []):
                 _tid = _pt_trade.get(PT_TRADE_ID, '')
                 if _tid and not str(_tid).startswith('TEST_'):

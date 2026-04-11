@@ -247,7 +247,17 @@ def run_paper_trading(candidates: list[dict], current_slot: str, market_regime: 
             current_slot, market_regime,
             debug_mode=debug_mode,
         )
-        
+
+        # In debug mode, tag all new trade IDs with TEST_ prefix BEFORE
+        # commit_updates writes them to Sheets — so the sheet rows are
+        # immediately identifiable and deletable via the delete_tests cleanup.
+        if debug_mode:
+            for _t in new_trades:
+                _tid = _t.get(PT_TRADE_ID, '')
+                if _tid and not str(_tid).startswith('TEST_'):
+                    _t[PT_TRADE_ID] = f'TEST_{_tid}'
+                _t['is_test'] = True
+
         commit_updates(updated_trades, new_trades, current_slot)
         
         open_count = sum(1 for t in updated_trades if t.get(PT_STATUS) == PT_STATUS_OPEN)
