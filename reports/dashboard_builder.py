@@ -1957,7 +1957,7 @@ def build_trades_page(paper_trading_summary: dict) -> None:
         '<div class="pg-eyebrow">LEDGER</div>'
         '<div class="pg-title">Paper <span class="hi">Trading</span></div>'
         f'<div class="pg-sub">Simulated trade ledger | Google Sheets backed'
-        f'<span style="float:right;color:var(--pu);">Generated: {{datetime.now(pytz.utc).strftime("%Y-%m-%d %H:%M:%S UTC")}}</span></div>'
+        f'<span style="float:right;color:var(--pu);">Generated: {datetime.now(pytz.utc).strftime("%Y-%m-%d %H:%M:%S UTC")}</span></div>'
         
         '<div id="pt-mount"></div>'
         
@@ -2303,6 +2303,9 @@ def _write_tests_json(test_entry: dict) -> None:
 def _write_tests_page() -> None:
     """Render tests.html — the Debug Test Layer page."""
     _TESTS_FETCH_JS = (
+        "function _esc(s){\n"
+        "  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');\n"
+        "}\n"
         "fetch('assets/data/tests.json?v=' + Date.now())\n"
         "  .then(function(r){ return r.json(); })\n"
         "  .then(function(data){\n"
@@ -2342,9 +2345,6 @@ def _write_tests_page() -> None:
         " '<div class=\"tst-empty\" style=\"color:var(--dn);\">Error loading test data.</div>';\n"
         "    if (window.dismissLoader) window.dismissLoader();\n"
         "  });\n"
-        "function _esc(s){\n"
-        "  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');\n"
-        "}\n"
     )
 
     _TESTS_STYLES = (

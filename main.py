@@ -536,7 +536,6 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict,
             'sector_data':          sector_data,
             'rotation':             {},
             'disclaimer':           DISCLAIMER,
-            'force_debug':          True,   # marks this as a debug/test candidate
         }
         all_candidates.append(candidate)
 
@@ -931,11 +930,13 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict,
     else:
         log.info('[DEBUG] dry_run=True — email suppressed')
 
-    # ── Commit: suppressed in dry_run ─────────────────────────────────────
-    if not dry_run:
-        _commit_outputs()
-    else:
-        log.info('[DEBUG] dry_run=True — git commit suppressed')
+    # ── Commit: handled by workflow CI step unconditionally ───────────────
+    # _commit_outputs() is intentionally NOT called here. The GitHub Actions
+    # "Commit outputs" step always runs after main.py exits and commits docs/
+    # regardless of dry_run. Calling _commit_outputs() here would double-commit
+    # on dry_run=False runs AND suppress the tests.json/tests.html push on
+    # dry_run=True runs (which is the entire point of the debug test layer).
+    log.info('[DEBUG] Commit delegated to workflow CI step.')
 
     log.info(
         f'[DEBUG] Force-ticker run complete. '
