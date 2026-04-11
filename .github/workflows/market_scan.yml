@@ -39,18 +39,11 @@ on:
           Safe mode — true by default for all manual runs.
             true  → No email (HTML OR EMAIL)
             false → behaves exactly like a scheduled run (use only when intentional)
+          Note: dry_run does NOT suppress Sub6. If sub6 is in your subsystems
+          list, paper trading will run and write TEST_-tagged trades to Sheets.
+          Clean up afterwards via the Cleanup workflow → delete_tests mode.
         required: false
         default: 'true'
-      force_sub6:
-        description: |
-          Enable Sub6 (Paper Trading) on debug runs — only applies when tickers are set above.
-            false → Sub6 is suppressed when dry_run=true (default, safe)
-            true  → Sub6 runs even with dry_run=true. All trades are tagged TEST_ and
-                    bypass financial strategy gates (verdict, entry quality) so the paper
-                    trading logic and Google Sheets integration can be tested independently.
-                    Clean up test data afterwards via the Cleanup workflow → delete_tests mode.
-        required: false
-        default: 'false'
 
 
 jobs:
@@ -93,7 +86,6 @@ jobs:
           FORCE_TICKERS:         ${{ github.event.inputs.force_tickers }}
           FORCE_SUBSYSTEMS:      ${{ github.event.inputs.subsystems }}
           DRY_RUN:               ${{ github.event.inputs.dry_run }}
-          FORCE_SUB6:            ${{ github.event.inputs.force_sub6 }}
           GOOGLE_SHEETS_ID:            ${{ secrets.GOOGLE_SHEETS_ID }}
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
         run: python main.py

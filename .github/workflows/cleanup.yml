@@ -23,7 +23,7 @@ on:
           2026-03-31 2     → slot 2 on that day (11:45-13:15)
           Slots: 1=9:45  2=11:45  3=13:45  4=16:00
 
-          NOTE: To delete test run data (from FORCE_SUB6 debug runs),
+          NOTE: To delete test run data (from Sub6 debug runs),
           use mode=delete_tests instead — no TARGET needed.
           That mode removes all tests.json entries, TEST_-prefixed
           trades from trades.json, and TEST_ rows from Google Sheets.
@@ -93,4 +93,3 @@ jobs:
           git pull --rebase origin main
           git stash pop || true
           git push
-          
