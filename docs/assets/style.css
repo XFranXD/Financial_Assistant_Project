@@ -1964,12 +1964,39 @@ a:hover {
 
 /* ── RESPONSIVE ── */
 @media (max-width: 760px) {
+
+  /* Nav — full-width horizontal scroll strip on mobile */
   nav {
-    padding: 0 14px;
+    padding: 0;
+    height: 48px;
+    justify-content: flex-start;
   }
 
-  .brand span {
+  .brand {
     display: none;
+  }
+
+  .nav-tabs {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 0;
+    padding: 0 4px;
+  }
+
+  .nav-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab {
+    flex-shrink: 0;
+    padding: 7px 14px;
+    font-size: 10px;
+    white-space: nowrap;
   }
 
   .page {
@@ -2020,22 +2047,6 @@ a:hover {
   .rpill {
     font-size: 7px;
     padding: 2px 6px;
-  }
-
-  /* Nav — horizontal scroll so 6 tabs don't overflow viewport */
-  .nav-tabs {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    flex-shrink: 0;
-  }
-
-  .nav-tabs::-webkit-scrollbar {
-    display: none;
-  }
-
-  .tab {
-    padding: 7px 11px;
   }
 
   /* PT scorecard — 2 columns on mobile */

@@ -1,395 +1,648 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="description" content="MRE Market Research Engine — Live dashboard"><title>MRE // Market Overview</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet"><script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script><link rel="stylesheet" href="assets/style.css"><style>.idx-taskbar{display:flex;gap:8px;}.idx-chart-wrap canvas{width:100%!important;height:100%!important;}.exp-chart canvas{width:100%!important;height:100%!important;}</style><style>#mre-loader{position:fixed;inset:0;z-index:9999;background:#0a0a12;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity 0.4s ease;}#mre-loader.done{opacity:0;pointer-events:none;}.mre-bar-shell{position:relative;width:280px;height:40px;border:2px solid #c850c0;border-radius:6px;padding:5px;box-shadow:0 0 8px #c850c080,0 0 20px #c850c040,inset 0 0 6px #c850c020;overflow:hidden;}.mre-bar-shell::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent calc(100% / 10 - 3px),#0a0a12 calc(100% / 10 - 3px),#0a0a12 calc(100% / 10));pointer-events:none;z-index:2;}.mre-bar-fill{height:100%;width:0%;border-radius:2px;background:linear-gradient(90deg,#5c6fff,#9b59ff,#c850c0);box-shadow:0 0 12px #9b59ff80;position:relative;z-index:1;transition:width 0.05s linear;}#mre-loader-text{font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:0.25em;color:#9b59ff;text-shadow:0 0 10px #9b59ff80;min-width:130px;text-align:center;}</style></head><body><div id="mre-loader"><div class="mre-bar-shell"><div class="mre-bar-fill" id="mre-bar-fill"></div></div><div id="mre-loader-text">LOADING</div></div><script>(function(){var _li=0,_ls=["LOADING","LOADING.","LOADING..","LOADING..."];var _lt=document.getElementById("mre-loader-text");var _lp=setInterval(function(){_li=(_li+1)%4;if(_lt)_lt.textContent=_ls[_li];},420);var _bf=document.getElementById("mre-bar-fill");var _bt=null;function _bStep(ts){if(!_bt)_bt=ts;var prog=Math.min((ts-_bt)/1800,1);var ease=1-Math.pow(1-prog,3);if(_bf)_bf.style.width=(ease*100)+"%";if(prog<1)requestAnimationFrame(_bStep);}requestAnimationFrame(_bStep);window.dismissLoader=function(){clearInterval(_lp);if(_bf)_bf.style.width="100%";setTimeout(function(){var el=document.getElementById("mre-loader");if(el){el.classList.add("done");setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},450);}},120);};})();</script><div class="scanlines"></div><nav><div class="brand"><div class="brand-pulse"></div><span>MRE // System</span></div><div class="nav-tabs"><a href="index.html" class="tab on">Home</a><a href="rank.html" class="tab">Rank</a><a href="trades.html" class="tab">Paper Trading</a><a href="news.html" class="tab">News</a><a href="archive.html" class="tab">Archive</a><a href="guide.html" class="tab">Guide</a></div></nav><div class="pages"><div id="p-home" class="page on"><div class="pg-eyebrow stagger-1">Dashboard &middot; Active</div><div class="pg-title stagger-1">Market <span class="hi">Overview</span></div><div class="pg-sub stagger-1">2026-04-10 16:59 ET &middot; Last scan</div><div class="idx-section stagger-2"><div class="sl">Market Indices &middot; 30-day</div><div class="idx-taskbar"><div class="idx-pill" id="pill-dow" onclick="toggleIdx('dow')"><div class="pill-left"><div class="pill-label"><span style="display:inline-block;background:linear-gradient(90deg,rgba(60,40,0,.90) 0%,rgba(255,179,71,.75) 100%);border-radius:5px;padding:1px;"><span style="display:inline-block;font-size:10px;color:#ffb347;font-family:var(--ff-mono);letter-spacing:0.1em;text-transform:uppercase;white-space:nowrap;background:rgba(40,25,0,.85);border-radius:4px;padding:2px 7px;">Dow Jones</span></span></div><div class="pill-val">47,917</div><div class="pill-change dn">▼ 0.56% FALLING</div></div><div class="pill-chevron">▼</div></div><div class="idx-pill" id="pill-sp" onclick="toggleIdx('sp')"><div class="pill-left"><div class="pill-label"><span style="display:inline-block;background:linear-gradient(90deg,rgba(60,30,0,.90) 0%,rgba(255,124,42,.75) 100%);border-radius:5px;padding:1px;"><span style="display:inline-block;font-size:10px;color:#ff7c2a;font-family:var(--ff-mono);letter-spacing:0.1em;text-transform:uppercase;white-space:nowrap;background:rgba(40,18,0,.85);border-radius:4px;padding:2px 7px;">S&amp;P 500</span></span></div><div class="pill-val">6,817</div><div class="pill-change dn">▼ 0.11% FALLING</div></div><div class="pill-chevron">▼</div></div><div class="idx-pill" id="pill-nq" onclick="toggleIdx('nq')"><div class="pill-left"><div class="pill-label"><span style="display:inline-block;background:linear-gradient(90deg,rgba(60,10,20,.90) 0%,rgba(255,68,102,.75) 100%);border-radius:5px;padding:1px;"><span style="display:inline-block;font-size:10px;color:#ff4466;font-family:var(--ff-mono);letter-spacing:0.1em;text-transform:uppercase;white-space:nowrap;background:rgba(40,5,12,.85);border-radius:4px;padding:2px 7px;">Nasdaq</span></span></div><div class="pill-val">22,903</div><div class="pill-change up">▲ 0.35% RISING</div></div><div class="pill-chevron">▼</div></div></div><div class="idx-expand" id="idx-expand"><div class="idx-slide-viewport" id="idx-slide-viewport"><div class="idx-slide-track" id="idx-slide-track"><div class="idx-panel" id="idx-panel-active"><div class="idx-panel-header"><div class="idx-expand-name" id="idx-expand-name">—</div><div class="idx-expand-stats"><span>1M <span class="val" id="idx-stat-1m">—</span></span><span>3M <span class="val" id="idx-stat-3m">—</span></span><span>6M <span class="val" id="idx-stat-6m">—</span></span></div></div><div class="idx-chart-wrap"><canvas id="idx-chart"></canvas></div></div></div></div></div></div><div class="home-below" id="home-below"><div class="status-strip stagger-3"><span class="ss-label" style="font-size:11px;">Breadth</span><span class="ss-val dn">WEAK BREADTH — MOST STOCKS DECLINING</span><span class="ss-divider">&middot;</span><span class="ss-label" style="font-size:11px;">Market</span><span class="ss-val nt">Normal market</span><span class="ss-divider">&middot;</span><span class="ss-label" style="font-size:11px;">Regime</span><span class="ss-val up">BULL</span></div><div class="stagger-4"><div class="sl">This Week's Best <a href="rank.html" class="rp-link" style="margin-left:8px">Full board &rarr;</a></div><div id="rank-preview-mount"></div></div><div class="stagger-5"><div class="sl" style="margin-top:28px">Recent Reports</div><div id="report-cards-mount" class="rcard-grid"></div></div><div class="stagger-5"><div class="sl" style="margin-top:28px">Signal Headlines <a href="news.html" class="rp-link" style="margin-left:8px">All &rarr;</a></div><div class="npc-group"><div class="npc"><div class="npc-stripe" style="background:linear-gradient(180deg,var(--up),transparent)"></div><div><div class="npc-title">US inflation jumps to two-year high as Iran war ripples across economy</div><div class="npc-meta"><span class="ntag pu">Energy</span> ft &middot; 17:00 ET</div></div></div><div class="npc"><div class="npc-stripe" style="background:linear-gradient(180deg,var(--up),transparent)"></div><div><div class="npc-title">After years of war with Russia, Ukraine&#x27;s farmers are hit by Iran conflict - Reuters</div><div class="npc-meta"><span class="ntag pu">Defense</span> finnhub &middot; 16:50 ET</div></div></div><div class="npc"><div class="npc-stripe" style="background:linear-gradient(180deg,var(--up),transparent)"></div><div><div class="npc-title">US inflation jumps to two-year high as Iran war ripples across economy</div><div class="npc-meta"><span class="ntag pu">Consumer Discretionary</span> ft &middot; 17:00 ET</div></div></div><div class="npc"><div class="npc-stripe" style="background:linear-gradient(180deg,var(--up),transparent)"></div><div><div class="npc-title">US inflation jumps to two-year high as Iran war ripples across economy</div><div class="npc-meta"><span class="ntag pu">Materials</span> ft &middot; 17:00 ET</div></div></div><div class="npc"><div class="npc-stripe" style="background:linear-gradient(180deg,var(--nt),transparent)"></div><div><div class="npc-title">Jim Cramer&#x27;s top 10 things to watch in the stock market Friday</div><div class="npc-meta"><span class="ntag pu">Consumer Discretionary</span> finnhub &middot; 12:56 ET</div></div></div></div></div></div></div></div><footer><span>MRE</span> &middot; Free-tier data only &middot; Not investment advice &middot; Always verify before acting</footer><script>
-const DAYS = Array.from({length:30},(_,i)=>{
-  const d=new Date(); d.setDate(d.getDate()-(29-i));
-  return d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
-});
+<!DOCTYPE html>
+<html lang="en">
 
-function easeOutExpo(t)  { return t===1?1:1-Math.pow(2,-10*t); }
-function easeOutCubic(t) { return 1-Math.pow(1-t,3); }
-
-function genieClipOpen(t){
-  const e=easeOutExpo(t),x1=46*(1-e),x2=54+46*e,tx1=3*(1-e),tx2=97+3*e;
-  return `polygon(${tx1.toFixed(1)}% 0%, ${tx2.toFixed(1)}% 0%, ${x2.toFixed(1)}% 100%, ${x1.toFixed(1)}% 100%)`;
-}
-function genieClipClose(t){
-  const tB=Math.min(t*1.6,1),tT=Math.max((t-0.4)/0.6,0);
-  const bx1=easeOutCubic(tB)*46,bx2=100-easeOutCubic(tB)*46;
-  const tx1=easeOutCubic(tT)*46,tx2=100-easeOutCubic(tT)*46;
-  return `polygon(${tx1.toFixed(1)}% 0%, ${tx2.toFixed(1)}% 0%, ${bx2.toFixed(1)}% 100%, ${bx1.toFixed(1)}% 100%)`;
-}
-let expandRAF=null, expandHeight=0;
-function getFullHeight(){
-  const ex=document.getElementById('idx-expand'),pan=document.getElementById('idx-panel-active');
-  if(!pan) return 200;
-  const pH=ex.style.height,pC=ex.style.clipPath;
-  ex.style.height='auto'; ex.style.clipPath='';
-  const h=pan.offsetHeight+8;
-  ex.style.height=pH; ex.style.clipPath=pC;
-  return h;
-}
-function animateGenie(fromH,toH,dur,onDone){
-  if(expandRAF){cancelAnimationFrame(expandRAF);expandRAF=null;}
-  const ex=document.getElementById('idx-expand'),start=performance.now(),opening=toH>fromH;
-  function frame(now){
-    const raw=Math.min((now-start)/dur,1);
-    const tH=opening?easeOutExpo(raw):easeOutCubic(raw);
-    const h=fromH+(toH-fromH)*tH; expandHeight=h;
-    const clip=opening?genieClipOpen(raw):genieClipClose(raw);
-    const sc=opening?0.93+0.07*easeOutExpo(raw):1.0-0.07*easeOutCubic(raw);
-    const mt=h>0?8*Math.min(raw*4,1):0;
-    ex.style.height=h+'px'; ex.style.marginTop=mt+'px';
-    ex.style.opacity=opening?Math.min(raw*3,1):Math.max(1-raw,0);
-    ex.style.clipPath=clip; ex.style.transform=`scaleX(${sc.toFixed(4)})`;
-    if(raw<1){expandRAF=requestAnimationFrame(frame);}
-    else{
-      expandRAF=null;
-      if(toH>0){ex.style.height=toH+'px';ex.style.marginTop='8px';ex.style.opacity='1';
-        ex.style.clipPath='polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)';ex.style.transform='scaleX(1)';}
-      else{ex.style.height='0';ex.style.marginTop='0';ex.style.opacity='0';
-        ex.style.clipPath='polygon(46% 0%, 54% 0%, 54% 0%, 46% 0%)';ex.style.transform='scaleX(0.93)';}
-      isAnimating=false; if(onDone)onDone();
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="description" content="MRE Market Research Engine — Live dashboard">
+  <title>MRE // Market Overview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap"
+    rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" defer></script>
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    .idx-taskbar {
+      display: flex;
+      gap: 8px;
     }
-  }
-  expandRAF=requestAnimationFrame(frame);
-}
 
-function animateSlide(prevKey,nextKey,onDone){
-  const fromO=IDX_ORDER.indexOf(prevKey),toO=IDX_ORDER.indexOf(nextKey);
-  const dir=toO>fromO?'left':'right';
-  const ex=document.getElementById('idx-expand'),vp=document.getElementById('idx-slide-viewport');
-  const tr=document.getElementById('idx-slide-track'),ac=document.getElementById('idx-panel-active');
-  if(window._mreCharts&&window._mreCharts['idx-chart']){window._mreCharts['idx-chart'].destroy();delete window._mreCharts['idx-chart'];}
-  ex.classList.add('sliding');
-  const pW=ac.offsetWidth,pH=ac.offsetHeight;
-  vp.style.height=pH+'px'; vp.style.overflow='hidden';
-  const cl=ac.cloneNode(true); cl.removeAttribute('id');
-  cl.style.cssText=`position:absolute;top:0;left:0;width:${pW}px;z-index:1;transform:translateX(0);opacity:1;pointer-events:none;`;
-  tr.appendChild(cl);
-  const d=IDX_DATA[nextKey];
-  ac.querySelector('.idx-expand-name').textContent=d.name;
-  ac.querySelector('#idx-stat-1m').textContent=d.stat1m;
-  ac.querySelector('#idx-stat-3m').textContent=d.stat3m;
-  ac.querySelector('#idx-stat-6m').textContent=d.stat6m;
-  const eX=dir==='left'?pW:-pW;
-  ac.style.cssText=`position:absolute;top:0;left:0;width:${pW}px;z-index:2;transform:translateX(${eX}px);opacity:0.7;`;
-  tr.style.position='relative'; tr.style.height=pH+'px';
-  const DUR=520,start=performance.now(),exitX=dir==='left'?-pW:pW;
-  let slideRAF=null;
-  function frame(now){
-    const raw=Math.min((now-start)/DUR,1),ease=easeOutCubic(raw);
-    const fo=Math.max(1-raw/0.6,0),fi=raw<0.3?0:easeOutCubic((raw-0.3)/0.7);
-    cl.style.transform=`translateX(${exitX*ease}px)`; cl.style.opacity=fo.toFixed(3);
-    ac.style.transform=`translateX(${eX*(1-ease)}px)`; ac.style.opacity=fi.toFixed(3);
-    if(raw<1){slideRAF=requestAnimationFrame(frame);}
-    else{
-      cl.remove(); ac.style.cssText='';
-      tr.style.height=''; tr.style.position='';
-      vp.style.height=''; vp.style.overflow='';
-      ex.classList.remove('sliding');
-      ac.querySelector('.idx-panel-header').style.opacity='0';
-      ac.querySelector('.idx-panel-header').style.transform='translateY(-6px)';
-      ac.querySelector('.idx-chart-wrap').style.opacity='0';
-      ac.querySelector('.idx-chart-wrap').style.transform='translateY(-6px)';
-      requestAnimationFrame(()=>{
-        ac.querySelector('.idx-panel-header').style.opacity='';
-        ac.querySelector('.idx-panel-header').style.transform='';
-        ac.querySelector('.idx-chart-wrap').style.opacity='';
-        ac.querySelector('.idx-chart-wrap').style.transform='';
-        ex.classList.add('slide-reveal');
-      });
-      isAnimating=false;
-      if(onDone) pendingChartTimer=setTimeout(()=>{pendingChartTimer=null;onDone();},320);
+    .idx-chart-wrap canvas {
+      width: 100% !important;
+      height: 100% !important;
     }
-  }
-  slideRAF=requestAnimationFrame(frame);
-}
 
-let currentIdx=null, isAnimating=false, pendingChartTimer=null;
-const IDX_ORDER=['dow','sp','nq'];
-function toggleIdx(key){
-  if(isAnimating)return;
-  if(pendingChartTimer){clearTimeout(pendingChartTimer);pendingChartTimer=null;}
-  if(window._mreCharts&&window._mreCharts['idx-chart']){
-    window._mreCharts['idx-chart'].destroy();delete window._mreCharts['idx-chart'];
-  }
-  const ex=document.getElementById('idx-expand'),pill=document.getElementById('pill-'+key);
-  if(currentIdx===key){
-    pill.classList.remove('active');
-    ex.classList.remove('content-visible','slide-reveal');
-    currentIdx=null; isAnimating=true;
-    animateGenie(expandHeight,0,340,null); return;
-  }
-  const prevIdx=currentIdx,panelOpen=expandHeight>20;
-  document.querySelectorAll('.idx-pill').forEach(p=>p.classList.remove('active'));
-  pill.classList.add('active'); currentIdx=key; isAnimating=true;
-  if(panelOpen){
-    animateSlide(prevIdx,key,()=>buildIdxChart(IDX_DATA[key]));
-  } else {
-    const d=IDX_DATA[key];
-    document.getElementById('idx-expand-name').textContent=d.name;
-    document.getElementById('idx-stat-1m').textContent=d.stat1m;
-    document.getElementById('idx-stat-3m').textContent=d.stat3m;
-    document.getElementById('idx-stat-6m').textContent=d.stat6m;
-    const full=getFullHeight();
-    animateGenie(0,full,580,()=>{ex.classList.add('content-visible');buildIdxChart(d);});
-  }
-}
+    .exp-chart canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+  </style>
+  <style>
+    #mre-loader {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #0a0a12;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      transition: opacity 0.4s ease;
+    }
 
-function buildIdxChart(d){
-  if(typeof Chart==='undefined')return;
-  window._mreCharts=window._mreCharts||{};
-  const cid='idx-chart',cv=document.getElementById(cid);
-  if(!cv)return;
-  if(window._mreCharts[cid]){window._mreCharts[cid].destroy();delete window._mreCharts[cid];}
-  const col=d.color;
-  window._mreCharts[cid]=new Chart(cv.getContext('2d'),{
-    type:'line',
-    data:{labels:DAYS,datasets:[{data:d.data,borderColor:col,borderWidth:1.8,fill:true,tension:0.38,
-      backgroundColor:ctx=>{const{ctx:c,chartArea:a}=ctx.chart;if(!a)return 'transparent';
-        const g=c.createLinearGradient(0,a.top,0,a.bottom);g.addColorStop(0,col+'30');g.addColorStop(1,'transparent');return g;},
-      pointRadius:0,pointHoverRadius:3,pointHoverBackgroundColor:col,
-      pointHoverBorderColor:'#0a0610',pointHoverBorderWidth:2,hitRadius:20}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,
-        backgroundColor:'#1a1430',borderColor:'rgba(155,89,255,0.25)',borderWidth:1,
-        titleColor:'#9b59ff',bodyColor:'#f0eaff',
-        titleFont:{family:'Share Tech Mono',size:10},bodyFont:{family:'Share Tech Mono',size:11},
-        callbacks:{title:i=>DAYS[i[0].dataIndex],label:i=>' $'+i.raw.toFixed(2)}}},
-      scales:{x:{display:false},y:{display:false}},
-      interaction:{mode:'index',intersect:false},animation:{duration:600,easing:'easeInOutCubic'}}
-  });
-}
+    #mre-loader.done {
+      opacity: 0;
+      pointer-events: none;
+    }
 
-function rafExpandRow(el,innerSel,duration,onDone){
-  el.style.display='block'; el.style.overflow='hidden'; el.style.height='0px';
-  const inner=el.querySelector(innerSel);
-  if(inner){
-    inner.style.opacity='0';
-    inner.style.transform='translateY(-10px)';
-    inner.style.transition='none';
-    inner.querySelectorAll('.est').forEach(function(t){
-      t.style.opacity='0'; t.style.transform='translateY(8px) scale(0.96)';
+    .mre-bar-shell {
+      position: relative;
+      width: 280px;
+      height: 40px;
+      border: 2px solid #c850c0;
+      border-radius: 6px;
+      padding: 5px;
+      box-shadow: 0 0 8px #c850c080, 0 0 20px #c850c040, inset 0 0 6px #c850c020;
+      overflow: hidden;
+    }
+
+    .mre-bar-shell::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(90deg, transparent, transparent calc(100% / 10 - 3px), #0a0a12 calc(100% / 10 - 3px), #0a0a12 calc(100% / 10));
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .mre-bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 2px;
+      background: linear-gradient(90deg, #5c6fff, #9b59ff, #c850c0);
+      box-shadow: 0 0 12px #9b59ff80;
+      position: relative;
+      z-index: 1;
+      transition: width 0.05s linear;
+    }
+
+    #mre-loader-text {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.25em;
+      color: #9b59ff;
+      text-shadow: 0 0 10px #9b59ff80;
+      min-width: 130px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="mre-loader">
+    <div class="mre-bar-shell">
+      <div class="mre-bar-fill" id="mre-bar-fill"></div>
+    </div>
+    <div id="mre-loader-text">LOADING</div>
+  </div>
+  <script>(function () { var _li = 0, _ls = ["LOADING", "LOADING.", "LOADING..", "LOADING..."]; var _lt = document.getElementById("mre-loader-text"); var _lp = setInterval(function () { _li = (_li + 1) % 4; if (_lt) _lt.textContent = _ls[_li]; }, 420); var _bf = document.getElementById("mre-bar-fill"); var _bt = null; function _bStep(ts) { if (!_bt) _bt = ts; var prog = Math.min((ts - _bt) / 1800, 1); var ease = 1 - Math.pow(1 - prog, 3); if (_bf) _bf.style.width = (ease * 100) + "%"; if (prog < 1) requestAnimationFrame(_bStep); } requestAnimationFrame(_bStep); window.dismissLoader = function () { clearInterval(_lp); if (_bf) _bf.style.width = "100%"; setTimeout(function () { var el = document.getElementById("mre-loader"); if (el) { el.classList.add("done"); setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 450); } }, 120); }; })();</script>
+  <div class="scanlines"></div>
+  <nav>
+    <div class="brand">
+      <div class="brand-pulse"></div><span>MRE // System</span>
+    </div>
+    <div class="nav-tabs"><a href="index.html" class="tab on">Home</a><a href="rank.html" class="tab">Rank</a><a
+        href="trades.html" class="tab">Paper Trading</a><a href="news.html" class="tab">News</a><a href="archive.html"
+        class="tab">Archive</a><a href="tests.html" class="tab">Tests</a><a href="guide.html" class="tab">Guide</a>
+    </div>
+  </nav>
+  <div class="pages">
+    <div id="p-home" class="page on">
+      <div class="pg-eyebrow stagger-1">Dashboard &middot; Active</div>
+      <div class="pg-title stagger-1">Market <span class="hi">Overview</span></div>
+      <div class="pg-sub stagger-1">2026-04-10 16:59 ET &middot; Last scan</div>
+      <div class="idx-section stagger-2">
+        <div class="sl">Market Indices &middot; 30-day</div>
+        <div class="idx-taskbar">
+          <div class="idx-pill" id="pill-dow" onclick="toggleIdx('dow')">
+            <div class="pill-left">
+              <div class="pill-label"><span
+                  style="display:inline-block;background:linear-gradient(90deg,rgba(60,40,0,.90) 0%,rgba(255,179,71,.75) 100%);border-radius:5px;padding:1px;"><span
+                    style="display:inline-block;font-size:10px;color:#ffb347;font-family:var(--ff-mono);letter-spacing:0.1em;text-transform:uppercase;white-space:nowrap;background:rgba(40,25,0,.85);border-radius:4px;padding:2px 7px;">Dow
+                    Jones</span></span></div>
+              <div class="pill-val">47,917</div>
+              <div class="pill-change dn">▼ 0.56% FALLING</div>
+            </div>
+            <div class="pill-chevron">▼</div>
+          </div>
+          <div class="idx-pill" id="pill-sp" onclick="toggleIdx('sp')">
+            <div class="pill-left">
+              <div class="pill-label"><span
+                  style="display:inline-block;background:linear-gradient(90deg,rgba(60,30,0,.90) 0%,rgba(255,124,42,.75) 100%);border-radius:5px;padding:1px;"><span
+                    style="display:inline-block;font-size:10px;color:#ff7c2a;font-family:var(--ff-mono);letter-spacing:0.1em;text-transform:uppercase;white-space:nowrap;background:rgba(40,18,0,.85);border-radius:4px;padding:2px 7px;">S&amp;P
+                    500</span></span></div>
+              <div class="pill-val">6,817</div>
+              <div class="pill-change dn">▼ 0.11% FALLING</div>
+            </div>
+            <div class="pill-chevron">▼</div>
+          </div>
+          <div class="idx-pill" id="pill-nq" onclick="toggleIdx('nq')">
+            <div class="pill-left">
+              <div class="pill-label"><span
+                  style="display:inline-block;background:linear-gradient(90deg,rgba(60,10,20,.90) 0%,rgba(255,68,102,.75) 100%);border-radius:5px;padding:1px;"><span
+                    style="display:inline-block;font-size:10px;color:#ff4466;font-family:var(--ff-mono);letter-spacing:0.1em;text-transform:uppercase;white-space:nowrap;background:rgba(40,5,12,.85);border-radius:4px;padding:2px 7px;">Nasdaq</span></span>
+              </div>
+              <div class="pill-val">22,903</div>
+              <div class="pill-change up">▲ 0.35% RISING</div>
+            </div>
+            <div class="pill-chevron">▼</div>
+          </div>
+        </div>
+        <div class="idx-expand" id="idx-expand">
+          <div class="idx-slide-viewport" id="idx-slide-viewport">
+            <div class="idx-slide-track" id="idx-slide-track">
+              <div class="idx-panel" id="idx-panel-active">
+                <div class="idx-panel-header">
+                  <div class="idx-expand-name" id="idx-expand-name">—</div>
+                  <div class="idx-expand-stats"><span>1M <span class="val" id="idx-stat-1m">—</span></span><span>3M
+                      <span class="val" id="idx-stat-3m">—</span></span><span>6M <span class="val"
+                        id="idx-stat-6m">—</span></span></div>
+                </div>
+                <div class="idx-chart-wrap"><canvas id="idx-chart"></canvas></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="home-below" id="home-below">
+        <div class="status-strip stagger-3"><span class="ss-label" style="font-size:11px;">Breadth</span><span
+            class="ss-val dn">WEAK BREADTH — MOST STOCKS DECLINING</span><span class="ss-divider">&middot;</span><span
+            class="ss-label" style="font-size:11px;">Market</span><span class="ss-val nt">Normal market</span><span
+            class="ss-divider">&middot;</span><span class="ss-label" style="font-size:11px;">Regime</span><span
+            class="ss-val up">BULL</span></div>
+        <div class="stagger-4">
+          <div class="sl">This Week's Best <a href="rank.html" class="rp-link" style="margin-left:8px">Full board
+              &rarr;</a></div>
+          <div id="rank-preview-mount"></div>
+        </div>
+        <div class="stagger-5">
+          <div class="sl" style="margin-top:28px">Recent Reports</div>
+          <div id="report-cards-mount" class="rcard-grid"></div>
+        </div>
+        <div class="stagger-5">
+          <div class="sl" style="margin-top:28px">Signal Headlines <a href="news.html" class="rp-link"
+              style="margin-left:8px">All &rarr;</a></div>
+          <div class="npc-group">
+            <div class="npc">
+              <div class="npc-stripe" style="background:linear-gradient(180deg,var(--up),transparent)"></div>
+              <div>
+                <div class="npc-title">US inflation jumps to two-year high as Iran war ripples across economy</div>
+                <div class="npc-meta"><span class="ntag pu">Energy</span> ft &middot; 17:00 ET</div>
+              </div>
+            </div>
+            <div class="npc">
+              <div class="npc-stripe" style="background:linear-gradient(180deg,var(--up),transparent)"></div>
+              <div>
+                <div class="npc-title">After years of war with Russia, Ukraine&#x27;s farmers are hit by Iran conflict -
+                  Reuters</div>
+                <div class="npc-meta"><span class="ntag pu">Defense</span> finnhub &middot; 16:50 ET</div>
+              </div>
+            </div>
+            <div class="npc">
+              <div class="npc-stripe" style="background:linear-gradient(180deg,var(--up),transparent)"></div>
+              <div>
+                <div class="npc-title">US inflation jumps to two-year high as Iran war ripples across economy</div>
+                <div class="npc-meta"><span class="ntag pu">Consumer Discretionary</span> ft &middot; 17:00 ET</div>
+              </div>
+            </div>
+            <div class="npc">
+              <div class="npc-stripe" style="background:linear-gradient(180deg,var(--up),transparent)"></div>
+              <div>
+                <div class="npc-title">US inflation jumps to two-year high as Iran war ripples across economy</div>
+                <div class="npc-meta"><span class="ntag pu">Materials</span> ft &middot; 17:00 ET</div>
+              </div>
+            </div>
+            <div class="npc">
+              <div class="npc-stripe" style="background:linear-gradient(180deg,var(--nt),transparent)"></div>
+              <div>
+                <div class="npc-title">Jim Cramer&#x27;s top 10 things to watch in the stock market Friday</div>
+                <div class="npc-meta"><span class="ntag pu">Consumer Discretionary</span> finnhub &middot; 12:56 ET
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer><span>MRE</span> &middot; Free-tier data only &middot; Not investment advice &middot; Always verify before
+    acting</footer>
+  <script>
+    const DAYS = Array.from({ length: 30 }, (_, i) => {
+      const d = new Date(); d.setDate(d.getDate() - (29 - i));
+      return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     });
-  }
-  const toH=el.scrollHeight;
-  const start=performance.now();
-  function frame(now){
-    const raw=Math.min((now-start)/duration,1);
-    const eH=easeOutExpo(raw), eO=easeOutCubic(Math.min(raw*2.5,1));
-    el.style.height=(toH*eH).toFixed(1)+'px';
-    if(inner){
-      inner.style.opacity=eO.toFixed(3);
-      inner.style.transform=`translateY(${(-10*(1-eH)).toFixed(2)}px)`;
+
+    function easeOutExpo(t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }
+    function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+    function genieClipOpen(t) {
+      const e = easeOutExpo(t), x1 = 46 * (1 - e), x2 = 54 + 46 * e, tx1 = 3 * (1 - e), tx2 = 97 + 3 * e;
+      return `polygon(${tx1.toFixed(1)}% 0%, ${tx2.toFixed(1)}% 0%, ${x2.toFixed(1)}% 100%, ${x1.toFixed(1)}% 100%)`;
     }
-    if(raw<1){requestAnimationFrame(frame);}
-    else{
-      el.classList.add('open');
-      el.style.height=''; el.style.overflow='';
-      if(inner){
-        inner.style.opacity=''; inner.style.transform=''; inner.style.transition='';
-        inner.querySelectorAll('.est').forEach(function(t,i){
-          t.style.opacity='0'; t.style.transform='translateY(8px) scale(0.96)';
-          t.style.transition='none';
-          setTimeout(function(){
-            t.style.transition='opacity 0.22s ease, transform 0.22s ease';
-            t.style.opacity='1'; t.style.transform='translateY(0) scale(1)';
-            setTimeout(function(){t.style.transition='';},240);
-          }, 30+i*45);
+    function genieClipClose(t) {
+      const tB = Math.min(t * 1.6, 1), tT = Math.max((t - 0.4) / 0.6, 0);
+      const bx1 = easeOutCubic(tB) * 46, bx2 = 100 - easeOutCubic(tB) * 46;
+      const tx1 = easeOutCubic(tT) * 46, tx2 = 100 - easeOutCubic(tT) * 46;
+      return `polygon(${tx1.toFixed(1)}% 0%, ${tx2.toFixed(1)}% 0%, ${bx2.toFixed(1)}% 100%, ${bx1.toFixed(1)}% 100%)`;
+    }
+    let expandRAF = null, expandHeight = 0;
+    function getFullHeight() {
+      const ex = document.getElementById('idx-expand'), pan = document.getElementById('idx-panel-active');
+      if (!pan) return 200;
+      const pH = ex.style.height, pC = ex.style.clipPath;
+      ex.style.height = 'auto'; ex.style.clipPath = '';
+      const h = pan.offsetHeight + 8;
+      ex.style.height = pH; ex.style.clipPath = pC;
+      return h;
+    }
+    function animateGenie(fromH, toH, dur, onDone) {
+      if (expandRAF) { cancelAnimationFrame(expandRAF); expandRAF = null; }
+      const ex = document.getElementById('idx-expand'), start = performance.now(), opening = toH > fromH;
+      function frame(now) {
+        const raw = Math.min((now - start) / dur, 1);
+        const tH = opening ? easeOutExpo(raw) : easeOutCubic(raw);
+        const h = fromH + (toH - fromH) * tH; expandHeight = h;
+        const clip = opening ? genieClipOpen(raw) : genieClipClose(raw);
+        const sc = opening ? 0.93 + 0.07 * easeOutExpo(raw) : 1.0 - 0.07 * easeOutCubic(raw);
+        const mt = h > 0 ? 8 * Math.min(raw * 4, 1) : 0;
+        ex.style.height = h + 'px'; ex.style.marginTop = mt + 'px';
+        ex.style.opacity = opening ? Math.min(raw * 3, 1) : Math.max(1 - raw, 0);
+        ex.style.clipPath = clip; ex.style.transform = `scaleX(${sc.toFixed(4)})`;
+        if (raw < 1) { expandRAF = requestAnimationFrame(frame); }
+        else {
+          expandRAF = null;
+          if (toH > 0) {
+            ex.style.height = toH + 'px'; ex.style.marginTop = '8px'; ex.style.opacity = '1';
+            ex.style.clipPath = 'polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)'; ex.style.transform = 'scaleX(1)';
+          }
+          else {
+            ex.style.height = '0'; ex.style.marginTop = '0'; ex.style.opacity = '0';
+            ex.style.clipPath = 'polygon(46% 0%, 54% 0%, 54% 0%, 46% 0%)'; ex.style.transform = 'scaleX(0.93)';
+          }
+          isAnimating = false; if (onDone) onDone();
+        }
+      }
+      expandRAF = requestAnimationFrame(frame);
+    }
+
+    function animateSlide(prevKey, nextKey, onDone) {
+      const fromO = IDX_ORDER.indexOf(prevKey), toO = IDX_ORDER.indexOf(nextKey);
+      const dir = toO > fromO ? 'left' : 'right';
+      const ex = document.getElementById('idx-expand'), vp = document.getElementById('idx-slide-viewport');
+      const tr = document.getElementById('idx-slide-track'), ac = document.getElementById('idx-panel-active');
+      if (window._mreCharts && window._mreCharts['idx-chart']) { window._mreCharts['idx-chart'].destroy(); delete window._mreCharts['idx-chart']; }
+      ex.classList.add('sliding');
+      const pW = ac.offsetWidth, pH = ac.offsetHeight;
+      vp.style.height = pH + 'px'; vp.style.overflow = 'hidden';
+      const cl = ac.cloneNode(true); cl.removeAttribute('id');
+      cl.style.cssText = `position:absolute;top:0;left:0;width:${pW}px;z-index:1;transform:translateX(0);opacity:1;pointer-events:none;`;
+      tr.appendChild(cl);
+      const d = IDX_DATA[nextKey];
+      ac.querySelector('.idx-expand-name').textContent = d.name;
+      ac.querySelector('#idx-stat-1m').textContent = d.stat1m;
+      ac.querySelector('#idx-stat-3m').textContent = d.stat3m;
+      ac.querySelector('#idx-stat-6m').textContent = d.stat6m;
+      const eX = dir === 'left' ? pW : -pW;
+      ac.style.cssText = `position:absolute;top:0;left:0;width:${pW}px;z-index:2;transform:translateX(${eX}px);opacity:0.7;`;
+      tr.style.position = 'relative'; tr.style.height = pH + 'px';
+      const DUR = 520, start = performance.now(), exitX = dir === 'left' ? -pW : pW;
+      let slideRAF = null;
+      function frame(now) {
+        const raw = Math.min((now - start) / DUR, 1), ease = easeOutCubic(raw);
+        const fo = Math.max(1 - raw / 0.6, 0), fi = raw < 0.3 ? 0 : easeOutCubic((raw - 0.3) / 0.7);
+        cl.style.transform = `translateX(${exitX * ease}px)`; cl.style.opacity = fo.toFixed(3);
+        ac.style.transform = `translateX(${eX * (1 - ease)}px)`; ac.style.opacity = fi.toFixed(3);
+        if (raw < 1) { slideRAF = requestAnimationFrame(frame); }
+        else {
+          cl.remove(); ac.style.cssText = '';
+          tr.style.height = ''; tr.style.position = '';
+          vp.style.height = ''; vp.style.overflow = '';
+          ex.classList.remove('sliding');
+          ac.querySelector('.idx-panel-header').style.opacity = '0';
+          ac.querySelector('.idx-panel-header').style.transform = 'translateY(-6px)';
+          ac.querySelector('.idx-chart-wrap').style.opacity = '0';
+          ac.querySelector('.idx-chart-wrap').style.transform = 'translateY(-6px)';
+          requestAnimationFrame(() => {
+            ac.querySelector('.idx-panel-header').style.opacity = '';
+            ac.querySelector('.idx-panel-header').style.transform = '';
+            ac.querySelector('.idx-chart-wrap').style.opacity = '';
+            ac.querySelector('.idx-chart-wrap').style.transform = '';
+            ex.classList.add('slide-reveal');
+          });
+          isAnimating = false;
+          if (onDone) pendingChartTimer = setTimeout(() => { pendingChartTimer = null; onDone(); }, 320);
+        }
+      }
+      slideRAF = requestAnimationFrame(frame);
+    }
+
+    let currentIdx = null, isAnimating = false, pendingChartTimer = null;
+    const IDX_ORDER = ['dow', 'sp', 'nq'];
+    function toggleIdx(key) {
+      if (isAnimating) return;
+      if (pendingChartTimer) { clearTimeout(pendingChartTimer); pendingChartTimer = null; }
+      if (window._mreCharts && window._mreCharts['idx-chart']) {
+        window._mreCharts['idx-chart'].destroy(); delete window._mreCharts['idx-chart'];
+      }
+      const ex = document.getElementById('idx-expand'), pill = document.getElementById('pill-' + key);
+      if (currentIdx === key) {
+        pill.classList.remove('active');
+        ex.classList.remove('content-visible', 'slide-reveal');
+        currentIdx = null; isAnimating = true;
+        animateGenie(expandHeight, 0, 340, null); return;
+      }
+      const prevIdx = currentIdx, panelOpen = expandHeight > 20;
+      document.querySelectorAll('.idx-pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active'); currentIdx = key; isAnimating = true;
+      if (panelOpen) {
+        animateSlide(prevIdx, key, () => buildIdxChart(IDX_DATA[key]));
+      } else {
+        const d = IDX_DATA[key];
+        document.getElementById('idx-expand-name').textContent = d.name;
+        document.getElementById('idx-stat-1m').textContent = d.stat1m;
+        document.getElementById('idx-stat-3m').textContent = d.stat3m;
+        document.getElementById('idx-stat-6m').textContent = d.stat6m;
+        const full = getFullHeight();
+        animateGenie(0, full, 580, () => { ex.classList.add('content-visible'); buildIdxChart(d); });
+      }
+    }
+
+    function buildIdxChart(d) {
+      if (typeof Chart === 'undefined') return;
+      window._mreCharts = window._mreCharts || {};
+      const cid = 'idx-chart', cv = document.getElementById(cid);
+      if (!cv) return;
+      if (window._mreCharts[cid]) { window._mreCharts[cid].destroy(); delete window._mreCharts[cid]; }
+      const col = d.color;
+      window._mreCharts[cid] = new Chart(cv.getContext('2d'), {
+        type: 'line',
+        data: {
+          labels: DAYS, datasets: [{
+            data: d.data, borderColor: col, borderWidth: 1.8, fill: true, tension: 0.38,
+            backgroundColor: ctx => {
+              const { ctx: c, chartArea: a } = ctx.chart; if (!a) return 'transparent';
+              const g = c.createLinearGradient(0, a.top, 0, a.bottom); g.addColorStop(0, col + '30'); g.addColorStop(1, 'transparent'); return g;
+            },
+            pointRadius: 0, pointHoverRadius: 3, pointHoverBackgroundColor: col,
+            pointHoverBorderColor: '#0a0610', pointHoverBorderWidth: 2, hitRadius: 20
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }, tooltip: {
+              mode: 'index', intersect: false,
+              backgroundColor: '#1a1430', borderColor: 'rgba(155,89,255,0.25)', borderWidth: 1,
+              titleColor: '#9b59ff', bodyColor: '#f0eaff',
+              titleFont: { family: 'Share Tech Mono', size: 10 }, bodyFont: { family: 'Share Tech Mono', size: 11 },
+              callbacks: { title: i => DAYS[i[0].dataIndex], label: i => ' $' + i.raw.toFixed(2) }
+            }
+          },
+          scales: { x: { display: false }, y: { display: false } },
+          interaction: { mode: 'index', intersect: false }, animation: { duration: 600, easing: 'easeInOutCubic' }
+        }
+      });
+    }
+
+    function rafExpandRow(el, innerSel, duration, onDone) {
+      el.style.display = 'block'; el.style.overflow = 'hidden'; el.style.height = '0px';
+      const inner = el.querySelector(innerSel);
+      if (inner) {
+        inner.style.opacity = '0';
+        inner.style.transform = 'translateY(-10px)';
+        inner.style.transition = 'none';
+        inner.querySelectorAll('.est').forEach(function (t) {
+          t.style.opacity = '0'; t.style.transform = 'translateY(8px) scale(0.96)';
         });
       }
-      if(onDone)onDone();
-    }
-  }
-  requestAnimationFrame(frame);
-}
-function rafCollapseRow(el,innerSel,duration,onDone){
-  const fromH=el.offsetHeight;
-  if(fromH===0){el.style.display='none';if(onDone)onDone();return;}
-  const inner=el.querySelector(innerSel);
-  el.style.height=fromH+'px'; el.style.overflow='hidden';
-  const start=performance.now();
-  function frame(now){
-    const raw=Math.min((now-start)/duration,1);
-    const eH=easeOutCubic(raw), eO=Math.max(1-raw*2.2,0);
-    el.style.height=(fromH*(1-eH)).toFixed(1)+'px';
-    if(inner){
-      inner.style.opacity=eO.toFixed(3);
-      inner.style.transform=`translateY(${(-8*eH).toFixed(2)}px)`;
-    }
-    if(raw<1){requestAnimationFrame(frame);}
-    else{
-      el.classList.remove('open'); el.style.display='none';
-      el.style.height=''; el.style.overflow='';
-      if(inner){inner.style.opacity=''; inner.style.transform='';
-        inner.querySelectorAll('.est').forEach(function(t){t.style.opacity='';t.style.transform='';t.style.transition='';});
-      }
-      if(onDone)onDone();
-    }
-  }
-  requestAnimationFrame(frame);
-}
-function closeRpExp(el){if(!el.classList.contains('open'))return;rafCollapseRow(el,'.rp-exp-inner',380,null);}
-function closeRpExpInstant(el){
-  if(!el.classList.contains('open'))return;
-  el.classList.remove('open'); el.style.display='none'; el.style.height='';
-  const inner=el.querySelector('.rp-exp-inner');
-  if(inner){inner.style.opacity='';inner.style.transform='';inner.style.transformOrigin='';}
-}
-function rpT(id){
-  const el=document.getElementById(id),was=el.classList.contains('open');
-  const anyOpen=!!document.querySelector('.rp-exp.open');
-  document.querySelectorAll('.rp-exp').forEach(e=>{if(e!==el)closeRpExpInstant(e);});
-  if(!was){
-    function fireItems(){
-      el.querySelectorAll('.pex-item').forEach(function(item,i){
-        item.style.opacity='';
-        item.style.animation='none'; item.offsetHeight;
-        item.style.animation='pex-spark 0.22s ease both '+(0.04+i*0.06)+'s';
-      });
-    }
-    if(anyOpen){
-      el.style.display='block'; el.style.height='';
-      const inner=el.querySelector('.rp-exp-inner');
-      if(inner){inner.style.opacity='1';inner.style.transform='';}
-      el.classList.add('open');
-      requestAnimationFrame(fireItems);
-    } else {
-      el.style.display='block'; el.style.overflow='hidden'; el.style.height='0px';
-      const inner=el.querySelector('.rp-exp-inner');
-      if(inner){inner.style.opacity='1';inner.style.transform='';}
-      el.querySelectorAll('.pex-item').forEach(function(item){
-        item.style.opacity='0'; item.style.animation='none';
-      });
-      const toH=el.scrollHeight;
-      const start=performance.now(),dur=380;
-      function frame(now){
-        const raw=Math.min((now-start)/dur,1);
-        const ease=1-Math.pow(1-raw,3);
-        el.style.height=(toH*ease).toFixed(1)+'px';
-        if(raw<1){requestAnimationFrame(frame);}
-        else{
+      const toH = el.scrollHeight;
+      const start = performance.now();
+      function frame(now) {
+        const raw = Math.min((now - start) / duration, 1);
+        const eH = easeOutExpo(raw), eO = easeOutCubic(Math.min(raw * 2.5, 1));
+        el.style.height = (toH * eH).toFixed(1) + 'px';
+        if (inner) {
+          inner.style.opacity = eO.toFixed(3);
+          inner.style.transform = `translateY(${(-10 * (1 - eH)).toFixed(2)}px)`;
+        }
+        if (raw < 1) { requestAnimationFrame(frame); }
+        else {
           el.classList.add('open');
-          el.style.height=''; el.style.overflow='';
-          requestAnimationFrame(fireItems);
+          el.style.height = ''; el.style.overflow = '';
+          if (inner) {
+            inner.style.opacity = ''; inner.style.transform = ''; inner.style.transition = '';
+            inner.querySelectorAll('.est').forEach(function (t, i) {
+              t.style.opacity = '0'; t.style.transform = 'translateY(8px) scale(0.96)';
+              t.style.transition = 'none';
+              setTimeout(function () {
+                t.style.transition = 'opacity 0.22s ease, transform 0.22s ease';
+                t.style.opacity = '1'; t.style.transform = 'translateY(0) scale(1)';
+                setTimeout(function () { t.style.transition = ''; }, 240);
+              }, 30 + i * 45);
+            });
+          }
+          if (onDone) onDone();
         }
       }
       requestAnimationFrame(frame);
     }
-  } else { closeRpExp(el); }
-}
-function closeExpRow(row){
-  if(!row.classList.contains('open'))return;
-  const card=row.closest('.rank-card'),cid=card?card.dataset.cid:null;
-  if(cid&&window._mreCharts&&window._mreCharts[cid]){
-    window._mreCharts[cid].destroy();delete window._mreCharts[cid];
-    const _oc=document.getElementById(cid);
-    if(_oc){const _octx=_oc.getContext('2d');_octx.clearRect(0,0,_oc.width,_oc.height);}
-  }
-  rafCollapseRow(row,'.exp-inner',380,null);
-}
-function closeExpRowInstant(row){
-  if(!row.classList.contains('open'))return;
-  const card=row.closest('.rank-card'),cid=card?card.dataset.cid:null;
-  if(cid&&window._mreCharts&&window._mreCharts[cid]){
-    window._mreCharts[cid].destroy();delete window._mreCharts[cid];
-    const _oc=document.getElementById(cid);
-    if(_oc){const _octx=_oc.getContext('2d');_octx.clearRect(0,0,_oc.width,_oc.height);}
-  }
-  row.classList.remove('open'); row.style.display='none'; row.style.height='';
-  const inner=row.querySelector('.exp-inner');
-  if(inner){inner.style.opacity='';inner.style.transform='';inner.style.transformOrigin='';}
-}
-function rcT(el){el.classList.toggle('open');}</script><script>const IDX_DATA={"dow": {"name": "Dow Jones", "color": "#ff4d6d", "bg_color": "rgba(255,77,109,0.12)", "data": [48977.92, 48904.78, 48501.27, 48739.41, 47954.74, 47501.55, 47740.8, 47706.51, 47417.27, 46677.85, 46558.47, 46946.41, 46993.26, 46225.15, 46021.43, 45577.47, 46208.47, 46124.06, 46429.49, 45960.11, 45166.64, 45216.14, 46341.51, 46565.74, 46504.67, 46669.88, 46584.46, 47909.92, 48185.8, 47916.57], "stat1m": "\u25b21.1%", "stat3m": "\u2014", "stat6m": "\u2014"}, "sp": {"name": "S&P 500", "color": "#ff4d6d", "bg_color": "rgba(255,77,109,0.12)", "data": [6878.88, 6881.62, 6816.63, 6869.5, 6830.71, 6740.02, 6795.99, 6781.48, 6775.8, 6672.62, 6632.19, 6699.38, 6716.09, 6624.7, 6606.49, 6506.48, 6581.0, 6556.37, 6591.9, 6477.16, 6368.85, 6343.72, 6528.52, 6575.32, 6582.69, 6611.83, 6616.85, 6782.81, 6824.66, 6816.89], "stat1m": "\u25b20.6%", "stat3m": "\u2014", "stat6m": "\u2014"}, "nq": {"name": "Nasdaq", "color": "#39e8a0", "bg_color": "rgba(57,232,160,0.12)", "data": [22668.21, 22748.86, 22516.69, 22807.48, 22748.99, 22387.68, 22695.95, 22697.1, 22716.13, 22311.98, 22105.36, 22374.18, 22479.53, 22152.42, 22090.69, 21647.61, 21946.76, 21761.89, 21929.82, 21408.08, 20948.36, 20794.64, 21590.63, 21840.95, 21879.18, 21996.34, 22017.85, 22634.99, 22822.42, 22902.89], "stat1m": "\u25b20.8%", "stat3m": "\u2014", "stat6m": "\u2014"}};</script><script>
-document.addEventListener('click', function(e) {
-  var btn = e.target.closest('.copy-prompt-btn');
-  if (!btn) return;
-  e.stopPropagation();
-  var el = document.getElementById(btn.dataset.ref);
-  if (!el) return;
-  var text;
-  try { text = JSON.parse(el.textContent); } catch(err) {
-    btn.textContent = 'Error';
-    btn.style.color = 'var(--dn)';
-    setTimeout(function() {
-      btn.textContent = '⎉ Copy AI Prompt';
-      btn.style.color = '';
-    }, 1800);
-    return;
-  }
-  function onCopied() {
-    var orig = btn.textContent;
-    btn.textContent = 'Copied ✓';
-    btn.style.color = 'var(--up)';
-    btn.style.borderColor = 'rgba(57,232,160,.5)';
-    setTimeout(function() {
-      btn.textContent = orig;
-      btn.style.color = '';
-      btn.style.borderColor = '';
-    }, 1800);
-  }
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(text).then(onCopied).catch(function() {
-      var ta = document.createElement('textarea');
-      ta.value = text;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-      onCopied();
+    function rafCollapseRow(el, innerSel, duration, onDone) {
+      const fromH = el.offsetHeight;
+      if (fromH === 0) { el.style.display = 'none'; if (onDone) onDone(); return; }
+      const inner = el.querySelector(innerSel);
+      el.style.height = fromH + 'px'; el.style.overflow = 'hidden';
+      const start = performance.now();
+      function frame(now) {
+        const raw = Math.min((now - start) / duration, 1);
+        const eH = easeOutCubic(raw), eO = Math.max(1 - raw * 2.2, 0);
+        el.style.height = (fromH * (1 - eH)).toFixed(1) + 'px';
+        if (inner) {
+          inner.style.opacity = eO.toFixed(3);
+          inner.style.transform = `translateY(${(-8 * eH).toFixed(2)}px)`;
+        }
+        if (raw < 1) { requestAnimationFrame(frame); }
+        else {
+          el.classList.remove('open'); el.style.display = 'none';
+          el.style.height = ''; el.style.overflow = '';
+          if (inner) {
+            inner.style.opacity = ''; inner.style.transform = '';
+            inner.querySelectorAll('.est').forEach(function (t) { t.style.opacity = ''; t.style.transform = ''; t.style.transition = ''; });
+          }
+          if (onDone) onDone();
+        }
+      }
+      requestAnimationFrame(frame);
+    }
+    function closeRpExp(el) { if (!el.classList.contains('open')) return; rafCollapseRow(el, '.rp-exp-inner', 380, null); }
+    function closeRpExpInstant(el) {
+      if (!el.classList.contains('open')) return;
+      el.classList.remove('open'); el.style.display = 'none'; el.style.height = '';
+      const inner = el.querySelector('.rp-exp-inner');
+      if (inner) { inner.style.opacity = ''; inner.style.transform = ''; inner.style.transformOrigin = ''; }
+    }
+    function rpT(id) {
+      const el = document.getElementById(id), was = el.classList.contains('open');
+      const anyOpen = !!document.querySelector('.rp-exp.open');
+      document.querySelectorAll('.rp-exp').forEach(e => { if (e !== el) closeRpExpInstant(e); });
+      if (!was) {
+        function fireItems() {
+          el.querySelectorAll('.pex-item').forEach(function (item, i) {
+            item.style.opacity = '';
+            item.style.animation = 'none'; item.offsetHeight;
+            item.style.animation = 'pex-spark 0.22s ease both ' + (0.04 + i * 0.06) + 's';
+          });
+        }
+        if (anyOpen) {
+          el.style.display = 'block'; el.style.height = '';
+          const inner = el.querySelector('.rp-exp-inner');
+          if (inner) { inner.style.opacity = '1'; inner.style.transform = ''; }
+          el.classList.add('open');
+          requestAnimationFrame(fireItems);
+        } else {
+          el.style.display = 'block'; el.style.overflow = 'hidden'; el.style.height = '0px';
+          const inner = el.querySelector('.rp-exp-inner');
+          if (inner) { inner.style.opacity = '1'; inner.style.transform = ''; }
+          el.querySelectorAll('.pex-item').forEach(function (item) {
+            item.style.opacity = '0'; item.style.animation = 'none';
+          });
+          const toH = el.scrollHeight;
+          const start = performance.now(), dur = 380;
+          function frame(now) {
+            const raw = Math.min((now - start) / dur, 1);
+            const ease = 1 - Math.pow(1 - raw, 3);
+            el.style.height = (toH * ease).toFixed(1) + 'px';
+            if (raw < 1) { requestAnimationFrame(frame); }
+            else {
+              el.classList.add('open');
+              el.style.height = ''; el.style.overflow = '';
+              requestAnimationFrame(fireItems);
+            }
+          }
+          requestAnimationFrame(frame);
+        }
+      } else { closeRpExp(el); }
+    }
+    function closeExpRow(row) {
+      if (!row.classList.contains('open')) return;
+      const card = row.closest('.rank-card'), cid = card ? card.dataset.cid : null;
+      if (cid && window._mreCharts && window._mreCharts[cid]) {
+        window._mreCharts[cid].destroy(); delete window._mreCharts[cid];
+        const _oc = document.getElementById(cid);
+        if (_oc) { const _octx = _oc.getContext('2d'); _octx.clearRect(0, 0, _oc.width, _oc.height); }
+      }
+      rafCollapseRow(row, '.exp-inner', 380, null);
+    }
+    function closeExpRowInstant(row) {
+      if (!row.classList.contains('open')) return;
+      const card = row.closest('.rank-card'), cid = card ? card.dataset.cid : null;
+      if (cid && window._mreCharts && window._mreCharts[cid]) {
+        window._mreCharts[cid].destroy(); delete window._mreCharts[cid];
+        const _oc = document.getElementById(cid);
+        if (_oc) { const _octx = _oc.getContext('2d'); _octx.clearRect(0, 0, _oc.width, _oc.height); }
+      }
+      row.classList.remove('open'); row.style.display = 'none'; row.style.height = '';
+      const inner = row.querySelector('.exp-inner');
+      if (inner) { inner.style.opacity = ''; inner.style.transform = ''; inner.style.transformOrigin = ''; }
+    }
+    function rcT(el) { el.classList.toggle('open'); }</script>
+  <script>const IDX_DATA = { "dow": { "name": "Dow Jones", "color": "#ff4d6d", "bg_color": "rgba(255,77,109,0.12)", "data": [48977.92, 48904.78, 48501.27, 48739.41, 47954.74, 47501.55, 47740.8, 47706.51, 47417.27, 46677.85, 46558.47, 46946.41, 46993.26, 46225.15, 46021.43, 45577.47, 46208.47, 46124.06, 46429.49, 45960.11, 45166.64, 45216.14, 46341.51, 46565.74, 46504.67, 46669.88, 46584.46, 47909.92, 48185.8, 47916.57], "stat1m": "\u25b21.1%", "stat3m": "\u2014", "stat6m": "\u2014" }, "sp": { "name": "S&P 500", "color": "#ff4d6d", "bg_color": "rgba(255,77,109,0.12)", "data": [6878.88, 6881.62, 6816.63, 6869.5, 6830.71, 6740.02, 6795.99, 6781.48, 6775.8, 6672.62, 6632.19, 6699.38, 6716.09, 6624.7, 6606.49, 6506.48, 6581.0, 6556.37, 6591.9, 6477.16, 6368.85, 6343.72, 6528.52, 6575.32, 6582.69, 6611.83, 6616.85, 6782.81, 6824.66, 6816.89], "stat1m": "\u25b20.6%", "stat3m": "\u2014", "stat6m": "\u2014" }, "nq": { "name": "Nasdaq", "color": "#39e8a0", "bg_color": "rgba(57,232,160,0.12)", "data": [22668.21, 22748.86, 22516.69, 22807.48, 22748.99, 22387.68, 22695.95, 22697.1, 22716.13, 22311.98, 22105.36, 22374.18, 22479.53, 22152.42, 22090.69, 21647.61, 21946.76, 21761.89, 21929.82, 21408.08, 20948.36, 20794.64, 21590.63, 21840.95, 21879.18, 21996.34, 22017.85, 22634.99, 22822.42, 22902.89], "stat1m": "\u25b20.8%", "stat3m": "\u2014", "stat6m": "\u2014" } };</script>
+  <script>
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest('.copy-prompt-btn');
+      if (!btn) return;
+      e.stopPropagation();
+      var el = document.getElementById(btn.dataset.ref);
+      if (!el) return;
+      var text;
+      try { text = JSON.parse(el.textContent); } catch (err) {
+        btn.textContent = 'Error';
+        btn.style.color = 'var(--dn)';
+        setTimeout(function () {
+          btn.textContent = '⎉ Copy AI Prompt';
+          btn.style.color = '';
+        }, 1800);
+        return;
+      }
+      function onCopied() {
+        var orig = btn.textContent;
+        btn.textContent = 'Copied ✓';
+        btn.style.color = 'var(--up)';
+        btn.style.borderColor = 'rgba(57,232,160,.5)';
+        setTimeout(function () {
+          btn.textContent = orig;
+          btn.style.color = '';
+          btn.style.borderColor = '';
+        }, 1800);
+      }
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(onCopied).catch(function () {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          onCopied();
+        });
+      } else {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        onCopied();
+      }
     });
-  } else {
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    onCopied();
-  }
-});
-</script><script>// ── Rank preview fetch ───────────────────────────────────────────────────
-fetch('assets/data/rank.json?v='+Date.now())
-  .then(function(r){ return r.ok ? r.json() : Promise.reject(r.status); })
-  .then(function(rankData) {
-    var stocks = rankData.stocks || {};
-    var arr = Array.isArray(stocks) ? stocks : Object.values(stocks);
-    arr = arr.filter(function(s){ return s && typeof s === 'object'; });
-    arr.sort(function(a,b){
-      var ca = typeof a.confidence === 'number' ? a.confidence : -1;
-      var cb = typeof b.confidence === 'number' ? b.confidence : -1;
-      return cb - ca;
-    });
-    var top5 = arr.slice(0, 5);
-    var rows = '';
-    top5.forEach(function(s, idx) {
-      var i    = idx + 1;
-      var conf = typeof s.confidence === 'number' ? s.confidence : null;
-      var cCls = conf === null ? 'nt' : conf >= 70 ? 'up' : conf >= 50 ? 'nt' : 'dn';
-      var eqV  = s.eq_verdict_display  || '';
-      var eqCls  = eqV  === 'STRONG'  ? 'up' : eqV  === 'WEAK'    ? 'dn' : 'nt';
-      var rotS = s.rotation_signal_display || '';
-      var rotCls = rotS === 'LEADING' ? 'up' : rotS === 'LAGGING' ? 'dn' : 'nt';
-      var verdict  = s.market_verdict_display || s.market_verdict || '\u2014';
-      var confStr  = conf !== null ? Math.round(conf) : '\u2014';
-      var riskStr  = typeof s.risk_score === 'number' ? Math.round(s.risk_score) : '\u2014';
-      var ret1m = typeof s.return_1m === 'number' ? (s.return_1m >= 0 ? '\u25b2' : '\u25bc') + ' ' + Math.abs(s.return_1m).toFixed(1) + '%' : '\u2014';
-      var ret3m = typeof s.return_3m === 'number' ? (s.return_3m >= 0 ? '\u25b2' : '\u25bc') + ' ' + Math.abs(s.return_3m).toFixed(1) + '%' : '\u2014';
-      var ret6m = typeof s.return_6m === 'number' ? (s.return_6m >= 0 ? '\u25b2' : '\u25bc') + ' ' + Math.abs(s.return_6m).toFixed(1) + '%' : '\u2014';
-      var rpConfVal = typeof s.confidence === 'number' ? s.confidence : null;
-      var rpConf    = rpConfVal !== null ? Math.round(rpConfVal) : '\u2014';
-      var rpConfCls = rpConfVal !== null ? (rpConfVal >= 70 ? 'rpill-cup' : rpConfVal >= 50 ? 'rpill-cnt' : 'rpill-cdn') : 'rpill-una';
-      var rpPrice   = typeof s.price === 'number' ? '$' + s.price.toFixed(2) : '\u2014';
-      var sector    = (s.sector || '').replace(/_/g,' ').replace(/\b\w/g, function(c){ return c.toUpperCase(); });
-      var _sMap={'Energy':'#f4a44a','Technology':'#7dd8ff','Healthcare':'#7be8b0','Financials':'#c9b8ff',
-        'Consumer Discretionary':'#ff9ec4','Consumer Staples':'#b8e8c8','Industrials':'#ffd27a',
-        'Materials':'#a8e6cf','Real Estate':'#ffb8a0','Utilities':'#9ecfff',
-        'Communication Services':'#d4b8ff'};
-      var _sKey=_sMap[sector]?sector:Object.keys(_sMap).find(function(k){return sector.toLowerCase().indexOf(k.toLowerCase())!==-1;})||'';
-      var sectorColor=_sMap[_sKey]||'#a89bc2';
-      var psEntry   = s.ps_verdict_display || '\u2014';
-      var psKeyLvl  = s.ps_key_level_display || s.ps_key_level || '\u2014';
-      var psMoveExt = typeof s.ps_move_extension_pct === 'number' ? s.ps_move_extension_pct.toFixed(1) + '%' : '\u2014';
-      rows += '<div class="rank-card" onclick="rpT(\'rp' + i + '\')">'
+  </script>
+  <script>// ── Rank preview fetch ───────────────────────────────────────────────────
+    fetch('assets/data/rank.json?v=' + Date.now())
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+      .then(function (rankData) {
+        var stocks = rankData.stocks || {};
+        var arr = Array.isArray(stocks) ? stocks : Object.values(stocks);
+        arr = arr.filter(function (s) { return s && typeof s === 'object'; });
+        arr.sort(function (a, b) {
+          var ca = typeof a.confidence === 'number' ? a.confidence : -1;
+          var cb = typeof b.confidence === 'number' ? b.confidence : -1;
+          return cb - ca;
+        });
+        var top5 = arr.slice(0, 5);
+        var rows = '';
+        top5.forEach(function (s, idx) {
+          var i = idx + 1;
+          var conf = typeof s.confidence === 'number' ? s.confidence : null;
+          var cCls = conf === null ? 'nt' : conf >= 70 ? 'up' : conf >= 50 ? 'nt' : 'dn';
+          var eqV = s.eq_verdict_display || '';
+          var eqCls = eqV === 'STRONG' ? 'up' : eqV === 'WEAK' ? 'dn' : 'nt';
+          var rotS = s.rotation_signal_display || '';
+          var rotCls = rotS === 'LEADING' ? 'up' : rotS === 'LAGGING' ? 'dn' : 'nt';
+          var verdict = s.market_verdict_display || s.market_verdict || '\u2014';
+          var confStr = conf !== null ? Math.round(conf) : '\u2014';
+          var riskStr = typeof s.risk_score === 'number' ? Math.round(s.risk_score) : '\u2014';
+          var ret1m = typeof s.return_1m === 'number' ? (s.return_1m >= 0 ? '\u25b2' : '\u25bc') + ' ' + Math.abs(s.return_1m).toFixed(1) + '%' : '\u2014';
+          var ret3m = typeof s.return_3m === 'number' ? (s.return_3m >= 0 ? '\u25b2' : '\u25bc') + ' ' + Math.abs(s.return_3m).toFixed(1) + '%' : '\u2014';
+          var ret6m = typeof s.return_6m === 'number' ? (s.return_6m >= 0 ? '\u25b2' : '\u25bc') + ' ' + Math.abs(s.return_6m).toFixed(1) + '%' : '\u2014';
+          var rpConfVal = typeof s.confidence === 'number' ? s.confidence : null;
+          var rpConf = rpConfVal !== null ? Math.round(rpConfVal) : '\u2014';
+          var rpConfCls = rpConfVal !== null ? (rpConfVal >= 70 ? 'rpill-cup' : rpConfVal >= 50 ? 'rpill-cnt' : 'rpill-cdn') : 'rpill-una';
+          var rpPrice = typeof s.price === 'number' ? '$' + s.price.toFixed(2) : '\u2014';
+          var sector = (s.sector || '').replace(/_/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+          var _sMap = {
+            'Energy': '#f4a44a', 'Technology': '#7dd8ff', 'Healthcare': '#7be8b0', 'Financials': '#c9b8ff',
+            'Consumer Discretionary': '#ff9ec4', 'Consumer Staples': '#b8e8c8', 'Industrials': '#ffd27a',
+            'Materials': '#a8e6cf', 'Real Estate': '#ffb8a0', 'Utilities': '#9ecfff',
+            'Communication Services': '#d4b8ff'
+          };
+          var _sKey = _sMap[sector] ? sector : Object.keys(_sMap).find(function (k) { return sector.toLowerCase().indexOf(k.toLowerCase()) !== -1; }) || '';
+          var sectorColor = _sMap[_sKey] || '#a89bc2';
+          var psEntry = s.ps_verdict_display || '\u2014';
+          var psKeyLvl = s.ps_key_level_display || s.ps_key_level || '\u2014';
+          var psMoveExt = typeof s.ps_move_extension_pct === 'number' ? s.ps_move_extension_pct.toFixed(1) + '%' : '\u2014';
+          rows += '<div class="rank-card" onclick="rpT(\'rp' + i + '\')">'
             + '<div class="rank-card-main">'
             + '<div class="rck-n">#' + i + '</div>'
             + '<div class="rck-t">' + (s.ticker || '\u2014') + '</div>'
@@ -409,99 +662,102 @@ fetch('assets/data/rank.json?v='+Date.now())
             + '<div class="pex-item"><div class="pex-k">Move Ext.</div><div class="pex-v">' + psMoveExt + '</div></div>'
             + '</div></div>'
             + '</div>';
-    });
-    if (!rows) rows = '<div style="padding:14px 18px;color:var(--mist);font-size:11px;">No candidates this week.</div>';
-    document.getElementById('rank-preview-mount').innerHTML =
-        '<div class="rank-preview">'
-      + '<div class="rank-preview-head">'
-      + '<span class="rank-preview-title">Top 5 Candidates \u00b7 Week Rank</span>'
-      + '<a href="rank.html" class="rp-link">Full \u2192</a>'
-      + '</div>'
-      + rows
-      + '</div>';
-    document.querySelectorAll('#rank-preview-mount .rank-card').forEach(function(card, i) {
-      card.style.animation = 'none';
-      card.offsetHeight;
-      card.style.animation = 'stagger-up 0.52s cubic-bezier(0.16,1,0.3,1) both ' + (0.05 + i * 0.07) + 's';
-    });
-  })
-  .catch(function() {
-    document.getElementById('rank-preview-mount').innerHTML =
-      '<div style="color:var(--dn);font-family:var(--ff-mono);font-size:11px;padding:14px;">Error loading rank data.</div>';
-  });
+        });
+        if (!rows) rows = '<div style="padding:14px 18px;color:var(--mist);font-size:11px;">No candidates this week.</div>';
+        document.getElementById('rank-preview-mount').innerHTML =
+          '<div class="rank-preview">'
+          + '<div class="rank-preview-head">'
+          + '<span class="rank-preview-title">Top 5 Candidates \u00b7 Week Rank</span>'
+          + '<a href="rank.html" class="rp-link">Full \u2192</a>'
+          + '</div>'
+          + rows
+          + '</div>';
+        document.querySelectorAll('#rank-preview-mount .rank-card').forEach(function (card, i) {
+          card.style.animation = 'none';
+          card.offsetHeight;
+          card.style.animation = 'stagger-up 0.52s cubic-bezier(0.16,1,0.3,1) both ' + (0.05 + i * 0.07) + 's';
+        });
+      })
+      .catch(function () {
+        document.getElementById('rank-preview-mount').innerHTML =
+          '<div style="color:var(--dn);font-family:var(--ff-mono);font-size:11px;padding:14px;">Error loading rank data.</div>';
+      });
 
-// ── Report cards fetch ───────────────────────────────────────────────────
-// NOTE: dismissLoader() is called here (reports fetch), not in rank fetch,
-// because this is the last fetch to resolve. Both .then and .catch call it.
-fetch('assets/data/reports.json?v='+Date.now())
-  .then(function(r){ return r.ok ? r.json() : Promise.reject(r.status); })
-  .then(function(data) {
-    var reports = Array.isArray(data.reports) ? data.reports.slice(0, 14) : [];
-    var html = '';
-    reports.forEach(function(r, idx) {
-      var vc = r.verdicts || {};
-      var rnC, wC, sC;
-      if (Array.isArray(vc)) {
-        rnC = vc.filter(function(v){ return v === 'RESEARCH NOW'; }).length;
-        wC  = vc.filter(function(v){ return v === 'WATCH'; }).length;
-        sC  = vc.filter(function(v){ return v === 'SKIP'; }).length;
-      } else {
-        rnC = (typeof vc['RESEARCH NOW'] === 'number') ? vc['RESEARCH NOW'] : 0;
-        wC  = (typeof vc['WATCH']        === 'number') ? vc['WATCH']        : 0;
-        sC  = (typeof vc['SKIP']         === 'number') ? vc['SKIP']         : 0;
-      }
-      var tickers  = Array.isArray(r.tickers) ? r.tickers.join(', ') : '\u2014';
-      var topScore = typeof r.top_score === 'number' ? Math.round(r.top_score) : '\u2014';
-      var b        = r.breadth || '';
-      var bCls     = b === 'BULLISH' ? 'up' : b === 'BEARISH' ? 'dn' : 'nt';
-      var bTitle   = b.charAt(0).toUpperCase() + b.slice(1).toLowerCase();
-      var count    = r.count || 0;
-      var regimeRaw = (r.regime || '').toLowerCase();
-      var regimeLabel = (r.regime || '').replace(/\b\w/g, function(c){ return c.toUpperCase(); });
-      var regimeCls = regimeRaw.indexOf('calm') !== -1 ? 'regime-calm' : regimeRaw.indexOf('normal') !== -1 ? 'regime-normal' : regimeRaw.indexOf('elevated') !== -1 ? 'regime-elevated' : regimeRaw.indexOf('stress') !== -1 ? 'regime-crisis' : 'regime-normal';
-      var regimeBadge = '<span class="regime-badge ' + regimeCls + '">' + regimeLabel + '</span>';
-      var uid      = 'prompt_' + (idx + 1);
-      var promptText  = r.prompt || '';
-      var scriptBlock = '';
-      var copyBtn     = '';
-      if (promptText) {
-        var safePrompt = JSON.stringify(promptText).replace(/<\/script>/gi, '<\\/script>');
-        scriptBlock = '<script type="application/json" id="' + uid + '">' + safePrompt + '<\/script>';
-        copyBtn = '<button class="btn mg copy-prompt-btn" data-ref="' + uid + '">\u29c9 Copy AI Prompt</button>';
-      }
-      var reportUrl = r.report_url || '';
-      var fullBtn = reportUrl
-        ? '<a href="' + reportUrl + '" class="btn" target="_blank" onclick="event.stopPropagation()">\u2197 Full Report</a>'
-        : '';
-      html += scriptBlock
-           + '<div class="rcard" onclick="rcT(this)">'
-           + '<div class="rcard-head"><div>'
-           + '<div class="rcard-date">' + (r.date || '') + ' \u00b7 ' + (r.slot || '') + ' \u00b7 ' + count + ' stock' + (count !== 1 ? 's' : '') + '</div>'
-           + '<div class="rcard-slot" style="font-size:11px;color:var(--mist);">' + (r.time || '') + ' ET \u00b7 ' + regimeBadge + '</div>'
-           + '</div>'
-           + '<span class="rcard-badge ' + bCls + '">' + bTitle + '</span>'
-           + '</div>'
-           + '<div class="rcard-body"><div class="rcard-inner">'
-           + '<div class="rcard-cols">'
-           + '<div><div class="rcc-k">Sys 1 \u00b7 Tickers</div><div class="rcc-v">' + tickers
-           + '<br><span class="top-conf-val" style="font-size:11px;">Confidence: ' + topScore + '/100</span></div></div>'
-           + '<div><div class="rcc-k">Verdicts</div><div class="rcc-v">'
-           + '<span style="color:var(--up)">RN:' + rnC + '</span> '
-           + '<span style="color:var(--nt)">W:' + wC + '</span> '
-           + '<span style="color:var(--dn)">S:' + sC + '</span></div></div>'
-           + '<div><div class="rcc-k">Breadth</div><div class="rcc-v" style="color:var(--' + bCls + ')">' + bTitle + '</div></div>'
-           + '</div>'
-           + '<div class="rcard-btns">' + fullBtn + copyBtn + '</div>'
-           + '</div></div></div>';
-    });
-    if (!html) html = '<div style="color:var(--mist);font-family:var(--ff-mono);font-size:11px;">No reports yet.</div>';
-    document.getElementById('report-cards-mount').innerHTML = html;
-    // ── Dismiss loader after final data is in the DOM ──
-    if (window.dismissLoader) window.dismissLoader();
-  })
-  .catch(function() {
-    document.getElementById('report-cards-mount').innerHTML =
-      '<div style="color:var(--dn);font-family:var(--ff-mono);font-size:11px;padding:14px;">Error loading reports. Try refreshing.</div>';
-    if (window.dismissLoader) window.dismissLoader();
-  });
-</script></body></html>
+    // ── Report cards fetch ───────────────────────────────────────────────────
+    // NOTE: dismissLoader() is called here (reports fetch), not in rank fetch,
+    // because this is the last fetch to resolve. Both .then and .catch call it.
+    fetch('assets/data/reports.json?v=' + Date.now())
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+      .then(function (data) {
+        var reports = Array.isArray(data.reports) ? data.reports.slice(0, 14) : [];
+        var html = '';
+        reports.forEach(function (r, idx) {
+          var vc = r.verdicts || {};
+          var rnC, wC, sC;
+          if (Array.isArray(vc)) {
+            rnC = vc.filter(function (v) { return v === 'RESEARCH NOW'; }).length;
+            wC = vc.filter(function (v) { return v === 'WATCH'; }).length;
+            sC = vc.filter(function (v) { return v === 'SKIP'; }).length;
+          } else {
+            rnC = (typeof vc['RESEARCH NOW'] === 'number') ? vc['RESEARCH NOW'] : 0;
+            wC = (typeof vc['WATCH'] === 'number') ? vc['WATCH'] : 0;
+            sC = (typeof vc['SKIP'] === 'number') ? vc['SKIP'] : 0;
+          }
+          var tickers = Array.isArray(r.tickers) ? r.tickers.join(', ') : '\u2014';
+          var topScore = typeof r.top_score === 'number' ? Math.round(r.top_score) : '\u2014';
+          var b = r.breadth || '';
+          var bCls = b === 'BULLISH' ? 'up' : b === 'BEARISH' ? 'dn' : 'nt';
+          var bTitle = b.charAt(0).toUpperCase() + b.slice(1).toLowerCase();
+          var count = r.count || 0;
+          var regimeRaw = (r.regime || '').toLowerCase();
+          var regimeLabel = (r.regime || '').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+          var regimeCls = regimeRaw.indexOf('calm') !== -1 ? 'regime-calm' : regimeRaw.indexOf('normal') !== -1 ? 'regime-normal' : regimeRaw.indexOf('elevated') !== -1 ? 'regime-elevated' : regimeRaw.indexOf('stress') !== -1 ? 'regime-crisis' : 'regime-normal';
+          var regimeBadge = '<span class="regime-badge ' + regimeCls + '">' + regimeLabel + '</span>';
+          var uid = 'prompt_' + (idx + 1);
+          var promptText = r.prompt || '';
+          var scriptBlock = '';
+          var copyBtn = '';
+          if (promptText) {
+            var safePrompt = JSON.stringify(promptText).replace(/<\/script>/gi, '<\\/script>');
+            scriptBlock = '<script type="application/json" id="' + uid + '">' + safePrompt + '<\/script>';
+            copyBtn = '<button class="btn mg copy-prompt-btn" data-ref="' + uid + '">\u29c9 Copy AI Prompt</button>';
+          }
+          var reportUrl = r.report_url || '';
+          var fullBtn = reportUrl
+            ? '<a href="' + reportUrl + '" class="btn" target="_blank" onclick="event.stopPropagation()">\u2197 Full Report</a>'
+            : '';
+          html += scriptBlock
+            + '<div class="rcard" onclick="rcT(this)">'
+            + '<div class="rcard-head"><div>'
+            + '<div class="rcard-date">' + (r.date || '') + ' \u00b7 ' + (r.slot || '') + ' \u00b7 ' + count + ' stock' + (count !== 1 ? 's' : '') + '</div>'
+            + '<div class="rcard-slot" style="font-size:11px;color:var(--mist);">' + (r.time || '') + ' ET \u00b7 ' + regimeBadge + '</div>'
+            + '</div>'
+            + '<span class="rcard-badge ' + bCls + '">' + bTitle + '</span>'
+            + '</div>'
+            + '<div class="rcard-body"><div class="rcard-inner">'
+            + '<div class="rcard-cols">'
+            + '<div><div class="rcc-k">Sys 1 \u00b7 Tickers</div><div class="rcc-v">' + tickers
+            + '<br><span class="top-conf-val" style="font-size:11px;">Confidence: ' + topScore + '/100</span></div></div>'
+            + '<div><div class="rcc-k">Verdicts</div><div class="rcc-v">'
+            + '<span style="color:var(--up)">RN:' + rnC + '</span> '
+            + '<span style="color:var(--nt)">W:' + wC + '</span> '
+            + '<span style="color:var(--dn)">S:' + sC + '</span></div></div>'
+            + '<div><div class="rcc-k">Breadth</div><div class="rcc-v" style="color:var(--' + bCls + ')">' + bTitle + '</div></div>'
+            + '</div>'
+            + '<div class="rcard-btns">' + fullBtn + copyBtn + '</div>'
+            + '</div></div></div>';
+        });
+        if (!html) html = '<div style="color:var(--mist);font-family:var(--ff-mono);font-size:11px;">No reports yet.</div>';
+        document.getElementById('report-cards-mount').innerHTML = html;
+        // ── Dismiss loader after final data is in the DOM ──
+        if (window.dismissLoader) window.dismissLoader();
+      })
+      .catch(function () {
+        document.getElementById('report-cards-mount').innerHTML =
+          '<div style="color:var(--dn);font-family:var(--ff-mono);font-size:11px;padding:14px;">Error loading reports. Try refreshing.</div>';
+        if (window.dismissLoader) window.dismissLoader();
+      });
+  </script>
+</body>
+
+</html>

@@ -1,135 +1,241 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="description" content="MRE Report Archive"><title>MRE // Report Archive</title><link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet"><link rel="stylesheet" href="assets/style.css"><style>#mre-loader{position:fixed;inset:0;z-index:9999;background:#0a0a12;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity 0.4s ease;}#mre-loader.done{opacity:0;pointer-events:none;}.mre-bar-shell{position:relative;width:280px;height:40px;border:2px solid #c850c0;border-radius:6px;padding:5px;box-shadow:0 0 8px #c850c080,0 0 20px #c850c040,inset 0 0 6px #c850c020;overflow:hidden;}.mre-bar-shell::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent calc(100% / 10 - 3px),#0a0a12 calc(100% / 10 - 3px),#0a0a12 calc(100% / 10));pointer-events:none;z-index:2;}.mre-bar-fill{height:100%;width:0%;border-radius:2px;background:linear-gradient(90deg,#5c6fff,#9b59ff,#c850c0);box-shadow:0 0 12px #9b59ff80;position:relative;z-index:1;transition:width 0.05s linear;}#mre-loader-text{font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:0.25em;color:#9b59ff;text-shadow:0 0 10px #9b59ff80;min-width:130px;text-align:center;}</style></head><body><div id="mre-loader"><div class="mre-bar-shell"><div class="mre-bar-fill" id="mre-bar-fill"></div></div><div id="mre-loader-text">LOADING</div></div><script>(function(){var _li=0,_ls=["LOADING","LOADING.","LOADING..","LOADING..."];var _lt=document.getElementById("mre-loader-text");var _lp=setInterval(function(){_li=(_li+1)%4;if(_lt)_lt.textContent=_ls[_li];},420);var _bf=document.getElementById("mre-bar-fill");var _bt=null;function _bStep(ts){if(!_bt)_bt=ts;var prog=Math.min((ts-_bt)/1800,1);var ease=1-Math.pow(1-prog,3);if(_bf)_bf.style.width=(ease*100)+"%";if(prog<1)requestAnimationFrame(_bStep);}requestAnimationFrame(_bStep);window.dismissLoader=function(){clearInterval(_lp);if(_bf)_bf.style.width="100%";setTimeout(function(){var el=document.getElementById("mre-loader");if(el){el.classList.add("done");setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},450);}},120);};})();</script><div class="scanlines"></div><nav><div class="brand"><div class="brand-pulse"></div><span>MRE // System</span></div><div class="nav-tabs"><a href="index.html" class="tab">Home</a><a href="rank.html" class="tab">Rank</a><a href="trades.html" class="tab">Paper Trading</a><a href="news.html" class="tab">News</a><a href="archive.html" class="tab on">Archive</a><a href="guide.html" class="tab">Guide</a></div></nav><div class="pages"><div id="p-archive" class="page on"><div class="pg-eyebrow">History &middot; Stored</div><div class="pg-title">Report <span class="hi">Archive</span></div><div class="pg-sub">12 weeks retained &middot; 10 runs per week max</div><div id="archive-mount"></div></div></div><footer><span>MRE</span> &middot; Free-tier data only &middot; Not investment advice</footer><script>function rcT(el){el.classList.toggle('open');}
-document.addEventListener('click', function(e) {
-  var btn = e.target.closest('.copy-prompt-btn');
-  if (!btn) return;
-  e.stopPropagation();
-  var el = document.getElementById(btn.dataset.ref);
-  if (!el) return;
-  var text;
-  try { text = JSON.parse(el.textContent); } catch(err) {
-    btn.textContent = 'Error';
-    btn.style.color = 'var(--dn)';
-    setTimeout(function() {
-      btn.textContent = '⎉ Copy AI Prompt';
-      btn.style.color = '';
-    }, 1800);
-    return;
-  }
-  function onCopied() {
-    var orig = btn.textContent;
-    btn.textContent = 'Copied ✓';
-    btn.style.color = 'var(--up)';
-    btn.style.borderColor = 'rgba(57,232,160,.5)';
-    setTimeout(function() {
-      btn.textContent = orig;
-      btn.style.color = '';
-      btn.style.borderColor = '';
-    }, 1800);
-  }
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(text).then(onCopied).catch(function() {
-      var ta = document.createElement('textarea');
-      ta.value = text;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-      onCopied();
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <meta name="description" content="MRE Report Archive">
+  <title>MRE // Report Archive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="assets/style.css">
+  <style>
+    #mre-loader {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #0a0a12;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      transition: opacity 0.4s ease;
+    }
+
+    #mre-loader.done {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .mre-bar-shell {
+      position: relative;
+      width: 280px;
+      height: 40px;
+      border: 2px solid #c850c0;
+      border-radius: 6px;
+      padding: 5px;
+      box-shadow: 0 0 8px #c850c080, 0 0 20px #c850c040, inset 0 0 6px #c850c020;
+      overflow: hidden;
+    }
+
+    .mre-bar-shell::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(90deg, transparent, transparent calc(100% / 10 - 3px), #0a0a12 calc(100% / 10 - 3px), #0a0a12 calc(100% / 10));
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .mre-bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 2px;
+      background: linear-gradient(90deg, #5c6fff, #9b59ff, #c850c0);
+      box-shadow: 0 0 12px #9b59ff80;
+      position: relative;
+      z-index: 1;
+      transition: width 0.05s linear;
+    }
+
+    #mre-loader-text {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.25em;
+      color: #9b59ff;
+      text-shadow: 0 0 10px #9b59ff80;
+      min-width: 130px;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="mre-loader">
+    <div class="mre-bar-shell">
+      <div class="mre-bar-fill" id="mre-bar-fill"></div>
+    </div>
+    <div id="mre-loader-text">LOADING</div>
+  </div>
+  <script>(function () { var _li = 0, _ls = ["LOADING", "LOADING.", "LOADING..", "LOADING..."]; var _lt = document.getElementById("mre-loader-text"); var _lp = setInterval(function () { _li = (_li + 1) % 4; if (_lt) _lt.textContent = _ls[_li]; }, 420); var _bf = document.getElementById("mre-bar-fill"); var _bt = null; function _bStep(ts) { if (!_bt) _bt = ts; var prog = Math.min((ts - _bt) / 1800, 1); var ease = 1 - Math.pow(1 - prog, 3); if (_bf) _bf.style.width = (ease * 100) + "%"; if (prog < 1) requestAnimationFrame(_bStep); } requestAnimationFrame(_bStep); window.dismissLoader = function () { clearInterval(_lp); if (_bf) _bf.style.width = "100%"; setTimeout(function () { var el = document.getElementById("mre-loader"); if (el) { el.classList.add("done"); setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 450); } }, 120); }; })();</script>
+  <div class="scanlines"></div>
+  <nav>
+    <div class="brand">
+      <div class="brand-pulse"></div><span>MRE // System</span>
+    </div>
+    <div class="nav-tabs"><a href="index.html" class="tab">Home</a><a href="rank.html" class="tab">Rank</a><a
+        href="trades.html" class="tab">Paper Trading</a><a href="news.html" class="tab">News</a><a href="archive.html"
+        class="tab on">Archive</a><a href="tests.html" class="tab">Tests</a><a href="guide.html" class="tab">Guide</a>
+    </div>
+  </nav>
+  <div class="pages">
+    <div id="p-archive" class="page on">
+      <div class="pg-eyebrow">History &middot; Stored</div>
+      <div class="pg-title">Report <span class="hi">Archive</span></div>
+      <div class="pg-sub">12 weeks retained &middot; 10 runs per week max</div>
+      <div id="archive-mount"></div>
+    </div>
+  </div>
+  <footer><span>MRE</span> &middot; Free-tier data only &middot; Not investment advice</footer>
+  <script>function rcT(el) { el.classList.toggle('open'); }
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest('.copy-prompt-btn');
+      if (!btn) return;
+      e.stopPropagation();
+      var el = document.getElementById(btn.dataset.ref);
+      if (!el) return;
+      var text;
+      try { text = JSON.parse(el.textContent); } catch (err) {
+        btn.textContent = 'Error';
+        btn.style.color = 'var(--dn)';
+        setTimeout(function () {
+          btn.textContent = '⎉ Copy AI Prompt';
+          btn.style.color = '';
+        }, 1800);
+        return;
+      }
+      function onCopied() {
+        var orig = btn.textContent;
+        btn.textContent = 'Copied ✓';
+        btn.style.color = 'var(--up)';
+        btn.style.borderColor = 'rgba(57,232,160,.5)';
+        setTimeout(function () {
+          btn.textContent = orig;
+          btn.style.color = '';
+          btn.style.borderColor = '';
+        }, 1800);
+      }
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(onCopied).catch(function () {
+          var ta = document.createElement('textarea');
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          onCopied();
+        });
+      } else {
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        onCopied();
+      }
     });
-  } else {
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    onCopied();
-  }
-});
-</script><script>fetch('assets/data/weekly_archive.json?v='+Date.now())
-  .then(function(r){ return r.ok ? r.json() : Promise.reject(r.status); })
-  .then(function(archiveData) {
-    var weeksRaw = archiveData.weeks || {};
-    if (typeof weeksRaw !== 'object' || Array.isArray(weeksRaw)) weeksRaw = {};
-    var weekKeys = Object.keys(weeksRaw).sort().reverse();
-    var html = '';
-    weekKeys.forEach(function(wk) {
-      var weekInfo = weeksRaw[wk];
-      var runs     = (weekInfo && Array.isArray(weekInfo.runs)) ? weekInfo.runs : [];
-      var label    = wk.replace('W', ' \u2014 Week ');
-      var cardsHtml = '';
-      runs.forEach(function(run, runIdx) {
-        var slot      = run.slot      || '';
-        var ts        = run.timestamp || '';
-        var breadth   = run.breadth   || '';
-        var regime    = run.regime    || '';
-        var count     = run.count     || 0;
-        var runType   = run.run_type  || '';
-        var bCls      = breadth === 'BULLISH' ? 'up' : breadth === 'BEARISH' ? 'dn' : 'nt';
-        var bTitle    = breadth.charAt(0).toUpperCase() + breadth.slice(1).toLowerCase();
-        var regRaw    = regime.toLowerCase();
-        var regTitle  = regime.charAt(0).toUpperCase()  + regime.slice(1).toLowerCase();
-        var regimeCls = regRaw.indexOf('calm') !== -1 ? 'regime-calm' : regRaw.indexOf('normal') !== -1 ? 'regime-normal' : regRaw.indexOf('elevated') !== -1 ? 'regime-elevated' : regRaw.indexOf('stress') !== -1 ? 'regime-crisis' : 'regime-normal';
-        var regimeBadge = '<span class="regime-badge ' + regimeCls + '">' + regTitle + '</span>';
-        var cands     = Array.isArray(run.candidates) ? run.candidates : [];
-        var tickers   = cands.slice(0,5).map(function(c){ return c.ticker||''; }).filter(Boolean).join(', ') || '\u2014';
-        var topConf   = cands.length
-          ? Math.max.apply(null, cands.map(function(c){ return typeof c.confidence === 'number' ? c.confidence : 0; }))
-          : 0;
-        var topConfStr = topConf > 0 ? Math.round(topConf) : '\u2014';
-        var vc  = run.verdict_counts || {};
-        var rnC = typeof vc['RESEARCH NOW'] === 'number' ? vc['RESEARCH NOW'] : 0;
-        var wC  = typeof vc['WATCH']        === 'number' ? vc['WATCH']        : 0;
-        var sC  = typeof vc['SKIP']         === 'number' ? vc['SKIP']         : 0;
-        var promptText  = run.prompt || '';
-        var scriptBlock = '';
-        var copyBtn     = '';
-        if (promptText) {
-          var uid = 'arc_' + wk + '_' + runIdx;
-          scriptBlock = '<script type="application/json" id="' + uid + '">'
-                      + JSON.stringify(promptText).replace(/<\/script>/gi,'<\\/script>')
-                      + '<\/script>';
-          copyBtn = '<button class="btn mg copy-prompt-btn" data-ref="' + uid + '">\u29c9 Copy AI Prompt</button>';
-        }
-        var reportUrl = run.report_url || '';
-        var fullBtn = reportUrl
-          ? '<a href="' + reportUrl + '" class="btn" target="_blank" onclick="event.stopPropagation()">\u2197 Full Report</a>'
-          : '';
-        var rtypeBadge = runType === 'MANUAL'
-          ? '<span style="font-size:8px;color:var(--sun);margin-left:8px">MANUAL</span>'
-          : '';
-        cardsHtml += scriptBlock
-          + '<div class="rcard" onclick="rcT(this)">'
-          + '<div class="rcard-head"><div>'
-          + '<div class="rcard-date">' + ts + ' \u00b7 ' + slot + ' \u00b7 ' + count + ' stock' + (count !== 1 ? 's' : '') + rtypeBadge + '</div>'
-          + '<div class="rcard-slot">' + regimeBadge + '</div>'
-          + '</div><span class="rcard-badge ' + bCls + '">' + bTitle + '</span></div>'
-          + '<div class="rcard-body"><div class="rcard-inner">'
-          + '<div class="rcard-cols">'
-          + '<div><div class="rcc-k">Sys 1</div><div class="rcc-v">' + tickers
-          + '<br><span class="top-conf-val" style="font-size:10px;">Confidence: ' + topConfStr + '/100</span></div></div>'
-          + '<div><div class="rcc-k">Verdicts</div><div class="rcc-v">'
-          + '<span style="color:var(--up)">RN:' + rnC + '</span> '
-          + '<span style="color:var(--nt)">W:' + wC  + '</span> '
-          + '<span style="color:var(--dn)">S:'  + sC  + '</span>'
-          + '</div></div>'
-          + '<div><div class="rcc-k">Breadth</div><div class="rcc-v" style="color:var(--' + bCls + ')">' + bTitle + '</div></div>'
-          + '</div>'
-          + '<div class="rcard-btns">' + fullBtn + copyBtn + '</div>'
-          + '</div></div></div>';
-      });
-      html += '<div class="week-block">'
+  </script>
+  <script>fetch('assets/data/weekly_archive.json?v=' + Date.now())
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(r.status); })
+      .then(function (archiveData) {
+        var weeksRaw = archiveData.weeks || {};
+        if (typeof weeksRaw !== 'object' || Array.isArray(weeksRaw)) weeksRaw = {};
+        var weekKeys = Object.keys(weeksRaw).sort().reverse();
+        var html = '';
+        weekKeys.forEach(function (wk) {
+          var weekInfo = weeksRaw[wk];
+          var runs = (weekInfo && Array.isArray(weekInfo.runs)) ? weekInfo.runs : [];
+          var label = wk.replace('W', ' \u2014 Week ');
+          var cardsHtml = '';
+          runs.forEach(function (run, runIdx) {
+            var slot = run.slot || '';
+            var ts = run.timestamp || '';
+            var breadth = run.breadth || '';
+            var regime = run.regime || '';
+            var count = run.count || 0;
+            var runType = run.run_type || '';
+            var bCls = breadth === 'BULLISH' ? 'up' : breadth === 'BEARISH' ? 'dn' : 'nt';
+            var bTitle = breadth.charAt(0).toUpperCase() + breadth.slice(1).toLowerCase();
+            var regRaw = regime.toLowerCase();
+            var regTitle = regime.charAt(0).toUpperCase() + regime.slice(1).toLowerCase();
+            var regimeCls = regRaw.indexOf('calm') !== -1 ? 'regime-calm' : regRaw.indexOf('normal') !== -1 ? 'regime-normal' : regRaw.indexOf('elevated') !== -1 ? 'regime-elevated' : regRaw.indexOf('stress') !== -1 ? 'regime-crisis' : 'regime-normal';
+            var regimeBadge = '<span class="regime-badge ' + regimeCls + '">' + regTitle + '</span>';
+            var cands = Array.isArray(run.candidates) ? run.candidates : [];
+            var tickers = cands.slice(0, 5).map(function (c) { return c.ticker || ''; }).filter(Boolean).join(', ') || '\u2014';
+            var topConf = cands.length
+              ? Math.max.apply(null, cands.map(function (c) { return typeof c.confidence === 'number' ? c.confidence : 0; }))
+              : 0;
+            var topConfStr = topConf > 0 ? Math.round(topConf) : '\u2014';
+            var vc = run.verdict_counts || {};
+            var rnC = typeof vc['RESEARCH NOW'] === 'number' ? vc['RESEARCH NOW'] : 0;
+            var wC = typeof vc['WATCH'] === 'number' ? vc['WATCH'] : 0;
+            var sC = typeof vc['SKIP'] === 'number' ? vc['SKIP'] : 0;
+            var promptText = run.prompt || '';
+            var scriptBlock = '';
+            var copyBtn = '';
+            if (promptText) {
+              var uid = 'arc_' + wk + '_' + runIdx;
+              scriptBlock = '<script type="application/json" id="' + uid + '">'
+                + JSON.stringify(promptText).replace(/<\/script>/gi, '<\\/script>')
+                + '<\/script>';
+              copyBtn = '<button class="btn mg copy-prompt-btn" data-ref="' + uid + '">\u29c9 Copy AI Prompt</button>';
+            }
+            var reportUrl = run.report_url || '';
+            var fullBtn = reportUrl
+              ? '<a href="' + reportUrl + '" class="btn" target="_blank" onclick="event.stopPropagation()">\u2197 Full Report</a>'
+              : '';
+            var rtypeBadge = runType === 'MANUAL'
+              ? '<span style="font-size:8px;color:var(--sun);margin-left:8px">MANUAL</span>'
+              : '';
+            cardsHtml += scriptBlock
+              + '<div class="rcard" onclick="rcT(this)">'
+              + '<div class="rcard-head"><div>'
+              + '<div class="rcard-date">' + ts + ' \u00b7 ' + slot + ' \u00b7 ' + count + ' stock' + (count !== 1 ? 's' : '') + rtypeBadge + '</div>'
+              + '<div class="rcard-slot">' + regimeBadge + '</div>'
+              + '</div><span class="rcard-badge ' + bCls + '">' + bTitle + '</span></div>'
+              + '<div class="rcard-body"><div class="rcard-inner">'
+              + '<div class="rcard-cols">'
+              + '<div><div class="rcc-k">Sys 1</div><div class="rcc-v">' + tickers
+              + '<br><span class="top-conf-val" style="font-size:10px;">Confidence: ' + topConfStr + '/100</span></div></div>'
+              + '<div><div class="rcc-k">Verdicts</div><div class="rcc-v">'
+              + '<span style="color:var(--up)">RN:' + rnC + '</span> '
+              + '<span style="color:var(--nt)">W:' + wC + '</span> '
+              + '<span style="color:var(--dn)">S:' + sC + '</span>'
+              + '</div></div>'
+              + '<div><div class="rcc-k">Breadth</div><div class="rcc-v" style="color:var(--' + bCls + ')">' + bTitle + '</div></div>'
+              + '</div>'
+              + '<div class="rcard-btns">' + fullBtn + copyBtn + '</div>'
+              + '</div></div></div>';
+          });
+          html += '<div class="week-block">'
             + '<div class="week-head">' + label + ' <span class="week-count">' + runs.length + ' report' + (runs.length !== 1 ? 's' : '') + '</span></div>'
             + cardsHtml
             + '</div>';
-    });
-    if (!html) html = '<div style="color:var(--mist);font-family:var(--ff-mono);font-size:11px;padding:28px;">No archive data yet.</div>';
-    document.getElementById('archive-mount').innerHTML = html;
-    if (window.dismissLoader) window.dismissLoader();
-  })
-  .catch(function() {
-    document.getElementById('archive-mount').innerHTML =
-      '<div style="color:var(--dn);font-family:var(--ff-mono);font-size:11px;padding:28px;">Error loading archive. Try refreshing.</div>';
-    if (window.dismissLoader) window.dismissLoader();
-  });
-</script></body></html>
+        });
+        if (!html) html = '<div style="color:var(--mist);font-family:var(--ff-mono);font-size:11px;padding:28px;">No archive data yet.</div>';
+        document.getElementById('archive-mount').innerHTML = html;
+        if (window.dismissLoader) window.dismissLoader();
+      })
+      .catch(function () {
+        document.getElementById('archive-mount').innerHTML =
+          '<div style="color:var(--dn);font-family:var(--ff-mono);font-size:11px;padding:28px;">Error loading archive. Try refreshing.</div>';
+        if (window.dismissLoader) window.dismissLoader();
+      });
+  </script>
+</body>
+
+</html>
