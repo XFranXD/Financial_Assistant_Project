@@ -673,6 +673,166 @@ def _dry_run():
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+# DELETE TESTS  (--delete-tests)
+# Removes all test-tagged entries from:
+#   - docs/assets/data/tests.json        (the test log store)
+#   - docs/assets/data/trades.json       (removes TEST_* trade entries)
+#   - Google Sheets trades ledger        (deletes rows where trade_id starts TEST_)
+# Does NOT touch rank.json, weekly_archive.json, or any HTML report files
+# because test runs never write to those stores.
+# ══════════════════════════════════════════════════════════════════════════════
+
+def _delete_test_trades_from_sheets() -> int:
+    """
+    Delete all rows from Google Sheets where the trade_id column starts
+    with 'TEST_'.  Returns count of rows deleted (0 if Sheets unavailable).
+    Non-fatal — logs errors and continues.
+    """
+    deleted = 0
+    try:
+        import os as _os
+        import json as _json
+        import gspread
+        from google.oauth2.service_account import Credentials
+
+        creds_json = _os.environ.get('GOOGLE_SERVICE_ACCOUNT_JSON')
+        sheet_id   = _os.environ.get('GOOGLE_SHEETS_ID')
+        if not creds_json or not sheet_id:
+            print('  Google Sheets credentials not set — skipping Sheets cleanup.')
+            return 0
+
+        creds_dict  = _json.loads(creds_json)
+        scopes      = [
+            'https://spreadsheets.google.com/feeds',
+            'https://www.googleapis.com/auth/drive',
+        ]
+        credentials = Credentials.from_service_account_info(creds_dict, scopes=scopes)
+        client      = gspread.authorize(credentials)
+        sheet       = client.open_by_key(sheet_id).worksheet('trades')
+
+        all_rows = sheet.get_all_values()
+        if not all_rows:
+            print('  Sheets: empty — nothing to delete.')
+            return 0
+
+        header = all_rows[0]
+        try:
+            tid_col = header.index('trade_id')  # 0-based
+        except ValueError:
+            print('  Sheets: trade_id column not found — skipping Sheets cleanup.')
+            return 0
+
+        # Collect row indices to delete (1-based, skip header row 1)
+        rows_to_delete = []
+        for row_idx, row in enumerate(all_rows[1:], start=2):
+            trade_id = row[tid_col] if len(row) > tid_col else ''
+            if str(trade_id).startswith('TEST_'):
+                rows_to_delete.append(row_idx)
+
+        if not rows_to_delete:
+            print('  Sheets: no TEST_ trades found.')
+            return 0
+
+        # Delete in reverse order so indices stay valid
+        for row_idx in reversed(rows_to_delete):
+            try:
+                sheet.delete_rows(row_idx)
+                deleted += 1
+            except Exception as _row_err:
+                print(f'  Sheets: error deleting row {row_idx}: {_row_err}')
+
+        print(f'  Sheets: {deleted} TEST_ trade row(s) deleted.')
+    except Exception as e:
+        print(f'  Sheets cleanup failed (non-fatal): {e}')
+    return deleted
+
+
+def run_delete_tests() -> None:
+    """
+    Entry point for --delete-tests mode.
+    Clears all is_test entries from tests.json, removes TEST_* entries
+    from trades.json, and deletes TEST_* rows from Google Sheets.
+    Re-renders tests.html as an empty page after cleanup.
+    """
+    print('Deleting all test run data...')
+    print('─' * 60)
+
+    # ── Step 1: Clear tests.json ──────────────────────────────────
+    tests_path = os.path.join(DATA_DIR, 'tests.json')
+    tests_cleared = 0
+    if os.path.exists(tests_path):
+        try:
+            with open(tests_path) as f:
+                tests_data = json.load(f)
+            original = len(tests_data.get('tests', []))
+            tests_data['tests'] = []
+            tmp = tests_path + '.tmp'
+            with open(tmp, 'w') as f:
+                json.dump(tests_data, f, indent=2)
+            os.replace(tmp, tests_path)
+            tests_cleared = original
+            print(f'  tests.json: {tests_cleared} entry(ies) cleared.')
+        except Exception as e:
+            print(f'  ERROR updating tests.json: {e}')
+    else:
+        # Create an empty tests.json so tests.html renders correctly
+        try:
+            os.makedirs(DATA_DIR, exist_ok=True)
+            with open(tests_path, 'w') as f:
+                json.dump({'tests': []}, f, indent=2)
+            print('  tests.json: created empty.')
+        except Exception as e:
+            print(f'  ERROR creating tests.json: {e}')
+
+    # ── Step 2: Remove TEST_* entries from trades.json ────────────
+    trades_path = os.path.join(DATA_DIR, 'trades.json')
+    trades_cleared = 0
+    if os.path.exists(trades_path):
+        try:
+            with open(trades_path) as f:
+                trades_data = json.load(f)
+            original_trades = trades_data.get('trades', [])
+            clean_trades    = [
+                t for t in original_trades
+                if not str(t.get('trade_id', '')).startswith('TEST_')
+                and not t.get('is_test')
+            ]
+            trades_cleared = len(original_trades) - len(clean_trades)
+            trades_data['trades'] = clean_trades
+            tmp = trades_path + '.tmp'
+            with open(tmp, 'w') as f:
+                json.dump(trades_data, f, indent=2)
+            os.replace(tmp, trades_path)
+            print(f'  trades.json: {trades_cleared} TEST_ entry(ies) removed.')
+        except Exception as e:
+            print(f'  ERROR updating trades.json: {e}')
+    else:
+        print('  trades.json not found — skipping.')
+
+    # ── Step 3: Delete TEST_ rows from Google Sheets ──────────────
+    print('\nCleaning Google Sheets...')
+    sheets_deleted = _delete_test_trades_from_sheets()
+
+    # ── Step 4: Re-render tests.html as empty ─────────────────────
+    print('\nRe-rendering tests.html...')
+    try:
+        # Import build helper from dashboard_builder
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+        from reports.dashboard_builder import _write_tests_page
+        _write_tests_page()
+        print('  tests.html re-rendered (empty).')
+    except Exception as e:
+        print(f'  WARNING: tests.html re-render failed: {e}')
+
+    print('\n' + '─' * 60)
+    print(
+        f'Done. {tests_cleared} test log(s) cleared, '
+        f'{trades_cleared} test trade(s) removed from trades.json, '
+        f'{sheets_deleted} row(s) deleted from Google Sheets.'
+    )
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 # ENTRY POINT
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -680,6 +840,8 @@ if __name__ == '__main__':
     if '--force' in sys.argv:
         print('Running scheduled cleanup (--force)...')
         run_cleanup()
+    elif '--delete-tests' in sys.argv:
+        run_delete_tests()
     elif '--delete' in sys.argv:
         idx = sys.argv.index('--delete')
         # Accept target as remaining args joined (handles spaces naturally)

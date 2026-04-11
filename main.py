@@ -843,6 +843,7 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict,
             from paper_trading.sheets_ledger import update_rows
             from contracts.paper_trading_schema import (
                 PT_EXPECTED_RETURN_PCT, PT_STATUS, PT_STATUS_CLOSED,
+                PT_TRADE_ID,
             )
             _pt_regime = market_regime_dict.get('market_regime', 'NEUTRAL')
             paper_trading_summary = run_paper_trading(
@@ -850,6 +851,13 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict,
                 current_slot  = slot,
                 market_regime = _pt_regime,
             )
+            # Tag every trade ID with TEST_ prefix so cleanup can identify
+            # and delete them from Google Sheets without touching real trades.
+            for _pt_trade in paper_trading_summary.get('trades', []):
+                _tid = _pt_trade.get(PT_TRADE_ID, '')
+                if _tid and not str(_tid).startswith('TEST_'):
+                    _pt_trade[PT_TRADE_ID] = f'TEST_{_tid}'
+                _pt_trade['is_test'] = True
             _replay_enriched = []
             for _pt_trade in paper_trading_summary.get('trades', []):
                 if (
@@ -865,7 +873,7 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict,
                 if not update_rows(_replay_enriched):
                     log.warning('[PT][DEBUG] Failed to persist replay enrichment to Sheets (non-fatal)')
             log.info(
-                f'[PT][DEBUG] Paper trading complete. '
+                f'[PT][DEBUG] Paper trading complete (TEST_ tagged). '
                 f'Open: {paper_trading_summary.get("open_count")} | '
                 f'New: {paper_trading_summary.get("new_count")} | '
                 f'Closed: {paper_trading_summary.get("closed_count")} | '
@@ -883,20 +891,9 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict,
     # ── End Sub6 (Debug) ─────────────────────────────────────────────────
 
     # ── Build report ──────────────────────────────────────────────────────
-    from reports.report_builder import build_intraday_report
-    html_files = build_intraday_report(
-        companies             = all_candidates,
-        slot                  = slot,
-        indices               = indices,
-        breadth               = breadth,
-        regime                = regime,
-        all_articles          = articles,
-        sector_scores         = sector_scores,
-        rotation              = rotation,
-        market_regime_dict    = market_regime_dict,
-        portfolio_summary     = portfolio_summary,
-        paper_trading_summary = paper_trading_summary,
-    )
+    # Test runs do NOT generate intraday HTML report files — output goes
+    # exclusively to tests.json / tests.html via build_dashboard below.
+    html_files: dict = {}
 
     # ── Pre-dashboard candidate enrichment ───────────────────────────────
     _enrich_for_dashboard(all_candidates)
@@ -909,9 +906,10 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict,
             indices               = indices,
             breadth               = breadth,
             regime                = regime,
-            prompt_text           = html_files.get('prompt', ''),
-            full_url              = html_files.get('full_url', ''),
+            prompt_text           = '',
+            full_url              = '',
             is_debug              = True,
+            active_subs           = active_subs,
             index_history         = _index_history,
             confirmed_sectors     = candidate_sectors,
             market_regime_dict    = market_regime_dict,

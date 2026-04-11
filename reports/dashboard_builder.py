@@ -1128,13 +1128,14 @@ document.addEventListener('click', function(e) {
 # ── Nav ──────────────────────────────────────────────────────────────────────
 
 def _nav_html(active: str) -> str:
-    """Returns sticky nav HTML. active: 'home' | 'rank' | 'news' | 'archive' | 'guide'"""
+    """Returns sticky nav HTML. active: 'home' | 'rank' | 'news' | 'archive' | 'guide' | 'tests'"""
     pages = [
         ('index.html',   'home',    'Home'),
         ('rank.html',    'rank',    'Rank'),
         ('trades.html',  'trades',  'Paper Trading'),
         ('news.html',    'news',    'News'),
         ('archive.html', 'archive', 'Archive'),
+        ('tests.html',   'tests',   'Tests'),
         ('guide.html',   'guide',   'Guide'),
     ]
     tabs = ''
@@ -1273,6 +1274,10 @@ def _update_rank_board(companies):
     if rank_data.get('week') != week_key:
         rank_data = {'week': week_key, 'stocks': {}}
     for c in companies:
+        # Test-run tickers are never written to the rank board.
+        # They belong exclusively in tests.json / tests.html.
+        if c.get('is_test'):
+            continue
         ticker = c.get('ticker', '')
         if not ticker:
             continue
@@ -1328,8 +1333,6 @@ def _update_rank_board(companies):
                 'pl_cluster_id':        c.get('pl_cluster_id'),
                 'pl_correlation_flags': c.get('pl_correlation_flags', []),
                 'pl_exclusion_reason':  c.get('pl_exclusion_reason'),
-                # ── Debug tag — set True only on force-ticker runs ───────────
-                'force_debug':          bool(c.get('force_debug', False)),
             }
     try:
         tmp = rank_path + '.tmp'
@@ -1341,6 +1344,9 @@ def _update_rank_board(companies):
 
 
 def _update_weekly_archive(companies, slot, breadth, regime, prompt_text='', is_debug=False, full_url='', market_regime_dict=None):
+    # Test runs (is_debug=True) are stored in tests.json, not the archive.
+    if is_debug:
+        return
     archive_path = os.path.join(DATA_DIR, 'weekly_archive.json')
     try:
         with open(archive_path, encoding='utf-8') as f:
@@ -2098,6 +2104,315 @@ def build_trades_page(paper_trading_summary: dict) -> None:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# DEBUG TEST LAYER  (tests.json + tests.html)
+# Test runs are written here — never to rank.json or weekly_archive.json.
+# Label: every entry has is_test=True.  Cleanup: --delete-tests in
+# scripts/cleanup_reports.py removes all entries from tests.json and any
+# TEST_* rows from Google Sheets.
+# ─────────────────────────────────────────────────────────────────────────────
+
+_TESTS_MAX_ENTRIES = 50  # hard cap — oldest entries dropped first
+
+
+def _build_test_log(companies: list, active_subs: set, slot: str) -> str:
+    """
+    Build a plain-text log block for one test run.
+    Shows per-ticker outputs for each active subsystem in a format
+    suitable for raw inspection — selectable text, no fancy formatting.
+    """
+    now_et = datetime.now(pytz.utc).astimezone(pytz.timezone('America/New_York'))
+    lines  = []
+
+    lines.append(f'TEST RUN — {now_et.strftime("%Y-%m-%d %H:%M:%S ET")}')
+    lines.append(f'Slot     : {slot}')
+    lines.append(f'Subs     : {", ".join(sorted(active_subs))}')
+    lines.append(f'Tickers  : {", ".join(c.get("ticker","?") for c in companies)}')
+    lines.append('─' * 72)
+
+    for c in companies:
+        t = c.get('ticker', '?')
+        lines.append(f'\n{"═"*72}')
+        lines.append(f'TICKER: {t}  —  {c.get("company_name", "")}')
+        lines.append('═' * 72)
+
+        # ── Sub1: Core scoring ──────────────────────────────────────────
+        if 'sub1' in active_subs:
+            lines.append('\n[SUB1] Filter Candidates / Core Scoring')
+            lines.append(f'  current_price        : {c.get("current_price")}')
+            lines.append(f'  sector               : {c.get("sector")}')
+            lines.append(f'  composite_confidence : {c.get("composite_confidence")}')
+            lines.append(f'  confidence_label     : {c.get("confidence_label")}')
+            lines.append(f'  risk_score           : {c.get("risk_score")}')
+            lines.append(f'  risk_label           : {c.get("risk_label")}')
+            lines.append(f'  opportunity_score    : {c.get("opportunity_score")}')
+            lines.append(f'  agreement_score      : {c.get("agreement_score")}')
+            lines.append(f'  agreement_label      : {c.get("agreement_label")}')
+            lines.append(f'  market_verdict       : {c.get("market_verdict_display")}')
+            lines.append(f'  alignment            : {c.get("alignment")}')
+            _ram = c.get('ram') or {}
+            lines.append(f'  ram_score            : {_ram.get("ram_score")}')
+            lines.append(f'  return_1m            : {c.get("return_1m")}')
+            lines.append(f'  return_3m            : {c.get("return_3m")}')
+            lines.append(f'  return_6m            : {c.get("return_6m")}')
+            _vol = c.get('volume_confirmation') or {}
+            lines.append(f'  volume_score         : {_vol.get("volume_score")}')
+            lines.append(f'  volume_ratio         : {_vol.get("volume_ratio")}')
+            _uv  = c.get('unusual_volume') or {}
+            lines.append(f'  unusual_volume_flag  : {_uv.get("unusual_flag")}')
+            _dd  = c.get('drawdown') or {}
+            lines.append(f'  drawdown_score       : {_dd.get("drawdown_score")}')
+            _fin = c.get('financials') or {}
+            lines.append(f'  earnings_warning     : {c.get("earnings_warning")}')
+            lines.append(f'  divergence_warning   : {c.get("divergence_warning")}')
+            _bkt = c.get('bucket_scores') or {}
+            if _bkt:
+                lines.append('  bucket_scores        :')
+                for _bk, _bv in _bkt.items():
+                    lines.append(f'    {_bk:<28}: {_bv}')
+            _rsk = c.get('risk_components') or {}
+            if _rsk:
+                lines.append('  risk_components      :')
+                for _rk, _rv in _rsk.items():
+                    lines.append(f'    {_rk:<28}: {_rv}')
+
+        # ── Sub2: Earnings Quality ──────────────────────────────────────
+        if 'sub2' in active_subs:
+            lines.append('\n[SUB2] Earnings Quality Analyzer')
+            lines.append(f'  eq_available         : {c.get("eq_available")}')
+            if c.get('eq_available'):
+                lines.append(f'  eq_score_final       : {c.get("eq_score_final")}')
+                lines.append(f'  eq_label             : {c.get("eq_label")}')
+                lines.append(f'  pass_tier            : {c.get("pass_tier")}')
+                lines.append(f'  final_classification : {c.get("final_classification")}')
+                lines.append(f'  eq_percentile        : {c.get("eq_percentile")}')
+                lines.append(f'  data_confidence      : {c.get("data_confidence")}')
+                lines.append(f'  fatal_flaw_reason    : {c.get("fatal_flaw_reason")}')
+                lines.append(f'  batch_regime         : {c.get("batch_regime")}')
+                lines.append(f'  combined_priority    : {c.get("combined_priority_score")}')
+                _str = c.get('top_strengths') or []
+                lines.append(f'  top_strengths        : {_str}')
+                _rsk2 = c.get('top_risks') or []
+                lines.append(f'  top_risks            : {_rsk2}')
+                _warn = c.get('warnings') or []
+                lines.append(f'  warnings             : {_warn}')
+            # 1A/1B sub-modules
+            lines.append(f'  event_risk           : {c.get("event_risk")}')
+            lines.append(f'  event_risk_reason    : {c.get("event_risk_reason")}')
+            lines.append(f'  days_to_earnings     : {c.get("days_to_earnings")}')
+            lines.append(f'  insider_signal       : {c.get("insider_signal")}')
+            lines.append(f'  insider_note         : {c.get("insider_note")}')
+            lines.append(f'  expectations_signal  : {c.get("expectations_signal")}')
+            lines.append(f'  earnings_beat_rate   : {c.get("earnings_beat_rate")}')
+            lines.append(f'  peg_ratio            : {c.get("peg_ratio")}')
+
+        # ── Sub3: Sector Rotation ───────────────────────────────────────
+        if 'sub3' in active_subs:
+            lines.append('\n[SUB3] Sector Rotation Detector')
+            lines.append(f'  rotation_available   : {c.get("rotation_available")}')
+            if c.get('rotation_available'):
+                lines.append(f'  rotation_score       : {c.get("rotation_score")}')
+                lines.append(f'  rotation_status      : {c.get("rotation_status")}')
+                lines.append(f'  rotation_signal      : {c.get("rotation_signal")}')
+                lines.append(f'  rotation_signal_disp : {c.get("rotation_signal_display")}')
+                lines.append(f'  sector_etf           : {c.get("sector_etf")}')
+                lines.append(f'  rotation_confidence  : {c.get("rotation_confidence")}')
+                lines.append(f'  rotation_reasoning   : {c.get("rotation_reasoning")}')
+                lines.append(f'  timeframes_used      : {c.get("timeframes_used")}')
+
+        # ── Sub4: Price Structure ───────────────────────────────────────
+        if 'sub4' in active_subs:
+            lines.append('\n[SUB4] Price Structure Analyzer')
+            lines.append(f'  ps_available         : {c.get("ps_available")}')
+            if c.get('ps_available'):
+                lines.append(f'  entry_quality        : {c.get("entry_quality")}')
+                lines.append(f'  ps_verdict_display   : {c.get("ps_verdict_display")}')
+                lines.append(f'  trend_structure      : {c.get("trend_structure")}')
+                lines.append(f'  trend_strength       : {c.get("trend_strength")}')
+                lines.append(f'  key_level_position   : {c.get("key_level_position")}')
+                lines.append(f'  volatility_state     : {c.get("volatility_state")}')
+                lines.append(f'  compression_location : {c.get("compression_location")}')
+                lines.append(f'  consolidation_conf   : {c.get("consolidation_confirmed")}')
+                lines.append(f'  support_reaction     : {c.get("support_reaction")}')
+                lines.append(f'  base_duration_days   : {c.get("base_duration_days")}')
+                lines.append(f'  volume_contraction   : {c.get("volume_contraction")}')
+                lines.append(f'  price_action_score   : {c.get("price_action_score")}')
+                lines.append(f'  move_extension_pct   : {c.get("move_extension_pct")}')
+                lines.append(f'  dist_to_support_pct  : {c.get("distance_to_support_pct")}')
+                lines.append(f'  dist_to_resist_pct   : {c.get("distance_to_resistance_pct")}')
+                lines.append(f'  structure_state      : {c.get("structure_state")}')
+                lines.append(f'  recent_crossover     : {c.get("recent_crossover")}')
+                lines.append(f'  ps_data_confidence   : {c.get("ps_data_confidence")}')
+                lines.append(f'  entry_price          : {c.get("entry_price")}')
+                lines.append(f'  stop_loss            : {c.get("stop_loss")}')
+                lines.append(f'  price_target         : {c.get("price_target")}')
+                lines.append(f'  risk_reward_ratio    : {c.get("risk_reward_ratio")}')
+                lines.append(f'  rr_override          : {c.get("rr_override")}')
+                _ps_rsn = c.get('ps_reasoning') or ''
+                lines.append(f'  ps_reasoning         : {_ps_rsn}')
+
+        # ── Sub5: Portfolio Layer ───────────────────────────────────────
+        if 'sub5' in active_subs:
+            lines.append('\n[SUB5] Portfolio & Correlation Layer')
+            lines.append(f'  pl_available         : {c.get("pl_available")}')
+            if c.get('pl_available'):
+                lines.append(f'  pl_selected          : {c.get("pl_selected")}')
+                lines.append(f'  pl_position_weight   : {c.get("pl_position_weight")}')
+                lines.append(f'  pl_cluster_id        : {c.get("pl_cluster_id")}')
+                lines.append(f'  pl_correlation_flags : {c.get("pl_correlation_flags")}')
+                lines.append(f'  pl_exclusion_reason  : {c.get("pl_exclusion_reason")}')
+
+        # ── Sub6: Paper Trading ─────────────────────────────────────────
+        if 'sub6' in active_subs:
+            lines.append('\n[SUB6] Paper Trading Engine')
+            lines.append('  (paper trading suppressed on test runs — see is_test flag)')
+
+    lines.append(f'\n{"─"*72}')
+    lines.append('END OF TEST LOG')
+    return '\n'.join(lines)
+
+
+def _write_tests_json(test_entry: dict) -> None:
+    """
+    Append a test run entry to tests.json.
+    Cap at _TESTS_MAX_ENTRIES — oldest entries dropped when over limit.
+    All entries carry is_test=True for cleanup targeting.
+    """
+    tests_path = os.path.join(DATA_DIR, 'tests.json')
+    try:
+        with open(tests_path, encoding='utf-8') as f:
+            tests_data = json.load(f)
+    except Exception:
+        tests_data = {'tests': []}
+
+    if not isinstance(tests_data.get('tests'), list):
+        tests_data['tests'] = []
+
+    tests_data['tests'].insert(0, test_entry)
+    tests_data['tests'] = tests_data['tests'][:_TESTS_MAX_ENTRIES]
+
+    try:
+        tmp = tests_path + '.tmp'
+        with open(tmp, 'w', encoding='utf-8') as f:
+            json.dump(tests_data, f, indent=2)
+        os.replace(tmp, tests_path)
+        log.info(f'tests.json updated. Total entries: {len(tests_data["tests"])}')
+    except Exception as e:
+        log.error(f'tests.json write failed: {e}')
+
+
+def _write_tests_page() -> None:
+    """Render tests.html — the Debug Test Layer page."""
+    _TESTS_FETCH_JS = (
+        "fetch('assets/data/tests.json?v=' + Date.now())\n"
+        "  .then(function(r){ return r.json(); })\n"
+        "  .then(function(data){\n"
+        "    var tests = Array.isArray(data.tests) ? data.tests : [];\n"
+        "    var mount = document.getElementById('tests-mount');\n"
+        "    if (!tests.length) {\n"
+        "      mount.innerHTML = '<div class=\"tst-empty\">No test runs recorded yet. "
+        "Trigger a workflow_dispatch run with FORCE_TICKERS set.</div>';\n"
+        "      if (window.dismissLoader) window.dismissLoader();\n"
+        "      return;\n"
+        "    }\n"
+        "    var html = '';\n"
+        "    tests.forEach(function(t, i){\n"
+        "      var ts    = t.timestamp_et || '';\n"
+        "      var subs  = Array.isArray(t.active_subs) ? t.active_subs.join(', ') : (t.active_subs || 'all');\n"
+        "      var ticks = Array.isArray(t.tickers) ? t.tickers.join(', ') : '';\n"
+        "      var log   = t.log || '';\n"
+        "      var label = 'TEST — ' + (t.active_subs_label || subs);\n"
+        "      html += '<div class=\"tst-card\">';\n"
+        "      html += '<div class=\"tst-hdr\">';\n"
+        "      html += '<span class=\"tst-badge\">TEST</span>';\n"
+        "      html += '<span class=\"tst-label\">' + label + '</span>';\n"
+        "      html += '<span class=\"tst-ts\">' + ts + ' ET</span>';\n"
+        "      html += '</div>';\n"
+        "      html += '<div class=\"tst-meta\">';\n"
+        "      html += '<span class=\"tst-meta-item\"><span class=\"tst-meta-k\">Tickers</span>' + ticks + '</span>';\n"
+        "      html += '<span class=\"tst-meta-item\"><span class=\"tst-meta-k\">Slot</span>' + (t.slot||'—') + '</span>';\n"
+        "      html += '</div>';\n"
+        "      html += '<pre class=\"tst-log\" spellcheck=\"false\">' + _esc(log) + '</pre>';\n"
+        "      html += '</div>';\n"
+        "    });\n"
+        "    mount.innerHTML = html;\n"
+        "    if (window.dismissLoader) window.dismissLoader();\n"
+        "  })\n"
+        "  .catch(function(){\n"
+        "    document.getElementById('tests-mount').innerHTML ="
+        " '<div class=\"tst-empty\" style=\"color:var(--dn);\">Error loading test data.</div>';\n"
+        "    if (window.dismissLoader) window.dismissLoader();\n"
+        "  });\n"
+        "function _esc(s){\n"
+        "  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');\n"
+        "}\n"
+    )
+
+    _TESTS_STYLES = (
+        '<style>\n'
+        '.tst-empty{color:var(--mist);font-family:var(--ff-mono);font-size:11px;padding:32px 0;}\n'
+        '.tst-card{margin-bottom:2rem;border:1px solid var(--rim);border-radius:4px;'
+        'background:rgba(20,20,35,.6);overflow:hidden;}\n'
+        '.tst-hdr{display:flex;align-items:center;gap:10px;padding:10px 14px;'
+        'background:rgba(155,89,255,.08);border-bottom:1px solid var(--rim);flex-wrap:wrap;}\n'
+        '.tst-badge{font-family:var(--ff-mono);font-size:9px;letter-spacing:.15em;'
+        'color:#fff5a0;background:rgba(180,150,20,.25);border:1px solid rgba(180,150,20,.5);'
+        'padding:2px 6px;border-radius:2px;flex-shrink:0;}\n'
+        '.tst-label{font-family:var(--ff-mono);font-size:11px;color:var(--pu);'
+        'letter-spacing:.08em;flex:1;min-width:0;}\n'
+        '.tst-ts{font-family:var(--ff-mono);font-size:10px;color:var(--mist);'
+        'margin-left:auto;white-space:nowrap;}\n'
+        '.tst-meta{display:flex;flex-wrap:wrap;gap:18px;padding:8px 14px;'
+        'border-bottom:1px solid var(--rim);background:rgba(0,0,0,.2);}\n'
+        '.tst-meta-item{font-family:var(--ff-mono);font-size:10px;color:var(--fg);}\n'
+        '.tst-meta-k{color:var(--mist);margin-right:6px;}\n'
+        '.tst-log{margin:0;padding:14px;font-family:var(--ff-mono);font-size:11px;'
+        'line-height:1.65;color:var(--fg);white-space:pre;overflow-x:auto;'
+        'background:rgba(0,0,0,.35);tab-size:2;user-select:text;cursor:text;'
+        'border:none;outline:none;max-height:700px;overflow-y:auto;}\n'
+        '.tst-log::-webkit-scrollbar{width:6px;height:6px;}\n'
+        '.tst-log::-webkit-scrollbar-track{background:transparent;}\n'
+        '.tst-log::-webkit-scrollbar-thumb{background:var(--rim);border-radius:3px;}\n'
+        '</style>\n'
+    )
+
+    out = (
+        '<!DOCTYPE html><html lang="en"><head>'
+        '<meta charset="UTF-8">'
+        '<meta name="viewport" content="width=device-width,initial-scale=1.0">'
+        '<meta name="description" content="MRE Debug Test Layer">'
+        '<title>MRE // Debug Tests</title>'
+        f'{_FONTS_LINK}'
+        '<link rel="stylesheet" href="assets/style.css">'
+        f'{_LOADER_CSS}'
+        f'{_TESTS_STYLES}'
+        '</head><body>'
+        f'{_LOADER_HTML}'
+        f'{_LOADER_JS}'
+        '<div class="scanlines"></div>'
+        f'{_nav_html("tests")}'
+        '<div class="pages"><div id="p-tests" class="page on">'
+        '<div class="pg-eyebrow">Debug Layer &middot; Manual Runs</div>'
+        '<div class="pg-title">Test <span class="hi">Outputs</span></div>'
+        '<div class="pg-sub">Force-ticker runs only &middot; Not mixed with scheduled data &middot; '
+        'Clean with <code style="font-family:var(--ff-mono);font-size:10px;">--delete-tests</code></div>'
+        '<div id="tests-mount"></div>'
+        '</div></div>'
+        '<footer><span>MRE</span> &middot; Free-tier data only &middot; Not investment advice</footer>'
+        '<script>'
+        f'{_TESTS_FETCH_JS}'
+        '</script>'
+        '</body></html>'
+    )
+
+    out_path = os.path.join(DOCS_DIR, 'tests.html')
+    try:
+        with open(out_path, 'w', encoding='utf-8') as f:
+            f.write(out)
+    except Exception as e:
+        log.error(f'tests.html write failed: {e}')
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # PUBLIC ENTRY POINT
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -2112,6 +2427,7 @@ def build_dashboard(
     full_url='',
     prompt_text='',
     is_debug=False,
+    active_subs=None,
     index_history=None,
     confirmed_sectors=None,
     market_regime_dict=None,
@@ -2123,21 +2439,61 @@ def build_dashboard(
 
     Parameters
     ----------
-    companies : list of company dicts (standard System 1 output)
-    slot      : str — e.g. 'morning', 'midday', 'closing'
-    indices   : dict — keys: 'dow', 'sp500', 'nasdaq'; values: {value, change_pct, label}
-    breadth   : dict — {label: str}
-    regime    : dict — {label: str}
-    full_url  : str — GitHub Pages report URL
-    prompt_text : str — AI research prompt for copy button
-    is_debug  : bool — if True, tags archive entry as MANUAL
-    index_history : dict — keys 'dow', 'sp500', 'nasdaq'; values: list[float] (30+ closes)
+    companies    : list of company dicts (standard System 1 output)
+    slot         : str — e.g. 'morning', 'midday', 'closing'
+    indices      : dict — keys: 'dow', 'sp500', 'nasdaq'; values: {value, change_pct, label}
+    breadth      : dict — {label: str}
+    regime       : dict — {label: str}
+    full_url     : str — GitHub Pages report URL
+    prompt_text  : str — AI research prompt for copy button
+    is_debug     : bool — if True, routes to tests.json/tests.html only (no rank/archive writes)
+    active_subs  : set[str] — subsystems active in this run (test runs only)
+    index_history: dict — keys 'dow', 'sp500', 'nasdaq'; values: list[float] (30+ closes)
     confirmed_sectors : dict — sector name → {score, articles:[]} from SectorSignalAccumulator
     """
     index_history     = index_history     or {}
     confirmed_sectors = confirmed_sectors or {}
+    active_subs       = active_subs       or set()
     os.makedirs(DATA_DIR, exist_ok=True)
     companies = companies or []
+
+    # ── TEST RUN PATH ───────────────────────────────────────────────────────
+    # Test runs skip ALL scheduled data stores (rank, archive, reports index).
+    # They write only to tests.json + re-render tests.html.
+    if is_debug:
+        now_et = datetime.now(pytz.utc).astimezone(pytz.timezone('America/New_York'))
+        for _c in companies:
+            _c['is_test'] = True
+        _subs_label = ', '.join(sorted(active_subs)) if active_subs else 'all'
+        try:
+            _log_text = _build_test_log(companies, active_subs or set(), slot)
+        except Exception as _log_err:
+            _log_text = f'[log build failed: {_log_err}]'
+        test_entry = {
+            'is_test':           True,
+            'timestamp_et':      now_et.strftime('%Y-%m-%d %H:%M:%S'),
+            'slot':              slot,
+            'active_subs':       sorted(active_subs) if active_subs else ['all'],
+            'active_subs_label': _subs_label,
+            'tickers':           [c.get('ticker', '') for c in companies],
+            'log':               _log_text,
+        }
+        try:
+            _write_tests_json(test_entry)
+        except Exception as e:
+            log.error(f'_write_tests_json error: {e}')
+        try:
+            _write_tests_page()
+            log.info('tests.html written (test run)')
+        except Exception as e:
+            log.error(f'tests.html write failed: {e}')
+        log.info(
+            f'[DEBUG] build_dashboard complete (test path). '
+            f'Subs: {_subs_label} | Tickers: {[c.get("ticker") for c in companies]}'
+        )
+        return
+
+    # ── SCHEDULED RUN PATH ─────────────────────────────────────────────────
 
     # ── Write index_history.json ────────────────────────────────────────────
     if index_history:

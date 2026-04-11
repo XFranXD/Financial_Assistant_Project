@@ -6,15 +6,16 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: 'Run mode: scheduled (90-day policy) or force_delete (targeted)'
+        description: 'Run mode: scheduled (90-day policy), force_delete (targeted by date), or delete_tests (remove all test run data)'
         required: true
         default: 'scheduled'
         type: choice
         options:
           - scheduled
           - force_delete
+          - delete_tests
       target:
-        description: |
+        description: |-
           TARGET (force_delete only):
           2026             → all reports from 2026
           2026-03          → all reports from March 2026
@@ -38,7 +39,7 @@ jobs:
         with: { python-version: '3.11' }
 
       - name: Install dependencies
-        run: pip install pytz
+        run: pip install pytz gspread google-auth
 
       - name: Run scheduled cleanup
         if: >
@@ -54,6 +55,15 @@ jobs:
           github.event.inputs.target != ''
         run: |
           python scripts/cleanup_reports.py --delete "${{ github.event.inputs.target }}"
+
+      - name: Delete all test run data
+        if: >
+          github.event_name == 'workflow_dispatch' &&
+          github.event.inputs.mode == 'delete_tests'
+        env:
+          GOOGLE_SHEETS_ID:            ${{ secrets.GOOGLE_SHEETS_ID }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+        run: python scripts/cleanup_reports.py --delete-tests
 
       - name: Validate target provided for force_delete
         if: >

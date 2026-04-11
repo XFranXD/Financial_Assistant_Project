@@ -528,14 +528,10 @@
           var psDistSup = typeof stock.ps_distance_to_support_pct === 'number' ? stock.ps_distance_to_support_pct.toFixed(1) + '%' : '\u2014';
           var psDistRes = typeof stock.ps_distance_to_resistance_pct === 'number' ? stock.ps_distance_to_resistance_pct.toFixed(1) + '%' : '\u2014';
           var psAvail = stock.ps_available === true;
-          var forceDebug = stock.force_debug === true;
-          var forceBadge = forceDebug
-            ? '<span class="rpill rpill-force" style="margin-left:6px;vertical-align:middle;">FORCE</span>'
-            : '';
           html += '<div class="rank-card" data-ref="' + phUid + '" data-eid="e' + i + '" data-cid="ec' + i + '">'
             + '<div class="rank-card-main" onclick="expT(this.closest(\'.rank-card\'))">'
             + '<div class="rck-n">#' + i + '</div>'
-            + '<div class="rck-t">' + (stock.ticker || '\u2014') + forceBadge + '</div>'
+            + '<div class="rck-t">' + (stock.ticker || '\u2014') + '</div>'
             + '<div class="rck-s" style="color:' + sectorColor + '">' + sector + '</div>'
             + '<div class="rck-pills">'
             + '<span class="rpill rpill-price"><span class="rpill-lbl">Price</span>' + priceDisp + '</span>'
