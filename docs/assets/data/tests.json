@@ -2,6 +2,24 @@
   "tests": [
     {
       "is_test": true,
+      "timestamp_et": "2026-04-11 02:27:33",
+      "slot": "9:45-11:15",
+      "active_subs": [
+        "sub1",
+        "sub2",
+        "sub3",
+        "sub4",
+        "sub5",
+        "sub6"
+      ],
+      "active_subs_label": "sub1, sub2, sub3, sub4, sub5, sub6",
+      "tickers": [
+        "APPL"
+      ],
+      "log": "TEST RUN \u2014 2026-04-11 02:27:33 ET\nSlot     : 9:45-11:15\nSubs     : sub1, sub2, sub3, sub4, sub5, sub6\nTickers  : APPL\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\n\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nTICKER: APPL  \u2014  APPL\n\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\n\n[SUB1] Filter Candidates / Core Scoring\n  current_price        : None\n  sector               : energy\n  composite_confidence : 38.7\n  confidence_label     : Weak confidence\n  risk_score           : 63.5\n  risk_label           : High Risk\n  opportunity_score    : 42.0\n  agreement_score      : 0.062\n  agreement_label      : weak agreement \u2014 signals not aligned\n  market_verdict       : SKIP\n  alignment            : PARTIAL\n  ram_score            : 0.5\n  return_1m            : None\n  return_3m            : None\n  return_6m            : None\n  volume_score         : 0.5\n  volume_ratio         : None\n  unusual_volume_flag  : False\n  drawdown_score       : 0.5\n  earnings_warning     : False\n  divergence_warning   : False\n  bucket_scores        :\n    Financial Health            : 50.0\n    Price Trend Strength        : 48.5\n    Market Confirmation         : 50.0\n  risk_components      :\n    debt                        : 50.0\n    volatility                  : 50.0\n    liquidity                   : 100\n    eps                         : 50.0\n    margin                      : 50.0\n    mcap                        : 100\n    drawdown                    : 50.0\n\n[SUB2] Earnings Quality Analyzer\n  eq_available         : False\n  event_risk           : NORMAL\n  event_risk_reason    : \n  days_to_earnings     : None\n  insider_signal       : UNAVAILABLE\n  insider_note         : \n  expectations_signal  : UNAVAILABLE\n  earnings_beat_rate   : None\n  peg_ratio            : None\n\n[SUB3] Sector Rotation Detector\n  rotation_available   : True\n  rotation_score       : 81.0\n  rotation_status      : FAVORABLE\n  rotation_signal      : SUPPORT\n  rotation_signal_disp : SUPPORT\n  sector_etf           : XLE\n  rotation_confidence  : None\n  rotation_reasoning   : None\n  timeframes_used      : ['1M', '3M', '6M']\n\n[SUB4] Price Structure Analyzer\n  ps_available         : False\n\n[SUB5] Portfolio & Correlation Layer\n  pl_available         : False\n\n[SUB6] Paper Trading Engine\n  pt_available         : True\n  open_count           : 0\n  new_count            : 0\n  closed_count         : 0\n  (no trade for this ticker this run)\n\n\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\nEND OF TEST LOG"
+    },
+    {
+      "is_test": true,
       "timestamp_et": "2026-04-11 02:09:48",
       "slot": "9:45-11:15",
       "active_subs": [
