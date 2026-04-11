@@ -37,7 +37,7 @@ on:
       dry_run:
         description: |
           Safe mode — true by default for all manual runs.
-            true  → no trades saved, no email, no commit (rank still updates, cards tagged FORCE)
+            true  → No email (HTML OR EMAIL)
             false → behaves exactly like a scheduled run (use only when intentional)
         required: false
         default: 'true'
