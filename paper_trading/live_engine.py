@@ -168,7 +168,7 @@ def process_open_trades(current_slot: str, open_trades: list[dict]) -> list[dict
             
     return open_trades
 
-def detect_new_entries(candidates: list[dict], updated_trades: list[dict], all_trades_raw: list[dict], current_slot: str, market_regime: str) -> list[dict]:
+def detect_new_entries(candidates: list[dict], updated_trades: list[dict], all_trades_raw: list[dict], current_slot: str, market_regime: str, debug_mode: bool = False) -> list[dict]:
     today_et_str = datetime.now(pytz.timezone('America/New_York')).strftime('%Y-%m-%d')
     new_entries = []
 
@@ -181,43 +181,60 @@ def detect_new_entries(candidates: list[dict], updated_trades: list[dict], all_t
     }
 
     for candidate in candidates:
-        if (candidate.get('market_verdict') in ('RESEARCH NOW', 'WATCH')
-            and candidate.get('entry_quality') == 'GOOD'
-            and candidate.get('entry_price') is not None
-            and candidate.get('stop_loss') is not None
-            and candidate.get('price_target') is not None):
-            
-            ticker = candidate.get('ticker')
+        ticker = candidate.get('ticker')
 
-            # Block re-entry for tickers that exited in this same run.
-            if ticker in tickers_closed_this_run:
-                log.info(f"[PT] {ticker}: skip — closed this run, cooldown applies")
+        if debug_mode:
+            # Debug mode: bypass all financial strategy gates (verdict, entry quality).
+            # Only require that numeric levels are present — the trade must still be
+            # structurally valid so the replay engine and Sheets integration can be
+            # tested with realistic data. Cooldown and duplicate-open checks still apply
+            # so the ledger stays clean across repeated test runs.
+            has_levels = (
+                candidate.get('entry_price') is not None
+                and candidate.get('stop_loss') is not None
+                and candidate.get('price_target') is not None
+            )
+            if not has_levels:
+                log.info(f'[PT][DEBUG] {ticker}: skip — entry/stop/target levels missing (Sub4 unavailable)')
+                continue
+        else:
+            if not (candidate.get('market_verdict') in ('RESEARCH NOW', 'WATCH')
+                    and candidate.get('entry_quality') == 'GOOD'
+                    and candidate.get('entry_price') is not None
+                    and candidate.get('stop_loss') is not None
+                    and candidate.get('price_target') is not None):
                 continue
 
-            is_open = any(t.get(PT_TICKER) == ticker and t.get(PT_STATUS) == PT_STATUS_OPEN for t in updated_trades)
-            if is_open:
-                log.info(f"[PT] {ticker}: skip — already has open trade")
-                continue
-                
-            closed_trades = [t for t in all_trades_raw if t.get(PT_TICKER) == ticker and t.get(PT_STATUS) == PT_STATUS_CLOSED]
-            # ISO date strings sort lexicographically == chronologically
-            closed_trades.sort(key=lambda x: x.get(PT_EXIT_DATE, ''), reverse=True)
-            
-            if closed_trades:
-                most_recent = closed_trades[0]
-                exit_date = most_recent.get(PT_EXIT_DATE)
-                if exit_date:
-                    days_since_close = _trading_days_between(exit_date, today_et_str)
-                    if days_since_close <= COOLDOWN_TRADING_DAYS:
-                        log.info(f"[PT] {ticker}: skip — cooldown active ({days_since_close} days since close)")
-                        continue
-            
-            new_trade = build_trade(candidate, current_slot, market_regime)
-            new_entries.append(new_trade)
+        # ── Shared checks (both normal and debug mode) ────────────────────
+        # Block re-entry for tickers that exited in this same run.
+        if ticker in tickers_closed_this_run:
+            log.info(f"[PT] {ticker}: skip — closed this run, cooldown applies")
+            continue
+
+        is_open = any(t.get(PT_TICKER) == ticker and t.get(PT_STATUS) == PT_STATUS_OPEN for t in updated_trades)
+        if is_open:
+            log.info(f"[PT] {ticker}: skip — already has open trade")
+            continue
+
+        closed_trades = [t for t in all_trades_raw if t.get(PT_TICKER) == ticker and t.get(PT_STATUS) == PT_STATUS_CLOSED]
+        # ISO date strings sort lexicographically == chronologically
+        closed_trades.sort(key=lambda x: x.get(PT_EXIT_DATE, ''), reverse=True)
+
+        if closed_trades:
+            most_recent = closed_trades[0]
+            exit_date = most_recent.get(PT_EXIT_DATE)
+            if exit_date:
+                days_since_close = _trading_days_between(exit_date, today_et_str)
+                if days_since_close <= COOLDOWN_TRADING_DAYS:
+                    log.info(f"[PT] {ticker}: skip — cooldown active ({days_since_close} days since close)")
+                    continue
+
+        new_trade = build_trade(candidate, current_slot, market_regime)
+        new_entries.append(new_trade)
             
     return new_entries
 
-def run_paper_trading(candidates: list[dict], current_slot: str, market_regime: str) -> dict:
+def run_paper_trading(candidates: list[dict], current_slot: str, market_regime: str, debug_mode: bool = False) -> dict:
     try:
         from paper_trading.sheets_ledger import read_all_trades
         all_trades_raw = read_all_trades()
@@ -227,7 +244,8 @@ def run_paper_trading(candidates: list[dict], current_slot: str, market_regime: 
         
         new_trades = detect_new_entries(
             candidates, updated_trades, all_trades_raw,
-            current_slot, market_regime
+            current_slot, market_regime,
+            debug_mode=debug_mode,
         )
         
         commit_updates(updated_trades, new_trades, current_slot)
@@ -251,4 +269,3 @@ def run_paper_trading(candidates: list[dict], current_slot: str, market_regime: 
             'closed_count': 0,
             'trades': []
         }
-        

@@ -317,7 +317,8 @@ def _enrich_for_dashboard(candidates: list) -> None:
 # ── Force-ticker pipeline (debug mode) ────────────────────────────────────
 
 def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict,
-                               active_subs: set[str], dry_run: bool) -> None:
+                               active_subs: set[str], dry_run: bool,
+                               force_sub6: bool = False) -> None:
     """
     Debug mode: skip all sector/news gates and run the full per-company
     analysis pipeline directly against the provided ticker list.
@@ -328,6 +329,11 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict,
                   Parsed from FORCE_SUBSYSTEMS env var.
     dry_run     : if True, suppresses paper trading writes, email, and git commit.
                   Rank board IS updated but cards are tagged FORCE.
+    force_sub6  : if True, Sub6 runs even when dry_run=True.
+                  All trades are tagged TEST_ / is_test=True and bypass all
+                  financial strategy gates (verdict, entry quality) so the
+                  paper trading logic and Google Sheets integration can be
+                  tested independently of the strategy pipeline.
 
     Does NOT update state slot completion — debug runs are invisible
     to the score stability filter and daily dedup logic.
@@ -335,6 +341,7 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict,
     log.info(f'[DEBUG] Force-ticker mode active — tickers: {force_tickers}')
     log.info(f'[DEBUG] Active subsystems: {sorted(active_subs)}')
     log.info(f'[DEBUG] Dry run: {dry_run}')
+    log.info(f'[DEBUG] Force Sub6: {force_sub6}')
     log.info(f'[DEBUG] Skipping all sector/news gates')
 
     # Fetch market context needed for scoring
@@ -830,11 +837,13 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict,
     # ── End Sub5 (Debug) ─────────────────────────────────────────────────
 
     # ── Sub6: Paper Trading Engine (Debug) ───────────────────────────────
-    # Gated on BOTH sub6 being active AND dry_run being False.
-    # dry_run=True (default for all manual runs) fully suppresses paper
-    # trading writes so test tickers never pollute the ledger.
+    # Normal gate: sub6 in active_subs AND dry_run=False.
+    # force_sub6=True bypasses the dry_run guard so the paper trading logic
+    # and Google Sheets integration can be tested on debug runs without
+    # sending emails. All trades are tagged TEST_ / is_test=True and bypass
+    # all financial strategy gates (verdict, entry quality) in live_engine.
     paper_trading_summary: dict = {}
-    if 'sub6' in active_subs and not dry_run:
+    if 'sub6' in active_subs and (not dry_run or force_sub6):
         try:
             from paper_trading.live_engine import run_paper_trading
             from paper_trading.replay_engine import simulate_expected_return
@@ -849,6 +858,7 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict,
                 candidates    = all_candidates,
                 current_slot  = slot,
                 market_regime = _pt_regime,
+                debug_mode    = force_sub6,
             )
             # Tag every trade ID with TEST_ prefix so cleanup can identify
             # and delete them from Google Sheets without touching real trades.
@@ -882,8 +892,8 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict,
             paper_trading_summary = {'pt_available': False}
             log.warning(f'[PT][DEBUG] Paper trading failed (non-fatal): {_pt_err}')
     else:
-        if dry_run:
-            log.info('[DEBUG][PT] Sub6 suppressed — dry_run=True protects ledger from test tickers')
+        if dry_run and not force_sub6:
+            log.info('[DEBUG][PT] Sub6 suppressed — dry_run=True and force_sub6=False. Set FORCE_SUB6=true to test Sub6 on debug runs.')
         else:
             log.info('[DEBUG][PT] Sub6 excluded — paper trading skipped')
         paper_trading_summary = {'pt_available': False}
@@ -965,8 +975,10 @@ def run():
         slot  = _determine_slot() or RUN_SLOTS[0]
         active_subs = _parse_subsystems(os.environ.get('FORCE_SUBSYSTEMS', 'all'))
         dry_run     = os.environ.get('DRY_RUN', 'true').strip().lower() != 'false'
+        force_sub6  = os.environ.get('FORCE_SUB6', 'false').strip().lower() == 'true'
         log.info(f'[DEBUG] Using slot: {slot}')
-        _run_force_ticker_pipeline(force_tickers, slot, state, active_subs, dry_run)
+        log.info(f'[DEBUG] force_sub6: {force_sub6}')
+        _run_force_ticker_pipeline(force_tickers, slot, state, active_subs, dry_run, force_sub6)
         sys.exit(0)
 
     # ── Time gate ─────────────────────────────────────────────────────────
