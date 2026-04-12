@@ -2341,6 +2341,33 @@ def _build_test_log(companies: list, active_subs: set, slot: str, paper_trading_
                 else:
                     lines.append('  (no trade for this ticker this run)')
 
+        # ── FSV: Financial Standards Validator ──────────────────────────
+        _val = c.get('_validator')
+        if _val:
+            _tv  = _val.get('ticker_verdict', 'UNKNOWN')
+            _inc = _val.get('inconsistent_count', 0)
+            _que = _val.get('questionable_count', 0)
+            _con = _val.get('consistent_count', 0)
+            lines.append('\n[FSV] Financial Standards Validator')
+            lines.append(f'  ticker_verdict       : {_tv}')
+            lines.append(f'  inconsistent_count   : {_inc}')
+            lines.append(f'  questionable_count   : {_que}')
+            lines.append(f'  consistent_count     : {_con}')
+            _checks = _val.get('checks') or []
+            _flagged = [ch for ch in _checks if ch.get('verdict') in ('INCONSISTENT', 'QUESTIONABLE')]
+            if _flagged:
+                lines.append('  flags:')
+                for _ch in _flagged:
+                    lines.append(
+                        f'    [{_ch.get("verdict","?")}] {_ch.get("check_id","?")} '
+                        f'— {_ch.get("note","")}'
+                    )
+            else:
+                lines.append('  flags                : (none)')
+        else:
+            lines.append('\n[FSV] Financial Standards Validator')
+            lines.append('  (validator did not run for this ticker)')
+
     lines.append(f'\n{"─"*72}')
     lines.append('END OF TEST LOG')
     return '\n'.join(lines)

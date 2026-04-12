@@ -894,6 +894,28 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict,
         paper_trading_summary = {'pt_available': False}
     # ── End Sub6 (Debug) ─────────────────────────────────────────────────
 
+    # ── FSV: Financial Standards Validator (debug path, non-fatal) ───────────
+    # Runs in both scheduled and force-ticker/test mode. Attaches to candidate
+    # dicts so _build_test_log() can render the validator block per ticker.
+    try:
+        from validator.financial_standards import validate_candidate
+        for _c in all_candidates:
+            try:
+                _val_result = validate_candidate(_c)
+                _c['_validator'] = _val_result
+                _tv  = _val_result.get('ticker_verdict', 'UNKNOWN')
+                _inc = _val_result.get('inconsistent_count', 0)
+                _que = _val_result.get('questionable_count', 0)
+                log.info(
+                    f'[FSV][DEBUG] {_c.get("ticker","?")} → {_tv} '
+                    f'| INCONSISTENT={_inc} QUESTIONABLE={_que}'
+                )
+            except Exception as _val_ticker_err:
+                log.error(f'[FSV][DEBUG] ticker-level error for {_c.get("ticker","?")}: {_val_ticker_err}')
+    except Exception as _val_mod_err:
+        log.error(f'[FSV][DEBUG] module-level error: {_val_mod_err}')
+    # ── End FSV (debug) ──────────────────────────────────────────────────────
+
     # ── Build report ──────────────────────────────────────────────────────
     # Test runs do NOT generate intraday HTML report files — output goes
     # exclusively to tests.json / tests.html via build_dashboard below.
@@ -1653,6 +1675,29 @@ def run():
         paper_trading_summary = {'pt_available': False}
         log.warning(f'[PT] Paper trading failed (non-fatal): {_pt_err}')
     # ── End Step 27k ───────────────────────────────────────────────────────
+
+    # ── Step 27l: Financial Standards Validator (non-fatal diagnostic) ────────
+    # Runs after all subsystems complete. Reads fully assembled candidate dicts.
+    # Never changes any score or verdict. Never blocks the pipeline.
+    # Attaches structured flag report to c['_validator'] for dashboard rendering.
+    try:
+        from validator.financial_standards import validate_candidate
+        for _c in final_companies:
+            try:
+                _val_result = validate_candidate(_c)
+                _c['_validator'] = _val_result
+                _tv  = _val_result.get('ticker_verdict', 'UNKNOWN')
+                _inc = _val_result.get('inconsistent_count', 0)
+                _que = _val_result.get('questionable_count', 0)
+                log.info(
+                    f'[FSV] {_c.get("ticker","?")} → {_tv} '
+                    f'| INCONSISTENT={_inc} QUESTIONABLE={_que}'
+                )
+            except Exception as _val_ticker_err:
+                log.error(f'[FSV] ticker-level error for {_c.get("ticker","?")}: {_val_ticker_err}')
+    except Exception as _val_mod_err:
+        log.error(f'[FSV] module-level error: {_val_mod_err}')
+    # ── End Step 27l ──────────────────────────────────────────────────────────
 
     # ── Step 28: Build reports ────────────────────────────────────────────
     from reports.report_builder import build_intraday_report
