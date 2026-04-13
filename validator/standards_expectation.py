@@ -13,15 +13,70 @@ Key notes on data sources:
 - composite_confidence < 35 is a C_EXPECTATION (soft) not B_CONTRADICTION,
   because in test/force-ticker mode the filter is intentionally bypassed —
   it would always fire INCONSISTENT on valid test runs
+
+Patch v1.1 changes:
+  - compute_market_verdict imported from validator_schema (no local duplicate).
+  - All calibration thresholds extracted to named constants at top of file.
+  - return_vs_trend threshold tightened from -15% to -25% to avoid flagging
+    valid early-reversal / trend-change setups.
+  - Stop loss proximity uses beta-tiered ranges with None fallback and 40%
+    hard upper cap.
+  - GOOD entry + distance_to_support_pct > 12% → QUESTIONABLE (C9 new check).
+  - High composite_confidence + high risk_score → QUESTIONABLE (C10 new check).
+  - Insider distributing note softened to reflect diversification context.
+  - log.warning used consistently on expectation (QUESTIONABLE) paths.
 """
 
 from utils.logger import get_logger
 from validator.validator_schema import (
     CONSISTENT, QUESTIONABLE,
     BUCKET_EXPECTATION,
+    compute_market_verdict,
 )
 
 log = get_logger('validator.expectation')
+
+# ── Calibration constants ─────────────────────────────────────────────────────
+# All thresholds live here. Adjust without hunting through logic.
+
+# C1 — Volume / Liquidity
+VOL_HIGH_AVG_THRESHOLD    = 3_000_000   # avg_volume above this = high-volume stock
+VOL_LOW_AVG_THRESHOLD     = 600_000     # avg_volume below this = thin-volume stock
+VOL_HIGH_LIQUIDITY_MAX    = 15          # expected liquidity risk ceiling for high-volume
+VOL_LOW_LIQUIDITY_MIN     = 50          # expected liquidity risk floor for thin-volume
+
+# C2 — Beta / Volatility
+BETA_HIGH_THRESHOLD       = 2.0         # beta above this = high-beta
+BETA_LOW_THRESHOLD        = 0.7         # beta below this = low-beta
+BETA_HIGH_VOL_MIN         = 40          # volatility component floor for high-beta
+BETA_LOW_VOL_MAX          = 60          # volatility component ceiling for low-beta
+
+# C3 — Return vs Trend
+RETURN_DECLINE_THRESHOLD  = -25.0       # 3m return below this with UP trend = atypical
+RETURN_GAIN_THRESHOLD     = 15.0        # 3m return above this with DOWN trend = atypical
+
+# C4 — Stop Loss Proximity
+STOP_DEFAULT_MIN_PCT      = 2.0         # minimum stop distance (default band)
+STOP_DEFAULT_MAX_PCT      = 25.0        # maximum stop distance (default band)
+STOP_HIGH_BETA_THRESHOLD  = 1.8         # beta above this uses high-beta stop band
+STOP_HIGH_BETA_MAX_PCT    = 35.0        # maximum stop distance for high-beta stocks
+STOP_LOW_BETA_THRESHOLD   = 0.8         # beta below this uses low-beta stop band
+STOP_LOW_BETA_MAX_PCT     = 20.0        # maximum stop distance for low-beta stocks
+STOP_HARD_CAP_PCT         = 40.0        # absolute maximum stop distance regardless of beta
+
+# C6 — Bear regime
+BEAR_REGIME_FLAG          = 'BEAR'
+
+# C7 — Distance vs key level
+DIST_NEAR_SUPPORT_MAX     = 2.0         # within this % = near support
+DIST_FAR_SUPPORT_MIN      = 10.0        # beyond this % = far from support label
+
+# C9 — Good entry vs support distance
+GOOD_ENTRY_SUPPORT_MAX    = 12.0        # GOOD entry with dist > this = atypical
+
+# C10 — High confidence + high risk
+HIGH_CONF_THRESHOLD       = 75.0        # composite_confidence >= this
+HIGH_RISK_THRESHOLD       = 70.0        # risk_score >= this
 
 
 def _make_flag(check_id: str, subsystem: str, field: str,
@@ -61,28 +116,32 @@ def check_volume_liquidity(c: dict) -> list[dict]:
         liquidity_f  = float(liquidity)
 
         # High volume → low liquidity risk expected
-        if avg_volume_f > 3_000_000 and liquidity_f > 30:
+        if avg_volume_f > VOL_HIGH_AVG_THRESHOLD and liquidity_f > VOL_HIGH_LIQUIDITY_MAX:
+            log.warning(
+                f'[FSV][C] QUESTIONABLE: avg_volume {avg_volume_f:,.0f} but '
+                f'liquidity risk {liquidity_f:.1f} > {VOL_HIGH_LIQUIDITY_MAX}'
+            )
             results.append(_make_flag(
                 check_id       = 'C_EXPECTATION_VOLUME_LIQUIDITY_HIGH',
                 subsystem      = 'sub1',
                 field          = 'risk_components.liquidity',
                 observed       = liquidity_f,
                 context        = {'avg_volume': avg_volume_f},
-                expected_range = '0–15 for avg_volume > 3M/day',
+                expected_range = f'0–{VOL_HIGH_LIQUIDITY_MAX} for avg_volume > {VOL_HIGH_AVG_THRESHOLD/1e6:.0f}M/day',
                 verdict        = QUESTIONABLE,
                 note           = (
                     f'Avg volume {avg_volume_f:,.0f} typically implies near-zero liquidity risk. '
-                    f'Observed {liquidity_f:.1f} — expected range 0–15 for this volume tier.'
+                    f'Observed {liquidity_f:.1f} — expected range 0–{VOL_HIGH_LIQUIDITY_MAX} for this volume tier.'
                 ),
             ))
-        elif avg_volume_f > 3_000_000:
+        elif avg_volume_f > VOL_HIGH_AVG_THRESHOLD:
             results.append(_make_flag(
                 check_id       = 'C_EXPECTATION_VOLUME_LIQUIDITY_HIGH',
                 subsystem      = 'sub1',
                 field          = 'risk_components.liquidity',
                 observed       = liquidity_f,
                 context        = {'avg_volume': avg_volume_f},
-                expected_range = '0–15 for avg_volume > 3M/day',
+                expected_range = f'0–{VOL_HIGH_LIQUIDITY_MAX} for avg_volume > {VOL_HIGH_AVG_THRESHOLD/1e6:.0f}M/day',
                 verdict        = CONSISTENT,
                 note           = (
                     f'Avg volume {avg_volume_f:,.0f} — liquidity risk {liquidity_f:.1f} '
@@ -91,28 +150,32 @@ def check_volume_liquidity(c: dict) -> list[dict]:
             ))
 
         # Thin volume → elevated liquidity risk expected
-        if avg_volume_f < 600_000 and liquidity_f < 10:
+        if avg_volume_f < VOL_LOW_AVG_THRESHOLD and liquidity_f < VOL_LOW_LIQUIDITY_MIN:
+            log.warning(
+                f'[FSV][C] QUESTIONABLE: avg_volume {avg_volume_f:,.0f} but '
+                f'liquidity risk {liquidity_f:.1f} < {VOL_LOW_LIQUIDITY_MIN}'
+            )
             results.append(_make_flag(
                 check_id       = 'C_EXPECTATION_VOLUME_LIQUIDITY_LOW',
                 subsystem      = 'sub1',
                 field          = 'risk_components.liquidity',
                 observed       = liquidity_f,
                 context        = {'avg_volume': avg_volume_f},
-                expected_range = '50–100 for avg_volume < 600K/day',
+                expected_range = f'{VOL_LOW_LIQUIDITY_MIN}–100 for avg_volume < {VOL_LOW_AVG_THRESHOLD/1e3:.0f}K/day',
                 verdict        = QUESTIONABLE,
                 note           = (
                     f'Thin volume ({avg_volume_f:,.0f}/day) typically implies elevated liquidity risk. '
-                    f'Observed {liquidity_f:.1f} — expected range 50–100 for this volume tier.'
+                    f'Observed {liquidity_f:.1f} — expected range {VOL_LOW_LIQUIDITY_MIN}–100 for this volume tier.'
                 ),
             ))
-        elif avg_volume_f < 600_000:
+        elif avg_volume_f < VOL_LOW_AVG_THRESHOLD:
             results.append(_make_flag(
                 check_id       = 'C_EXPECTATION_VOLUME_LIQUIDITY_LOW',
                 subsystem      = 'sub1',
                 field          = 'risk_components.liquidity',
                 observed       = liquidity_f,
                 context        = {'avg_volume': avg_volume_f},
-                expected_range = '50–100 for avg_volume < 600K/day',
+                expected_range = f'{VOL_LOW_LIQUIDITY_MIN}–100 for avg_volume < {VOL_LOW_AVG_THRESHOLD/1e3:.0f}K/day',
                 verdict        = CONSISTENT,
                 note           = (
                     f'Avg volume {avg_volume_f:,.0f} — liquidity risk {liquidity_f:.1f} '
@@ -131,6 +194,8 @@ def check_beta_volatility(c: dict) -> list[dict]:
     """
     beta lives in c['financials'], not directly on c.
     High beta should map to high volatility component, low beta to low.
+    Note: beta is market-relative, not absolute — this check catches extreme
+    mismatches only. Borderline cases are expected and not flagged.
     """
     results = []
     try:
@@ -145,20 +210,25 @@ def check_beta_volatility(c: dict) -> list[dict]:
         beta_f = float(beta)
         vol_f  = float(vol)
 
-        # High beta (>2.0) → volatility component 60–95
-        if beta_f > 2.0:
-            if vol_f < 40:
+        # High beta (> threshold) → volatility component >= BETA_HIGH_VOL_MIN
+        if beta_f > BETA_HIGH_THRESHOLD:
+            if vol_f < BETA_HIGH_VOL_MIN:
+                log.warning(
+                    f'[FSV][C] QUESTIONABLE: beta {beta_f:.2f} but '
+                    f'volatility component {vol_f:.1f} < {BETA_HIGH_VOL_MIN}'
+                )
                 results.append(_make_flag(
                     check_id       = 'C_EXPECTATION_BETA_VOLATILITY_HIGH',
                     subsystem      = 'sub1',
                     field          = 'risk_components.volatility',
                     observed       = vol_f,
                     context        = {'beta': beta_f},
-                    expected_range = '60–95 for beta > 2.0',
+                    expected_range = f'>= {BETA_HIGH_VOL_MIN} for beta > {BETA_HIGH_THRESHOLD}',
                     verdict        = QUESTIONABLE,
                     note           = (
-                        f'Beta {beta_f:.2f} typically produces volatility component 60–95. '
-                        f'Observed {vol_f:.1f} — statistically low for this beta.'
+                        f'Beta {beta_f:.2f} typically produces volatility component >= {BETA_HIGH_VOL_MIN}. '
+                        f'Observed {vol_f:.1f} — statistically low for this beta. '
+                        f'Note: beta is market-relative and may not directly predict short-term volatility.'
                     ),
                 ))
             else:
@@ -168,7 +238,7 @@ def check_beta_volatility(c: dict) -> list[dict]:
                     field          = 'risk_components.volatility',
                     observed       = vol_f,
                     context        = {'beta': beta_f},
-                    expected_range = '60–95 for beta > 2.0',
+                    expected_range = f'>= {BETA_HIGH_VOL_MIN} for beta > {BETA_HIGH_THRESHOLD}',
                     verdict        = CONSISTENT,
                     note           = (
                         f'Beta {beta_f:.2f} — volatility component {vol_f:.1f} '
@@ -176,20 +246,25 @@ def check_beta_volatility(c: dict) -> list[dict]:
                     ),
                 ))
 
-        # Low beta (<0.7) → volatility component 5–30
-        elif beta_f < 0.7:
-            if vol_f > 60:
+        # Low beta (< threshold) → volatility component <= BETA_LOW_VOL_MAX
+        elif beta_f < BETA_LOW_THRESHOLD:
+            if vol_f > BETA_LOW_VOL_MAX:
+                log.warning(
+                    f'[FSV][C] QUESTIONABLE: beta {beta_f:.2f} but '
+                    f'volatility component {vol_f:.1f} > {BETA_LOW_VOL_MAX}'
+                )
                 results.append(_make_flag(
                     check_id       = 'C_EXPECTATION_BETA_VOLATILITY_LOW',
                     subsystem      = 'sub1',
                     field          = 'risk_components.volatility',
                     observed       = vol_f,
                     context        = {'beta': beta_f},
-                    expected_range = '5–30 for beta < 0.7',
+                    expected_range = f'<= {BETA_LOW_VOL_MAX} for beta < {BETA_LOW_THRESHOLD}',
                     verdict        = QUESTIONABLE,
                     note           = (
-                        f'Beta {beta_f:.2f} typically produces volatility component 5–30. '
-                        f'Observed {vol_f:.1f} — statistically high for this beta.'
+                        f'Beta {beta_f:.2f} typically produces volatility component <= {BETA_LOW_VOL_MAX}. '
+                        f'Observed {vol_f:.1f} — statistically high for this beta. '
+                        f'Note: beta is market-relative and may not directly predict short-term volatility.'
                     ),
                 ))
             else:
@@ -199,7 +274,7 @@ def check_beta_volatility(c: dict) -> list[dict]:
                     field          = 'risk_components.volatility',
                     observed       = vol_f,
                     context        = {'beta': beta_f},
-                    expected_range = '5–30 for beta < 0.7',
+                    expected_range = f'<= {BETA_LOW_VOL_MAX} for beta < {BETA_LOW_THRESHOLD}',
                     verdict        = CONSISTENT,
                     note           = (
                         f'Beta {beta_f:.2f} — volatility component {vol_f:.1f} '
@@ -218,8 +293,10 @@ def check_return_vs_trend(c: dict) -> list[dict]:
     """
     return_3m comes from c['mtf']['r3m'] (not c['return_3m'] — that field is
     set by _enrich_for_dashboard which runs after the validator).
-    Large negative return with UP trend, or large positive return with DOWN trend,
-    is atypical.
+
+    Threshold is -25% (not -15%) to avoid flagging valid early-reversal setups
+    where a stock has declined but is beginning to form higher lows (UP trend).
+    A -25% sustained decline with UP trend is a stronger anomaly signal.
     """
     results = []
     try:
@@ -235,29 +312,33 @@ def check_return_vs_trend(c: dict) -> list[dict]:
 
         r3m_f = float(return_3m)
 
-        # Large decline + UP trend
-        if r3m_f < -15.0 and trend == 'UP':
+        # Large sustained decline + UP trend
+        if r3m_f < RETURN_DECLINE_THRESHOLD and trend == 'UP':
+            log.warning(
+                f'[FSV][C] QUESTIONABLE: return_3m {r3m_f:.1f}% with UP trend'
+            )
             results.append(_make_flag(
                 check_id       = 'C_EXPECTATION_RETURN_VS_TREND_DOWN',
                 subsystem      = 'sub4',
                 field          = 'trend_structure',
                 observed       = trend,
                 context        = {'return_3m': r3m_f},
-                expected_range = 'trend_structure != UP when return_3m < -15%',
+                expected_range = f'trend_structure != UP when return_3m < {RETURN_DECLINE_THRESHOLD}%',
                 verdict        = QUESTIONABLE,
                 note           = (
                     f'3-month return {r3m_f:.1f}% with UP trend structure is atypical. '
-                    f'Extended price decline rarely coincides with uptrend structure.'
+                    f'A sustained decline of this magnitude rarely coincides with uptrend structure. '
+                    f'Early reversals are possible — warrants manual review.'
                 ),
             ))
-        elif r3m_f < -15.0:
+        elif r3m_f < RETURN_DECLINE_THRESHOLD:
             results.append(_make_flag(
                 check_id       = 'C_EXPECTATION_RETURN_VS_TREND_DOWN',
                 subsystem      = 'sub4',
                 field          = 'trend_structure',
                 observed       = trend,
                 context        = {'return_3m': r3m_f},
-                expected_range = 'trend_structure != UP when return_3m < -15%',
+                expected_range = f'trend_structure != UP when return_3m < {RETURN_DECLINE_THRESHOLD}%',
                 verdict        = CONSISTENT,
                 note           = (
                     f'3-month return {r3m_f:.1f}% — trend structure {trend} '
@@ -266,28 +347,31 @@ def check_return_vs_trend(c: dict) -> list[dict]:
             ))
 
         # Large gain + DOWN trend
-        if r3m_f > 15.0 and trend == 'DOWN':
+        if r3m_f > RETURN_GAIN_THRESHOLD and trend == 'DOWN':
+            log.warning(
+                f'[FSV][C] QUESTIONABLE: return_3m {r3m_f:.1f}% with DOWN trend'
+            )
             results.append(_make_flag(
                 check_id       = 'C_EXPECTATION_RETURN_VS_TREND_UP',
                 subsystem      = 'sub4',
                 field          = 'trend_structure',
                 observed       = trend,
                 context        = {'return_3m': r3m_f},
-                expected_range = 'trend_structure != DOWN when return_3m > 15%',
+                expected_range = f'trend_structure != DOWN when return_3m > {RETURN_GAIN_THRESHOLD}%',
                 verdict        = QUESTIONABLE,
                 note           = (
                     f'3-month return {r3m_f:.1f}% with DOWN trend structure is atypical. '
                     f'Strong recent gain rarely coincides with downtrend structure.'
                 ),
             ))
-        elif r3m_f > 15.0:
+        elif r3m_f > RETURN_GAIN_THRESHOLD:
             results.append(_make_flag(
                 check_id       = 'C_EXPECTATION_RETURN_VS_TREND_UP',
                 subsystem      = 'sub4',
                 field          = 'trend_structure',
                 observed       = trend,
                 context        = {'return_3m': r3m_f},
-                expected_range = 'trend_structure != DOWN when return_3m > 15%',
+                expected_range = f'trend_structure != DOWN when return_3m > {RETURN_GAIN_THRESHOLD}%',
                 verdict        = CONSISTENT,
                 note           = (
                     f'3-month return {r3m_f:.1f}% — trend structure {trend} '
@@ -304,8 +388,18 @@ def check_return_vs_trend(c: dict) -> list[dict]:
 
 def check_stop_loss_proximity(c: dict) -> dict | None:
     """
-    Stop loss that is too tight (<2%) or too wide (>25%) is unusual.
-    Only runs if all three execution levels are present.
+    Stop loss proximity check with beta-tiered acceptable ranges.
+
+    Tiers:
+      beta > STOP_HIGH_BETA_THRESHOLD (1.8): allow 2% – 35%
+      beta < STOP_LOW_BETA_THRESHOLD  (0.8): allow 2% – 20%
+      beta None or in between:               allow 2% – 25% (default)
+
+    Hard cap: 40% maximum regardless of beta. A stop wider than 40% is
+    outside any normal equity trading range.
+
+    If beta is None or unparseable, falls back to default range.
+    Only runs if entry_price and stop_loss are present.
     """
     try:
         if not c.get('ps_available'):
@@ -322,31 +416,59 @@ def check_stop_loss_proximity(c: dict) -> dict | None:
 
         stop_pct = (entry_f - stop_f) / entry_f * 100
 
-        if stop_pct < 2.0:
+        # Determine acceptable max based on beta
+        beta_f    = None
+        beta_note = ''
+        try:
+            fin    = c.get('financials') or {}
+            raw_b  = fin.get('beta')
+            if raw_b is not None:
+                beta_f = float(raw_b)
+        except (TypeError, ValueError):
+            beta_f = None
+
+        if beta_f is not None and beta_f > STOP_HIGH_BETA_THRESHOLD:
+            stop_max = STOP_HIGH_BETA_MAX_PCT
+            beta_note = f' (high-beta {beta_f:.2f} — wider range applied)'
+        elif beta_f is not None and beta_f < STOP_LOW_BETA_THRESHOLD:
+            stop_max = STOP_LOW_BETA_MAX_PCT
+            beta_note = f' (low-beta {beta_f:.2f} — tighter range applied)'
+        else:
+            stop_max = STOP_DEFAULT_MAX_PCT
+            beta_note = ' (default range — beta not available or mid-range)' if beta_f is None else ''
+
+        # Hard cap overrides beta tier
+        effective_max = min(stop_max, STOP_HARD_CAP_PCT)
+
+        band_str = f'{STOP_DEFAULT_MIN_PCT}–{effective_max}%{beta_note}'
+
+        if stop_pct < STOP_DEFAULT_MIN_PCT:
+            log.warning(f'[FSV][C] QUESTIONABLE: stop_pct {stop_pct:.1f}% < {STOP_DEFAULT_MIN_PCT}%')
             return _make_flag(
                 check_id       = 'C_EXPECTATION_STOP_LOSS_PROXIMITY',
                 subsystem      = 'sub4',
                 field          = 'stop_loss',
                 observed       = stop_pct,
-                context        = {'entry_price': entry_f, 'stop_loss': stop_f},
-                expected_range = '2–25% below entry price',
+                context        = {'entry_price': entry_f, 'stop_loss': stop_f, 'beta': beta_f},
+                expected_range = band_str,
                 verdict        = QUESTIONABLE,
                 note           = (
                     f'Stop {stop_pct:.1f}% below entry is tighter than typical for equity stops. '
                     f'Risk of noise-triggered exit is high.'
                 ),
             )
-        elif stop_pct > 25.0:
+        elif stop_pct > effective_max:
+            log.warning(f'[FSV][C] QUESTIONABLE: stop_pct {stop_pct:.1f}% > {effective_max}%')
             return _make_flag(
                 check_id       = 'C_EXPECTATION_STOP_LOSS_PROXIMITY',
                 subsystem      = 'sub4',
                 field          = 'stop_loss',
                 observed       = stop_pct,
-                context        = {'entry_price': entry_f, 'stop_loss': stop_f},
-                expected_range = '2–25% below entry price',
+                context        = {'entry_price': entry_f, 'stop_loss': stop_f, 'beta': beta_f},
+                expected_range = band_str,
                 verdict        = QUESTIONABLE,
                 note           = (
-                    f'Stop {stop_pct:.1f}% below entry is wider than typical. '
+                    f'Stop {stop_pct:.1f}% below entry is wider than typical{beta_note}. '
                     f'Position sizing implications should be reviewed.'
                 ),
             )
@@ -356,12 +478,10 @@ def check_stop_loss_proximity(c: dict) -> dict | None:
                 subsystem      = 'sub4',
                 field          = 'stop_loss',
                 observed       = stop_pct,
-                context        = {'entry_price': entry_f, 'stop_loss': stop_f},
-                expected_range = '2–25% below entry price',
+                context        = {'entry_price': entry_f, 'stop_loss': stop_f, 'beta': beta_f},
+                expected_range = band_str,
                 verdict        = CONSISTENT,
-                note           = (
-                    f'Stop {stop_pct:.1f}% below entry — within typical 2–25% band.'
-                ),
+                note           = f'Stop {stop_pct:.1f}% below entry — within acceptable band{beta_note}.',
             )
     except Exception as e:
         log.warning(f'[FSV][C] stop_loss_proximity: {e}')
@@ -377,9 +497,7 @@ def check_supportive_eq_with_major_warnings(c: dict) -> dict | None:
     try:
         if not c.get('eq_available'):
             return None
-        eq_label = (c.get('eq_label') or '').upper()
-        # eq_verdict_display is set by _enrich_for_dashboard (runs after validator)
-        # So check pass_tier == PASS as proxy for SUPPORTIVE
+        eq_label  = (c.get('eq_label') or '').upper()
         pass_tier = (c.get('pass_tier') or '').upper()
         is_supportive = (eq_label in ('SUPPORTIVE',) or pass_tier == 'PASS')
         if not is_supportive:
@@ -393,6 +511,9 @@ def check_supportive_eq_with_major_warnings(c: dict) -> dict | None:
         n = len(major_warnings)
 
         if n > 0:
+            log.warning(
+                f'[FSV][C] QUESTIONABLE: SUPPORTIVE EQ with {n} major warning(s)'
+            )
             return _make_flag(
                 check_id       = 'C_EXPECTATION_SUPPORTIVE_EQ_MAJOR_WARNINGS',
                 subsystem      = 'sub2',
@@ -430,16 +551,23 @@ def check_bear_regime_research_now(c: dict) -> dict | None:
     """
     try:
         market_regime  = (c.get('market_regime') or '').upper()
-        market_verdict = _compute_market_verdict_local(c)
+        market_verdict = compute_market_verdict(c)
         if not market_regime or market_regime == 'NEUTRAL':
             return None
-        if market_regime == 'BEAR' and market_verdict == 'RESEARCH NOW':
+        if market_regime == BEAR_REGIME_FLAG and market_verdict == 'RESEARCH NOW':
+            log.warning(
+                f'[FSV][C] QUESTIONABLE: RESEARCH NOW in BEAR regime'
+            )
             return _make_flag(
                 check_id       = 'C_EXPECTATION_BEAR_REGIME_RESEARCH_NOW',
                 subsystem      = 'cross',
                 field          = 'market_regime',
                 observed       = market_regime,
-                context        = {'market_verdict': market_verdict, 'composite_confidence': c.get('composite_confidence'), 'risk_score': c.get('risk_score')},
+                context        = {
+                    'market_verdict':        market_verdict,
+                    'composite_confidence':  c.get('composite_confidence'),
+                    'risk_score':            c.get('risk_score'),
+                },
                 expected_range = 'RESEARCH NOW in BEAR regime is statistically rare',
                 verdict        = QUESTIONABLE,
                 note           = (
@@ -462,17 +590,6 @@ def check_bear_regime_research_now(c: dict) -> dict | None:
         return None
 
 
-def _compute_market_verdict_local(c: dict) -> str:
-    """Same logic as in standards_contradiction — avoid cross-module import."""
-    conf = c.get('composite_confidence') or 0
-    risk = c.get('risk_score') or 100
-    if conf >= 70 and risk <= 35:
-        return 'RESEARCH NOW'
-    elif conf >= 55:
-        return 'WATCH'
-    return 'SKIP'
-
-
 # ── C7 — Distance vs key level position ──────────────────────────────────────
 
 def check_distance_vs_key_level(c: dict) -> list[dict]:
@@ -491,55 +608,63 @@ def check_distance_vs_key_level(c: dict) -> list[dict]:
         dist_f = float(dist)
 
         # Very close to support → should be NEAR_SUPPORT or BREAKOUT
-        if dist_f < 2.0 and key_level not in ('NEAR_SUPPORT', 'BREAKOUT'):
+        if dist_f < DIST_NEAR_SUPPORT_MAX and key_level not in ('NEAR_SUPPORT', 'BREAKOUT'):
+            log.warning(
+                f'[FSV][C] QUESTIONABLE: distance_to_support {dist_f:.1f}% '
+                f'but key_level_position is {key_level}'
+            )
             results.append(_make_flag(
                 check_id       = 'C_EXPECTATION_DIST_VS_KEY_LEVEL_NEAR',
                 subsystem      = 'sub4',
                 field          = 'key_level_position',
                 observed       = key_level,
                 context        = {'distance_to_support_pct': dist_f},
-                expected_range = 'NEAR_SUPPORT or BREAKOUT when distance_to_support_pct < 2%',
+                expected_range = f'NEAR_SUPPORT or BREAKOUT when distance_to_support_pct < {DIST_NEAR_SUPPORT_MAX}%',
                 verdict        = QUESTIONABLE,
                 note           = (
                     f'Distance to support {dist_f:.1f}% but key_level_position is {key_level}. '
                     f'Expected NEAR_SUPPORT or BREAKOUT at this proximity.'
                 ),
             ))
-        elif dist_f < 2.0:
+        elif dist_f < DIST_NEAR_SUPPORT_MAX:
             results.append(_make_flag(
                 check_id       = 'C_EXPECTATION_DIST_VS_KEY_LEVEL_NEAR',
                 subsystem      = 'sub4',
                 field          = 'key_level_position',
                 observed       = key_level,
                 context        = {'distance_to_support_pct': dist_f},
-                expected_range = 'NEAR_SUPPORT or BREAKOUT when distance_to_support_pct < 2%',
+                expected_range = f'NEAR_SUPPORT or BREAKOUT when distance_to_support_pct < {DIST_NEAR_SUPPORT_MAX}%',
                 verdict        = CONSISTENT,
                 note           = f'Distance {dist_f:.1f}% and key_level_position {key_level} — consistent',
             ))
 
-        # Far from support (>10%) but labeled NEAR_SUPPORT
-        if dist_f > 10.0 and key_level == 'NEAR_SUPPORT':
+        # Far from support but labeled NEAR_SUPPORT
+        if dist_f > DIST_FAR_SUPPORT_MIN and key_level == 'NEAR_SUPPORT':
+            log.warning(
+                f'[FSV][C] QUESTIONABLE: key_level NEAR_SUPPORT but '
+                f'distance_to_support {dist_f:.1f}% > {DIST_FAR_SUPPORT_MIN}%'
+            )
             results.append(_make_flag(
                 check_id       = 'C_EXPECTATION_DIST_VS_KEY_LEVEL_FAR',
                 subsystem      = 'sub4',
                 field          = 'key_level_position',
                 observed       = key_level,
                 context        = {'distance_to_support_pct': dist_f},
-                expected_range = 'key_level_position != NEAR_SUPPORT when distance_to_support_pct > 10%',
+                expected_range = f'key_level_position != NEAR_SUPPORT when distance_to_support_pct > {DIST_FAR_SUPPORT_MIN}%',
                 verdict        = QUESTIONABLE,
                 note           = (
                     f'key_level_position is NEAR_SUPPORT but distance to support is {dist_f:.1f}%. '
-                    f'Atypical — NEAR_SUPPORT expected within 3%.'
+                    f'Atypical — NEAR_SUPPORT expected within ~3%.'
                 ),
             ))
-        elif dist_f > 10.0:
+        elif dist_f > DIST_FAR_SUPPORT_MIN:
             results.append(_make_flag(
                 check_id       = 'C_EXPECTATION_DIST_VS_KEY_LEVEL_FAR',
                 subsystem      = 'sub4',
                 field          = 'key_level_position',
                 observed       = key_level,
                 context        = {'distance_to_support_pct': dist_f},
-                expected_range = 'key_level_position != NEAR_SUPPORT when distance_to_support_pct > 10%',
+                expected_range = f'key_level_position != NEAR_SUPPORT when distance_to_support_pct > {DIST_FAR_SUPPORT_MIN}%',
                 verdict        = CONSISTENT,
                 note           = f'Distance {dist_f:.1f}% and key_level_position {key_level} — consistent',
             ))
@@ -554,15 +679,22 @@ def check_distance_vs_key_level(c: dict) -> list[dict]:
 def check_insider_distributing_research_now(c: dict) -> dict | None:
     """
     Insiders distributing while system produces RESEARCH NOW + GOOD entry is atypical.
+    Note: insider selling is not inherently bearish — diversification and
+    compensation plans are common non-bearish reasons. This is a soft signal
+    warranting awareness, not a red flag.
     """
     try:
         insider_signal = (c.get('insider_signal') or '').upper()
         if insider_signal != 'DISTRIBUTING':
             return None
         eq             = c.get('entry_quality')
-        market_verdict = _compute_market_verdict_local(c)
+        market_verdict = compute_market_verdict(c)
 
         if eq == 'GOOD' and market_verdict == 'RESEARCH NOW':
+            log.warning(
+                f'[FSV][C] QUESTIONABLE: insider DISTRIBUTING with '
+                f'RESEARCH NOW + GOOD entry'
+            )
             return _make_flag(
                 check_id       = 'C_EXPECTATION_INSIDER_DISTRIBUTING_RESEARCH_NOW',
                 subsystem      = 'cross',
@@ -573,7 +705,9 @@ def check_insider_distributing_research_now(c: dict) -> dict | None:
                 verdict        = QUESTIONABLE,
                 note           = (
                     f'Insiders distributing while system produces RESEARCH NOW + GOOD entry. '
-                    f'Atypical combination — warrants manual review before acting.'
+                    f'Atypical combination — warrants manual review before acting. '
+                    f'Note: insider selling may reflect diversification or compensation, '
+                    f'not necessarily a negative outlook.'
                 ),
             )
         return _make_flag(
@@ -601,7 +735,6 @@ def check_low_confidence(c: dict) -> dict | None:
     composite_confidence < 35 is below the scheduled-run filter threshold.
     This is QUESTIONABLE not INCONSISTENT because in test/force-ticker mode
     the filter is intentionally bypassed — it's always valid in debug runs.
-    The note flags it for awareness without breaking anything.
     """
     try:
         conf = c.get('composite_confidence')
@@ -609,6 +742,9 @@ def check_low_confidence(c: dict) -> dict | None:
             return None
         conf_f = float(conf)
         if conf_f < 35:
+            log.warning(
+                f'[FSV][C] QUESTIONABLE: composite_confidence {conf_f:.1f} < 35'
+            )
             return _make_flag(
                 check_id       = 'C_EXPECTATION_LOW_CONFIDENCE',
                 subsystem      = 'sub1',
@@ -629,6 +765,113 @@ def check_low_confidence(c: dict) -> dict | None:
         return None
 
 
+# ── C10 — Good entry far from support ────────────────────────────────────────
+
+def check_good_entry_far_from_support(c: dict) -> dict | None:
+    """
+    GOOD entry quality with distance_to_support_pct > GOOD_ENTRY_SUPPORT_MAX (12%)
+    is atypical. A GOOD entry should be near a structural anchor (support).
+    Entry far from support increases downside risk if the move fails.
+
+    Only fires when entry_quality is GOOD and ps_available is True.
+    """
+    try:
+        if not c.get('ps_available'):
+            return None
+        eq   = c.get('entry_quality')
+        dist = c.get('distance_to_support_pct')
+        if eq != 'GOOD' or dist is None:
+            return None
+        dist_f = float(dist)
+        if dist_f > GOOD_ENTRY_SUPPORT_MAX:
+            log.warning(
+                f'[FSV][C] QUESTIONABLE: GOOD entry but distance_to_support '
+                f'{dist_f:.1f}% > {GOOD_ENTRY_SUPPORT_MAX}%'
+            )
+            return _make_flag(
+                check_id       = 'C_EXPECTATION_GOOD_ENTRY_FAR_FROM_SUPPORT',
+                subsystem      = 'sub4',
+                field          = 'distance_to_support_pct',
+                observed       = dist_f,
+                context        = {'entry_quality': eq},
+                expected_range = f'distance_to_support_pct <= {GOOD_ENTRY_SUPPORT_MAX}% for GOOD entry',
+                verdict        = QUESTIONABLE,
+                note           = (
+                    f'GOOD entry quality but distance to nearest support is {dist_f:.1f}% '
+                    f'(> {GOOD_ENTRY_SUPPORT_MAX}%). A structurally anchored entry typically '
+                    f'sits closer to support. Increased downside risk if move fails.'
+                ),
+            )
+        return _make_flag(
+            check_id       = 'C_EXPECTATION_GOOD_ENTRY_FAR_FROM_SUPPORT',
+            subsystem      = 'sub4',
+            field          = 'distance_to_support_pct',
+            observed       = dist_f,
+            context        = {'entry_quality': eq},
+            expected_range = f'distance_to_support_pct <= {GOOD_ENTRY_SUPPORT_MAX}% for GOOD entry',
+            verdict        = CONSISTENT,
+            note           = (
+                f'GOOD entry with distance_to_support_pct {dist_f:.1f}% '
+                f'within expected range — structurally anchored.'
+            ),
+        )
+    except Exception as e:
+        log.warning(f'[FSV][C] good_entry_far_from_support: {e}')
+        return None
+
+
+# ── C11 — High confidence + high risk anomaly ─────────────────────────────────
+
+def check_high_confidence_high_risk(c: dict) -> dict | None:
+    """
+    composite_confidence >= HIGH_CONF_THRESHOLD (75) with
+    risk_score >= HIGH_RISK_THRESHOLD (70) is atypical.
+
+    These two values are designed to move inversely in a well-functioning
+    scoring system. A stock with very high confidence and very high risk
+    simultaneously suggests the scoring components may be pulling in
+    contradictory directions — warrants manual review.
+
+    Thresholds set deliberately high (75/70) to avoid firing on normal
+    volatile growth stocks where moderate divergence is expected.
+    """
+    try:
+        conf = c.get('composite_confidence')
+        risk = c.get('risk_score')
+        if conf is None or risk is None:
+            return None
+        conf_f = float(conf)
+        risk_f = float(risk)
+
+        if conf_f >= HIGH_CONF_THRESHOLD and risk_f >= HIGH_RISK_THRESHOLD:
+            log.warning(
+                f'[FSV][C] QUESTIONABLE: composite_confidence {conf_f:.1f} '
+                f'with risk_score {risk_f:.1f}'
+            )
+            return _make_flag(
+                check_id       = 'C_EXPECTATION_HIGH_CONF_HIGH_RISK',
+                subsystem      = 'sub1',
+                field          = 'composite_confidence',
+                observed       = conf_f,
+                context        = {'risk_score': risk_f},
+                expected_range = (
+                    f'composite_confidence and risk_score should not both exceed '
+                    f'{HIGH_CONF_THRESHOLD}/{HIGH_RISK_THRESHOLD} simultaneously'
+                ),
+                verdict        = QUESTIONABLE,
+                note           = (
+                    f'composite_confidence {conf_f:.1f} and risk_score {risk_f:.1f} '
+                    f'are both elevated. These metrics are expected to move inversely — '
+                    f'simultaneous high values suggest scoring drift or data anomaly. '
+                    f'Manual review recommended.'
+                ),
+            )
+        return None  # No flag when not both elevated — saves noise
+    except Exception as e:
+        log.warning(f'[FSV][C] high_confidence_high_risk: {e}')
+        return None
+
+
 # ── Runner ────────────────────────────────────────────────────────────────────
 
 def run_expectation_checks(c: dict) -> list[dict]:
@@ -641,6 +884,8 @@ def run_expectation_checks(c: dict) -> list[dict]:
         check_bear_regime_research_now,
         check_insider_distributing_research_now,
         check_low_confidence,
+        check_good_entry_far_from_support,
+        check_high_confidence_high_risk,
     ]
 
     for fn in single_checks:
@@ -652,8 +897,12 @@ def run_expectation_checks(c: dict) -> list[dict]:
             log.warning(f'[FSV][C] check {fn.__name__} crashed: {e}')
 
     # Multi-result checks
-    for multi_fn in [check_volume_liquidity, check_beta_volatility,
-                     check_return_vs_trend, check_distance_vs_key_level]:
+    for multi_fn in [
+        check_volume_liquidity,
+        check_beta_volatility,
+        check_return_vs_trend,
+        check_distance_vs_key_level,
+    ]:
         try:
             results.extend(multi_fn(c))
         except Exception as e:

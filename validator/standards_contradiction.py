@@ -6,17 +6,32 @@ These check logical consistency between fields — within a subsystem or across
 subsystems. All checks return CONSISTENT or INCONSISTENT only — never QUESTIONABLE.
 A contradiction either exists or it doesn't.
 
-market_verdict is computed inline here because the validator runs before
-_enrich_for_dashboard() in both scheduled and debug paths.
+market_verdict is recomputed using the shared compute_market_verdict() utility
+from validator_schema. This is the single source of truth — no local copy.
+
+Patch v1.1 changes:
+  - compute_market_verdict imported from validator_schema (no local duplicate).
+  - R/R logic checks use c['_computed_rr'] (pre-computed by orchestrator) as
+    effective R/R when available, falling back to stored value. This ensures
+    logic checks operate on the correct arithmetic result, not a potentially
+    corrupt stored value.
+  - R/R gate threshold changed from < 2.0 to < (2.0 - FLOAT_TOLERANCE) to
+    avoid false flags from floating point precision.
+  - log.error used on INCONSISTENT verdict paths (not on exceptions).
 """
 
 from utils.logger import get_logger
 from validator.validator_schema import (
     CONSISTENT, INCONSISTENT,
     BUCKET_CONTRADICTION,
+    FLOAT_TOLERANCE,
+    compute_market_verdict,
 )
 
 log = get_logger('validator.contradiction')
+
+# R/R minimum threshold with float tolerance applied
+RR_MIN_THRESHOLD = 2.0 - FLOAT_TOLERANCE  # 1.995
 
 
 def _make_flag(check_id: str, subsystem: str, field: str,
@@ -35,21 +50,26 @@ def _make_flag(check_id: str, subsystem: str, field: str,
     }
 
 
-def _compute_market_verdict(c: dict) -> str:
+def _get_effective_rr(c: dict) -> float | None:
     """
-    Inline recompute of market_verdict.
-    Mirrors _enrich_for_dashboard() logic exactly:
-      conf >= 70 AND risk <= 35 → RESEARCH NOW
-      conf >= 55                → WATCH
-      else                      → SKIP
+    Returns the effective R/R to use for logic checks.
+    Prefers _computed_rr (from first principles) over the stored value.
+    Falls back to stored risk_reward_ratio if _computed_rr is None.
+    Returns None if neither is available.
     """
-    conf = c.get('composite_confidence') or 0
-    risk = c.get('risk_score') or 100
-    if conf >= 70 and risk <= 35:
-        return 'RESEARCH NOW'
-    elif conf >= 55:
-        return 'WATCH'
-    return 'SKIP'
+    computed = c.get('_computed_rr')
+    if computed is not None:
+        try:
+            return float(computed)
+        except (TypeError, ValueError):
+            pass
+    stored = c.get('risk_reward_ratio')
+    if stored is not None:
+        try:
+            return float(stored)
+        except (TypeError, ValueError):
+            pass
+    return None
 
 
 # ── Sub4 internal contradictions ──────────────────────────────────────────────
@@ -69,6 +89,10 @@ def check_good_entry_with_high_extension(c: dict) -> dict | None:
             return None
         ext_f = float(ext)
         if eq == 'GOOD' and ext_f > 50:
+            log.error(
+                f'[FSV][B] INCONSISTENT: entry_quality GOOD with '
+                f'move_extension_pct {ext_f:.1f}% > 50 — rule not applied'
+            )
             return _make_flag(
                 check_id       = 'B_CONTRADICTION_GOOD_ENTRY_HIGH_EXTENSION',
                 subsystem      = 'sub4',
@@ -112,6 +136,10 @@ def check_rr_override_not_applied(c: dict) -> dict | None:
         if override is None or eq is None:
             return None
         if override is True and eq != 'WEAK':
+            log.error(
+                f'[FSV][B] INCONSISTENT: rr_override True but entry_quality '
+                f'is {eq} (expected WEAK)'
+            )
             return _make_flag(
                 check_id       = 'B_CONTRADICTION_RR_OVERRIDE_NOT_APPLIED',
                 subsystem      = 'sub4',
@@ -154,8 +182,11 @@ def check_fatal_flaw_without_risky(c: dict) -> dict | None:
         label = c.get('eq_label')
         if flaw is None or flaw == '':
             return None  # no flaw — skip
-        # Flaw is present — check label
         if label != 'RISKY':
+            log.error(
+                f'[FSV][B] INCONSISTENT: fatal_flaw_reason set but eq_label '
+                f'is {label} (expected RISKY)'
+            )
             return _make_flag(
                 check_id       = 'B_CONTRADICTION_FATAL_FLAW_WITHOUT_RISKY',
                 subsystem      = 'sub2',
@@ -194,8 +225,11 @@ def check_eq_score_when_unavailable(c: dict) -> dict | None:
         score     = c.get('eq_score_final')
         if available is True or available is None:
             return None  # available or not set — skip
-        # eq_available is False
         if score is not None:
+            log.error(
+                f'[FSV][B] INCONSISTENT: eq_available False but '
+                f'eq_score_final is {score}'
+            )
             return _make_flag(
                 check_id       = 'B_CONTRADICTION_EQ_SCORE_WHEN_UNAVAILABLE',
                 subsystem      = 'sub2',
@@ -239,6 +273,10 @@ def check_execution_fields_when_unavailable(c: dict) -> list[dict]:
             try:
                 val = c.get(field)
                 if val is not None:
+                    log.error(
+                        f'[FSV][B] INCONSISTENT: ps_available False but '
+                        f'{field} is {val}'
+                    )
                     results.append(_make_flag(
                         check_id       = f'B_CONTRADICTION_EXEC_FIELD_WHEN_UNAVAILABLE_{field.upper()}',
                         subsystem      = 'sub4',
@@ -289,6 +327,10 @@ def check_rotation_signal_status_mapping(c: dict) -> list[dict]:
                     note           = 'rotation_signal SUPPORT → rotation_status FAVORABLE — consistent',
                 ))
             else:
+                log.error(
+                    f'[FSV][B] INCONSISTENT: rotation_signal SUPPORT but '
+                    f'rotation_status is {status} (expected FAVORABLE)'
+                )
                 results.append(_make_flag(
                     check_id       = 'B_CONTRADICTION_ROTATION_SUPPORT_STATUS',
                     subsystem      = 'sub3',
@@ -317,6 +359,10 @@ def check_rotation_signal_status_mapping(c: dict) -> list[dict]:
                     note           = 'rotation_signal WEAKEN → rotation_status UNFAVORABLE — consistent',
                 ))
             else:
+                log.error(
+                    f'[FSV][B] INCONSISTENT: rotation_signal WEAKEN but '
+                    f'rotation_status is {status} (expected UNFAVORABLE)'
+                )
                 results.append(_make_flag(
                     check_id       = 'B_CONTRADICTION_ROTATION_WEAKEN_STATUS',
                     subsystem      = 'sub3',
@@ -346,23 +392,29 @@ def check_risky_eq_with_research_now(c: dict) -> dict | None:
     try:
         if not c.get('eq_available'):
             return None
-        eq_label       = (c.get('eq_label') or '').upper()
+        eq_label        = (c.get('eq_label') or '').upper()
         eq_verdict_disp = (c.get('eq_verdict_display') or '').upper()
-        market_verdict = _compute_market_verdict(c)
+        market_verdict  = compute_market_verdict(c)
 
-        # eq_label from Sub2 raw can be 'RISKY', but eq_verdict_display is
-        # what _enrich_for_dashboard computes — check both paths
         is_risky = (eq_label == 'RISKY') or (eq_verdict_disp == 'RISKY')
         if not is_risky:
             return None
 
         if market_verdict == 'RESEARCH NOW':
+            log.error(
+                f'[FSV][B] INCONSISTENT: eq_label RISKY but market_verdict '
+                f'computed as RESEARCH NOW — hard gate not enforced'
+            )
             return _make_flag(
                 check_id       = 'B_CONTRADICTION_RISKY_EQ_RESEARCH_NOW',
                 subsystem      = 'cross',
                 field          = 'eq_label',
                 observed       = eq_label or eq_verdict_disp,
-                context        = {'market_verdict': market_verdict, 'composite_confidence': c.get('composite_confidence'), 'risk_score': c.get('risk_score')},
+                context        = {
+                    'market_verdict':        market_verdict,
+                    'composite_confidence':  c.get('composite_confidence'),
+                    'risk_score':            c.get('risk_score'),
+                },
                 expected_range = 'market_verdict != RESEARCH NOW when eq_label is RISKY',
                 verdict        = INCONSISTENT,
                 note           = (
@@ -392,16 +444,23 @@ def check_high_risk_event_with_research_now(c: dict) -> dict | None:
     """
     try:
         event_risk     = (c.get('event_risk') or '').upper()
-        market_verdict = _compute_market_verdict(c)
+        market_verdict = compute_market_verdict(c)
         if event_risk != 'HIGH RISK':
             return None
         if market_verdict == 'RESEARCH NOW':
+            log.error(
+                f'[FSV][B] INCONSISTENT: event_risk HIGH RISK but '
+                f'market_verdict computed as RESEARCH NOW — hard gate not enforced'
+            )
             return _make_flag(
                 check_id       = 'B_CONTRADICTION_HIGH_RISK_EVENT_RESEARCH_NOW',
                 subsystem      = 'cross',
                 field          = 'event_risk',
                 observed       = event_risk,
-                context        = {'market_verdict': market_verdict, 'event_risk_reason': c.get('event_risk_reason')},
+                context        = {
+                    'market_verdict':    market_verdict,
+                    'event_risk_reason': c.get('event_risk_reason'),
+                },
                 expected_range = 'market_verdict != RESEARCH NOW when event_risk is HIGH RISK',
                 verdict        = INCONSISTENT,
                 note           = (
@@ -426,32 +485,48 @@ def check_high_risk_event_with_research_now(c: dict) -> dict | None:
 
 def check_rr_gate_not_enforced(c: dict) -> dict | None:
     """
-    ps_available True + entry_quality GOOD + rr_override False + risk_reward_ratio < 2.0
-    is INCONSISTENT. R/R below 2.0 without override flag means the R/R gate
-    was not enforced — it should have forced entry_quality to WEAK.
+    ps_available True + entry_quality GOOD + rr_override False +
+    effective R/R < RR_MIN_THRESHOLD (1.995) is INCONSISTENT.
+
+    Uses _computed_rr if available (source of truth), falling back to stored
+    risk_reward_ratio. This ensures the gate check operates on correct
+    arithmetic even if the stored value is corrupt.
     """
     try:
         if not c.get('ps_available'):
             return None
         eq       = c.get('entry_quality')
         override = c.get('rr_override')
-        rr       = c.get('risk_reward_ratio')
-        if eq != 'GOOD' or override is True or rr is None:
+        if eq != 'GOOD' or override is True:
             return None
-        rr_f = float(rr)
-        if rr_f < 2.0:
+
+        rr_f = _get_effective_rr(c)
+        if rr_f is None:
+            return None
+
+        rr_source = 'computed' if c.get('_computed_rr') is not None else 'stored'
+
+        if rr_f < RR_MIN_THRESHOLD:
+            log.error(
+                f'[FSV][B] INCONSISTENT: R/R {rr_f:.4f} ({rr_source}) < '
+                f'{RR_MIN_THRESHOLD} with entry_quality GOOD — gate not enforced'
+            )
             return _make_flag(
                 check_id       = 'B_CONTRADICTION_RR_GATE_NOT_ENFORCED',
                 subsystem      = 'cross',
                 field          = 'risk_reward_ratio',
                 observed       = rr_f,
-                context        = {'entry_quality': eq, 'rr_override': override},
-                expected_range = 'risk_reward_ratio >= 2.0 when entry_quality is GOOD and rr_override is False',
+                context        = {
+                    'entry_quality': eq,
+                    'rr_override':   override,
+                    'rr_source':     rr_source,
+                },
+                expected_range = f'risk_reward_ratio >= {RR_MIN_THRESHOLD} when entry_quality is GOOD and rr_override is False',
                 verdict        = INCONSISTENT,
                 note           = (
-                    f'risk_reward_ratio is {rr_f:.2f} (< 2.0) with entry_quality GOOD '
-                    f'and rr_override False. R/R gate not enforced — entry_quality '
-                    f'should have been overridden to WEAK.'
+                    f'Effective R/R ({rr_source}) is {rr_f:.4f} (< {RR_MIN_THRESHOLD}) '
+                    f'with entry_quality GOOD and rr_override False. '
+                    f'R/R gate not enforced — entry_quality should have been overridden to WEAK.'
                 ),
             )
         return _make_flag(
@@ -459,10 +534,17 @@ def check_rr_gate_not_enforced(c: dict) -> dict | None:
             subsystem      = 'cross',
             field          = 'risk_reward_ratio',
             observed       = rr_f,
-            context        = {'entry_quality': eq, 'rr_override': override},
-            expected_range = 'risk_reward_ratio >= 2.0 when entry_quality is GOOD and rr_override is False',
+            context        = {
+                'entry_quality': eq,
+                'rr_override':   override,
+                'rr_source':     rr_source,
+            },
+            expected_range = f'risk_reward_ratio >= {RR_MIN_THRESHOLD} when entry_quality is GOOD and rr_override is False',
             verdict        = CONSISTENT,
-            note           = f'risk_reward_ratio {rr_f:.2f} >= 2.0 with GOOD entry — R/R gate correctly passed',
+            note           = (
+                f'Effective R/R ({rr_source}) {rr_f:.4f} >= {RR_MIN_THRESHOLD} '
+                f'with GOOD entry — R/R gate correctly passed'
+            ),
         )
     except Exception as e:
         log.warning(f'[FSV][B] rr_gate_not_enforced: {e}')
