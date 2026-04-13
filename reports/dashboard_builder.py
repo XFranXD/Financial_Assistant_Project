@@ -1902,11 +1902,70 @@ def _render_news_html(sectors: list, generated: str) -> str:
 
 # ── Sub6 Paper Trading ───────────────────────────────────────────────────────
 
+def _normalize_sheet_trade(raw: dict) -> dict:
+    """
+    Normalize a raw trade dict read from Google Sheets (all string values)
+    into the same typed shape that run_paper_trading() returns in-memory.
+    Called by write_trades_json() when merging Sheets history. Non-fatal
+    per-field: bad casts leave the field as None.
+    """
+    from contracts.paper_trading_schema import (
+        PT_FLOAT_FIELDS, PT_INT_FIELDS, PT_BOOL_FIELDS,
+    )
+    t = dict(raw)
+    t.pop('row_index', None)  # internal Sheets index, not needed in JSON output
+    for field in PT_FLOAT_FIELDS:
+        val = t.get(field)
+        if val == '' or val is None:
+            t[field] = None
+        else:
+            try:
+                t[field] = float(val)
+            except (ValueError, TypeError):
+                t[field] = None
+    for field in PT_INT_FIELDS:
+        val = t.get(field)
+        if val == '' or val is None:
+            t[field] = None
+        else:
+            try:
+                t[field] = int(float(val))
+            except (ValueError, TypeError):
+                t[field] = None
+    for field in PT_BOOL_FIELDS:
+        val = t.get(field)
+        if val == '' or val is None:
+            t[field] = None
+        elif isinstance(val, bool):
+            pass
+        elif str(val).strip() == 'True':
+            t[field] = True
+        elif str(val).strip() == 'False':
+            t[field] = False
+        else:
+            t[field] = None
+    return t
+
+
 def write_trades_json(paper_trading_summary: dict) -> None:
+    """
+    Build trades.json as a FULL ledger dump from Google Sheets.
+
+    Previous behaviour: only trades from the current engine run
+    (updated_trades + new_trades) were written, so historical closed trades
+    accumulated in Sheets but were invisible on the Paper Trading page.
+
+    New behaviour:
+      1. Read ALL rows from Google Sheets (read_all_trades).
+      2. Merge with current-run trades — current-run version wins for any
+         trade_id that appears in both (it carries the freshest exit data).
+      3. Compute counts from the full merged set.
+      4. Write the merged set to trades.json.
+
+    Non-fatal: if Sheets is unavailable, falls back to current-run trades
+    only (same as before), so the page still shows something useful.
+    """
     try:
-        from contracts.eq_schema import (
-            PT_AVAILABLE, PT_OPEN_COUNT, PT_NEW_COUNT, PT_CLOSED_COUNT
-        )
         from contracts.paper_trading_schema import (
             PT_TICKER, PT_ENTRY_DATE, PT_ENTRY_RUN, PT_ENTRY_TIMESTAMP,
             PT_ENTRY_PRICE, PT_STOP_LOSS, PT_PRICE_TARGET, PT_RISK_REWARD,
@@ -1921,71 +1980,113 @@ def write_trades_json(paper_trading_summary: dict) -> None:
             PT_STATUS_OPEN, PT_STATUS_CLOSED, PT_STATUS_DROPPED,
         )
 
-        pt_avail = paper_trading_summary.get('pt_available', False)
-        trades_list = paper_trading_summary.get('trades', [])
-        
-        output = {
-            "generated_at": datetime.now(pytz.utc).isoformat(),
-            "pt_available": pt_avail,
-            "open_count":   paper_trading_summary.get('open_count', 0),
-            "new_count":    paper_trading_summary.get('new_count', 0),
-            "closed_count": paper_trading_summary.get('closed_count', 0),
-            "total_count":  len(trades_list),
-            "real_open_count":   paper_trading_summary.get('real_open_count', 0),
-            "real_new_count":    paper_trading_summary.get('real_new_count', 0),
-            "real_closed_count": paper_trading_summary.get('real_closed_count', 0),
-            "test_open_count":   paper_trading_summary.get('test_open_count', 0),
-            "test_new_count":    paper_trading_summary.get('test_new_count', 0),
-            "test_closed_count": paper_trading_summary.get('test_closed_count', 0),
-            "trades": []
+        pt_avail       = paper_trading_summary.get('pt_available', False)
+        current_trades = paper_trading_summary.get('trades', [])
+
+        # ── Step 1: Read full Sheets history ─────────────────────────────────
+        # Build an index of current-run trades so they take precedence over
+        # any stale Sheets rows for the same trade_id (they carry the freshest
+        # exit/update data from this run).
+        current_by_id = {
+            str(t.get('trade_id', '')): t
+            for t in current_trades
+            if t.get('trade_id')
         }
-        
+        all_sheets_trades: list = []
+        if pt_avail:
+            try:
+                from paper_trading.sheets_ledger import read_all_trades
+                for raw in read_all_trades():
+                    tid = str(raw.get('trade_id', ''))
+                    if tid in current_by_id:
+                        continue  # current-run version is more up-to-date
+                    all_sheets_trades.append(_normalize_sheet_trade(raw))
+            except Exception as _sh_err:
+                log.warning(
+                    f'write_trades_json: Sheets read failed (non-fatal), '
+                    f'falling back to current-run trades only: {_sh_err}'
+                )
+
+        # ── Step 2: Merge — current-run first, then Sheets history ───────────
+        trades_list = current_trades + all_sheets_trades
+
+        # ── Step 3: Compute counts from the full merged set ───────────────────
+        real_open   = sum(1 for t in trades_list if t.get(PT_STATUS) == PT_STATUS_OPEN and not t.get(PT_IS_TEST))
+        real_closed = sum(1 for t in trades_list if t.get(PT_STATUS) in (PT_STATUS_CLOSED, PT_STATUS_DROPPED) and not t.get(PT_IS_TEST))
+        test_open   = sum(1 for t in trades_list if t.get(PT_STATUS) == PT_STATUS_OPEN and t.get(PT_IS_TEST))
+        test_closed = sum(1 for t in trades_list if t.get(PT_STATUS) in (PT_STATUS_CLOSED, PT_STATUS_DROPPED) and t.get(PT_IS_TEST))
+        # new_count reflects THIS run only, not the full history
+        real_new    = paper_trading_summary.get('real_new_count', 0)
+        test_new    = paper_trading_summary.get('test_new_count', 0)
+
+        output = {
+            'generated_at':      datetime.now(pytz.utc).isoformat(),
+            'pt_available':      pt_avail,
+            'open_count':        real_open + test_open,
+            'new_count':         real_new  + test_new,
+            'closed_count':      real_closed + test_closed,
+            'total_count':       len(trades_list),
+            'real_open_count':   real_open,
+            'real_new_count':    real_new,
+            'real_closed_count': real_closed,
+            'test_open_count':   test_open,
+            'test_new_count':    test_new,
+            'test_closed_count': test_closed,
+            'trades': [],
+        }
+
+        # ── Step 4: Serialize all trades ─────────────────────────────────────
         for t in trades_list:
-            output["trades"].append({
-                "trade_id": t.get("trade_id"),
-                PT_TICKER: t.get(PT_TICKER),
-                PT_ENTRY_DATE: t.get(PT_ENTRY_DATE),
-                PT_ENTRY_RUN: t.get(PT_ENTRY_RUN),
-                PT_ENTRY_TIMESTAMP: t.get(PT_ENTRY_TIMESTAMP),
-                PT_ENTRY_PRICE: t.get(PT_ENTRY_PRICE),
-                PT_STOP_LOSS: t.get(PT_STOP_LOSS),
-                PT_PRICE_TARGET: t.get(PT_PRICE_TARGET),
-                PT_RISK_REWARD: t.get(PT_RISK_REWARD),
-                PT_POSITION_SIZE_PCT: t.get(PT_POSITION_SIZE_PCT),
-                PT_MARKET_VERDICT: t.get(PT_MARKET_VERDICT),
-                PT_ENTRY_QUALITY: t.get(PT_ENTRY_QUALITY),
-                PT_EQ_VERDICT: t.get(PT_EQ_VERDICT),
-                PT_ROTATION_SIGNAL: t.get(PT_ROTATION_SIGNAL),
-                PT_ALIGNMENT: t.get(PT_ALIGNMENT),
-                PT_COMPOSITE_SCORE: t.get(PT_COMPOSITE_SCORE),
-                PT_MARKET_REGIME: t.get(PT_MARKET_REGIME),
-                PT_INSIDER_SIGNAL: t.get(PT_INSIDER_SIGNAL),
-                PT_EVENT_RISK: t.get(PT_EVENT_RISK),
+            output['trades'].append({
+                'trade_id':             t.get('trade_id'),
+                PT_TICKER:              t.get(PT_TICKER),
+                PT_ENTRY_DATE:          t.get(PT_ENTRY_DATE),
+                PT_ENTRY_RUN:           t.get(PT_ENTRY_RUN),
+                PT_ENTRY_TIMESTAMP:     t.get(PT_ENTRY_TIMESTAMP),
+                PT_ENTRY_PRICE:         t.get(PT_ENTRY_PRICE),
+                PT_STOP_LOSS:           t.get(PT_STOP_LOSS),
+                PT_PRICE_TARGET:        t.get(PT_PRICE_TARGET),
+                PT_RISK_REWARD:         t.get(PT_RISK_REWARD),
+                PT_POSITION_SIZE_PCT:   t.get(PT_POSITION_SIZE_PCT),
+                PT_MARKET_VERDICT:      t.get(PT_MARKET_VERDICT),
+                PT_ENTRY_QUALITY:       t.get(PT_ENTRY_QUALITY),
+                PT_EQ_VERDICT:          t.get(PT_EQ_VERDICT),
+                PT_ROTATION_SIGNAL:     t.get(PT_ROTATION_SIGNAL),
+                PT_ALIGNMENT:           t.get(PT_ALIGNMENT),
+                PT_COMPOSITE_SCORE:     t.get(PT_COMPOSITE_SCORE),
+                PT_MARKET_REGIME:       t.get(PT_MARKET_REGIME),
+                PT_INSIDER_SIGNAL:      t.get(PT_INSIDER_SIGNAL),
+                PT_EVENT_RISK:          t.get(PT_EVENT_RISK),
                 PT_EXPECTATIONS_SIGNAL: t.get(PT_EXPECTATIONS_SIGNAL),
-                PT_STATUS: t.get(PT_STATUS),
-                PT_EXIT_DATE: t.get(PT_EXIT_DATE),
-                PT_EXIT_RUN: t.get(PT_EXIT_RUN),
-                PT_EXIT_PRICE: t.get(PT_EXIT_PRICE),
-                PT_EXIT_REASON: t.get(PT_EXIT_REASON),
-                PT_LIVE_PNL_PCT: t.get(PT_LIVE_PNL_PCT),
-                PT_DAYS_HELD: t.get(PT_DAYS_HELD),
+                PT_STATUS:              t.get(PT_STATUS),
+                PT_EXIT_DATE:           t.get(PT_EXIT_DATE),
+                PT_EXIT_RUN:            t.get(PT_EXIT_RUN),
+                PT_EXIT_PRICE:          t.get(PT_EXIT_PRICE),
+                PT_EXIT_REASON:         t.get(PT_EXIT_REASON),
+                PT_LIVE_PNL_PCT:        t.get(PT_LIVE_PNL_PCT),
+                PT_DAYS_HELD:           t.get(PT_DAYS_HELD),
                 PT_CLOSED_AT_TIMESTAMP: t.get(PT_CLOSED_AT_TIMESTAMP),
                 PT_EXPECTED_RETURN_PCT: t.get(PT_EXPECTED_RETURN_PCT),
-                PT_ERROR_PCT: t.get(PT_ERROR_PCT),
-                PT_DIRECTION_CORRECT: t.get(PT_DIRECTION_CORRECT),
-                PT_BENCHMARK_RETURN: t.get(PT_BENCHMARK_RETURN),
-                PT_ALPHA: t.get(PT_ALPHA),
-                PT_LAST_UPDATED_RUN: t.get(PT_LAST_UPDATED_RUN),
-                PT_DATA_VALID: t.get(PT_DATA_VALID),
-                PT_VERSION: t.get(PT_VERSION),
-                PT_IS_TEST: bool(t.get(PT_IS_TEST, False)),
+                PT_ERROR_PCT:           t.get(PT_ERROR_PCT),
+                PT_DIRECTION_CORRECT:   t.get(PT_DIRECTION_CORRECT),
+                PT_BENCHMARK_RETURN:    t.get(PT_BENCHMARK_RETURN),
+                PT_ALPHA:               t.get(PT_ALPHA),
+                PT_LAST_UPDATED_RUN:    t.get(PT_LAST_UPDATED_RUN),
+                PT_DATA_VALID:          t.get(PT_DATA_VALID),
+                PT_VERSION:             t.get(PT_VERSION),
+                PT_IS_TEST:             bool(t.get(PT_IS_TEST, False)),
             })
-            
+
         out_path = os.path.join(DATA_DIR, 'trades.json')
         tmp = out_path + '.tmp'
         with open(tmp, 'w', encoding='utf-8') as f:
             json.dump(output, f, ensure_ascii=False)
         os.replace(tmp, out_path)
+        log.info(
+            f'trades.json written: {len(trades_list)} total trades '
+            f'({real_open} real open, {real_closed} real closed, '
+            f'{test_open + test_closed} test).'
+        )
     except Exception as e:
         log.warning(f'trades.json write failed: {e}')
 

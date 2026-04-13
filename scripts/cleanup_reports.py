@@ -583,6 +583,24 @@ def _rebuild_index():
                 json.dump(index, f, indent=2)
             print(f'reports.json weekly reset: 0 entries kept '
                   f'(was {old_week} → now {week_key}).')
+
+            # ── Also clear rank.json so the rank board goes empty on Sunday ──
+            # dashboard_builder._update_rank_board() resets rank.json when it
+            # detects a new week key, but that only happens on the first engine
+            # run after Sunday. The cleanup job runs at 23:00 UTC Sunday and
+            # must clear rank.json immediately so the rank page shows an empty
+            # board — not stale tickers from the previous week.
+            rank_path = os.path.join(DATA_DIR, 'rank.json')
+            try:
+                empty_rank = {'week': week_key, 'stocks': {}}
+                tmp = rank_path + '.tmp'
+                with open(tmp, 'w') as f:
+                    json.dump(empty_rank, f, indent=2)
+                os.replace(tmp, rank_path)
+                print(f'rank.json weekly reset: stocks cleared for {week_key}.')
+            except Exception as _rank_err:
+                print(f'WARNING: rank.json weekly reset failed (non-fatal): {_rank_err}')
+
             return pruned_tickers
 
         existing_files = (
@@ -829,7 +847,7 @@ def run_delete_tests() -> None:
         except Exception as e:
             print(f'  ERROR creating tests.json: {e}')
 
-    # ── Step 2: Remove TEST_* entries from trades.json ────────────
+    # ── Step 2: Remove TEST_* entries from trades.json and reset counts ──
     trades_path = os.path.join(DATA_DIR, 'trades.json')
     trades_cleared = 0
     if os.path.exists(trades_path):
@@ -844,11 +862,29 @@ def run_delete_tests() -> None:
             ]
             trades_cleared = len(original_trades) - len(clean_trades)
             trades_data['trades'] = clean_trades
+
+            # Recompute all count fields from the surviving (non-test) trades.
+            # Without this, stale count values (open_count, test_new_count, etc.)
+            # remain in trades.json even after the trades array is emptied,
+            # causing the Paper Trading page to show phantom counts.
+            real_open   = sum(1 for t in clean_trades if t.get('status') == 'OPEN'   and not t.get('is_test'))
+            real_closed = sum(1 for t in clean_trades if t.get('status') in ('CLOSED', 'DROPPED') and not t.get('is_test'))
+            trades_data['open_count']        = real_open
+            trades_data['new_count']         = 0   # "new this run" is always 0 after cleanup
+            trades_data['closed_count']      = real_closed
+            trades_data['total_count']       = len(clean_trades)
+            trades_data['real_open_count']   = real_open
+            trades_data['real_new_count']    = 0
+            trades_data['real_closed_count'] = real_closed
+            trades_data['test_open_count']   = 0
+            trades_data['test_new_count']    = 0
+            trades_data['test_closed_count'] = 0
+
             tmp = trades_path + '.tmp'
             with open(tmp, 'w') as f:
                 json.dump(trades_data, f, indent=2)
             os.replace(tmp, trades_path)
-            print(f'  trades.json: {trades_cleared} TEST_ entry(ies) removed.')
+            print(f'  trades.json: {trades_cleared} TEST_ entry(ies) removed, counts reset.')
         except Exception as e:
             print(f'  ERROR updating trades.json: {e}')
     else:
