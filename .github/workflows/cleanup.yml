@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: 'Run mode: scheduled (90-day policy), force_delete (targeted by date), or delete_tests (remove all test run data)'
+        description: 'Run mode: scheduled (90-day policy), force_delete (targeted by date), delete_tests (remove all test run data), or purge_rank (remove orphaned rank tickers with no archive backing)'
         required: true
         default: 'scheduled'
         type: choice
@@ -14,6 +14,7 @@ on:
           - scheduled
           - force_delete
           - delete_tests
+          - purge_rank
       target:
         description: |-
           TARGET (force_delete only):
@@ -27,6 +28,10 @@ on:
           use mode=delete_tests instead — no TARGET needed.
           That mode removes all tests.json entries, TEST_-prefixed
           trades from trades.json, and TEST_ rows from Google Sheets.
+
+          NOTE: To remove tickers stuck in the rank board with no report
+          backing (orphans from failed/partial runs), use mode=purge_rank
+          — no TARGET needed.
         required: false
         default: ''
 
@@ -69,6 +74,12 @@ jobs:
           GOOGLE_SHEETS_ID:            ${{ secrets.GOOGLE_SHEETS_ID }}
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
         run: python scripts/cleanup_reports.py --delete-tests
+
+      - name: Purge orphaned rank tickers
+        if: >
+          github.event_name == 'workflow_dispatch' &&
+          github.event.inputs.mode == 'purge_rank'
+        run: python scripts/cleanup_reports.py --purge-rank
 
       - name: Validate target provided for force_delete
         if: >

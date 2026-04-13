@@ -917,10 +917,117 @@ def run_delete_tests() -> None:
 # ENTRY POINT
 # ══════════════════════════════════════════════════════════════════════════════
 
+# ══════════════════════════════════════════════════════════════════════════════
+# PURGE RANK  (--purge-rank)
+# Removes every ticker from rank.json that has no backing entry in
+# weekly_archive.json. This handles the "orphan" case where a previous
+# Claude session or a failed run left tickers in rank.json that can never
+# be traced or deleted via the normal force_delete path (which requires a
+# reports.json entry to identify the ticker → date link).
+#
+# Safe to run at any time — it only touches rank.json and never deletes
+# archive data or HTML files.
+# ══════════════════════════════════════════════════════════════════════════════
+
+def run_purge_rank() -> None:
+    """
+    Remove all orphaned tickers from rank.json.
+
+    A ticker is orphaned when it exists in rank.json['stocks'] but does not
+    appear as a candidate in any run inside weekly_archive.json. This can
+    happen when:
+      - A previous engine run wrote to rank.json but not to weekly_archive.json
+        (e.g. a schema mismatch, a partial failure, or a pre-archive build).
+      - The archive was manually cleared but rank.json was not.
+      - reports.json has no 'week' key so the normal weekly reset never fired.
+
+    After removing orphans, rank.json is written atomically. If ALL tickers
+    are orphaned (the common recovery scenario), rank.json ends up with an
+    empty 'stocks' dict — which is the correct clean state.
+    """
+    print('Purging orphaned rank tickers...')
+    print('─' * 60)
+
+    rank_path    = os.path.join(DATA_DIR, 'rank.json')
+    archive_path = os.path.join(DATA_DIR, 'weekly_archive.json')
+
+    # ── Load rank.json ────────────────────────────────────────────
+    if not os.path.exists(rank_path):
+        print('  rank.json not found — nothing to purge.')
+        return
+    try:
+        with open(rank_path) as f:
+            rank_data = json.load(f)
+    except Exception as e:
+        print(f'  ERROR reading rank.json: {e}')
+        return
+
+    stocks = rank_data.get('stocks', {})
+    if not stocks:
+        print('  rank.json is already empty — nothing to purge.')
+        return
+
+    print(f'  rank.json: {len(stocks)} ticker(s) present.')
+
+    # ── Build set of tickers backed by weekly_archive.json ────────
+    archived_tickers: set = set()
+    if os.path.exists(archive_path):
+        try:
+            with open(archive_path) as f:
+                archive = json.load(f)
+            for week_data in archive.get('weeks', {}).values():
+                for run in week_data.get('runs', []):
+                    for cand in run.get('candidates', []):
+                        t = cand.get('ticker', '')
+                        if t:
+                            archived_tickers.add(t)
+            print(f'  weekly_archive.json: {len(archived_tickers)} unique ticker(s) found across all runs.')
+        except Exception as e:
+            print(f'  WARNING: could not read weekly_archive.json ({e}). '
+                  f'All rank tickers will be treated as orphaned.')
+    else:
+        print('  weekly_archive.json not found — treating all rank tickers as orphaned.')
+
+    # ── Identify and remove orphans ───────────────────────────────
+    orphans   = [t for t in stocks if t not in archived_tickers]
+    survivors = [t for t in stocks if t in archived_tickers]
+
+    if not orphans:
+        print('  No orphaned tickers found — rank board is fully backed by archive.')
+        return
+
+    print(f'\n  Orphaned tickers to remove ({len(orphans)}):')
+    for t in sorted(orphans):
+        print(f'    {t}')
+    if survivors:
+        print(f'\n  Archive-backed tickers kept ({len(survivors)}):')
+        for t in sorted(survivors):
+            print(f'    {t}')
+    else:
+        print('\n  No archive-backed tickers — rank board will be fully cleared.')
+
+    rank_data['stocks'] = {t: v for t, v in stocks.items() if t in archived_tickers}
+
+    try:
+        tmp = rank_path + '.tmp'
+        with open(tmp, 'w') as f:
+            json.dump(rank_data, f, indent=2)
+        os.replace(tmp, rank_path)
+        print(f'\n  rank.json updated: {len(orphans)} orphan(s) removed, '
+              f'{len(survivors)} ticker(s) kept.')
+    except Exception as e:
+        print(f'  ERROR writing rank.json: {e}')
+
+    print('─' * 60)
+    print('Done.')
+
+
 if __name__ == '__main__':
     if '--force' in sys.argv:
         print('Running scheduled cleanup (--force)...')
         run_cleanup()
+    elif '--purge-rank' in sys.argv:
+        run_purge_rank()
     elif '--delete-tests' in sys.argv:
         run_delete_tests()
     elif '--delete' in sys.argv:
