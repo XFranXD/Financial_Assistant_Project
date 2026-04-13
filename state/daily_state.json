@@ -36,26 +36,26 @@
   "failed_tickers": [],
   "api_failures": {},
   "sector_scores_today": {
-    "technology": 6.093,
-    "healthcare": 0.182,
-    "financials": 2.724,
-    "consumer_discretionary": 3.666,
-    "consumer_staples": -2.023,
-    "industrials": 4.202,
-    "materials": 3.389,
-    "energy": -5.508,
-    "utilities": -0.104,
-    "real_estate": 2.807,
-    "communication_services": 2.883,
-    "semiconductors": 13.851,
-    "defense": 2.875
+    "technology": 6.859,
+    "healthcare": 0.635,
+    "financials": 3.531,
+    "consumer_discretionary": 4.262,
+    "consumer_staples": -1.897,
+    "industrials": 4.873,
+    "materials": 3.753,
+    "energy": -6.7,
+    "utilities": -0.178,
+    "real_estate": 3.199,
+    "communication_services": 3.237,
+    "semiconductors": 14.975,
+    "defense": 3.637
   },
-  "breadth_score_today": 0.377,
+  "breadth_score_today": 0.554,
   "sector_breadth_ma_today": {
     "technology": {
-      "breadth_ma_score": 0.5,
-      "pct": 50.0,
-      "label": "mixed signals"
+      "breadth_ma_score": 0.6,
+      "pct": 60.0,
+      "label": "healthy participation"
     },
     "semiconductors": {
       "breadth_ma_score": 0.9,
@@ -63,14 +63,14 @@
       "label": "sector is genuinely strong"
     },
     "healthcare": {
-      "breadth_ma_score": 0.2,
-      "pct": 20.0,
-      "label": "sector is structurally weak"
+      "breadth_ma_score": 0.3,
+      "pct": 30.0,
+      "label": "mixed signals"
     },
     "financials": {
-      "breadth_ma_score": 0.6,
-      "pct": 60.0,
-      "label": "healthy participation"
+      "breadth_ma_score": 0.9,
+      "pct": 90.0,
+      "label": "sector is genuinely strong"
     },
     "consumer_discretionary": {
       "breadth_ma_score": 0.5,
@@ -88,13 +88,13 @@
       "label": "healthy participation"
     },
     "defense": {
-      "breadth_ma_score": 0.1,
-      "pct": 10.0,
+      "breadth_ma_score": 0.2,
+      "pct": 20.0,
       "label": "sector is structurally weak"
     },
     "energy": {
-      "breadth_ma_score": 0.9,
-      "pct": 90.0,
+      "breadth_ma_score": 0.8,
+      "pct": 80.0,
       "label": "sector is genuinely strong"
     },
     "materials": {
@@ -113,27 +113,27 @@
       "label": "healthy participation"
     },
     "communication_services": {
-      "breadth_ma_score": 0.2,
-      "pct": 20.0,
-      "label": "sector is structurally weak"
+      "breadth_ma_score": 0.4,
+      "pct": 40.0,
+      "label": "mixed signals"
     }
   },
   "unusual_volume_flags": [],
   "event_scores_today": {},
   "indices_today": {
     "dow": {
-      "value": 47677.59,
-      "change_pct": -0.5,
-      "label": "Falling"
+      "value": 48013.91,
+      "change_pct": 0.2,
+      "label": "Rising"
     },
     "sp500": {
-      "value": 6816.88,
-      "change_pct": -0.0,
-      "label": "Flat"
+      "value": 6855.29,
+      "change_pct": 0.56,
+      "label": "Rising"
     },
     "nasdaq": {
-      "value": 22947.9,
-      "change_pct": 0.2,
+      "value": 23083.49,
+      "change_pct": 0.79,
       "label": "Rising"
     }
   },
