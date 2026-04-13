@@ -553,8 +553,10 @@ def run_force_delete(target: str):
 def _rebuild_index():
     """
     Rebuild reports.json keeping only entries whose HTML file still exists
-    on disk. Returns the set of tickers from pruned entries so the caller
-    can sync rank.json.
+    on disk. Also enforces the weekly reset: if the stored week key is not
+    the current week, the list is cleared entirely (matching the live-write
+    behaviour in _update_reports_index). Returns the set of tickers from
+    pruned entries so the caller can sync rank.json.
     """
     index_path = os.path.join(DATA_DIR, 'reports.json')
     if not os.path.exists(index_path):
@@ -563,6 +565,25 @@ def _rebuild_index():
     try:
         with open(index_path) as f:
             index = json.load(f)
+
+        now_et   = datetime.now(pytz.utc)
+        days_since_sunday = (now_et.weekday() + 1) % 7
+        sunday   = (now_et - __import__('datetime').timedelta(days=days_since_sunday)).date()
+        week_key = f'week-of-{sunday}'
+
+        # ── Weekly reset ──────────────────────────────────────────────────────
+        if index.get('week') != week_key:
+            old_week = index.get('week', '?')
+            pruned_tickers = {
+                t for e in index.get('reports', [])
+                for t in e.get('tickers', [])
+            }
+            index = {'week': week_key, 'reports': []}
+            with open(index_path, 'w') as f:
+                json.dump(index, f, indent=2)
+            print(f'reports.json weekly reset: 0 entries kept '
+                  f'(was {old_week} → now {week_key}).')
+            return pruned_tickers
 
         existing_files = (
             set(os.listdir(REPORTS_DIR))

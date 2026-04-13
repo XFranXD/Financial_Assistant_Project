@@ -9,7 +9,7 @@ import html
 import json
 import math
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pytz
 
@@ -19,6 +19,19 @@ log = get_logger('dashboard_builder')
 
 DOCS_DIR = 'docs'
 DATA_DIR = os.path.join(DOCS_DIR, 'assets', 'data')
+
+
+def _week_key(dt_et) -> str:
+    """
+    Return a stable week key based on the Sunday that started the current week.
+    Format: 'week-of-YYYY-MM-DD'  (the Sunday date)
+    Resets on Sunday — so the first scheduled run of each Sunday produces a
+    new key, and Monday's first run inherits that same key (already empty).
+    dt_et must be a timezone-aware ET datetime.
+    """
+    days_since_sunday = (dt_et.weekday() + 1) % 7  # Mon=0…Sun=6 → Sun gives 0
+    sunday = (dt_et - timedelta(days=days_since_sunday)).date()
+    return f'week-of-{sunday}'
 
 _FONTS_LINK = (
     '<link rel="preconnect" href="https://fonts.googleapis.com">'
@@ -1224,7 +1237,15 @@ def _update_reports_index(companies, slot, indices, breadth, regime, full_url=''
     except Exception:
         index = {'reports': []}
 
-    now_et = datetime.now(pytz.utc).astimezone(pytz.timezone('America/New_York'))
+    now_et   = datetime.now(pytz.utc).astimezone(pytz.timezone('America/New_York'))
+    week_key = _week_key(now_et)
+
+    # ── Weekly reset: clear reports list when the week turns ─────────────────
+    if index.get('week') != week_key:
+        index = {'week': week_key, 'reports': []}
+    else:
+        index.setdefault('week', week_key)
+
     vc = {
         'RESEARCH NOW': sum(1 for c in companies if c.get('market_verdict_display', c.get('summary_verdict', '')) == 'RESEARCH NOW'),
         'WATCH':        sum(1 for c in companies if c.get('market_verdict_display', c.get('summary_verdict', '')) == 'WATCH'),
@@ -1265,7 +1286,7 @@ def _update_reports_index(companies, slot, indices, breadth, regime, full_url=''
 def _update_rank_board(companies):
     rank_path = os.path.join(DATA_DIR, 'rank.json')
     now_et    = datetime.now(pytz.utc).astimezone(pytz.timezone('America/New_York'))
-    week_key  = now_et.strftime('%Y-W%W')
+    week_key  = _week_key(now_et)
     try:
         with open(rank_path, encoding='utf-8') as f:
             rank_data = json.load(f)
@@ -1343,6 +1364,19 @@ def _update_rank_board(companies):
         log.error(f'rank.json write failed: {e}')
 
 
+def _archive_week_is_recent(week_key: str, cutoff) -> bool:
+    """
+    Return True if the week identified by week_key (format 'week-of-YYYY-MM-DD')
+    starts on or after cutoff (a naive date). Conservatively keeps the week
+    if the key cannot be parsed.
+    """
+    try:
+        sunday = datetime.strptime(week_key, 'week-of-%Y-%m-%d').date()
+        return sunday >= cutoff
+    except Exception:
+        return True  # keep on parse failure
+
+
 def _update_weekly_archive(companies, slot, breadth, regime, prompt_text='', is_debug=False, full_url='', market_regime_dict=None):
     # Test runs (is_debug=True) are stored in tests.json, not the archive.
     if is_debug:
@@ -1354,7 +1388,7 @@ def _update_weekly_archive(companies, slot, breadth, regime, prompt_text='', is_
     except Exception:
         archive = {'weeks': {}}
     now_et   = datetime.now(pytz.utc).astimezone(pytz.timezone('America/New_York'))
-    week_key = now_et.strftime('%Y-W%W')
+    week_key = _week_key(now_et)
     run_id   = f"{slot}_{now_et.strftime('%Y-%m-%dT%H:%M')}"
     run_entry = {
         'id':        run_id,
@@ -1391,9 +1425,13 @@ def _update_weekly_archive(companies, slot, breadth, regime, prompt_text='', is_
     if not any(r.get('id') == run_id for r in existing):
         existing.insert(0, run_entry)
     archive['weeks'][week_key]['runs'] = existing[:10]
-    if len(archive['weeks']) > 12:
-        for old in sorted(archive['weeks'].keys())[:len(archive['weeks']) - 12]:
-            del archive['weeks'][old]
+
+    # ── Prune weeks older than 90 days ────────────────────────────────────────
+    cutoff = (now_et - timedelta(days=90)).date()
+    archive['weeks'] = {
+        k: v for k, v in archive['weeks'].items()
+        if _archive_week_is_recent(k, cutoff)
+    }
     try:
         tmp = archive_path + '.tmp'
         with open(tmp, 'w', encoding='utf-8') as f:
@@ -1706,7 +1744,11 @@ def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, ind
 def _render_rank_html(rank_data: dict) -> str:
     try:
         week = rank_data.get('week', '')
-        week_display = week.replace('W', ' \u2014 week ') if week else 'current week'
+        try:
+            _sunday = datetime.strptime(week, 'week-of-%Y-%m-%d').date()
+            week_display = f'{_sunday.strftime("%Y")} \u2014 w/o {_sunday.strftime("%b %-d")}'
+        except Exception:
+            week_display = week if week else 'current week'
 
         return (
             '<!DOCTYPE html><html lang="en"><head>'
@@ -1736,7 +1778,7 @@ def _render_rank_html(rank_data: dict) -> str:
             '<div class="pages"><div id="p-rank" class="page on">'
             '<div class="pg-eyebrow">Rank Board &middot; Active</div>'
             '<div class="pg-title">Weekly <span class="hi">Rankings</span></div>'
-            f'<div class="pg-sub">{_esc(week_display)} &middot; Resets Monday &middot; Click row to expand</div>'
+            f'<div class="pg-sub">{_esc(week_display)} &middot; Resets Sunday &middot; Click row to expand</div>'
             '<div class="rank-wrap">'
             '<div id="rank-board-mount"></div>'
             '</div>'
