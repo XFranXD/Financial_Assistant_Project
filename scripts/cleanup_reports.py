@@ -201,8 +201,11 @@ def run_cleanup():
             except Exception as e:
                 print(f'Error processing served report {fname}: {e}')
 
-    _rebuild_index()
+    pruned_tickers = _rebuild_index()
     _prune_weekly_archive()
+    if pruned_tickers:
+        print('\nSyncing rank.json with pruned data...')
+        _update_rank_json(pruned_tickers, '', None, from_scheduled_cleanup=True)
     refresh_breadth_basket()
     print(f'Cleanup complete. Removed {removed} output + {served_removed} served file(s).')
 
@@ -310,12 +313,17 @@ def _delete_report_files(report_url: str) -> int:
     return count
 
 
-def _update_rank_json(deleted_tickers: set, date_prefix: str, slot_str):
+def _update_rank_json(deleted_tickers: set, date_prefix: str, slot_str,
+                      from_scheduled_cleanup: bool = False):
     """
     For each deleted ticker, find its previous best score in
     weekly_archive.json (excluding the deleted runs). If a prior
     entry exists, update rank.json with that score. If not, remove
     the ticker from rank.json entirely.
+
+    When from_scheduled_cleanup=True the archive has already been pruned
+    by _prune_weekly_archive(), so ALL remaining archive entries are treated
+    as survivors — nothing is skipped via _match_archive_run.
     """
     rank_path    = os.path.join(DATA_DIR, 'rank.json')
     archive_path = os.path.join(DATA_DIR, 'weekly_archive.json')
@@ -334,7 +342,9 @@ def _update_rank_json(deleted_tickers: set, date_prefix: str, slot_str):
         return
 
     # Build best prior scores from weekly_archive.json
-    # excluding the runs being deleted right now
+    # excluding the runs being deleted right now.
+    # When from_scheduled_cleanup=True the archive is already pruned —
+    # treat every remaining entry as a survivor (skip nothing).
     prior_best = {}  # ticker → best candidate dict from archive
     if os.path.exists(archive_path):
         try:
@@ -342,8 +352,8 @@ def _update_rank_json(deleted_tickers: set, date_prefix: str, slot_str):
                 archive = json.load(f)
             for week_data in archive.get('weeks', {}).values():
                 for run in week_data.get('runs', []):
-                    # Skip runs that are being deleted
-                    if _match_archive_run(run, date_prefix, slot_str):
+                    # Skip runs that are being deleted (force-delete path only)
+                    if not from_scheduled_cleanup and _match_archive_run(run, date_prefix, slot_str):
                         continue
                     for cand in run.get('candidates', []):
                         ticker = cand.get('ticker', '')
@@ -541,11 +551,15 @@ def run_force_delete(target: str):
 # ══════════════════════════════════════════════════════════════════════════════
 
 def _rebuild_index():
-    """Rebuild reports.json from files actually present on disk."""
+    """
+    Rebuild reports.json keeping only entries whose HTML file still exists
+    on disk. Returns the set of tickers from pruned entries so the caller
+    can sync rank.json.
+    """
     index_path = os.path.join(DATA_DIR, 'reports.json')
     if not os.path.exists(index_path):
         print('reports.json not found — skipping index rebuild.')
-        return
+        return set()
     try:
         with open(index_path) as f:
             index = json.load(f)
@@ -557,6 +571,7 @@ def _rebuild_index():
 
         original_count = len(index.get('reports', []))
         clean_reports  = []
+        pruned_tickers = set()
 
         for entry in index.get('reports', []):
             date   = entry.get('date', '').replace('-', '')
@@ -567,6 +582,9 @@ def _rebuild_index():
             )
             if matched or not date:
                 clean_reports.append(entry)
+            else:
+                for t in entry.get('tickers', []):
+                    pruned_tickers.add(t)
 
         index['reports'] = clean_reports
         pruned = original_count - len(clean_reports)
@@ -576,12 +594,20 @@ def _rebuild_index():
 
         print(f'reports.json rebuilt: {len(clean_reports)} entries kept, '
               f'{pruned} pruned.')
+        return pruned_tickers
     except Exception as e:
         print(f'Index rebuild failed: {e}')
+        return set()
 
 
 def _prune_weekly_archive():
-    """Remove stale entries from weekly_archive.json."""
+    """
+    Remove stale entries from weekly_archive.json.
+    A run is stale when its matching intraday_full HTML file no longer
+    exists in REPORTS_DIR — same criterion as _rebuild_index().
+    Age is intentionally not used here; file presence is the source of
+    truth so the archive stays in sync with reports.json after any cleanup.
+    """
     archive_path = os.path.join(DATA_DIR, 'weekly_archive.json')
     if not os.path.exists(archive_path):
         return
@@ -593,7 +619,6 @@ def _prune_weekly_archive():
             set(os.listdir(REPORTS_DIR))
             if os.path.exists(REPORTS_DIR) else set()
         )
-        now        = datetime.now(pytz.utc)
         pruned_runs = 0
 
         for week_data in archive.get('weeks', {}).values():
@@ -601,26 +626,19 @@ def _prune_weekly_archive():
             for run in week_data.get('runs', []):
                 ts = run.get('timestamp', '')
                 if not ts:
+                    # No timestamp — keep conservatively
                     clean_runs.append(run)
                     continue
-                try:
-                    run_date = datetime.strptime(
-                        ts[:10], '%Y-%m-%d'
-                    ).replace(tzinfo=pytz.utc)
-                    age_days = (now - run_date).days
-                except Exception:
-                    clean_runs.append(run)
-                    continue
-
-                if age_days <= DELETE_DAYS:
+                date_fragment = ts[:10].replace('-', '')
+                slot_s        = (run.get('slot', '') or '').replace(':', '')
+                has_file = any(
+                    f.startswith('intraday_full') and date_fragment in f and slot_s in f
+                    for f in existing_files
+                )
+                if has_file:
                     clean_runs.append(run)
                 else:
-                    date_fragment = ts[:10].replace('-', '')
-                    has_file = any(date_fragment in f for f in existing_files)
-                    if has_file:
-                        clean_runs.append(run)
-                    else:
-                        pruned_runs += 1
+                    pruned_runs += 1
 
             week_data['runs'] = clean_runs
 
