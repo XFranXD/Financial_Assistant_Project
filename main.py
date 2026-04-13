@@ -1699,6 +1699,47 @@ def run():
         log.error(f'[FSV] module-level error: {_val_mod_err}')
     # ── End Step 27l ──────────────────────────────────────────────────────────
 
+    # ── Step 27m: Write scheduled run log to tests.json / tests.html ─────────
+    # Non-fatal — must never block Step 28. Writes a full subsystem log entry
+    # (same format as manual/force-ticker runs) so every run is visible in
+    # tests.html for human and AI review.
+    # _enrich_for_dashboard() is called here first so display fields
+    # (market_verdict_display, eq_verdict_display, ps_verdict_display,
+    # alignment, return_1m/3m/6m) are populated before _build_test_log().
+    try:
+        _enrich_for_dashboard(final_companies)
+        from reports.dashboard_builder import (
+            _build_test_log, _write_tests_json, _write_tests_page,
+        )
+        import pytz as _pytz
+        _sched_now_et = (
+            __import__('datetime').datetime.now(_pytz.utc)
+            .astimezone(_pytz.timezone('America/New_York'))
+        )
+        try:
+            _sched_log_text = _build_test_log(
+                final_companies, set(), slot,
+                paper_trading_summary=paper_trading_summary or {},
+            )
+        except Exception as _sched_log_err:
+            _sched_log_text = f'[scheduled log build failed: {_sched_log_err}]'
+        _sched_entry = {
+            'is_test':           False,
+            'run_type':          'SCHEDULED',
+            'timestamp_et':      _sched_now_et.strftime('%Y-%m-%d %H:%M:%S'),
+            'slot':              slot,
+            'active_subs':       ['all'],
+            'active_subs_label': 'all',
+            'tickers':           [c.get('ticker', '') for c in final_companies],
+            'log':               _sched_log_text,
+        }
+        _write_tests_json(_sched_entry)
+        _write_tests_page()
+        log.info(f'[Step 27m] Scheduled run log written to tests.json/tests.html')
+    except Exception as _sched_tests_err:
+        log.warning(f'[Step 27m] Scheduled test log write failed (non-fatal): {_sched_tests_err}')
+    # ── End Step 27m ──────────────────────────────────────────────────────────
+
     # ── Step 28: Build reports ────────────────────────────────────────────
     from reports.report_builder import build_intraday_report
     html_files = build_intraday_report(

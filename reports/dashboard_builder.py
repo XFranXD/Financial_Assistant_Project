@@ -2167,12 +2167,14 @@ def _build_test_log(companies: list, active_subs: set, slot: str, paper_trading_
     Shows per-ticker outputs for each active subsystem in a format
     suitable for raw inspection — selectable text, no fancy formatting.
     """
-    now_et = datetime.now(pytz.utc).astimezone(pytz.timezone('America/New_York'))
-    lines  = []
+    now_et    = datetime.now(pytz.utc).astimezone(pytz.timezone('America/New_York'))
+    lines     = []
+    _show_all = not active_subs  # scheduled runs pass empty set → show all subs
 
-    lines.append(f'TEST RUN — {now_et.strftime("%Y-%m-%d %H:%M:%S ET")}')
+    _run_kind = 'SCHEDULED RUN' if _show_all else 'TEST RUN'
+    lines.append(f'{_run_kind} — {now_et.strftime("%Y-%m-%d %H:%M:%S ET")}')
     lines.append(f'Slot     : {slot}')
-    lines.append(f'Subs     : {", ".join(sorted(active_subs))}')
+    lines.append(f'Subs     : {"all" if _show_all else ", ".join(sorted(active_subs))}')
     lines.append(f'Tickers  : {", ".join(c.get("ticker","?") for c in companies)}')
     lines.append('─' * 72)
 
@@ -2183,7 +2185,7 @@ def _build_test_log(companies: list, active_subs: set, slot: str, paper_trading_
         lines.append('═' * 72)
 
         # ── Sub1: Core scoring ──────────────────────────────────────────
-        if 'sub1' in active_subs:
+        if _show_all or 'sub1' in active_subs:
             lines.append('\n[SUB1] Filter Candidates / Core Scoring')
             lines.append(f'  current_price        : {c.get("current_price")}')
             lines.append(f'  sector               : {c.get("sector")}')
@@ -2223,7 +2225,7 @@ def _build_test_log(companies: list, active_subs: set, slot: str, paper_trading_
                     lines.append(f'    {_rk:<28}: {_rv}')
 
         # ── Sub2: Earnings Quality ──────────────────────────────────────
-        if 'sub2' in active_subs:
+        if _show_all or 'sub2' in active_subs:
             lines.append('\n[SUB2] Earnings Quality Analyzer')
             lines.append(f'  eq_available         : {c.get("eq_available")}')
             if c.get('eq_available'):
@@ -2253,7 +2255,7 @@ def _build_test_log(companies: list, active_subs: set, slot: str, paper_trading_
             lines.append(f'  peg_ratio            : {c.get("peg_ratio")}')
 
         # ── Sub3: Sector Rotation ───────────────────────────────────────
-        if 'sub3' in active_subs:
+        if _show_all or 'sub3' in active_subs:
             lines.append('\n[SUB3] Sector Rotation Detector')
             lines.append(f'  rotation_available   : {c.get("rotation_available")}')
             if c.get('rotation_available'):
@@ -2267,7 +2269,7 @@ def _build_test_log(companies: list, active_subs: set, slot: str, paper_trading_
                 lines.append(f'  timeframes_used      : {c.get("timeframes_used")}')
 
         # ── Sub4: Price Structure ───────────────────────────────────────
-        if 'sub4' in active_subs:
+        if _show_all or 'sub4' in active_subs:
             lines.append('\n[SUB4] Price Structure Analyzer')
             lines.append(f'  ps_available         : {c.get("ps_available")}')
             if c.get('ps_available'):
@@ -2298,7 +2300,7 @@ def _build_test_log(companies: list, active_subs: set, slot: str, paper_trading_
                 lines.append(f'  ps_reasoning         : {_ps_rsn}')
 
         # ── Sub5: Portfolio Layer ───────────────────────────────────────
-        if 'sub5' in active_subs:
+        if _show_all or 'sub5' in active_subs:
             lines.append('\n[SUB5] Portfolio & Correlation Layer')
             lines.append(f'  pl_available         : {c.get("pl_available")}')
             if c.get('pl_available'):
@@ -2309,7 +2311,7 @@ def _build_test_log(companies: list, active_subs: set, slot: str, paper_trading_
                 lines.append(f'  pl_exclusion_reason  : {c.get("pl_exclusion_reason")}')
 
         # ── Sub6: Paper Trading ─────────────────────────────────────────
-        if 'sub6' in active_subs:
+        if _show_all or 'sub6' in active_subs:
             lines.append('\n[SUB6] Paper Trading Engine')
             pt = paper_trading_summary or {}
             if not pt.get('pt_available', False):
@@ -2425,10 +2427,17 @@ def _write_tests_page() -> None:
         "      var subs  = Array.isArray(t.active_subs) ? t.active_subs.join(', ') : (t.active_subs || 'all');\n"
         "      var ticks = Array.isArray(t.tickers) ? t.tickers.join(', ') : '';\n"
         "      var log   = t.log || '';\n"
-        "      var label = 'TEST — ' + (t.active_subs_label || subs);\n"
+        "      var rtype = t.run_type || 'TEST';\n"
+        "      var isSched = (rtype === 'SCHEDULED');\n"
+        "      var label = isSched\n"
+        "        ? 'SCHEDULED \u2014 ' + (t.slot || 'slot?')\n"
+        "        : 'TEST \u2014 ' + (t.active_subs_label || subs);\n"
+        "      var badgeHtml = isSched\n"
+        "        ? '<span class=\"tst-badge tst-badge-sched\">SCHEDULED</span>'\n"
+        "        : '<span class=\"tst-badge\">TEST</span>';\n"
         "      html += '<div class=\"tst-card\">';\n"
         "      html += '<div class=\"tst-hdr\">';\n"
-        "      html += '<span class=\"tst-badge\">TEST</span>';\n"
+        "      html += badgeHtml;\n"
         "      html += '<span class=\"tst-label\">' + label + '</span>';\n"
         "      html += '<span class=\"tst-ts\">' + ts + ' ET</span>';\n"
         "      html += '</div>';\n"
@@ -2463,6 +2472,7 @@ def _write_tests_page() -> None:
         '.tst-badge{font-family:var(--ff-mono);font-size:9px;letter-spacing:.15em;'
         'color:#fff5a0;background:rgba(180,150,20,.25);border:1px solid rgba(180,150,20,.5);'
         'padding:2px 6px;border-radius:2px;flex-shrink:0;}\n'
+        '.tst-badge-sched{color:#a0e8ff;background:rgba(20,140,180,.25);border:1px solid rgba(20,140,180,.5);}\n'
         '.tst-label{font-family:var(--ff-mono);font-size:11px;color:var(--pu);'
         'letter-spacing:.08em;flex:1;min-width:0;}\n'
         '.tst-ts{font-family:var(--ff-mono);font-size:10px;color:var(--mist);'
@@ -2507,9 +2517,9 @@ def _write_tests_page() -> None:
         '<div class="scanlines"></div>'
         f'{_nav_html("tests")}'
         '<div class="pages"><div id="p-tests" class="page on">'
-        '<div class="pg-eyebrow">Debug Layer &middot; Manual Runs</div>'
+        '<div class="pg-eyebrow">System Validation Log &middot; All Runs</div>'
         '<div class="pg-title">Test <span class="hi">Outputs</span></div>'
-        '<div class="pg-sub">Force-ticker runs only &middot; Not mixed with scheduled data &middot; '
+        '<div class="pg-sub">All runs &middot; Manual and Scheduled &middot; System validation log &middot; '
         'Clean with <code style="font-family:var(--ff-mono);font-size:10px;">--delete-tests</code></div>'
         '<div id="tests-mount"></div>'
         '</div></div>'
@@ -2608,6 +2618,7 @@ def build_dashboard(
             _log_text = f'[log build failed: {_log_err}]'
         test_entry = {
             'is_test':           True,
+            'run_type':          'TEST',
             'timestamp_et':      now_et.strftime('%Y-%m-%d %H:%M:%S'),
             'slot':              slot,
             'active_subs':       sorted(active_subs) if active_subs else ['all'],

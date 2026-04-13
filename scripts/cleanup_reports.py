@@ -61,7 +61,13 @@ def refresh_breadth_basket() -> None:
     - Non-fatal: logs error and returns without modifying file on any exception.
     """
     import logging
-    import pandas as pd
+    try:
+        import pandas as pd
+    except ImportError:
+        logging.getLogger('cleanup.basket_refresh').warning(
+            '[BASKET] pandas not installed — skipping breadth basket refresh.'
+        )
+        return
     from pathlib import Path
 
     log = logging.getLogger('cleanup.basket_refresh')
@@ -861,4 +867,3 @@ if __name__ == '__main__':
             _dry_run()
         else:
             print('Aborted.')
-            
