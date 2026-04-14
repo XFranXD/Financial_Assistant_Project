@@ -1,0 +1,106 @@
+2026-04-14T00:16:47 UTC | INFO     | main | ============================================================
+2026-04-14T00:16:47 UTC | INFO     | main | AUTOMATED STOCK RESEARCH SYSTEM — starting run
+2026-04-14T00:16:47 UTC | INFO     | main | DISCLAIMER: This system does NOT perform trading, does NOT give investment advice, and does NOT make price predictions. It is a research data aggregation and scoring tool only.
+2026-04-14T00:16:47 UTC | INFO     | main | ============================================================
+2026-04-14T00:16:47 UTC | INFO     | main | [DEBUG] FORCE_TICKERS detected — entering debug mode
+2026-04-14T00:16:47 UTC | WARNING  | main | Validated tickers file is 35 days old (limit 30). Consider re-running validate_tickers.py.
+2026-04-14T00:16:47 UTC | INFO     | state_manager | New trading day (2026-04-14) — resetting state
+2026-04-14T00:16:47 UTC | INFO     | main | [DEBUG] Using slot: 9:45-11:15
+2026-04-14T00:16:47 UTC | INFO     | main | [DEBUG] Force-ticker mode active — tickers: ['MSFT']
+2026-04-14T00:16:47 UTC | INFO     | main | [DEBUG] Active subsystems: ['sub1', 'sub2', 'sub3', 'sub4', 'sub5', 'sub6']
+2026-04-14T00:16:47 UTC | INFO     | main | [DEBUG] Dry run: True
+2026-04-14T00:16:47 UTC | INFO     | main | [DEBUG] Skipping all sector/news gates
+2026-04-14T00:16:47 UTC | INFO     | market_collector | Index dow: 48218.25 Rising (+0.63%)
+2026-04-14T00:16:47 UTC | INFO     | market_collector | Index sp500: 6886.24 Rising (+1.02%)
+2026-04-14T00:16:48 UTC | INFO     | market_collector | Index nasdaq: 23183.74 Rising (+1.23%)
+2026-04-14T00:16:48 UTC | INFO     | market_regime | VIX fetched: 19.12
+2026-04-14T00:16:48 UTC | INFO     | market_regime | Regime: normal vix=19.12 risk_mult=1.0 opp_mult=1.0
+2026-04-14T00:17:15 UTC | INFO     | market_breadth | Market breadth: 82/130 advancing (0.63) — strong breadth — most stocks rising
+2026-04-14T00:17:15 UTC | INFO     | spy_sma | [SPY] price=686.10 sma200=661.39 above=True
+2026-04-14T00:17:19 UTC | INFO     | market_breadth | [B200] 87/125 above 200d SMA = 69.6%
+2026-04-14T00:17:19 UTC | INFO     | market_regime_classifier | [MRC] regime=BULL score=3 spy_above=True vix=19.12 breadth_pct=69.6
+2026-04-14T00:17:19 UTC | INFO     | main | [MR] market_regime=BULL score=3 breadth_pct=69.6
+2026-04-14T00:17:20 UTC | INFO     | sector_breadth_ma | Sector breadth MA technology: 6/10 = 0.60 (healthy participation)
+2026-04-14T00:17:21 UTC | INFO     | sector_breadth_ma | Sector breadth MA semiconductors: 9/10 = 0.90 (sector is genuinely strong)
+2026-04-14T00:17:22 UTC | INFO     | sector_breadth_ma | Sector breadth MA healthcare: 4/10 = 0.40 (mixed signals)
+2026-04-14T00:17:23 UTC | INFO     | sector_breadth_ma | Sector breadth MA financials: 9/10 = 0.90 (sector is genuinely strong)
+2026-04-14T00:17:24 UTC | INFO     | sector_breadth_ma | Sector breadth MA consumer_discretionary: 5/10 = 0.50 (mixed signals)
+2026-04-14T00:17:25 UTC | INFO     | sector_breadth_ma | Sector breadth MA consumer_staples: 1/10 = 0.10 (sector is structurally weak)
+2026-04-14T00:17:26 UTC | INFO     | sector_breadth_ma | Sector breadth MA industrials: 7/10 = 0.70 (healthy participation)
+2026-04-14T00:17:27 UTC | INFO     | sector_breadth_ma | Sector breadth MA defense: 2/10 = 0.20 (sector is structurally weak)
+2026-04-14T00:17:28 UTC | INFO     | sector_breadth_ma | Sector breadth MA energy: 8/10 = 0.80 (sector is genuinely strong)
+2026-04-14T00:17:30 UTC | INFO     | sector_breadth_ma | Sector breadth MA materials: 7/10 = 0.70 (healthy participation)
+2026-04-14T00:17:31 UTC | INFO     | sector_breadth_ma | Sector breadth MA utilities: 9/10 = 0.90 (sector is genuinely strong)
+2026-04-14T00:17:32 UTC | INFO     | sector_breadth_ma | Sector breadth MA real_estate: 8/10 = 0.80 (sector is genuinely strong)
+2026-04-14T00:17:33 UTC | INFO     | sector_breadth_ma | Sector breadth MA communication_services: 4/10 = 0.40 (mixed signals)
+2026-04-14T00:17:36 UTC | INFO     | sector_momentum | Top 5 sectors: ['semiconductors', 'technology', 'industrials', 'consumer_discretionary', 'financials']
+2026-04-14T00:17:36 UTC | INFO     | sector_momentum | Sector momentum history updated (6 entries)
+2026-04-14T00:17:36 UTC | INFO     | sector_rotation_speed | Rotation technology: rank 4 -> 2 speed=2 (gaining momentum)
+2026-04-14T00:17:36 UTC | INFO     | sector_rotation_speed | Rotation healthcare: rank 7 -> 10 speed=-3 (losing momentum)
+2026-04-14T00:17:36 UTC | INFO     | sector_rotation_speed | Rotation financials: rank 3 -> 5 speed=-2 (losing momentum)
+2026-04-14T00:17:36 UTC | INFO     | sector_rotation_speed | Rotation consumer_discretionary: rank 8 -> 4 speed=4 (rapidly gaining strength)
+2026-04-14T00:17:36 UTC | INFO     | sector_rotation_speed | Rotation consumer_staples: rank 10 -> 12 speed=-2 (losing momentum)
+2026-04-14T00:17:36 UTC | INFO     | sector_rotation_speed | Rotation industrials: rank 6 -> 3 speed=3 (gaining momentum)
+2026-04-14T00:17:36 UTC | INFO     | sector_rotation_speed | Rotation materials: rank 13 -> 6 speed=7 (rapidly gaining strength)
+2026-04-14T00:17:36 UTC | INFO     | sector_rotation_speed | Rotation energy: rank 1 -> 13 speed=-12 (rapidly losing strength)
+2026-04-14T00:17:36 UTC | INFO     | sector_rotation_speed | Rotation utilities: rank 12 -> 11 speed=1 (stable)
+2026-04-14T00:17:36 UTC | INFO     | sector_rotation_speed | Rotation real_estate: rank 9 -> 8 speed=1 (stable)
+2026-04-14T00:17:36 UTC | INFO     | sector_rotation_speed | Rotation communication_services: rank 5 -> 9 speed=-4 (rapidly losing strength)
+2026-04-14T00:17:36 UTC | INFO     | sector_rotation_speed | Rotation semiconductors: rank 2 -> 1 speed=1 (stable)
+2026-04-14T00:17:36 UTC | INFO     | sector_rotation_speed | Rotation defense: rank 11 -> 7 speed=4 (rapidly gaining strength)
+2026-04-14T00:17:36 UTC | INFO     | news_collector | reuters RSS: fetched 0 articles
+2026-04-14T00:17:36 UTC | INFO     | news_collector | ft RSS: fetched 11 articles
+2026-04-14T00:17:37 UTC | INFO     | news_collector | Finnhub: fetched 100 articles
+2026-04-14T00:17:37 UTC | INFO     | news_collector | Filter: 111 raw → 48 passed
+2026-04-14T00:17:37 UTC | INFO     | news_collector | Dedup: 48 → 48 articles
+2026-04-14T00:17:37 UTC | INFO     | news_collector | Sector confirmed: energy score=14.2 headlines=5
+2026-04-14T00:17:37 UTC | INFO     | news_collector | Sector confirmed: materials score=12.6 headlines=6
+2026-04-14T00:17:37 UTC | INFO     | news_collector | Sector confirmed: consumer_discretionary score=29.6 headlines=13
+2026-04-14T00:17:37 UTC | INFO     | news_collector | Sector confirmed: industrials score=19.1 headlines=9
+2026-04-14T00:17:37 UTC | INFO     | news_collector | Sector confirmed: utilities score=9.2 headlines=5
+2026-04-14T00:17:37 UTC | INFO     | news_collector | Sector confirmed: technology score=18.0 headlines=9
+2026-04-14T00:17:37 UTC | INFO     | news_collector | Sector gated: semiconductors score=1.8 headlines=1 (need score>=4, headlines>=2)
+2026-04-14T00:17:37 UTC | INFO     | news_collector | Sector gated: communication_services score=1.5 headlines=1 (need score>=4, headlines>=2)
+2026-04-14T00:17:37 UTC | INFO     | news_collector | Sector confirmed: financials score=11.4 headlines=6
+2026-04-14T00:17:37 UTC | INFO     | news_collector | Sector gated: real_estate score=1.7 headlines=1 (need score>=4, headlines>=2)
+2026-04-14T00:17:37 UTC | INFO     | news_collector | Sector gated: consumer_staples score=2.0 headlines=1 (need score>=4, headlines>=2)
+2026-04-14T00:17:37 UTC | INFO     | news_collector | Sector confirmed: defense score=5.4 headlines=2
+2026-04-14T00:17:37 UTC | INFO     | news_collector | Confirmed sectors: ['energy', 'materials', 'consumer_discretionary', 'industrials', 'utilities', 'technology', 'financials', 'defense']
+2026-04-14T00:17:37 UTC | INFO     | market_collector | get_index_history dow: 30 points
+2026-04-14T00:17:37 UTC | INFO     | market_collector | get_index_history sp500: 30 points
+2026-04-14T00:17:37 UTC | INFO     | market_collector | get_index_history nasdaq: 30 points
+2026-04-14T00:17:37 UTC | INFO     | main | [DEBUG] Processing forced ticker: MSFT
+2026-04-14T00:17:37 UTC | INFO     | financial_parser | MSFT: using cached financials (6d old)
+2026-04-14T00:17:38 UTC | INFO     | volume_confirmation | MSFT volume ratio=1.07 score=0.36 label=normal trading activity
+2026-04-14T00:17:38 UTC | INFO     | risk_adjusted_momentum | MSFT RAM raw=-9.24 score=0.04
+2026-04-14T00:17:38 UTC | INFO     | multi_timeframe_momentum | MSFT MTF 1m=-4.3522597103252485 3m=-19.619576722176756 6m=-26.116323723027403 score=0.19
+2026-04-14T00:17:38 UTC | INFO     | trend_stability | MSFT trend stability: dev=0.0790 score=0.21
+2026-04-14T00:17:38 UTC | INFO     | drawdown_risk | MSFT drawdown=21.7% score=0.46
+2026-04-14T00:17:38 UTC | INFO     | risk_model | Risk score: raw=14.0 penalty=0 mult=1.0 final=14.0
+2026-04-14T00:17:38 UTC | INFO     | opportunity_model | Opp score: b1=62.0 b2=29.2 b3=44.2 raw=45.3 x1.0 x1.15 = 52.1
+2026-04-14T00:17:38 UTC | INFO     | signal_agreement | Signal agreement: m=0.04 s=0.50 e=0.50 v=0.35 -> 0.003
+2026-04-14T00:17:38 UTC | INFO     | opportunity_model | Composite confidence: 58.4 (Moderate confidence)
+2026-04-14T00:17:38 UTC | INFO     | main | [DEBUG] MSFT: conf=58.4 risk=14.0 opp=52.1
+2026-04-14T00:17:38 UTC | INFO     | main | [DEBUG][EQ] Running EQ analysis on 1 forced tickers
+2026-04-14T00:17:40 UTC | INFO     | main | [ROT] Running rotation analysis on 1 candidates
+2026-04-14T00:17:41 UTC | INFO     | main | [ROT] Enrichment complete. 1 enriched / 1 total
+2026-04-14T00:17:41 UTC | INFO     | main | [PS] Running price structure analysis on 1 forced tickers
+2026-04-14T00:17:41 UTC | INFO     | main | [PS] Enrichment complete. 1 enriched / 1 total
+2026-04-14T00:17:41 UTC | INFO     | main | [ER] Event risk enrichment complete. 1/1 processed
+2026-04-14T00:18:00 UTC | INFO     | main | [INS] Insider enrichment complete. 1/1 processed
+2026-04-14T00:18:00 UTC | INFO     | expectations | [EXP] MSFT: no Finnhub token — skipping beat streak
+2026-04-14T00:18:00 UTC | INFO     | main | [EXP] Expectations enrichment complete. 1/1 processed
+2026-04-14T00:18:00 UTC | INFO     | main | [PL][DEBUG] Portfolio analysis skipped — fewer than 2 candidates
+2026-04-14T00:18:02 UTC | INFO     | main | [PT][DEBUG] Paper trading complete (TEST_ tagged). Open: 0 | New: 1 | Closed: 0 | Replay enriched: 0
+2026-04-14T00:18:02 UTC | ERROR    | validator | [FSV] MSFT: INTEGRITY failure — ps field entry_quality invalid
+2026-04-14T00:18:02 UTC | WARNING  | validator.expectation | [FSV][C] QUESTIONABLE: stop_pct 1.2% < 2.0%
+2026-04-14T00:18:02 UTC | ERROR    | validator | [FSV] MSFT: 1 data integrity failure(s) — forcing CRITICAL.
+2026-04-14T00:18:02 UTC | INFO     | main | [FSV][DEBUG] MSFT → CRITICAL | INCONSISTENT=1 QUESTIONABLE=1
+2026-04-14T00:18:02 UTC | INFO     | dashboard_builder | tests.json updated. Total entries: 5
+2026-04-14T00:18:02 UTC | INFO     | dashboard_builder | tests.html written (test run)
+2026-04-14T00:18:02 UTC | INFO     | dashboard_builder | trades.json written: 1 total trades (0 real open, 0 real closed, 1 test).
+2026-04-14T00:18:02 UTC | INFO     | dashboard_builder | trades.html written (test run)
+2026-04-14T00:18:02 UTC | INFO     | dashboard_builder | [DEBUG] build_dashboard complete (test path). Subs: sub1, sub2, sub3, sub4, sub5, sub6 | Tickers: ['MSFT']
+2026-04-14T00:18:02 UTC | INFO     | main | [DEBUG] dry_run=True — email suppressed
+2026-04-14T00:18:02 UTC | INFO     | main | [DEBUG] Commit delegated to workflow CI step.
+2026-04-14T00:18:02 UTC | INFO     | main | [DEBUG] Force-ticker run complete. Tickers: ['MSFT'] | Subs: ['sub1', 'sub2', 'sub3', 'sub4', 'sub5', 'sub6'] | dry_run: True
