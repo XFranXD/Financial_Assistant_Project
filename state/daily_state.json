@@ -1,27 +1,38 @@
 {
   "date": "2026-04-14",
   "reported_companies": [
-    "DRS",
-    "AME",
-    "ROST",
-    "UNP",
-    "AMAT",
-    "EBAY",
-    "NOC",
-    "ETN",
-    "TXN",
-    "NVDA",
     "AVGO",
-    "ABNB",
-    "RTX",
-    "DAL",
-    "TJX",
+    "NVDA",
+    "ETN",
+    "ORLY",
     "CSX",
-    "MAR",
-    "MCD",
-    "AMD",
+    "EBAY",
+    "KLAC",
+    "RSG",
+    "HLT",
+    "ROST",
+    "MSFT",
+    "AME",
     "GE",
-    "WDC"
+    "TXN",
+    "AMAT",
+    "AAPL",
+    "MCD",
+    "GD",
+    "HII",
+    "DRS",
+    "DAL",
+    "UNP",
+    "NOC",
+    "MAR",
+    "ABNB",
+    "PH",
+    "RTX",
+    "TJX",
+    "GM",
+    "WDC",
+    "AMD",
+    "HON"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -57,8 +68,20 @@
       "status": "complete"
     },
     "13:45-15:15": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "AAPL",
+        "MSFT",
+        "KLAC",
+        "HLT",
+        "PH",
+        "RSG",
+        "ORLY",
+        "HON",
+        "GD",
+        "HII",
+        "GM"
+      ],
+      "status": "complete"
     },
     "16:00-17:20": {
       "companies": [],
@@ -170,15 +193,16 @@
     }
   },
   "today_scores": {
-    "AMAT": 59.7,
-    "AVGO": 59.0,
-    "AMD": 58.4,
-    "UNP": 54.0,
-    "DAL": 53.6,
-    "GE": 53.0,
-    "ABNB": 52.8,
-    "MAR": 52.7,
-    "TJX": 52.1,
-    "NOC": 51.0
+    "AAPL": 58.2,
+    "MSFT": 57.6,
+    "KLAC": 56.8,
+    "HLT": 52.1,
+    "PH": 51.8,
+    "RSG": 51.8,
+    "ORLY": 51.3,
+    "HON": 50.8,
+    "GD": 50.0,
+    "HII": 49.1,
+    "GM": 47.4
   }
 }
