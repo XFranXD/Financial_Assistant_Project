@@ -2074,6 +2074,22 @@ a:hover {
   .pt-test-notice {
     font-size: 0.75rem;
   }
+
+  /* Status strip — allow wrap and tighten spacing on mobile */
+  .status-strip {
+    flex-wrap: wrap;
+    row-gap: 6px;
+    overflow: visible;
+    padding: 10px 14px;
+  }
+
+  .ss-val {
+    margin-right: 10px;
+  }
+
+  .ss-divider {
+    margin-right: 10px;
+  }
 }
 
 /* ── Sub6 Paper Trading Page ─────────────────────────────────────── */
