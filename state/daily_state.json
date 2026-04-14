@@ -1,11 +1,35 @@
 {
   "date": "2026-04-14",
-  "reported_companies": [],
+  "reported_companies": [
+    "CSX",
+    "AME",
+    "NVDA",
+    "DRS",
+    "RTX",
+    "EBAY",
+    "WDC",
+    "ROST",
+    "MCD",
+    "ETN",
+    "TXN"
+  ],
   "alpha_vantage_calls_today": 20,
   "runs": {
     "9:45-11:15": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "WDC",
+        "NVDA",
+        "TXN",
+        "CSX",
+        "AME",
+        "ETN",
+        "ROST",
+        "RTX",
+        "MCD",
+        "DRS",
+        "EBAY"
+      ],
+      "status": "complete"
     },
     "11:45-13:15": {
       "companies": [],
@@ -124,5 +148,17 @@
       "label": "Rising"
     }
   },
-  "today_scores": {}
+  "today_scores": {
+    "WDC": 65.1,
+    "NVDA": 61.8,
+    "TXN": 59.2,
+    "CSX": 58.5,
+    "AME": 55.8,
+    "ETN": 55.6,
+    "ROST": 55.2,
+    "RTX": 54.7,
+    "MCD": 53.6,
+    "DRS": 53.4,
+    "EBAY": 52.7
+  }
 }
