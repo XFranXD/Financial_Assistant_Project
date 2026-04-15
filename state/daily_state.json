@@ -37,21 +37,21 @@
   "failed_tickers": [],
   "api_failures": {},
   "sector_scores_today": {
-    "technology": 6.844,
-    "healthcare": -1.494,
-    "financials": 2.025,
-    "consumer_discretionary": 5.652,
-    "consumer_staples": -2.797,
-    "industrials": 1.54,
-    "materials": -0.155,
-    "energy": -6.106,
-    "utilities": -1.358,
-    "real_estate": 2.353,
-    "communication_services": 3.342,
-    "semiconductors": 11.581,
-    "defense": 1.951
+    "technology": 6.804,
+    "healthcare": -1.472,
+    "financials": 2.227,
+    "consumer_discretionary": 6.395,
+    "consumer_staples": -2.642,
+    "industrials": 1.168,
+    "materials": -0.374,
+    "energy": -6.215,
+    "utilities": -1.631,
+    "real_estate": 2.35,
+    "communication_services": 3.469,
+    "semiconductors": 11.165,
+    "defense": 1.757
   },
-  "breadth_score_today": 0.362,
+  "breadth_score_today": 0.346,
   "sector_breadth_ma_today": {
     "technology": {
       "breadth_ma_score": 0.8,
@@ -74,9 +74,9 @@
       "label": "healthy participation"
     },
     "consumer_discretionary": {
-      "breadth_ma_score": 0.5,
-      "pct": 50.0,
-      "label": "mixed signals"
+      "breadth_ma_score": 0.6,
+      "pct": 60.0,
+      "label": "healthy participation"
     },
     "consumer_staples": {
       "breadth_ma_score": 0.0,
@@ -84,8 +84,8 @@
       "label": "sector is structurally weak"
     },
     "industrials": {
-      "breadth_ma_score": 0.5,
-      "pct": 50.0,
+      "breadth_ma_score": 0.4,
+      "pct": 40.0,
       "label": "mixed signals"
     },
     "defense": {
@@ -104,13 +104,13 @@
       "label": "healthy participation"
     },
     "utilities": {
-      "breadth_ma_score": 0.6,
-      "pct": 60.0,
-      "label": "healthy participation"
+      "breadth_ma_score": 0.4,
+      "pct": 40.0,
+      "label": "mixed signals"
     },
     "real_estate": {
-      "breadth_ma_score": 0.8,
-      "pct": 80.0,
+      "breadth_ma_score": 0.9,
+      "pct": 90.0,
       "label": "sector is genuinely strong"
     },
     "communication_services": {
@@ -123,18 +123,18 @@
   "event_scores_today": {},
   "indices_today": {
     "dow": {
-      "value": 48347.03,
-      "change_pct": -0.39,
+      "value": 48349.48,
+      "change_pct": -0.38,
       "label": "Falling"
     },
     "sp500": {
-      "value": 6991.92,
-      "change_pct": 0.35,
+      "value": 6997.79,
+      "change_pct": 0.44,
       "label": "Rising"
     },
     "nasdaq": {
-      "value": 23853.3,
-      "change_pct": 0.91,
+      "value": 23887.97,
+      "change_pct": 1.05,
       "label": "Rising"
     }
   },
