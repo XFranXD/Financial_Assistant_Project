@@ -1,12 +1,18 @@
 {
   "date": "2026-04-15",
   "reported_companies": [
-    "ABNB",
-    "NVDA",
-    "AVGO",
     "ROST",
+    "ABNB",
+    "MAR",
+    "AMAT",
+    "AAPL",
+    "TJX",
+    "WDC",
+    "TXN",
     "MCD",
-    "WDC"
+    "AVGO",
+    "EBAY",
+    "NVDA"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -22,8 +28,15 @@
       "status": "complete"
     },
     "11:45-13:15": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "AAPL",
+        "AMAT",
+        "TXN",
+        "EBAY",
+        "TJX",
+        "MAR"
+      ],
+      "status": "complete"
     },
     "13:45-15:15": {
       "companies": [],
@@ -139,11 +152,11 @@
     }
   },
   "today_scores": {
-    "WDC": 61.0,
-    "NVDA": 59.3,
-    "AVGO": 57.4,
-    "ROST": 51.9,
-    "ABNB": 51.2,
-    "MCD": 50.8
+    "AAPL": 56.5,
+    "AMAT": 56.4,
+    "TXN": 56.0,
+    "EBAY": 50.2,
+    "TJX": 49.9,
+    "MAR": 49.8
   }
 }
