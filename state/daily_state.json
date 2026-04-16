@@ -1,21 +1,27 @@
 {
   "date": "2026-04-16",
   "reported_companies": [
-    "AMAT",
     "SBAC",
-    "VICI",
     "AVGO",
-    "KIM",
+    "NVDA",
+    "VICI",
     "O",
-    "NNN",
-    "AMD",
     "WDC",
-    "MSFT",
-    "FTNT",
     "REG",
+    "MSFT",
+    "PLTR",
+    "AMAT",
     "TXN",
+    "KIM",
+    "NNN",
+    "GLPI",
+    "FTNT",
+    "AMD",
     "AAPL",
-    "NVDA"
+    "FRT",
+    "KLAC",
+    "CRM",
+    "PLD"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -50,8 +56,15 @@
       "status": "complete"
     },
     "16:00-17:20": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "PLTR",
+        "KLAC",
+        "GLPI",
+        "FRT",
+        "PLD",
+        "CRM"
+      ],
+      "status": "complete"
     }
   },
   "failed_tickers": [],
@@ -159,8 +172,11 @@
     }
   },
   "today_scores": {
-    "AAPL": 59.8,
-    "MSFT": 59.8,
-    "FTNT": 58.4
+    "PLTR": 60.6,
+    "KLAC": 60.4,
+    "GLPI": 57.3,
+    "FRT": 56.5,
+    "PLD": 56.0,
+    "CRM": 55.9
   }
 }
