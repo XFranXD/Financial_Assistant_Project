@@ -1,18 +1,21 @@
 {
   "date": "2026-04-16",
   "reported_companies": [
-    "WDC",
-    "AMD",
-    "NNN",
-    "O",
-    "TXN",
-    "REG",
-    "NVDA",
-    "KIM",
     "AMAT",
-    "AVGO",
     "SBAC",
-    "VICI"
+    "VICI",
+    "AVGO",
+    "KIM",
+    "O",
+    "NNN",
+    "AMD",
+    "WDC",
+    "MSFT",
+    "FTNT",
+    "REG",
+    "TXN",
+    "AAPL",
+    "NVDA"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -39,8 +42,12 @@
       "status": "complete"
     },
     "13:45-15:15": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "AAPL",
+        "MSFT",
+        "FTNT"
+      ],
+      "status": "complete"
     },
     "16:00-17:20": {
       "companies": [],
@@ -152,11 +159,8 @@
     }
   },
   "today_scores": {
-    "AMD": 65.2,
-    "AVGO": 62.9,
-    "AMAT": 62.3,
-    "O": 56.9,
-    "NNN": 55.6,
-    "SBAC": 55.4
+    "AAPL": 59.8,
+    "MSFT": 59.8,
+    "FTNT": 58.4
   }
 }
