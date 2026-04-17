@@ -1,15 +1,18 @@
 {
   "date": "2026-04-17",
   "reported_companies": [
-    "ROST",
-    "ABNB",
-    "MAR",
-    "TFC",
-    "SCHW",
+    "MCD",
     "EBAY",
     "TJX",
+    "HLT",
+    "SCHW",
+    "ROST",
+    "ABNB",
     "MFC",
-    "MCD"
+    "ORLY",
+    "GM",
+    "TFC",
+    "MAR"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -33,8 +36,12 @@
       "status": "complete"
     },
     "13:45-15:15": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "HLT",
+        "ORLY",
+        "GM"
+      ],
+      "status": "complete"
     },
     "16:00-17:20": {
       "companies": [],
@@ -146,11 +153,8 @@
     }
   },
   "today_scores": {
-    "MFC": 61.0,
-    "TFC": 60.4,
-    "SCHW": 59.9,
-    "EBAY": 56.9,
-    "MAR": 56.7,
-    "TJX": 55.9
+    "HLT": 55.8,
+    "ORLY": 54.4,
+    "GM": 51.7
   }
 }
