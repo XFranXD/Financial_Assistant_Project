@@ -1,90 +1,43 @@
 {
-  "date": "2026-04-16",
-  "reported_companies": [
-    "SBAC",
-    "AVGO",
-    "NVDA",
-    "VICI",
-    "O",
-    "WDC",
-    "REG",
-    "MSFT",
-    "PLTR",
-    "AMAT",
-    "TXN",
-    "KIM",
-    "NNN",
-    "GLPI",
-    "FTNT",
-    "AMD",
-    "AAPL",
-    "FRT",
-    "KLAC",
-    "CRM",
-    "PLD"
-  ],
+  "date": "2026-04-17",
+  "reported_companies": [],
   "alpha_vantage_calls_today": 20,
   "runs": {
     "9:45-11:15": {
-      "companies": [
-        "WDC",
-        "NVDA",
-        "TXN",
-        "KIM",
-        "REG",
-        "VICI"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     },
     "11:45-13:15": {
-      "companies": [
-        "AMD",
-        "AVGO",
-        "AMAT",
-        "O",
-        "NNN",
-        "SBAC"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     },
     "13:45-15:15": {
-      "companies": [
-        "AAPL",
-        "MSFT",
-        "FTNT"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     },
     "16:00-17:20": {
-      "companies": [
-        "PLTR",
-        "KLAC",
-        "GLPI",
-        "FRT",
-        "PLD",
-        "CRM"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     }
   },
   "failed_tickers": [],
   "api_failures": {},
   "sector_scores_today": {
-    "technology": 8.067,
-    "healthcare": -2.142,
-    "financials": 1.886,
-    "consumer_discretionary": 4.536,
-    "consumer_staples": -2.345,
-    "industrials": -0.319,
-    "materials": 0.236,
-    "energy": -2.771,
-    "utilities": -1.671,
-    "real_estate": 3.225,
-    "communication_services": 4.201,
-    "semiconductors": 10.385,
-    "defense": -0.741
+    "technology": 9.077,
+    "healthcare": 0.205,
+    "financials": 3.807,
+    "consumer_discretionary": 8.236,
+    "consumer_staples": -1.228,
+    "industrials": 2.548,
+    "materials": 0.699,
+    "energy": -8.15,
+    "utilities": -3.034,
+    "real_estate": 3.742,
+    "communication_services": 4.378,
+    "semiconductors": 10.614,
+    "defense": 3.077
   },
-  "breadth_score_today": 0.623,
+  "breadth_score_today": 0.723,
   "sector_breadth_ma_today": {
     "technology": {
       "breadth_ma_score": 0.8,
@@ -92,8 +45,8 @@
       "label": "sector is genuinely strong"
     },
     "semiconductors": {
-      "breadth_ma_score": 0.9,
-      "pct": 90.0,
+      "breadth_ma_score": 1.0,
+      "pct": 100.0,
       "label": "sector is genuinely strong"
     },
     "healthcare": {
@@ -102,14 +55,14 @@
       "label": "mixed signals"
     },
     "financials": {
-      "breadth_ma_score": 0.6,
-      "pct": 60.0,
+      "breadth_ma_score": 0.7,
+      "pct": 70.0,
       "label": "healthy participation"
     },
     "consumer_discretionary": {
-      "breadth_ma_score": 0.4,
-      "pct": 40.0,
-      "label": "mixed signals"
+      "breadth_ma_score": 0.7,
+      "pct": 70.0,
+      "label": "healthy participation"
     },
     "consumer_staples": {
       "breadth_ma_score": 0.0,
@@ -117,34 +70,34 @@
       "label": "sector is structurally weak"
     },
     "industrials": {
-      "breadth_ma_score": 0.5,
-      "pct": 50.0,
-      "label": "mixed signals"
+      "breadth_ma_score": 0.9,
+      "pct": 90.0,
+      "label": "sector is genuinely strong"
     },
     "defense": {
-      "breadth_ma_score": 0.0,
-      "pct": 0.0,
+      "breadth_ma_score": 0.2,
+      "pct": 20.0,
       "label": "sector is structurally weak"
     },
     "energy": {
-      "breadth_ma_score": 0.7,
-      "pct": 70.0,
-      "label": "healthy participation"
+      "breadth_ma_score": 0.1,
+      "pct": 10.0,
+      "label": "sector is structurally weak"
     },
     "materials": {
-      "breadth_ma_score": 0.6,
-      "pct": 60.0,
+      "breadth_ma_score": 0.7,
+      "pct": 70.0,
       "label": "healthy participation"
     },
     "utilities": {
-      "breadth_ma_score": 0.4,
-      "pct": 40.0,
-      "label": "mixed signals"
+      "breadth_ma_score": 0.2,
+      "pct": 20.0,
+      "label": "sector is structurally weak"
     },
     "real_estate": {
-      "breadth_ma_score": 0.7,
-      "pct": 70.0,
-      "label": "healthy participation"
+      "breadth_ma_score": 1.0,
+      "pct": 100.0,
+      "label": "sector is genuinely strong"
     },
     "communication_services": {
       "breadth_ma_score": 0.5,
@@ -156,27 +109,20 @@
   "event_scores_today": {},
   "indices_today": {
     "dow": {
-      "value": 48578.72,
-      "change_pct": 0.24,
+      "value": 49588.25,
+      "change_pct": 2.08,
       "label": "Rising"
     },
     "sp500": {
-      "value": 7041.28,
-      "change_pct": 0.26,
+      "value": 7131.45,
+      "change_pct": 1.28,
       "label": "Rising"
     },
     "nasdaq": {
-      "value": 24102.7,
-      "change_pct": 0.36,
+      "value": 24467.94,
+      "change_pct": 1.52,
       "label": "Rising"
     }
   },
-  "today_scores": {
-    "PLTR": 60.6,
-    "KLAC": 60.4,
-    "GLPI": 57.3,
-    "FRT": 56.5,
-    "PLD": 56.0,
-    "CRM": 55.9
-  }
+  "today_scores": {}
 }
