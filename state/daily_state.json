@@ -1,18 +1,24 @@
 {
   "date": "2026-04-17",
   "reported_companies": [
-    "MCD",
-    "EBAY",
-    "TJX",
+    "MAR",
+    "CCL",
     "HLT",
-    "SCHW",
-    "ROST",
-    "ABNB",
-    "MFC",
-    "ORLY",
-    "GM",
+    "RCL",
     "TFC",
-    "MAR"
+    "EBAY",
+    "GM",
+    "NVDA",
+    "AAPL",
+    "SCHW",
+    "ORLY",
+    "WDC",
+    "ROST",
+    "MFC",
+    "MCD",
+    "BBY",
+    "ABNB",
+    "TJX"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -44,8 +50,15 @@
       "status": "complete"
     },
     "16:00-17:20": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "WDC",
+        "NVDA",
+        "AAPL",
+        "RCL",
+        "CCL",
+        "BBY"
+      ],
+      "status": "complete"
     }
   },
   "failed_tickers": [],
@@ -155,8 +168,11 @@
     }
   },
   "today_scores": {
-    "HLT": 55.8,
-    "ORLY": 54.4,
-    "GM": 51.7
+    "WDC": 71.2,
+    "NVDA": 68.2,
+    "AAPL": 66.2,
+    "RCL": 54.4,
+    "CCL": 51.5,
+    "BBY": 51.1
   }
 }
