@@ -51,10 +51,28 @@ def detect_levels(df: pd.DataFrame, consolidation_confirmed: bool) -> dict:
     sup_zones = sorted(cluster_pivots(swing_lows))
 
     current_close = df["Close"].iloc[-1]
-    
+
+    # ── Minimum resistance distance filter ───────────────────────────────────
+    # Resistance zones less than MIN_RESIST_DIST_PCT above current price are
+    # rejected as non-tradeable targets. In strongly trending stocks, the pivot
+    # detector routinely identifies the most recent swing high — which may be
+    # only 0.2–0.6% above current price — as "nearest resistance". Using that
+    # as price_target produces R:R values of 0.02–0.05 that are geometrically
+    # correct but financially meaningless. A real resistance level must be far
+    # enough away to represent a genuine price objective.
+    # 1.5% chosen as the minimum: below this threshold a target offers less
+    # reward than a single day's typical noise for most mid/large-cap stocks.
+    MIN_RESIST_DIST_PCT = 0.015
+
     sups_below = [s for s in sup_zones if s < current_close]
-    res_above = [r for r in res_zones if r > current_close]
-    
+    res_above_raw = [r for r in res_zones if r > current_close]
+
+    # Filter out resistance levels too close to current price to be meaningful
+    res_above = [
+        r for r in res_above_raw
+        if (r - current_close) / current_close >= MIN_RESIST_DIST_PCT
+    ]
+
     nearest_support = max(sups_below) if sups_below else None
     nearest_resistance = min(res_above) if res_above else None
 
@@ -68,6 +86,10 @@ def detect_levels(df: pd.DataFrame, consolidation_confirmed: bool) -> dict:
             else:
                 nearest_support = df["Low"].min()
         if nearest_resistance is None:
+            # All pivot-based resistance zones were filtered out as too close —
+            # fall back to the 20-bar high as a structural ceiling. This is the
+            # same fallback tier 3 uses and always produces a level at least as
+            # far as the recent trading range high.
             if len(df) >= 20:
                 nearest_resistance = df["High"].tail(20).max()
             else:
