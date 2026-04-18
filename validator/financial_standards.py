@@ -126,8 +126,12 @@ def _run_integrity_check(c: dict, ticker: str) -> list[dict]:
                     f'data integrity failure. Ticker output cannot be trusted.'
                 ),
             }
-        # Attempt float cast for numeric fields (non-string expected fields)
-        if isinstance(val, str):
+        # Attempt float cast for numeric fields (non-string expected fields).
+        # entry_quality is a legitimate string label by contract (GOOD / WEAK /
+        # EXTENDED / EARLY) — skip numeric validation for this field entirely.
+        # All other PS_FIELDS (entry_price, stop_loss, price_target) are numeric
+        # and must pass the float-cast check.
+        if isinstance(val, str) and key != 'entry_quality':
             try:
                 float(val)
             except (ValueError, TypeError):

@@ -69,8 +69,28 @@ def compute_execution_levels(
             if entry_price > stop_loss:   # valid setup: stop is below entry
                 reward = price_target - entry_price
                 risk   = entry_price   - stop_loss
-                if risk > 0:
-                    risk_reward_ratio = round(reward / risk, 2)
+
+                # ── Geometric invalidity guard ────────────────────────────
+                # reward <= 0 means price_target is at or below entry —
+                # the trade structure is inverted or flat and cannot exist.
+                # risk <= 0 is already blocked by entry_price > stop_loss
+                # above, but guarded here explicitly for safety.
+                # Nullify all levels so no downstream layer receives a
+                # geometrically impossible trade structure. This is distinct
+                # from sub-threshold R:R (0 < R:R < MIN_RR_THRESHOLD) which
+                # is a quality failure, not a structural one — those keep
+                # their levels and receive entry_quality = WEAK below.
+                if reward <= 0 or risk <= 0:
+                    return {
+                        'entry_price':       None,
+                        'stop_loss':         None,
+                        'price_target':      None,
+                        'risk_reward_ratio': None,
+                        'entry_quality':     'WEAK',
+                        'rr_override':       True,
+                    }
+
+                risk_reward_ratio = round(reward / risk, 2)
 
         # ── R/R override: downgrade entry_quality to WEAK if below threshold
         rr_override    = False
@@ -90,4 +110,3 @@ def compute_execution_levels(
 
     except Exception:
         return _safe
-        
