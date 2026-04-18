@@ -90,7 +90,11 @@ def compute_execution_levels(
                         'rr_override':       True,
                     }
 
-                risk_reward_ratio = round(reward / risk, 2)
+                # Round to 4dp — 2dp causes relative errors exceeding 5% on
+                # sub-0.05 R:R values (e.g. 0.0188 -> 0.02 = 6.3% error),
+                # which triggers false A_RANGE_RR_RECOMPUTE_DELTA FSV flags.
+                # 4dp is sufficient for all realistic R:R values.
+                risk_reward_ratio = round(reward / risk, 4)
 
         # ── R/R override: downgrade entry_quality to WEAK if below threshold
         rr_override    = False
