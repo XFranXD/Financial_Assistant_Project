@@ -310,3 +310,159 @@
 2026-04-18T01:13:23 UTC | INFO     | main | [DEBUG] dry_run=True — email suppressed
 2026-04-18T01:13:23 UTC | INFO     | main | [DEBUG] Commit delegated to workflow CI step.
 2026-04-18T01:13:23 UTC | INFO     | main | [DEBUG] Force-ticker run complete. Tickers: ['ETN', 'KLAC', 'LRCX', 'AMD', 'AMAT'] | Subs: ['sub1', 'sub4'] | dry_run: True
+2026-04-18T01:22:57 UTC | INFO     | main | ============================================================
+2026-04-18T01:22:57 UTC | INFO     | main | AUTOMATED STOCK RESEARCH SYSTEM — starting run
+2026-04-18T01:22:57 UTC | INFO     | main | DISCLAIMER: This system does NOT perform trading, does NOT give investment advice, and does NOT make price predictions. It is a research data aggregation and scoring tool only.
+2026-04-18T01:22:57 UTC | INFO     | main | ============================================================
+2026-04-18T01:22:57 UTC | INFO     | main | [DEBUG] FORCE_TICKERS detected — entering debug mode
+2026-04-18T01:22:57 UTC | WARNING  | main | Validated tickers file is 39 days old (limit 30). Consider re-running validate_tickers.py.
+2026-04-18T01:22:57 UTC | INFO     | main | [DEBUG] Using slot: 9:45-11:15
+2026-04-18T01:22:57 UTC | INFO     | main | [DEBUG] Force-ticker mode active — tickers: ['ETN', 'KLAC', 'LRCX', 'AMD', 'AMAT']
+2026-04-18T01:22:57 UTC | INFO     | main | [DEBUG] Active subsystems: ['sub1', 'sub4']
+2026-04-18T01:22:57 UTC | INFO     | main | [DEBUG] Dry run: True
+2026-04-18T01:22:57 UTC | INFO     | main | [DEBUG] Skipping all sector/news gates
+2026-04-18T01:22:57 UTC | INFO     | market_collector | Index dow: 49447.43 Rising (+1.79%)
+2026-04-18T01:22:57 UTC | INFO     | market_collector | Index sp500: 7126.06 Rising (+1.20%)
+2026-04-18T01:22:57 UTC | INFO     | market_collector | Index nasdaq: 24468.48 Rising (+1.52%)
+2026-04-18T01:22:57 UTC | INFO     | market_regime | VIX fetched: 17.48
+2026-04-18T01:22:57 UTC | INFO     | market_regime | Regime: normal vix=17.48 risk_mult=1.0 opp_mult=1.0
+2026-04-18T01:23:17 UTC | INFO     | market_breadth | Market breadth: 92/130 advancing (0.71) — strong breadth — most stocks rising
+2026-04-18T01:23:17 UTC | INFO     | spy_sma | [SPY] price=710.14 sma200=663.21 above=True
+2026-04-18T01:23:21 UTC | INFO     | market_breadth | [B200] 93/125 above 200d SMA = 74.4%
+2026-04-18T01:23:21 UTC | INFO     | market_regime_classifier | [MRC] regime=BULL score=3 spy_above=True vix=17.48 breadth_pct=74.4
+2026-04-18T01:23:21 UTC | INFO     | main | [MR] market_regime=BULL score=3 breadth_pct=74.4
+2026-04-18T01:23:22 UTC | INFO     | sector_breadth_ma | Sector breadth MA technology: 8/10 = 0.80 (sector is genuinely strong)
+2026-04-18T01:23:22 UTC | INFO     | sector_breadth_ma | Sector breadth MA semiconductors: 10/10 = 1.00 (sector is genuinely strong)
+2026-04-18T01:23:23 UTC | INFO     | sector_breadth_ma | Sector breadth MA healthcare: 4/10 = 0.40 (mixed signals)
+2026-04-18T01:23:24 UTC | INFO     | sector_breadth_ma | Sector breadth MA financials: 7/10 = 0.70 (healthy participation)
+2026-04-18T01:23:25 UTC | INFO     | sector_breadth_ma | Sector breadth MA consumer_discretionary: 6/10 = 0.60 (healthy participation)
+2026-04-18T01:23:26 UTC | INFO     | sector_breadth_ma | Sector breadth MA consumer_staples: 2/10 = 0.20 (sector is structurally weak)
+2026-04-18T01:23:27 UTC | INFO     | sector_breadth_ma | Sector breadth MA industrials: 7/10 = 0.70 (healthy participation)
+2026-04-18T01:23:29 UTC | INFO     | sector_breadth_ma | Sector breadth MA defense: 2/10 = 0.20 (sector is structurally weak)
+2026-04-18T01:23:30 UTC | INFO     | sector_breadth_ma | Sector breadth MA energy: 2/10 = 0.20 (sector is structurally weak)
+2026-04-18T01:23:31 UTC | INFO     | sector_breadth_ma | Sector breadth MA materials: 7/10 = 0.70 (healthy participation)
+2026-04-18T01:23:31 UTC | INFO     | sector_breadth_ma | Sector breadth MA utilities: 4/10 = 0.40 (mixed signals)
+2026-04-18T01:23:32 UTC | INFO     | sector_breadth_ma | Sector breadth MA real_estate: 10/10 = 1.00 (sector is genuinely strong)
+2026-04-18T01:23:33 UTC | INFO     | sector_breadth_ma | Sector breadth MA communication_services: 5/10 = 0.50 (mixed signals)
+2026-04-18T01:23:35 UTC | INFO     | sector_momentum | Top 5 sectors: ['semiconductors', 'technology', 'consumer_discretionary', 'communication_services', 'real_estate']
+2026-04-18T01:23:35 UTC | INFO     | sector_momentum | Sector momentum history updated (6 entries)
+2026-04-18T01:23:35 UTC | INFO     | sector_rotation_speed | Rotation technology: rank 4 -> 2 speed=2 (gaining momentum)
+2026-04-18T01:23:35 UTC | INFO     | sector_rotation_speed | Rotation healthcare: rank 7 -> 9 speed=-2 (losing momentum)
+2026-04-18T01:23:35 UTC | INFO     | sector_rotation_speed | Rotation financials: rank 3 -> 6 speed=-3 (losing momentum)
+2026-04-18T01:23:35 UTC | INFO     | sector_rotation_speed | Rotation consumer_discretionary: rank 8 -> 3 speed=5 (rapidly gaining strength)
+2026-04-18T01:23:35 UTC | INFO     | sector_rotation_speed | Rotation consumer_staples: rank 10 -> 11 speed=-1 (stable)
+2026-04-18T01:23:35 UTC | INFO     | sector_rotation_speed | Rotation industrials: rank 6 -> 7 speed=-1 (stable)
+2026-04-18T01:23:35 UTC | INFO     | sector_rotation_speed | Rotation materials: rank 13 -> 10 speed=3 (gaining momentum)
+2026-04-18T01:23:35 UTC | INFO     | sector_rotation_speed | Rotation energy: rank 1 -> 13 speed=-12 (rapidly losing strength)
+2026-04-18T01:23:35 UTC | INFO     | sector_rotation_speed | Rotation utilities: rank 12 -> 12 speed=0 (stable)
+2026-04-18T01:23:35 UTC | INFO     | sector_rotation_speed | Rotation real_estate: rank 9 -> 5 speed=4 (rapidly gaining strength)
+2026-04-18T01:23:35 UTC | INFO     | sector_rotation_speed | Rotation communication_services: rank 5 -> 4 speed=1 (stable)
+2026-04-18T01:23:35 UTC | INFO     | sector_rotation_speed | Rotation semiconductors: rank 2 -> 1 speed=1 (stable)
+2026-04-18T01:23:35 UTC | INFO     | sector_rotation_speed | Rotation defense: rank 11 -> 8 speed=3 (gaining momentum)
+2026-04-18T01:23:35 UTC | INFO     | news_collector | reuters RSS: fetched 0 articles
+2026-04-18T01:23:35 UTC | INFO     | news_collector | ft RSS: fetched 12 articles
+2026-04-18T01:23:35 UTC | INFO     | news_collector | Finnhub: fetched 100 articles
+2026-04-18T01:23:35 UTC | INFO     | news_collector | Filter: 112 raw → 40 passed
+2026-04-18T01:23:35 UTC | INFO     | news_collector | Dedup: 40 → 40 articles
+2026-04-18T01:23:35 UTC | INFO     | news_collector | Sector confirmed: energy score=19.9 headlines=6
+2026-04-18T01:23:35 UTC | INFO     | news_collector | Sector confirmed: materials score=12.1 headlines=5
+2026-04-18T01:23:35 UTC | INFO     | news_collector | Sector confirmed: consumer_discretionary score=41.4 headlines=13
+2026-04-18T01:23:35 UTC | INFO     | news_collector | Sector confirmed: industrials score=18.3 headlines=8
+2026-04-18T01:23:35 UTC | INFO     | news_collector | Sector confirmed: utilities score=12.9 headlines=6
+2026-04-18T01:23:35 UTC | INFO     | news_collector | Sector confirmed: technology score=25.2 headlines=7
+2026-04-18T01:23:35 UTC | INFO     | news_collector | Sector confirmed: financials score=19.6 headlines=4
+2026-04-18T01:23:35 UTC | INFO     | news_collector | Sector confirmed: real_estate score=8.0 headlines=2
+2026-04-18T01:23:35 UTC | INFO     | news_collector | Sector confirmed: consumer_staples score=6.5 headlines=2
+2026-04-18T01:23:35 UTC | INFO     | news_collector | Sector confirmed: defense score=11.6 headlines=2
+2026-04-18T01:23:35 UTC | INFO     | news_collector | Sector gated: semiconductors score=1.7 headlines=1 (need score>=4, headlines>=2)
+2026-04-18T01:23:35 UTC | INFO     | news_collector | Confirmed sectors: ['energy', 'materials', 'consumer_discretionary', 'industrials', 'utilities', 'technology', 'financials', 'real_estate', 'consumer_staples', 'defense']
+2026-04-18T01:23:36 UTC | INFO     | market_collector | get_index_history dow: 30 points
+2026-04-18T01:23:36 UTC | INFO     | market_collector | get_index_history sp500: 30 points
+2026-04-18T01:23:36 UTC | INFO     | market_collector | get_index_history nasdaq: 30 points
+2026-04-18T01:23:36 UTC | INFO     | main | [DEBUG] Processing forced ticker: ETN
+2026-04-18T01:23:36 UTC | INFO     | financial_parser | ETN: using cached financials (0d old)
+2026-04-18T01:23:36 UTC | INFO     | main | AV budget exhausted — skipping AV for ETN
+2026-04-18T01:23:36 UTC | INFO     | volume_confirmation | ETN volume ratio=0.75 score=0.25 label=lower activity than usual
+2026-04-18T01:23:36 UTC | INFO     | risk_adjusted_momentum | ETN RAM raw=8.19 score=0.91
+2026-04-18T01:23:36 UTC | INFO     | multi_timeframe_momentum | ETN MTF 1m=12.667105405159479 3m=22.196558091173742 6m=7.042251595619006 score=0.76
+2026-04-18T01:23:36 UTC | INFO     | trend_stability | ETN trend stability: dev=0.0540 score=0.46
+2026-04-18T01:23:36 UTC | INFO     | drawdown_risk | ETN drawdown=0.0% score=1.00
+2026-04-18T01:23:36 UTC | INFO     | risk_model | Risk score: raw=27.2 penalty=0 mult=1.0 final=27.2
+2026-04-18T01:23:36 UTC | INFO     | opportunity_model | Opp score: b1=31.0 b2=69.0 b3=40.0 raw=48.0 x1.0 x1.15 = 55.2
+2026-04-18T01:23:36 UTC | INFO     | signal_agreement | Signal agreement: m=0.91 s=0.50 e=0.50 v=0.25 -> 0.057
+2026-04-18T01:23:36 UTC | INFO     | opportunity_model | Composite confidence: 55.9 (Moderate confidence)
+2026-04-18T01:23:36 UTC | INFO     | main | [DEBUG] ETN: conf=55.9 risk=27.2 opp=55.2
+2026-04-18T01:23:36 UTC | INFO     | main | [DEBUG] Processing forced ticker: KLAC
+2026-04-18T01:23:36 UTC | INFO     | financial_parser | KLAC: using cached financials (2d old)
+2026-04-18T01:23:36 UTC | INFO     | main | AV budget exhausted — skipping AV for KLAC
+2026-04-18T01:23:36 UTC | INFO     | volume_confirmation | KLAC volume ratio=0.74 score=0.25 label=lower activity than usual
+2026-04-18T01:23:37 UTC | INFO     | risk_adjusted_momentum | KLAC RAM raw=3.95 score=0.70
+2026-04-18T01:23:37 UTC | INFO     | multi_timeframe_momentum | KLAC MTF 1m=20.85053287386092 3m=16.104478140945552 6m=65.29538086762673 score=1.00
+2026-04-18T01:23:37 UTC | INFO     | trend_stability | KLAC trend stability: dev=0.1166 score=0.00
+2026-04-18T01:23:37 UTC | INFO     | drawdown_risk | KLAC drawdown=0.2% score=0.99
+2026-04-18T01:23:37 UTC | INFO     | risk_model | Risk score: raw=32.0 penalty=0 mult=1.0 final=32.0
+2026-04-18T01:23:37 UTC | INFO     | opportunity_model | Opp score: b1=45.5 b2=69.7 b3=39.9 raw=54.1 x1.0 x1.15 = 62.2
+2026-04-18T01:23:37 UTC | INFO     | signal_agreement | Signal agreement: m=0.70 s=0.50 e=0.50 v=0.25 -> 0.043
+2026-04-18T01:23:37 UTC | INFO     | opportunity_model | Composite confidence: 56.4 (Moderate confidence)
+2026-04-18T01:23:37 UTC | INFO     | main | [DEBUG] KLAC: conf=56.4 risk=32.0 opp=62.2
+2026-04-18T01:23:37 UTC | INFO     | main | [DEBUG] Processing forced ticker: LRCX
+2026-04-18T01:23:37 UTC | INFO     | financial_parser | LRCX: using cached financials (3d old)
+2026-04-18T01:23:37 UTC | INFO     | main | AV budget exhausted — skipping AV for LRCX
+2026-04-18T01:23:37 UTC | INFO     | volume_confirmation | LRCX volume ratio=0.82 score=0.27 label=normal trading activity
+2026-04-18T01:23:37 UTC | INFO     | risk_adjusted_momentum | LRCX RAM raw=5.26 score=0.76
+2026-04-18T01:23:37 UTC | INFO     | multi_timeframe_momentum | LRCX MTF 1m=19.086822174440186 3m=23.198885231174664 6m=85.35827418669028 score=1.00
+2026-04-18T01:23:37 UTC | INFO     | trend_stability | LRCX trend stability: dev=0.1023 score=0.00
+2026-04-18T01:23:37 UTC | INFO     | drawdown_risk | LRCX drawdown=1.8% score=0.96
+2026-04-18T01:23:37 UTC | INFO     | risk_model | Earnings proximity penalty: 4 days away
+2026-04-18T01:23:37 UTC | INFO     | risk_model | Risk score: raw=17.6 penalty=10 mult=1.0 final=27.6
+2026-04-18T01:23:37 UTC | INFO     | opportunity_model | Opp score: b1=45.1 b2=71.3 b3=41.0 raw=54.8 x1.0 x1.15 = 63.0
+2026-04-18T01:23:37 UTC | INFO     | signal_agreement | Signal agreement: m=0.76 s=0.50 e=0.50 v=0.27 -> 0.052
+2026-04-18T01:23:37 UTC | INFO     | opportunity_model | Composite confidence: 58.4 (Moderate confidence)
+2026-04-18T01:23:37 UTC | INFO     | main | [DEBUG] LRCX: conf=58.4 risk=27.6 opp=63.0
+2026-04-18T01:23:37 UTC | INFO     | main | [DEBUG] Processing forced ticker: AMD
+2026-04-18T01:23:37 UTC | INFO     | financial_parser | AMD: using cached financials (2d old)
+2026-04-18T01:23:37 UTC | INFO     | main | AV budget exhausted — skipping AV for AMD
+2026-04-18T01:23:37 UTC | INFO     | volume_confirmation | AMD volume ratio=1.05 score=0.35 label=normal trading activity
+2026-04-18T01:23:37 UTC | INFO     | risk_adjusted_momentum | AMD RAM raw=4.89 score=0.74
+2026-04-18T01:23:37 UTC | INFO     | multi_timeframe_momentum | AMD MTF 1m=39.57184662477143 3m=22.14374205201659 6m=16.676449089301006 score=0.90
+2026-04-18T01:23:37 UTC | INFO     | trend_stability | AMD trend stability: dev=0.1418 score=0.00
+2026-04-18T01:23:37 UTC | INFO     | drawdown_risk | AMD drawdown=0.0% score=1.00
+2026-04-18T01:23:37 UTC | INFO     | risk_model | Risk score: raw=21.0 penalty=0 mult=1.0 final=21.0
+2026-04-18T01:23:37 UTC | INFO     | opportunity_model | Opp score: b1=55.9 b2=68.4 b3=44.0 raw=58.5 x1.0 x1.15 = 67.3
+2026-04-18T01:23:37 UTC | INFO     | signal_agreement | Signal agreement: m=0.74 s=0.50 e=0.50 v=0.35 -> 0.065
+2026-04-18T01:23:37 UTC | INFO     | opportunity_model | Composite confidence: 62.5 (Moderate confidence)
+2026-04-18T01:23:37 UTC | INFO     | main | [DEBUG] AMD: conf=62.5 risk=21.0 opp=67.3
+2026-04-18T01:23:37 UTC | INFO     | main | [DEBUG] Processing forced ticker: AMAT
+2026-04-18T01:23:37 UTC | INFO     | financial_parser | AMAT: using cached financials (2d old)
+2026-04-18T01:23:37 UTC | INFO     | main | AV budget exhausted — skipping AV for AMAT
+2026-04-18T01:23:37 UTC | INFO     | volume_confirmation | AMAT volume ratio=0.95 score=0.32 label=normal trading activity
+2026-04-18T01:23:37 UTC | INFO     | risk_adjusted_momentum | AMAT RAM raw=6.42 score=0.82
+2026-04-18T01:23:38 UTC | INFO     | multi_timeframe_momentum | AMAT MTF 1m=13.583426633155868 3m=24.55656351121355 6m=74.97763329336328 score=1.00
+2026-04-18T01:23:38 UTC | INFO     | trend_stability | AMAT trend stability: dev=0.0784 score=0.22
+2026-04-18T01:23:38 UTC | INFO     | drawdown_risk | AMAT drawdown=0.6% score=0.98
+2026-04-18T01:23:38 UTC | INFO     | risk_model | Risk score: raw=21.0 penalty=0 mult=1.0 final=21.0
+2026-04-18T01:23:38 UTC | INFO     | opportunity_model | Opp score: b1=33.7 b2=72.8 b3=42.6 raw=51.1 x1.0 x1.15 = 58.8
+2026-04-18T01:23:38 UTC | INFO     | signal_agreement | Signal agreement: m=0.82 s=0.50 e=0.50 v=0.32 -> 0.065
+2026-04-18T01:23:38 UTC | INFO     | opportunity_model | Composite confidence: 59.5 (Moderate confidence)
+2026-04-18T01:23:38 UTC | INFO     | main | [DEBUG] AMAT: conf=59.5 risk=21.0 opp=58.8
+2026-04-18T01:23:38 UTC | INFO     | main | [DEBUG][EQ] Sub2 excluded — EQ fields set to UNAVAILABLE
+2026-04-18T01:23:38 UTC | INFO     | main | [DEBUG][ROT] Sub3 excluded — rotation fields set to UNAVAILABLE
+2026-04-18T01:23:38 UTC | INFO     | main | [PS] Running price structure analysis on 5 forced tickers
+2026-04-18T01:23:38 UTC | INFO     | main | [PS] Enrichment complete. 5 enriched / 5 total
+2026-04-18T01:23:38 UTC | INFO     | main | [DEBUG][1A/1B] Sub2 excluded — event risk, insider, expectations set to UNAVAILABLE
+2026-04-18T01:23:38 UTC | INFO     | main | [DEBUG][PL] Sub5 excluded — portfolio analysis skipped
+2026-04-18T01:23:38 UTC | INFO     | main | [DEBUG][PT] Sub6 excluded — not in active subsystems
+2026-04-18T01:23:38 UTC | INFO     | main | [FSV][DEBUG] ETN → CLEAN | INCONSISTENT=0 QUESTIONABLE=0
+2026-04-18T01:23:38 UTC | INFO     | main | [FSV][DEBUG] KLAC → CLEAN | INCONSISTENT=0 QUESTIONABLE=0
+2026-04-18T01:23:38 UTC | INFO     | main | [FSV][DEBUG] LRCX → CLEAN | INCONSISTENT=0 QUESTIONABLE=0
+2026-04-18T01:23:38 UTC | INFO     | main | [FSV][DEBUG] AMD → CLEAN | INCONSISTENT=0 QUESTIONABLE=0
+2026-04-18T01:23:38 UTC | WARNING  | validator.expectation | [FSV][C] QUESTIONABLE: avg_volume 7,429,048 but liquidity risk 40.6 > 15
+2026-04-18T01:23:38 UTC | INFO     | main | [FSV][DEBUG] AMAT → REVIEW | INCONSISTENT=0 QUESTIONABLE=1
+2026-04-18T01:23:38 UTC | INFO     | dashboard_builder | tests.json updated. Total entries: 24
+2026-04-18T01:23:38 UTC | INFO     | dashboard_builder | tests.html written (test run)
+2026-04-18T01:23:38 UTC | INFO     | dashboard_builder | trades.json written: 0 total trades (0 real open, 0 real closed, 0 test).
+2026-04-18T01:23:38 UTC | INFO     | dashboard_builder | trades.html written (test run)
+2026-04-18T01:23:38 UTC | INFO     | dashboard_builder | [DEBUG] build_dashboard complete (test path). Subs: sub1, sub4 | Tickers: ['ETN', 'KLAC', 'LRCX', 'AMD', 'AMAT']
+2026-04-18T01:23:38 UTC | INFO     | main | [DEBUG] dry_run=True — email suppressed
+2026-04-18T01:23:38 UTC | INFO     | main | [DEBUG] Commit delegated to workflow CI step.
+2026-04-18T01:23:38 UTC | INFO     | main | [DEBUG] Force-ticker run complete. Tickers: ['ETN', 'KLAC', 'LRCX', 'AMD', 'AMAT'] | Subs: ['sub1', 'sub4'] | dry_run: True
