@@ -1,178 +1,32 @@
 {
-  "date": "2026-04-17",
-  "reported_companies": [
-    "MAR",
-    "CCL",
-    "HLT",
-    "RCL",
-    "TFC",
-    "EBAY",
-    "GM",
-    "NVDA",
-    "AAPL",
-    "SCHW",
-    "ORLY",
-    "WDC",
-    "ROST",
-    "MFC",
-    "MCD",
-    "BBY",
-    "ABNB",
-    "TJX"
-  ],
+  "date": "2026-04-18",
+  "reported_companies": [],
   "alpha_vantage_calls_today": 20,
   "runs": {
     "9:45-11:15": {
-      "companies": [
-        "ROST",
-        "ABNB",
-        "MCD"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     },
     "11:45-13:15": {
-      "companies": [
-        "MFC",
-        "TFC",
-        "SCHW",
-        "EBAY",
-        "MAR",
-        "TJX"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     },
     "13:45-15:15": {
-      "companies": [
-        "HLT",
-        "ORLY",
-        "GM"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     },
     "16:00-17:20": {
-      "companies": [
-        "WDC",
-        "NVDA",
-        "AAPL",
-        "RCL",
-        "CCL",
-        "BBY"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     }
   },
   "failed_tickers": [],
   "api_failures": {},
-  "sector_scores_today": {
-    "technology": 8.904,
-    "healthcare": 0.212,
-    "financials": 3.142,
-    "consumer_discretionary": 7.161,
-    "consumer_staples": -0.618,
-    "industrials": 1.693,
-    "materials": -0.136,
-    "energy": -5.405,
-    "utilities": -2.212,
-    "real_estate": 3.88,
-    "communication_services": 4.248,
-    "semiconductors": 11.09,
-    "defense": 1.154
-  },
-  "breadth_score_today": 0.708,
-  "sector_breadth_ma_today": {
-    "technology": {
-      "breadth_ma_score": 0.8,
-      "pct": 80.0,
-      "label": "sector is genuinely strong"
-    },
-    "semiconductors": {
-      "breadth_ma_score": 1.0,
-      "pct": 100.0,
-      "label": "sector is genuinely strong"
-    },
-    "healthcare": {
-      "breadth_ma_score": 0.4,
-      "pct": 40.0,
-      "label": "mixed signals"
-    },
-    "financials": {
-      "breadth_ma_score": 0.7,
-      "pct": 70.0,
-      "label": "healthy participation"
-    },
-    "consumer_discretionary": {
-      "breadth_ma_score": 0.6,
-      "pct": 60.0,
-      "label": "healthy participation"
-    },
-    "consumer_staples": {
-      "breadth_ma_score": 0.2,
-      "pct": 20.0,
-      "label": "sector is structurally weak"
-    },
-    "industrials": {
-      "breadth_ma_score": 0.7,
-      "pct": 70.0,
-      "label": "healthy participation"
-    },
-    "defense": {
-      "breadth_ma_score": 0.2,
-      "pct": 20.0,
-      "label": "sector is structurally weak"
-    },
-    "energy": {
-      "breadth_ma_score": 0.2,
-      "pct": 20.0,
-      "label": "sector is structurally weak"
-    },
-    "materials": {
-      "breadth_ma_score": 0.7,
-      "pct": 70.0,
-      "label": "healthy participation"
-    },
-    "utilities": {
-      "breadth_ma_score": 0.4,
-      "pct": 40.0,
-      "label": "mixed signals"
-    },
-    "real_estate": {
-      "breadth_ma_score": 1.0,
-      "pct": 100.0,
-      "label": "sector is genuinely strong"
-    },
-    "communication_services": {
-      "breadth_ma_score": 0.5,
-      "pct": 50.0,
-      "label": "mixed signals"
-    }
-  },
-  "unusual_volume_flags": [
-    "RCL"
-  ],
+  "sector_scores_today": {},
+  "breadth_score_today": null,
+  "sector_breadth_ma_today": {},
+  "unusual_volume_flags": [],
   "event_scores_today": {},
-  "indices_today": {
-    "dow": {
-      "value": 49447.43,
-      "change_pct": 1.79,
-      "label": "Rising"
-    },
-    "sp500": {
-      "value": 7126.06,
-      "change_pct": 1.2,
-      "label": "Rising"
-    },
-    "nasdaq": {
-      "value": 24468.48,
-      "change_pct": 1.52,
-      "label": "Rising"
-    }
-  },
-  "today_scores": {
-    "WDC": 71.2,
-    "NVDA": 68.2,
-    "AAPL": 66.2,
-    "RCL": 54.4,
-    "CCL": 51.5,
-    "BBY": 51.1
-  }
+  "indices_today": {},
+  "today_scores": {}
 }
