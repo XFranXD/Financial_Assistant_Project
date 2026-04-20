@@ -1,12 +1,15 @@
 {
   "date": "2026-04-20",
   "reported_companies": [
-    "SBAC",
+    "NNN",
     "PLD",
-    "VICI",
-    "O",
     "REG",
-    "KIM"
+    "O",
+    "KIM",
+    "FRT",
+    "EQR",
+    "VICI",
+    "SBAC"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -27,8 +30,12 @@
       "status": "complete"
     },
     "13:45-15:15": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "EQR",
+        "NNN",
+        "FRT"
+      ],
+      "status": "complete"
     },
     "16:00-17:20": {
       "companies": [],
@@ -140,8 +147,8 @@
     }
   },
   "today_scores": {
-    "PLD": 56.1,
-    "O": 55.7,
-    "SBAC": 53.7
+    "EQR": 54.9,
+    "NNN": 54.3,
+    "FRT": 54.0
   }
 }
