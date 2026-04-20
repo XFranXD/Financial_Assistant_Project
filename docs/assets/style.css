@@ -2234,6 +2234,79 @@ a:hover {
   border-radius: 8px;
 }
 
+/* ── Performance Metrics Panel ───────────────────────────────────────── */
+.pt-perf-panel {
+  background: #0d0d18;
+  border: 1px solid #2a1a4a;
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem 1rem;
+  margin-bottom: 2rem;
+}
+
+.pt-perf-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  color: #9b6dff;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+
+.pt-perf-note {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.65rem;
+  color: #444466;
+  letter-spacing: 0.05em;
+  text-transform: lowercase;
+  margin-left: 0.5rem;
+}
+
+.pt-perf-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.75rem;
+}
+
+.pt-perf-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #13131f;
+  border: 1px solid #1e1e3a;
+  border-radius: 8px;
+  padding: 0.75rem 0.5rem;
+  text-align: center;
+}
+
+.pt-perf-value {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #e0e0f0;
+  line-height: 1.2;
+  margin-bottom: 0.4rem;
+}
+
+.pt-perf-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.6rem;
+  color: #555577;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 900px) {
+  .pt-perf-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 500px) {
+  .pt-perf-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 /* ── Paper Trading — responsive table columns ────────────────────────── */
 /*
   Open trades table column order:

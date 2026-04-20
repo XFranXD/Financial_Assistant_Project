@@ -2019,19 +2019,25 @@ def write_trades_json(paper_trading_summary: dict) -> None:
         real_new    = paper_trading_summary.get('real_new_count', 0)
         test_new    = paper_trading_summary.get('test_new_count', 0)
 
+        # Performance summary — passed through from paper_trading_summary
+        # (computed by live_engine.compute_performance_summary). Defaults to
+        # unavailable if the key is absent (e.g. older pipeline versions).
+        perf = paper_trading_summary.get('performance_summary', {'performance_available': False})
+
         output = {
-            'generated_at':      datetime.now(pytz.utc).isoformat(),
-            'pt_available':      pt_avail,
-            'open_count':        real_open + test_open,
-            'new_count':         real_new  + test_new,
-            'closed_count':      real_closed + test_closed,
-            'total_count':       len(trades_list),
-            'real_open_count':   real_open,
-            'real_new_count':    real_new,
-            'real_closed_count': real_closed,
-            'test_open_count':   test_open,
-            'test_new_count':    test_new,
-            'test_closed_count': test_closed,
+            'generated_at':        datetime.now(pytz.utc).isoformat(),
+            'pt_available':        pt_avail,
+            'open_count':          real_open + test_open,
+            'new_count':           real_new  + test_new,
+            'closed_count':        real_closed + test_closed,
+            'total_count':         len(trades_list),
+            'real_open_count':     real_open,
+            'real_new_count':      real_new,
+            'real_closed_count':   real_closed,
+            'test_open_count':     test_open,
+            'test_new_count':      test_new,
+            'test_closed_count':   test_closed,
+            'performance_summary': perf,
             'trades': [],
         }
 
@@ -2180,6 +2186,26 @@ def build_trades_page(paper_trading_summary: dict) -> None:
         '  }'
         '  hc += "</div>";'
         
+        '  var perf = data.performance_summary || {};'
+        '  if (perf.performance_available) {'
+        '    function fmtExpectancy(v) {'
+        '      if (v === null || v === undefined) return "\u2014";'
+        '      var c = v > 0 ? "pt-pnl-pos" : v < 0 ? "pt-pnl-neg" : "";'
+        '      var s = v > 0 ? "+" : "";'
+        '      return "<span class=\"" + c + "\">" + s + v.toFixed(2) + "%</span>";'
+        '    }'
+        '    hc += "<div class=\"pt-perf-panel stagger-1\">"'
+        '      + "<div class=\"pt-perf-title\">PERFORMANCE METRICS <span class=\"pt-perf-note\">(real closed trades only)</span></div>"'
+        '      + "<div class=\"pt-perf-grid\">"'
+        '      + "<div class=\"pt-perf-tile\"><span class=\"pt-perf-value\">" + perf.total_closed + "</span><span class=\"pt-perf-label\">Closed Trades</span></div>"'
+        '      + "<div class=\"pt-perf-tile\"><span class=\"pt-perf-value\">" + perf.win_rate.toFixed(1) + "%</span><span class=\"pt-perf-label\">Win Rate</span></div>"'
+        '      + "<div class=\"pt-perf-tile\"><span class=\"pt-perf-value pt-pnl-pos\">" + (perf.avg_win > 0 ? "+" : "") + perf.avg_win.toFixed(2) + "%</span><span class=\"pt-perf-label\">Avg Win</span></div>"'
+        '      + "<div class=\"pt-perf-tile\"><span class=\"pt-perf-value pt-pnl-neg\">" + perf.avg_loss.toFixed(2) + "%</span><span class=\"pt-perf-label\">Avg Loss</span></div>"'
+        '      + "<div class=\"pt-perf-tile\"><span class=\"pt-perf-value\">" + fmtExpectancy(perf.expectancy) + "</span><span class=\"pt-perf-label\">Expectancy</span></div>"'
+        '      + "<div class=\"pt-perf-tile\"><span class=\"pt-perf-value pt-pnl-neg\">" + perf.max_drawdown.toFixed(2) + "%</span><span class=\"pt-perf-label\">Max Drawdown</span></div>"'
+        '      + "</div></div>";'
+        '  }'
+
         '  var allTrades = Array.isArray(data.trades) ? data.trades : [];'
         '  var realOp = allTrades.filter(function(t) { return t.status === "OPEN" && !t.is_test; });'
         '  var realCl = allTrades.filter(function(t) { return (t.status === "CLOSED" || t.status === "DROPPED") && !t.is_test; });'

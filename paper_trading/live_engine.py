@@ -44,15 +44,14 @@ def _fetch_ohlc(ticker: str, date_str: str) -> dict | None:
         hist = yf.Ticker(ticker).history(period='5d', auto_adjust=False)
         if hist.empty:
             return None
-            
         last_match = None
         for timestamp, row in hist.iterrows():
             if timestamp.date().isoformat() == date_str:
                 last_match = {
                     'open': float(row['Open']),
                     'high': float(row['High']),
-                    'low': float(row['Low']),
-                    'close': float(row['Close'])
+                    'low':  float(row['Low']),
+                    'close':float(row['Close'])
                 }
         return last_match
     except Exception as e:
@@ -73,7 +72,6 @@ def _validate_trade_numerics(trade: dict) -> bool:
     stop_loss    = float(trade[PT_STOP_LOSS])
     price_target = float(trade[PT_PRICE_TARGET])
 
-    # All three must be strictly positive.
     if entry_price <= 0 or stop_loss <= 0 or price_target <= 0:
         log.warning(
             f"[{trade.get(PT_TICKER, 'unknown')}] Invalid trade levels: "
@@ -82,9 +80,6 @@ def _validate_trade_numerics(trade: dict) -> bool:
         )
         return False
 
-    # Stop must be below entry, target must be above entry.
-    # An inverted stop (stop >= entry) would trigger immediately on any candle.
-    # An inverted target (target <= entry) would also trigger immediately.
     if stop_loss >= entry_price:
         log.warning(
             f"[{trade.get(PT_TICKER, 'unknown')}] stop_loss ({stop_loss}) >= "
@@ -105,35 +100,34 @@ def _close_trade(trade: dict, exit_reason: str, exit_price: float, exit_run: str
     today_et_str = today_et.strftime('%Y-%m-%d')
     entry_price = float(trade[PT_ENTRY_PRICE])
 
-    trade[PT_STATUS] = PT_STATUS_CLOSED
-    trade[PT_EXIT_DATE] = today_et_str
-    trade[PT_EXIT_RUN] = exit_run
-    trade[PT_EXIT_PRICE] = exit_price
-    trade[PT_EXIT_REASON] = exit_reason
-    trade[PT_LIVE_PNL_PCT] = round((exit_price - entry_price) / entry_price * 100, 4)
-    trade[PT_DAYS_HELD] = _trading_days_between(trade[PT_ENTRY_DATE], today_et_str)
-    trade[PT_CLOSED_AT_TIMESTAMP] = datetime.now(pytz.utc).isoformat()
+    trade[PT_STATUS]             = PT_STATUS_CLOSED
+    trade[PT_EXIT_DATE]          = today_et_str
+    trade[PT_EXIT_RUN]           = exit_run
+    trade[PT_EXIT_PRICE]         = exit_price
+    trade[PT_EXIT_REASON]        = exit_reason
+    trade[PT_LIVE_PNL_PCT]       = round((exit_price - entry_price) / entry_price * 100, 4)
+    trade[PT_DAYS_HELD]          = _trading_days_between(trade[PT_ENTRY_DATE], today_et_str)
+    trade[PT_CLOSED_AT_TIMESTAMP]= datetime.now(pytz.utc).isoformat()
     return trade
 
 def _drop_trade(trade: dict, exit_run: str) -> dict:
     """
     Mark a trade as DROPPED without computing PnL.
-    Used when entry_price or other numeric fields are invalid — computing
-    (exit_price - entry_price) / entry_price would produce a meaningless 0%
-    result or raise an exception. exit_price and live_pnl_pct are left None
-    so downstream analysis can distinguish DROPPED from a genuine 0% outcome.
+    Used when entry_price or other numeric fields are invalid.
+    exit_price and live_pnl_pct are left None so downstream analysis
+    can distinguish DROPPED from a genuine 0% outcome.
     """
     today_et = datetime.now(pytz.timezone('America/New_York'))
     today_et_str = today_et.strftime('%Y-%m-%d')
 
-    trade[PT_STATUS] = PT_STATUS_DROPPED
-    trade[PT_EXIT_DATE] = today_et_str
-    trade[PT_EXIT_RUN] = exit_run
-    trade[PT_EXIT_PRICE] = None
-    trade[PT_EXIT_REASON] = PT_EXIT_DROPPED
-    trade[PT_LIVE_PNL_PCT] = None
-    trade[PT_DAYS_HELD] = _trading_days_between(trade[PT_ENTRY_DATE], today_et_str)
-    trade[PT_CLOSED_AT_TIMESTAMP] = datetime.now(pytz.utc).isoformat()
+    trade[PT_STATUS]             = PT_STATUS_DROPPED
+    trade[PT_EXIT_DATE]          = today_et_str
+    trade[PT_EXIT_RUN]           = exit_run
+    trade[PT_EXIT_PRICE]         = None
+    trade[PT_EXIT_REASON]        = PT_EXIT_DROPPED
+    trade[PT_LIVE_PNL_PCT]       = None
+    trade[PT_DAYS_HELD]          = _trading_days_between(trade[PT_ENTRY_DATE], today_et_str)
+    trade[PT_CLOSED_AT_TIMESTAMP]= datetime.now(pytz.utc).isoformat()
     return trade
 
 def process_open_trades(current_slot: str, open_trades: list[dict]) -> list[dict]:
@@ -143,17 +137,17 @@ def process_open_trades(current_slot: str, open_trades: list[dict]) -> list[dict
             log.warning(f"[{trade.get(PT_TICKER, 'unknown')}] Invalid numerics in trade — dropping")
             _drop_trade(trade, current_slot)
             continue
-            
+
         ticker = trade[PT_TICKER]
         ohlc = _fetch_ohlc(ticker, today_date)
-        
+
         if ohlc is None:
             trade['_failed_fetch_count'] = trade.get('_failed_fetch_count', 0) + 1
             if trade['_failed_fetch_count'] >= FAILED_FETCH_LIMIT:
                 log.warning(f"[PT] {trade.get(PT_TICKER, 'unknown')}: FAILED_FETCH_LIMIT reached — dropping")
                 _drop_trade(trade, current_slot)
             continue
-        
+
         days_held = _trading_days_between(trade[PT_ENTRY_DATE], today_date)
 
         # Check SL/TP first — even on the timeout day, an actual level hit takes
@@ -166,7 +160,7 @@ def process_open_trades(current_slot: str, open_trades: list[dict]) -> list[dict
         if days_held >= TIMEOUT_TRADING_DAYS:
             _close_trade(trade, PT_EXIT_TIMEOUT, ohlc['close'], current_slot)
             continue
-            
+
     return open_trades
 
 def detect_new_entries(candidates: list[dict], updated_trades: list[dict], all_trades_raw: list[dict], current_slot: str, market_regime: str, debug_mode: bool = False) -> list[dict]:
@@ -207,7 +201,6 @@ def detect_new_entries(candidates: list[dict], updated_trades: list[dict], all_t
                 continue
 
         # ── Shared checks (both normal and debug mode) ────────────────────
-        # Block re-entry for tickers that exited in this same run.
         if ticker in tickers_closed_this_run:
             log.info(f"[PT] {ticker}: skip — closed this run, cooldown applies")
             continue
@@ -232,17 +225,117 @@ def detect_new_entries(candidates: list[dict], updated_trades: list[dict], all_t
 
         new_trade = build_trade(candidate, current_slot, market_regime, is_test=debug_mode)
         new_entries.append(new_trade)
-            
+
     return new_entries
+
+
+def compute_performance_summary(all_trades_raw: list[dict]) -> dict:
+    """
+    Compute aggregated performance metrics from the full Google Sheets trade ledger.
+
+    Only real closed trades are included:
+      - Test trades (is_test=True) are excluded
+      - DROPPED trades are excluded (no P&L was computed for them)
+      - OPEN trades are excluded (no realised P&L yet)
+
+    Metrics:
+        total_closed  int   — number of real closed trades included
+        win_rate      float — % of trades where live_pnl_pct > 0
+        avg_win       float — mean pnl of winning trades (positive)
+        avg_loss      float — mean pnl of losing trades (negative or zero)
+        expectancy    float — (win_rate * avg_win) + ((1 - win_rate) * avg_loss)
+        max_drawdown  float — largest peak-to-trough loss on equity curve (negative)
+
+    Trades are processed in Sheets row order (oldest first), which is the
+    correct chronological sequence for the equity curve calculation.
+
+    Args:
+        all_trades_raw: raw dicts from read_all_trades() — all values are strings.
+
+    Returns:
+        dict with all metrics and performance_available=True, or
+        {'performance_available': False} when fewer than 1 eligible trade exists
+        or any exception occurs.
+    """
+    try:
+        closed_pnls: list[float] = []
+
+        for t in all_trades_raw:
+            # Exclude test trades
+            is_test_val = t.get(PT_IS_TEST, '')
+            if str(is_test_val).strip() in ('True', 'true', '1'):
+                continue
+            # Only CLOSED — not OPEN, not DROPPED
+            if t.get(PT_STATUS) != PT_STATUS_CLOSED:
+                continue
+            # Guard: skip if exit reason is DROPPED (should already be filtered above)
+            if t.get(PT_EXIT_REASON) == PT_EXIT_DROPPED:
+                continue
+            # Require parseable live_pnl_pct
+            pnl_raw = t.get(PT_LIVE_PNL_PCT, '')
+            if pnl_raw == '' or pnl_raw is None:
+                continue
+            try:
+                closed_pnls.append(float(pnl_raw))
+            except (ValueError, TypeError):
+                continue
+
+        if len(closed_pnls) < 1:
+            return {'performance_available': False}
+
+        total_closed = len(closed_pnls)
+        winners = [p for p in closed_pnls if p > 0]
+        losers  = [p for p in closed_pnls if p <= 0]
+
+        win_rate = round(len(winners) / total_closed * 100, 2)
+        avg_win  = round(sum(winners) / len(winners), 4) if winners else 0.0
+        avg_loss = round(sum(losers)  / len(losers),  4) if losers  else 0.0
+
+        wr = win_rate / 100.0
+        expectancy = round((wr * avg_win) + ((1.0 - wr) * avg_loss), 4)
+
+        # Max drawdown: walk equity curve in chronological order
+        cumulative = 0.0
+        peak       = 0.0
+        max_dd     = 0.0
+        for pnl in closed_pnls:
+            cumulative += pnl
+            if cumulative > peak:
+                peak = cumulative
+            drawdown = peak - cumulative
+            if drawdown > max_dd:
+                max_dd = drawdown
+        max_drawdown = round(-max_dd, 4)  # negative — represents a loss
+
+        log.info(
+            f'[PT][PERF] {total_closed} real closed trades | '
+            f'Win rate: {win_rate}% | Avg win: {avg_win} | Avg loss: {avg_loss} | '
+            f'Expectancy: {expectancy} | Max drawdown: {max_drawdown}'
+        )
+
+        return {
+            'performance_available': True,
+            'total_closed':          total_closed,
+            'win_rate':              win_rate,
+            'avg_win':               avg_win,
+            'avg_loss':              avg_loss,
+            'expectancy':            expectancy,
+            'max_drawdown':          max_drawdown,
+        }
+
+    except Exception as e:
+        log.warning(f'[PT][PERF] compute_performance_summary failed (non-fatal): {e}')
+        return {'performance_available': False}
+
 
 def run_paper_trading(candidates: list[dict], current_slot: str, market_regime: str, debug_mode: bool = False) -> dict:
     try:
         from paper_trading.sheets_ledger import read_all_trades
         all_trades_raw = read_all_trades()
         open_trades = load_open_trades(current_slot)
-        
+
         updated_trades = process_open_trades(current_slot, open_trades)
-        
+
         new_trades = detect_new_entries(
             candidates, updated_trades, all_trades_raw,
             current_slot, market_regime,
@@ -250,7 +343,13 @@ def run_paper_trading(candidates: list[dict], current_slot: str, market_regime: 
         )
 
         commit_updates(updated_trades, new_trades, current_slot)
-        
+
+        # ── Performance metrics ───────────────────────────────────────────────
+        # Reuses all_trades_raw already fetched above — no second Sheets call.
+        # Excludes test trades, DROPPED trades, and OPEN trades automatically.
+        # Non-fatal — defaults to performance_available=False on any exception.
+        performance_summary = compute_performance_summary(all_trades_raw)
+
         real_open   = sum(1 for t in updated_trades if t.get(PT_STATUS) == PT_STATUS_OPEN    and not t.get(PT_IS_TEST))
         test_open   = sum(1 for t in updated_trades if t.get(PT_STATUS) == PT_STATUS_OPEN    and t.get(PT_IS_TEST))
         real_closed = sum(1 for t in updated_trades if t.get(PT_STATUS) in (PT_STATUS_CLOSED, PT_STATUS_DROPPED) and not t.get(PT_IS_TEST))
@@ -259,24 +358,26 @@ def run_paper_trading(candidates: list[dict], current_slot: str, market_regime: 
         test_new    = sum(1 for t in new_trades if t.get(PT_IS_TEST))
 
         return {
-            'pt_available':   True,
-            'open_count':     real_open + test_open,
-            'new_count':      real_new  + test_new,
-            'closed_count':   real_closed + test_closed,
-            'real_open_count':   real_open,
-            'real_new_count':    real_new,
-            'real_closed_count': real_closed,
-            'test_open_count':   test_open,
-            'test_new_count':    test_new,
-            'test_closed_count': test_closed,
-            'trades': updated_trades + new_trades
+            'pt_available':        True,
+            'open_count':          real_open + test_open,
+            'new_count':           real_new  + test_new,
+            'closed_count':        real_closed + test_closed,
+            'real_open_count':     real_open,
+            'real_new_count':      real_new,
+            'real_closed_count':   real_closed,
+            'test_open_count':     test_open,
+            'test_new_count':      test_new,
+            'test_closed_count':   test_closed,
+            'trades':              updated_trades + new_trades,
+            'performance_summary': performance_summary,
         }
     except Exception as e:
         log.error(f"Failed to run paper trading: {e}")
         return {
-            'pt_available': False,
-            'open_count': 0,
-            'new_count': 0,
-            'closed_count': 0,
-            'trades': []
+            'pt_available':        False,
+            'open_count':          0,
+            'new_count':           0,
+            'closed_count':        0,
+            'trades':              [],
+            'performance_summary': {'performance_available': False},
         }
