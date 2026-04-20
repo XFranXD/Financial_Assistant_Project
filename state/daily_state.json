@@ -1,15 +1,21 @@
 {
   "date": "2026-04-20",
   "reported_companies": [
-    "NNN",
-    "PLD",
-    "REG",
     "O",
+    "REG",
     "KIM",
-    "FRT",
     "EQR",
+    "NVDA",
+    "SBAC",
+    "AAPL",
+    "UDR",
+    "NNN",
+    "FRT",
     "VICI",
-    "SBAC"
+    "PLD",
+    "CPT",
+    "PSA",
+    "WDC"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -38,8 +44,15 @@
       "status": "complete"
     },
     "16:00-17:20": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "WDC",
+        "NVDA",
+        "AAPL",
+        "PSA",
+        "CPT",
+        "UDR"
+      ],
+      "status": "complete"
     }
   },
   "failed_tickers": [],
@@ -147,8 +160,11 @@
     }
   },
   "today_scores": {
-    "EQR": 54.9,
-    "NNN": 54.3,
-    "FRT": 54.0
+    "WDC": 66.8,
+    "NVDA": 64.4,
+    "AAPL": 62.6,
+    "PSA": 54.5,
+    "CPT": 53.8,
+    "UDR": 53.2
   }
 }
