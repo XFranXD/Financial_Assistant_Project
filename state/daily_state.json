@@ -1,15 +1,18 @@
 {
   "date": "2026-04-21",
   "reported_companies": [
-    "AVGO",
-    "FTNT",
-    "MSFT",
-    "AMAT",
     "NVDA",
     "TXN",
+    "AVGO",
     "WDC",
+    "AMD",
+    "AMAT",
+    "CRM",
+    "MSFT",
     "AAPL",
-    "AMD"
+    "PLTR",
+    "KLAC",
+    "FTNT"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -38,8 +41,12 @@
       "status": "complete"
     },
     "16:00-17:20": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "PLTR",
+        "KLAC",
+        "CRM"
+      ],
+      "status": "complete"
     }
   },
   "failed_tickers": [],
@@ -147,8 +154,8 @@
     }
   },
   "today_scores": {
-    "MSFT": 57.6,
-    "FTNT": 56.5,
-    "TXN": 55.7
+    "PLTR": 55.7,
+    "KLAC": 53.9,
+    "CRM": 52.3
   }
 }
