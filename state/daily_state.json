@@ -1,12 +1,15 @@
 {
   "date": "2026-04-21",
   "reported_companies": [
-    "AMAT",
-    "AAPL",
-    "NVDA",
-    "AMD",
     "AVGO",
-    "WDC"
+    "FTNT",
+    "MSFT",
+    "AMAT",
+    "NVDA",
+    "TXN",
+    "WDC",
+    "AAPL",
+    "AMD"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -27,8 +30,12 @@
       "status": "complete"
     },
     "13:45-15:15": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "MSFT",
+        "FTNT",
+        "TXN"
+      ],
+      "status": "complete"
     },
     "16:00-17:20": {
       "companies": [],
@@ -140,8 +147,8 @@
     }
   },
   "today_scores": {
-    "AAPL": 57.6,
-    "AMD": 56.4,
-    "AMAT": 56.0
+    "MSFT": 57.6,
+    "FTNT": 56.5,
+    "TXN": 55.7
   }
 }
