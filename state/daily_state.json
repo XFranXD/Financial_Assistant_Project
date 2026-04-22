@@ -1,76 +1,47 @@
 {
-  "date": "2026-04-21",
-  "reported_companies": [
-    "NVDA",
-    "TXN",
-    "AVGO",
-    "WDC",
-    "AMD",
-    "AMAT",
-    "CRM",
-    "MSFT",
-    "AAPL",
-    "PLTR",
-    "KLAC",
-    "FTNT"
-  ],
+  "date": "2026-04-22",
+  "reported_companies": [],
   "alpha_vantage_calls_today": 20,
   "runs": {
     "9:45-11:15": {
-      "companies": [
-        "WDC",
-        "NVDA",
-        "AVGO"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     },
     "11:45-13:15": {
-      "companies": [
-        "AAPL",
-        "AMD",
-        "AMAT"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     },
     "13:45-15:15": {
-      "companies": [
-        "MSFT",
-        "FTNT",
-        "TXN"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     },
     "16:00-17:20": {
-      "companies": [
-        "PLTR",
-        "KLAC",
-        "CRM"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     }
   },
   "failed_tickers": [],
   "api_failures": {},
   "sector_scores_today": {
-    "technology": 6.685,
-    "healthcare": -1.779,
-    "financials": 1.881,
-    "consumer_discretionary": 4.362,
-    "consumer_staples": 0.255,
-    "industrials": 0.259,
-    "materials": 0.412,
-    "energy": -2.516,
-    "utilities": -3.423,
-    "real_estate": 1.768,
-    "communication_services": 1.516,
-    "semiconductors": 9.41,
-    "defense": -3.974
+    "technology": 5.841,
+    "healthcare": -1.218,
+    "financials": 0.503,
+    "consumer_discretionary": 2.643,
+    "consumer_staples": 0.754,
+    "industrials": 0.081,
+    "materials": 0.8,
+    "energy": -0.277,
+    "utilities": -2.365,
+    "real_estate": 1.081,
+    "communication_services": 0.809,
+    "semiconductors": 8.572,
+    "defense": -6.404
   },
-  "breadth_score_today": 0.262,
+  "breadth_score_today": 0.692,
   "sector_breadth_ma_today": {
     "technology": {
-      "breadth_ma_score": 0.8,
-      "pct": 80.0,
+      "breadth_ma_score": 1.0,
+      "pct": 100.0,
       "label": "sector is genuinely strong"
     },
     "semiconductors": {
@@ -79,19 +50,19 @@
       "label": "sector is genuinely strong"
     },
     "healthcare": {
-      "breadth_ma_score": 0.3,
-      "pct": 30.0,
-      "label": "mixed signals"
+      "breadth_ma_score": 0.2,
+      "pct": 20.0,
+      "label": "sector is structurally weak"
     },
     "financials": {
-      "breadth_ma_score": 0.8,
-      "pct": 80.0,
-      "label": "sector is genuinely strong"
+      "breadth_ma_score": 0.7,
+      "pct": 70.0,
+      "label": "healthy participation"
     },
     "consumer_discretionary": {
-      "breadth_ma_score": 0.5,
-      "pct": 50.0,
-      "label": "mixed signals"
+      "breadth_ma_score": 0.6,
+      "pct": 60.0,
+      "label": "healthy participation"
     },
     "consumer_staples": {
       "breadth_ma_score": 0.2,
@@ -114,8 +85,8 @@
       "label": "healthy participation"
     },
     "materials": {
-      "breadth_ma_score": 0.6,
-      "pct": 60.0,
+      "breadth_ma_score": 0.7,
+      "pct": 70.0,
       "label": "healthy participation"
     },
     "utilities": {
@@ -124,9 +95,9 @@
       "label": "sector is structurally weak"
     },
     "real_estate": {
-      "breadth_ma_score": 0.8,
-      "pct": 80.0,
-      "label": "sector is genuinely strong"
+      "breadth_ma_score": 0.7,
+      "pct": 70.0,
+      "label": "healthy participation"
     },
     "communication_services": {
       "breadth_ma_score": 0.5,
@@ -138,24 +109,20 @@
   "event_scores_today": {},
   "indices_today": {
     "dow": {
-      "value": 49149.38,
-      "change_pct": -0.59,
-      "label": "Falling"
+      "value": 49530.96,
+      "change_pct": 0.78,
+      "label": "Rising"
     },
     "sp500": {
-      "value": 7064.01,
-      "change_pct": -0.63,
-      "label": "Falling"
+      "value": 7120.61,
+      "change_pct": 0.8,
+      "label": "Rising"
     },
     "nasdaq": {
-      "value": 24259.96,
-      "change_pct": -0.59,
-      "label": "Falling"
+      "value": 24528.22,
+      "change_pct": 1.11,
+      "label": "Rising"
     }
   },
-  "today_scores": {
-    "PLTR": 55.7,
-    "KLAC": 53.9,
-    "CRM": 52.3
-  }
+  "today_scores": {}
 }
