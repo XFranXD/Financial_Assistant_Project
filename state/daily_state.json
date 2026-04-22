@@ -1,18 +1,21 @@
 {
   "date": "2026-04-22",
   "reported_companies": [
-    "ABNB",
-    "AAPL",
-    "MSFT",
-    "TXN",
-    "AMAT",
     "FTNT",
-    "WDC",
-    "NVDA",
+    "ABNB",
+    "MSFT",
     "AVGO",
     "ROST",
+    "AMD",
+    "PANW",
+    "TXN",
+    "AMAT",
+    "WDC",
+    "KLAC",
+    "AAPL",
+    "NVDA",
     "EBAY",
-    "AMD"
+    "PLTR"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -44,8 +47,12 @@
       "status": "complete"
     },
     "16:00-17:20": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "PLTR",
+        "KLAC",
+        "PANW"
+      ],
+      "status": "complete"
     }
   },
   "failed_tickers": [],
@@ -153,8 +160,8 @@
     }
   },
   "today_scores": {
-    "MSFT": 60.6,
-    "TXN": 60.3,
-    "FTNT": 59.8
+    "PLTR": 59.8,
+    "KLAC": 58.1,
+    "PANW": 57.0
   }
 }
