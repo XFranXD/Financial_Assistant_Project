@@ -2,14 +2,17 @@
   "date": "2026-04-22",
   "reported_companies": [
     "ABNB",
-    "EBAY",
-    "ROST",
-    "AVGO",
     "AAPL",
+    "MSFT",
+    "TXN",
     "AMAT",
-    "AMD",
+    "FTNT",
+    "WDC",
     "NVDA",
-    "WDC"
+    "AVGO",
+    "ROST",
+    "EBAY",
+    "AMD"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -33,8 +36,12 @@
       "status": "complete"
     },
     "13:45-15:15": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "MSFT",
+        "TXN",
+        "FTNT"
+      ],
+      "status": "complete"
     },
     "16:00-17:20": {
       "companies": [],
@@ -146,8 +153,8 @@
     }
   },
   "today_scores": {
-    "AAPL": 64.4,
-    "AMD": 63.5,
-    "AMAT": 63.0
+    "MSFT": 60.6,
+    "TXN": 60.3,
+    "FTNT": 59.8
   }
 }
