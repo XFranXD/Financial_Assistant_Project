@@ -1,7 +1,7 @@
 {
   "date": "2026-04-23",
   "reported_companies": [],
-  "alpha_vantage_calls_today": 0,
+  "alpha_vantage_calls_today": 20,
   "runs": {
     "9:45-11:15": {
       "companies": [],
@@ -23,21 +23,21 @@
   "failed_tickers": [],
   "api_failures": {},
   "sector_scores_today": {
-    "technology": 4.159,
-    "healthcare": -1.289,
-    "financials": -0.639,
-    "consumer_discretionary": 0.989,
-    "consumer_staples": 1.544,
-    "industrials": 1.271,
-    "materials": -0.481,
-    "energy": 0.031,
-    "utilities": -1.612,
-    "real_estate": 0.351,
-    "communication_services": -0.382,
-    "semiconductors": 10.362,
-    "defense": -5.747
+    "technology": 4.473,
+    "healthcare": -0.991,
+    "financials": -0.228,
+    "consumer_discretionary": 1.202,
+    "consumer_staples": 1.579,
+    "industrials": 1.671,
+    "materials": -0.031,
+    "energy": 0.118,
+    "utilities": -1.261,
+    "real_estate": 0.91,
+    "communication_services": -0.223,
+    "semiconductors": 10.792,
+    "defense": -4.863
   },
-  "breadth_score_today": 0.492,
+  "breadth_score_today": 0.585,
   "sector_breadth_ma_today": {
     "technology": {
       "breadth_ma_score": 0.8,
@@ -60,13 +60,13 @@
       "label": "sector is genuinely strong"
     },
     "consumer_discretionary": {
-      "breadth_ma_score": 0.4,
-      "pct": 40.0,
+      "breadth_ma_score": 0.5,
+      "pct": 50.0,
       "label": "mixed signals"
     },
     "consumer_staples": {
-      "breadth_ma_score": 0.4,
-      "pct": 40.0,
+      "breadth_ma_score": 0.3,
+      "pct": 30.0,
       "label": "mixed signals"
     },
     "industrials": {
@@ -90,9 +90,9 @@
       "label": "healthy participation"
     },
     "utilities": {
-      "breadth_ma_score": 0.2,
-      "pct": 20.0,
-      "label": "sector is structurally weak"
+      "breadth_ma_score": 0.3,
+      "pct": 30.0,
+      "label": "mixed signals"
     },
     "real_estate": {
       "breadth_ma_score": 0.9,
@@ -105,22 +105,25 @@
       "label": "mixed signals"
     }
   },
-  "unusual_volume_flags": [],
+  "unusual_volume_flags": [
+    "TXN",
+    "NOW"
+  ],
   "event_scores_today": {},
   "indices_today": {
     "dow": {
-      "value": 49127.63,
-      "change_pct": -0.73,
+      "value": 49310.32,
+      "change_pct": -0.36,
       "label": "Falling"
     },
     "sp500": {
-      "value": 7085.82,
-      "change_pct": -0.73,
+      "value": 7108.4,
+      "change_pct": -0.41,
       "label": "Falling"
     },
     "nasdaq": {
-      "value": 24372.76,
-      "change_pct": -1.16,
+      "value": 24438.5,
+      "change_pct": -0.89,
       "label": "Falling"
     }
   },

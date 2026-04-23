@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>■ Stock Research — 16:00-17:20 Update — 3 opportunities found</title>
+  <style>
+    body {
+      background: #0a0610;
+      color: #f0eaff;
+      font-family: 'Share Tech Mono', 'Courier New', monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0
+    }
+
+    .wrap {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 16px
+    }
+
+    .header {
+      background: #130f22;
+      border: 1px solid #2c224e;
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin-bottom: 12px
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 16px;
+      color: #00e5ff;
+      font-weight: bold
+    }
+
+    .header .sub {
+      color: #8878b8;
+      font-size: 12px;
+      margin-top: 4px
+    }
+
+    .pulse {
+      background: #1a1430;
+      border: 1px solid #2c224e;
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin-bottom: 12px
+    }
+
+    .pulse h2 {
+      margin: 0 0 8px;
+      font-size: 12px;
+      color: #8878b8;
+      text-transform: uppercase;
+      letter-spacing: .05em
+    }
+
+    .pulse-line {
+      font-family: 'Share Tech Mono', 'Courier New', monospace;
+      white-space: pre;
+      padding: 2px 0;
+      color: #f0eaff
+    }
+
+    .story {
+      background: #130f22;
+      border: 1px solid #2c224e;
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      color: #8878b8
+    }
+
+    .story p {
+      margin: 4px 0
+    }
+
+    .section-label {
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      padding: 6px 0 4px;
+      border-bottom: 1px solid #2c224e;
+      margin-bottom: 8px
+    }
+
+    .section-low .section-label {
+      color: #39e8a0
+    }
+
+    .section-mod .section-label {
+      color: #ff9a3c
+    }
+
+    .card {
+      border: 1px solid #2c224e;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      background: #130f22;
+      overflow: hidden
+    }
+
+    .card-name {
+      font-weight: bold;
+      color: #00e5ff;
+      padding: 10px 12px 8px;
+      border-bottom: 1px solid #2c224e;
+      font-size: 14px
+    }
+
+    .card-name .tk {
+      color: #8878b8;
+      font-size: 12px
+    }
+
+    .analysis-section {
+      padding: 8px 12px;
+      border-bottom: 1px solid #2c224e;
+      font-size: 13px
+    }
+
+    .analysis-section:last-child {
+      border-bottom: none
+    }
+
+    .section-label-inner {
+      font-size: 10px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      margin-bottom: 6px;
+      padding-bottom: 3px;
+      border-bottom: 1px solid #2c224e
+    }
+
+    .sec-market .section-label-inner {
+      color: #00e5ff
+    }
+
+    .sec-eq .section-label-inner {
+      color: #aa88ff
+    }
+
+    .sec-rotation .section-label-inner {
+      color: #ff9a3c
+    }
+
+    .sec-ps .section-label-inner {
+      color: #39e8a0
+    }
+
+    .sec-combined .section-label-inner {
+      color: #c850c0
+    }
+
+    .line {
+      margin: 2px 0;
+      font-size: 13px
+    }
+
+    .lbl {
+      color: #8878b8
+    }
+
+    .mv-now {
+      color: #39e8a0;
+      font-weight: bold
+    }
+
+    .mv-watch {
+      color: #ff9a3c;
+      font-weight: bold
+    }
+
+    .mv-skip {
+      color: #8878b8;
+      font-weight: bold
+    }
+
+    .eq-v-supportive {
+      color: #39e8a0;
+      font-weight: bold
+    }
+
+    .eq-v-neutral {
+      color: #c084ff;
+      font-weight: bold
+    }
+
+    .eq-v-weak {
+      color: #ff9a3c;
+      font-weight: bold
+    }
+
+    .eq-v-risky {
+      color: #ff4d6d;
+      font-weight: bold
+    }
+
+    .eq-v-unavailable {
+      color: #8878b8;
+      font-weight: bold
+    }
+
+    /* PS entry quality colours */
+    .ps-good {
+      color: #39e8a0;
+      font-weight: bold
+    }
+
+    .ps-extended {
+      color: #ff4d6d;
+      font-weight: bold
+    }
+
+    .ps-early {
+      color: #ff9a3c;
+      font-weight: bold
+    }
+
+    .ps-weak {
+      color: #ff4d6d;
+      font-weight: bold
+    }
+
+    .ps-unavail {
+      color: #8878b8;
+      font-weight: bold
+    }
+
+    .combined-text {
+      color: #f0eaff;
+      font-size: 12px;
+      line-height: 1.6
+    }
+
+    .eq-strength {
+      color: #39e8a0;
+      font-size: 12px;
+      margin: 1px 0
+    }
+
+    .eq-risk {
+      color: #ff4d6d;
+      font-size: 12px;
+      margin: 1px 0
+    }
+
+    .warn {
+      background: #1a1104;
+      border-left: 3px solid #ff9a3c;
+      padding: 5px 8px;
+      margin-top: 5px;
+      font-size: 12px;
+      color: #ff9a3c;
+      border-radius: 3px
+    }
+
+    .note {
+      background: #1a1430;
+      border-left: 3px solid #00e5ff;
+      padding: 5px 8px;
+      margin-top: 5px;
+      font-size: 12px;
+      color: #8878b8;
+      border-radius: 3px
+    }
+
+    .conf-strong {
+      color: #39e8a0;
+      font-weight: bold
+    }
+
+    .conf-mod {
+      color: #ff9a3c;
+      font-weight: bold
+    }
+
+    .conf-weak {
+      color: #8878b8;
+      font-weight: bold
+    }
+
+    .overflow {
+      background: #130f22;
+      border: 1px solid #2c224e;
+      border-radius: 6px;
+      padding: 10px 16px;
+      margin-top: 8px;
+      font-size: 13px;
+      color: #8878b8
+    }
+
+    .disclaimer {
+      margin-top: 16px;
+      font-size: 11px;
+      color: #4a3d72;
+      border-top: 1px solid #2c224e;
+      padding-top: 8px
+    }
+  </style>
+</head>
+
+<body>
+
+
+  <div class="wrap">
+
+    <!-- Header -->
+    <div class="header">
+      <h1>■ Stock Research — 16:00-17:20 Update</h1>
+      <div class="sub">2026-04-23 · 17:07 ET · Market: Normal market · Breadth: neutral breadth — mixed market movement</div>
+    </div>
+
+    <!-- Market Pulse -->
+    <div class="pulse">
+      <h2>Market Pulse</h2>
+      <div class="pulse-line">Dow Jones :      49,310  ▼ 0.4%  Falling</div>
+      <div class="pulse-line">S&amp;P 500   :       7,108  ▼ 0.4%  Falling</div>
+      <div class="pulse-line">Nasdaq    :      24,438  ▼ 0.9%  Falling</div>
+    </div>
+
+    <!-- Today's Story -->
+    <div class="story">
+      <p><em>Today's story</em></p>
+      <p>Technology stocks are moving higher today following news about positive sector news signals.</p>
+    </div>
+
+    <!-- Low Risk -->
+    <div class="section-low">
+      <div class="section-label">■ LOW RISK OPPORTUNITIES</div>
+  <div class="card">
+    <div class="card-name">
+      TXN <span class="tk">(TXN)</span>
+      — Technology (Semiconductors)    </div>
+
+    <!-- ── MARKET SIGNAL ANALYSIS ───────────────────────────── -->
+    <div class="analysis-section sec-market">
+      <div class="section-label-inner">── MARKET SIGNAL ANALYSIS ────────</div>
+      <div class="line"><span class="lbl">Confidence: </span>
+        <span
+          class="conf-mod">
+          [███████░░░] 70/100 (STRONG)
+        </span>
+      </div>
+      <div class="line"><span class="lbl">Trend: </span>very stable upward trend — 1M: ▲45.0% · 3M: ▲45.7% · 6M: ▲58.5%</div>
+      <div class="line"><span class="lbl">Volume: </span>Unusually high trading activity.</div>
+      <div class="line"><span class="lbl">Risk: </span>LOW RISK</div>
+      <div class="note" style="margin-top:3px">↓ ENTRY QUALITY OVERRIDDEN: R/R below 2.0 (computed R/R: 0.03x). Entry downgraded to WEAK.</div>
+      <div class="note" style="margin-top:3px">Notable: Very unusual trading volume today — this means something significant may be drawing attention to this stock.</div>
+      <div class="line" style="margin-top:5px"><span class="lbl">Market verdict: </span>
+        <span
+          class="mv-now">
+          RESEARCH NOW
+        </span>
+      </div>
+    </div>
+
+    <!-- ── EARNINGS QUALITY ANALYSIS ────────────────────────── -->
+    <div class="analysis-section sec-eq">
+      <div class="section-label-inner">── EARNINGS QUALITY ANALYSIS ─────</div>
+      <div class="line"><span class="lbl">EQ Score: </span>82/100 — ACCEPTABLE</div>
+      <div class="line"><span class="lbl">Pass tier: </span>WATCH (NEUTRAL) — 67th percentile</div>
+      <div style="margin-top:3px">
+        <div class="eq-strength">[+] Low accruals — earnings are cash-backed</div>
+        <div class="eq-strength">[+] Strong operating cash flow conversion</div>
+      </div>
+      <div style="margin-top:2px">
+        <div class="eq-risk">[!] Based on 9 quarters (limited history — interpret with caution): Multiple business dimensions deteriorating simultaneously. Revenue: stable_improving, margins: deteriorating, debt: deteriorating, FCF: strong_growth.</div>
+        <div class="eq-risk">[!] Payout ratio of 101% is above sustainable levels. Dividend is consuming most of reported earnings.</div>
+      </div>
+      <div style="margin-top:2px">
+        <div class="eq-risk" style="color:#ff9a3c">[w] MULTI-SIGNAL DETERIORATION</div>
+        <div class="eq-risk" style="color:#ff9a3c">[w] HIGH PAYOUT RATIO</div>
+      </div>
+    </div>
+
+    <!-- ── SECTOR ROTATION ANALYSIS ──────────────────────────── -->
+    <div class="analysis-section sec-rotation">
+      <div class="section-label-inner">── SECTOR ROTATION ANALYSIS ───────</div>
+      <div class="line">
+        <span class="lbl">Sector ETF: </span>
+        <span>XLK</span>
+      </div>
+      <div class="line">
+        <span class="lbl">Rot. score: </span>
+        <span>83.2/100</span>
+      </div>
+      <div class="line">
+        <span class="lbl">Signal: </span>
+        <span class=" eq-v-supportive">
+          SUPPORT
+        </span>
+      </div>
+    </div>
+
+    <!-- ── PRICE STRUCTURE ANALYSIS ──────────────────────────── -->
+    <div class="analysis-section sec-ps">
+      <div class="section-label-inner">── PRICE STRUCTURE ANALYSIS ───────</div>
+      <div class="line">
+        <span class="lbl">Entry quality: </span>
+        <span class=" ps-weak">
+          WEAK
+        </span>
+      </div>
+      <div class="line"><span class="lbl">Trend: </span>UP</div>
+      <div class="line"><span class="lbl">Key level: </span>Near Resistance</div>
+      <div class="line"><span class="lbl">Price action: </span>51/100</div>
+      <div class="line" style="margin-top:3px;color:#8878b8;font-size:12px;font-style:italic">Late in move with price near resistance and 86% extension — poor risk/reward.</div>
+    </div>
+
+    <!-- ── COMBINED READING ──────────────────────────────────── -->
+    <div class="analysis-section sec-combined">
+      <div class="section-label-inner">── COMBINED READING ──────────────</div>
+      <div class="combined-text">Market:          RESEARCH NOW (70/100)</div>
+      <div class="combined-text">Earnings:        NEUTRAL</div>
+      <div class="combined-text">Rotation:        SUPPORT</div>
+      <div class="combined-text">Price Structure: WEAK</div>
+      <div class="combined-text">
+        Alignment:
+        <span class=" eq-v-weak">
+          PARTIAL
+        </span>
+      </div>
+      <div class="combined-text" style="margin-top:4px">Conclusion: Strong signal with sector support but entry quality blocks action — not actionable.</div>
+    </div>
+
+  </div>
+  <div class="card">
+    <div class="card-name">
+      WDC <span class="tk">(WDC)</span>
+      — Technology (Computer Hardware)    </div>
+
+    <!-- ── MARKET SIGNAL ANALYSIS ───────────────────────────── -->
+    <div class="analysis-section sec-market">
+      <div class="section-label-inner">── MARKET SIGNAL ANALYSIS ────────</div>
+      <div class="line"><span class="lbl">Confidence: </span>
+        <span
+          class="conf-mod">
+          [██████░░░░] 66/100 (MODERATE)
+        </span>
+      </div>
+      <div class="line"><span class="lbl">Trend: </span>very stable upward trend — 1M: ▲33.9% · 3M: ▲65.8% · 6M: ▲232.5%</div>
+      <div class="line"><span class="lbl">Volume: </span>Normal trading activity.</div>
+      <div class="line"><span class="lbl">Risk: </span>LOW RISK</div>
+      <div class="note" style="margin-top:3px">↓ ENTRY QUALITY OVERRIDDEN: R/R below 2.0 (computed R/R: 0.10x). Entry downgraded to WEAK.</div>
+      <div class="line" style="margin-top:5px"><span class="lbl">Market verdict: </span>
+        <span
+          class="mv-watch">
+          WATCH
+        </span>
+      </div>
+    </div>
+
+    <!-- ── EARNINGS QUALITY ANALYSIS ────────────────────────── -->
+    <div class="analysis-section sec-eq">
+      <div class="section-label-inner">── EARNINGS QUALITY ANALYSIS ─────</div>
+      <div class="line"><span class="lbl">EQ Score: </span>69/100 — WEAK</div>
+      <div class="line"><span class="lbl">Pass tier: </span>FAIL (WEAK)</div>
+      <div style="margin-top:3px">
+        <div class="eq-strength">[+] Dividend policy is financially sustainable</div>
+        <div class="eq-strength">[+] Revenue growth backed by real cash collections</div>
+      </div>
+      <div style="margin-top:2px">
+        <div class="eq-risk">[!] Earnings are highly volatile across the measurement window. 0 unusual quarter(s) detected — possible one-time items or structural instability.</div>
+        <div class="eq-risk">[!] Profit-to-cash conversion is below acceptable levels</div>
+      </div>
+      <div style="margin-top:2px">
+        <div class="eq-risk" style="color:#ff9a3c">[w] VOLATILE EARNINGS</div>
+        <div class="eq-risk" style="color:#ff9a3c">[w] Revenue growth diverging significantly from cash conversion</div>
+      </div>
+    </div>
+
+    <!-- ── SECTOR ROTATION ANALYSIS ──────────────────────────── -->
+    <div class="analysis-section sec-rotation">
+      <div class="section-label-inner">── SECTOR ROTATION ANALYSIS ───────</div>
+      <div class="line">
+        <span class="lbl">Sector ETF: </span>
+        <span>XLK</span>
+      </div>
+      <div class="line">
+        <span class="lbl">Rot. score: </span>
+        <span>83.2/100</span>
+      </div>
+      <div class="line">
+        <span class="lbl">Signal: </span>
+        <span class=" eq-v-supportive">
+          SUPPORT
+        </span>
+      </div>
+    </div>
+
+    <!-- ── PRICE STRUCTURE ANALYSIS ──────────────────────────── -->
+    <div class="analysis-section sec-ps">
+      <div class="section-label-inner">── PRICE STRUCTURE ANALYSIS ───────</div>
+      <div class="line">
+        <span class="lbl">Entry quality: </span>
+        <span class=" ps-weak">
+          WEAK
+        </span>
+      </div>
+      <div class="line"><span class="lbl">Trend: </span>UP</div>
+      <div class="line"><span class="lbl">Key level: </span>Mid Range</div>
+      <div class="line"><span class="lbl">Price action: </span>58/100</div>
+      <div class="line" style="margin-top:3px;color:#8878b8;font-size:12px;font-style:italic">Structure present but no high-confidence entry signal detected.</div>
+    </div>
+
+    <!-- ── COMBINED READING ──────────────────────────────────── -->
+    <div class="analysis-section sec-combined">
+      <div class="section-label-inner">── COMBINED READING ──────────────</div>
+      <div class="combined-text">Market:          WATCH (66/100)</div>
+      <div class="combined-text">Earnings:        WEAK</div>
+      <div class="combined-text">Rotation:        SUPPORT</div>
+      <div class="combined-text">Price Structure: WEAK</div>
+      <div class="combined-text">
+        Alignment:
+        <span class=" eq-v-risky">
+          CONFLICT
+        </span>
+      </div>
+      <div class="combined-text" style="margin-top:4px">Conclusion: No alignment between signal and fundamentals — not actionable.</div>
+    </div>
+
+  </div>
+  <div class="card">
+    <div class="card-name">
+      NVDA <span class="tk">(NVDA)</span>
+      — Technology (Semiconductors)    </div>
+
+    <!-- ── MARKET SIGNAL ANALYSIS ───────────────────────────── -->
+    <div class="analysis-section sec-market">
+      <div class="section-label-inner">── MARKET SIGNAL ANALYSIS ────────</div>
+      <div class="line"><span class="lbl">Confidence: </span>
+        <span
+          class="conf-mod">
+          [██████░░░░] 62/100 (MODERATE)
+        </span>
+      </div>
+      <div class="line"><span class="lbl">Trend: </span>steady upward trend — 1M: ▲13.9% · 3M: ▲8.0% · 6M: ▲10.2%</div>
+      <div class="line"><span class="lbl">Volume: </span>Lower activity than usual.</div>
+      <div class="line"><span class="lbl">Risk: </span>LOW RISK</div>
+      <div class="note" style="margin-top:3px">↓ ENTRY QUALITY OVERRIDDEN: R/R below 2.0 (computed R/R: 0.20x). Entry downgraded to WEAK.</div>
+      <div class="line" style="margin-top:5px"><span class="lbl">Market verdict: </span>
+        <span
+          class="mv-watch">
+          WATCH
+        </span>
+      </div>
+    </div>
+
+    <!-- ── EARNINGS QUALITY ANALYSIS ────────────────────────── -->
+    <div class="analysis-section sec-eq">
+      <div class="section-label-inner">── EARNINGS QUALITY ANALYSIS ─────</div>
+      <div class="line"><span class="lbl">EQ Score: </span>69/100 — WEAK</div>
+      <div class="line"><span class="lbl">Pass tier: </span>FAIL (WEAK) — 33th percentile</div>
+      <div style="margin-top:3px">
+        <div class="eq-strength">[+] Dividend policy is financially sustainable</div>
+        <div class="eq-strength">[+] Business trajectory improving across multiple dimensions</div>
+      </div>
+      <div style="margin-top:2px">
+        <div class="eq-risk">[!] Accounts receivable is growing significantly faster than revenue, suggesting aggressive recognition or deteriorating collections.</div>
+        <div class="eq-risk">[!] Earnings are volatile or unpredictable</div>
+      </div>
+      <div style="margin-top:2px">
+        <div class="eq-risk" style="color:#ff9a3c">[w] Accounts receivable growing faster than revenue</div>
+        <div class="eq-risk" style="color:#ff9a3c">[w] Revenue growth diverging significantly from cash conversion</div>
+      </div>
+    </div>
+
+    <!-- ── SECTOR ROTATION ANALYSIS ──────────────────────────── -->
+    <div class="analysis-section sec-rotation">
+      <div class="section-label-inner">── SECTOR ROTATION ANALYSIS ───────</div>
+      <div class="line">
+        <span class="lbl">Sector ETF: </span>
+        <span>XLK</span>
+      </div>
+      <div class="line">
+        <span class="lbl">Rot. score: </span>
+        <span>83.2/100</span>
+      </div>
+      <div class="line">
+        <span class="lbl">Signal: </span>
+        <span class=" eq-v-supportive">
+          SUPPORT
+        </span>
+      </div>
+    </div>
+
+    <!-- ── PRICE STRUCTURE ANALYSIS ──────────────────────────── -->
+    <div class="analysis-section sec-ps">
+      <div class="section-label-inner">── PRICE STRUCTURE ANALYSIS ───────</div>
+      <div class="line">
+        <span class="lbl">Entry quality: </span>
+        <span class=" ps-weak">
+          WEAK
+        </span>
+      </div>
+      <div class="line"><span class="lbl">Trend: </span>UP</div>
+      <div class="line"><span class="lbl">Key level: </span>Near Resistance</div>
+      <div class="line"><span class="lbl">Price action: </span>51/100</div>
+      <div class="line" style="margin-top:3px;color:#8878b8;font-size:12px;font-style:italic">Structure present but no high-confidence entry signal detected.</div>
+    </div>
+
+    <!-- ── COMBINED READING ──────────────────────────────────── -->
+    <div class="analysis-section sec-combined">
+      <div class="section-label-inner">── COMBINED READING ──────────────</div>
+      <div class="combined-text">Market:          WATCH (62/100)</div>
+      <div class="combined-text">Earnings:        WEAK</div>
+      <div class="combined-text">Rotation:        SUPPORT</div>
+      <div class="combined-text">Price Structure: WEAK</div>
+      <div class="combined-text">
+        Alignment:
+        <span class=" eq-v-risky">
+          CONFLICT
+        </span>
+      </div>
+      <div class="combined-text" style="margin-top:4px">Conclusion: No alignment between signal and fundamentals — not actionable.</div>
+    </div>
+
+  </div>
+    </div>
+
+    <!-- Moderate Risk -->
+
+    <!-- No opportunities -->
+
+    <!-- Overflow notice -->
+
+    <!-- Dashboard link -->
+    <div style="font-family:monospace;font-size:12px;color:#4a3d72;
+                text-align:center;padding:16px 0 8px;border-top:1px solid #2c224e;
+                margin-top:20px;">
+      Full report + AI research prompt:
+      <a href="https://xfranxd.github.io/Financial_Assistant_Project" style="color:#00e5ff;text-decoration:none;">
+        https://xfranxd.github.io/Financial_Assistant_Project
+      </a>
+    </div>
+
+    <!-- Disclaimer -->
+    <div class="disclaimer">DISCLAIMER: This system does NOT perform trading, does NOT give investment advice, and does NOT make price predictions. It is a research data aggregation and scoring tool only.</div>
+
+  </div>
+</body>
+
+</html>
