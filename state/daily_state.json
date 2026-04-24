@@ -1,11 +1,7 @@
 {
-  "date": "2026-04-23",
-  "reported_companies": [
-    "NVDA",
-    "WDC",
-    "TXN"
-  ],
-  "alpha_vantage_calls_today": 20,
+  "date": "2026-04-24",
+  "reported_companies": [],
+  "alpha_vantage_calls_today": 0,
   "runs": {
     "9:45-11:15": {
       "companies": [],
@@ -13,39 +9,35 @@
     },
     "11:45-13:15": {
       "companies": [],
-      "status": "complete"
+      "status": "pending"
     },
     "13:45-15:15": {
       "companies": [],
-      "status": "complete"
+      "status": "pending"
     },
     "16:00-17:20": {
-      "companies": [
-        "TXN",
-        "WDC",
-        "NVDA"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     }
   },
   "failed_tickers": [],
   "api_failures": {},
   "sector_scores_today": {
-    "technology": 4.473,
-    "healthcare": -0.991,
-    "financials": -0.228,
-    "consumer_discretionary": 1.202,
-    "consumer_staples": 1.579,
-    "industrials": 1.671,
-    "materials": -0.031,
-    "energy": 0.118,
-    "utilities": -1.261,
-    "real_estate": 0.91,
-    "communication_services": -0.223,
-    "semiconductors": 10.792,
-    "defense": -4.863
+    "technology": 5.823,
+    "healthcare": -3.054,
+    "financials": -0.761,
+    "consumer_discretionary": 0.148,
+    "consumer_staples": 1.178,
+    "industrials": -0.522,
+    "materials": -0.237,
+    "energy": 2.01,
+    "utilities": -0.505,
+    "real_estate": 0.25,
+    "communication_services": -1.898,
+    "semiconductors": 12.87,
+    "defense": -7.227
   },
-  "breadth_score_today": 0.585,
+  "breadth_score_today": 0.362,
   "sector_breadth_ma_today": {
     "technology": {
       "breadth_ma_score": 0.8,
@@ -53,8 +45,8 @@
       "label": "sector is genuinely strong"
     },
     "semiconductors": {
-      "breadth_ma_score": 0.9,
-      "pct": 90.0,
+      "breadth_ma_score": 1.0,
+      "pct": 100.0,
       "label": "sector is genuinely strong"
     },
     "healthcare": {
@@ -63,18 +55,18 @@
       "label": "sector is structurally weak"
     },
     "financials": {
-      "breadth_ma_score": 0.8,
-      "pct": 80.0,
-      "label": "sector is genuinely strong"
+      "breadth_ma_score": 0.7,
+      "pct": 70.0,
+      "label": "healthy participation"
     },
     "consumer_discretionary": {
-      "breadth_ma_score": 0.5,
-      "pct": 50.0,
+      "breadth_ma_score": 0.4,
+      "pct": 40.0,
       "label": "mixed signals"
     },
     "consumer_staples": {
-      "breadth_ma_score": 0.3,
-      "pct": 30.0,
+      "breadth_ma_score": 0.4,
+      "pct": 40.0,
       "label": "mixed signals"
     },
     "industrials": {
@@ -88,13 +80,13 @@
       "label": "sector is structurally weak"
     },
     "energy": {
-      "breadth_ma_score": 0.6,
-      "pct": 60.0,
+      "breadth_ma_score": 0.7,
+      "pct": 70.0,
       "label": "healthy participation"
     },
     "materials": {
-      "breadth_ma_score": 0.6,
-      "pct": 60.0,
+      "breadth_ma_score": 0.7,
+      "pct": 70.0,
       "label": "healthy participation"
     },
     "utilities": {
@@ -103,41 +95,34 @@
       "label": "mixed signals"
     },
     "real_estate": {
-      "breadth_ma_score": 0.9,
-      "pct": 90.0,
+      "breadth_ma_score": 0.8,
+      "pct": 80.0,
       "label": "sector is genuinely strong"
     },
     "communication_services": {
-      "breadth_ma_score": 0.5,
-      "pct": 50.0,
+      "breadth_ma_score": 0.3,
+      "pct": 30.0,
       "label": "mixed signals"
     }
   },
-  "unusual_volume_flags": [
-    "TXN",
-    "NOW"
-  ],
+  "unusual_volume_flags": [],
   "event_scores_today": {},
   "indices_today": {
     "dow": {
-      "value": 49310.32,
-      "change_pct": -0.36,
+      "value": 49156.8,
+      "change_pct": -0.31,
       "label": "Falling"
     },
     "sp500": {
-      "value": 7108.4,
-      "change_pct": -0.41,
-      "label": "Falling"
+      "value": 7139.08,
+      "change_pct": 0.43,
+      "label": "Rising"
     },
     "nasdaq": {
-      "value": 24438.5,
-      "change_pct": -0.89,
-      "label": "Falling"
+      "value": 24686.53,
+      "change_pct": 1.01,
+      "label": "Rising"
     }
   },
-  "today_scores": {
-    "TXN": 70.9,
-    "WDC": 66.5,
-    "NVDA": 62.6
-  }
+  "today_scores": {}
 }
