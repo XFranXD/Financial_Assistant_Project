@@ -1,9 +1,12 @@
 {
   "date": "2026-04-24",
   "reported_companies": [
+    "AMAT",
+    "WDC",
+    "TXN",
     "AVGO",
-    "NVDA",
-    "WDC"
+    "AMD",
+    "NVDA"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -20,8 +23,12 @@
       "status": "complete"
     },
     "13:45-15:15": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "AMD",
+        "TXN",
+        "AMAT"
+      ],
+      "status": "complete"
     },
     "16:00-17:20": {
       "companies": [],
@@ -135,8 +142,8 @@
     }
   },
   "today_scores": {
-    "WDC": 61.0,
-    "NVDA": 60.6,
-    "AVGO": 58.8
+    "AMD": 62.5,
+    "TXN": 60.4,
+    "AMAT": 57.0
   }
 }
