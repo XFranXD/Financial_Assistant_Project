@@ -1,12 +1,15 @@
 {
   "date": "2026-04-24",
   "reported_companies": [
-    "AMAT",
-    "WDC",
-    "TXN",
+    "NVDA",
     "AVGO",
     "AMD",
-    "NVDA"
+    "TXN",
+    "WDC",
+    "AAPL",
+    "PLTR",
+    "FTNT",
+    "AMAT"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -31,8 +34,12 @@
       "status": "complete"
     },
     "16:00-17:20": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "AAPL",
+        "FTNT",
+        "PLTR"
+      ],
+      "status": "complete"
     }
   },
   "failed_tickers": [],
@@ -144,8 +151,8 @@
     }
   },
   "today_scores": {
-    "AMD": 62.5,
-    "TXN": 60.4,
-    "AMAT": 57.0
+    "AAPL": 58.8,
+    "FTNT": 56.2,
+    "PLTR": 54.9
   }
 }
