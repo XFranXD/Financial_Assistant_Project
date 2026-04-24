@@ -31,21 +31,21 @@
   "failed_tickers": [],
   "api_failures": {},
   "sector_scores_today": {
-    "technology": 6.164,
-    "healthcare": -2.982,
-    "financials": -0.809,
-    "consumer_discretionary": 0.433,
-    "consumer_staples": 0.879,
-    "industrials": 0.045,
-    "materials": -0.204,
-    "energy": 1.056,
-    "utilities": -0.59,
-    "real_estate": 0.119,
-    "communication_services": -1.502,
-    "semiconductors": 13.467,
-    "defense": -6.658
+    "technology": 6.098,
+    "healthcare": -3.026,
+    "financials": -0.881,
+    "consumer_discretionary": 0.372,
+    "consumer_staples": 0.668,
+    "industrials": -0.415,
+    "materials": -0.021,
+    "energy": 1.75,
+    "utilities": -0.538,
+    "real_estate": -0.169,
+    "communication_services": -1.742,
+    "semiconductors": 13.329,
+    "defense": -7.071
   },
-  "breadth_score_today": 0.362,
+  "breadth_score_today": 0.338,
   "sector_breadth_ma_today": {
     "technology": {
       "breadth_ma_score": 0.8,
@@ -88,9 +88,9 @@
       "label": "sector is structurally weak"
     },
     "energy": {
-      "breadth_ma_score": 0.7,
-      "pct": 70.0,
-      "label": "healthy participation"
+      "breadth_ma_score": 0.5,
+      "pct": 50.0,
+      "label": "mixed signals"
     },
     "materials": {
       "breadth_ma_score": 0.7,
@@ -103,8 +103,8 @@
       "label": "sector is structurally weak"
     },
     "real_estate": {
-      "breadth_ma_score": 0.8,
-      "pct": 80.0,
+      "breadth_ma_score": 0.9,
+      "pct": 90.0,
       "label": "sector is genuinely strong"
     },
     "communication_services": {
@@ -113,22 +113,24 @@
       "label": "mixed signals"
     }
   },
-  "unusual_volume_flags": [],
+  "unusual_volume_flags": [
+    "INTC"
+  ],
   "event_scores_today": {},
   "indices_today": {
     "dow": {
-      "value": 49236.24,
-      "change_pct": -0.15,
+      "value": 49172.61,
+      "change_pct": -0.28,
       "label": "Falling"
     },
     "sp500": {
-      "value": 7162.46,
-      "change_pct": 0.76,
+      "value": 7154.37,
+      "change_pct": 0.65,
       "label": "Rising"
     },
     "nasdaq": {
-      "value": 24806.89,
-      "change_pct": 1.51,
+      "value": 24791.24,
+      "change_pct": 1.44,
       "label": "Rising"
     }
   },
