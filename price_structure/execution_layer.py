@@ -96,20 +96,26 @@ def compute_execution_levels(
                 # 4dp is sufficient for all realistic R:R values.
                 risk_reward_ratio = round(reward / risk, 4)
 
-        # ── R/R override: downgrade entry_quality to WEAK if below threshold
-        rr_override    = False
-        final_eq       = entry_quality
-        if risk_reward_ratio is not None and risk_reward_ratio < MIN_RR_THRESHOLD:
-            final_eq    = 'WEAK'
-            rr_override = True
+        # ── R/R threshold flag: report separately, do NOT mutate entry_quality ──
+        # entry_quality reflects price structure (entry_classifier.py decision).
+        # R:R reflects execution geometry. These are independent judgments.
+        # rr_below_threshold signals that geometry is unfavorable for execution
+        # without destroying the structural quality reading.
+        # rr_override kept for backward compatibility (FSV notice layer reads it).
+        rr_below_threshold = (
+            risk_reward_ratio is not None
+            and risk_reward_ratio < MIN_RR_THRESHOLD
+        )
+        rr_override = rr_below_threshold  # alias — same signal, legacy name
 
         return {
-            'entry_price':       entry_price,
-            'stop_loss':         stop_loss,
-            'price_target':      price_target,
-            'risk_reward_ratio': risk_reward_ratio,
-            'entry_quality':     final_eq,
-            'rr_override':       rr_override,
+            'entry_price':        entry_price,
+            'stop_loss':          stop_loss,
+            'price_target':       price_target,
+            'risk_reward_ratio':  risk_reward_ratio,
+            'entry_quality':      entry_quality,       # unchanged — structural reading preserved
+            'rr_override':        rr_override,         # True when R:R < 2.0 (legacy compat)
+            'rr_below_threshold': rr_below_threshold,  # explicit flag for downstream layers
         }
 
     except Exception:

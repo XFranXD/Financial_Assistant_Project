@@ -18,6 +18,7 @@ import pytz
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 from utils.logger import get_logger
+from price_structure.execution_layer import MIN_RR_THRESHOLD
 from reports.commodity_signal import get_commodity_signal
 from reports.sentence_templates import (
     render_financial_health,
@@ -255,16 +256,20 @@ def _build_combined_reading(conf_score: float, pass_tier: str,
                             market_verdict: str = '',
                             rotation_signal: str = 'UNKNOWN',
                             rotation_available: bool = False,
-                            ps_entry_quality: str = 'UNAVAILABLE') -> dict:
+                            ps_entry_quality: str = 'UNAVAILABLE',
+                            ps_risk_reward_ratio: float | None = None) -> dict:
     """
     Deterministic combined reading of System 1, 2, 3, and 4.
     Returns a structured dict for template rendering.
 
-    BUY NOW hard gate (System 4):
-      entry_quality must be GOOD for BUY NOW to be issued.
-      EXTENDED or WEAK entry_quality blocks BUY NOW regardless of S1/S2/S3.
-      EARLY is unconfirmed — does not block but does not enable BUY NOW.
-      UNAVAILABLE treated same as EARLY — reduce confidence, no BUY NOW.
+    BUY NOW hard gate (System 4) — requires BOTH:
+      1. entry_quality == GOOD  (structural quality from entry_classifier.py)
+      2. risk_reward_ratio >= MIN_RR_THRESHOLD  (execution geometry)
+    These are independent signals. R:R gates BUY NOW only — it does NOT
+    affect entry_quality, alignment scoring, or confidence upstream.
+    EXTENDED or WEAK entry_quality blocks BUY NOW regardless of S1/S2/S3.
+    EARLY is unconfirmed — does not block but does not enable BUY NOW.
+    UNAVAILABLE treated same as EARLY — reduce confidence, no BUY NOW.
 
     Output keys:
       market_line    — Market classification line
@@ -323,8 +328,18 @@ def _build_combined_reading(conf_score: float, pass_tier: str,
     elif alignment == 'ALIGNED':
         if mv == 'RESEARCH NOW':
             # ── S4 BUY NOW hard gate ──────────────────────────────────────
-            if ps_eq == 'GOOD':
+            # Requires BOTH structural quality (EntryQ=GOOD) AND executable
+            # geometry (R:R >= MIN_RR_THRESHOLD). These are independent signals
+            # and both must pass. R:R is checked here only for BUY NOW gating —
+            # it does not affect EntryQ, alignment, or confidence upstream.
+            rr_executable = (
+                ps_risk_reward_ratio is not None
+                and ps_risk_reward_ratio >= MIN_RR_THRESHOLD
+            )
+            if ps_eq == 'GOOD' and rr_executable:
                 conclusion = 'Conclusion: Signal supported by fundamentals, sector timing, and entry quality confirmed. Highest priority candidate.'
+            elif ps_eq == 'GOOD' and not rr_executable:
+                conclusion = 'Conclusion: Signal aligned and structure is good but R:R below threshold — not executable. Monitor for better entry geometry.'
             elif ps_eq in ('EXTENDED', 'WEAK'):
                 conclusion = 'Conclusion: Signal aligned but entry quality is not GOOD — price structure blocks BUY NOW. Monitor for reset to support.'
             elif ps_eq == 'EARLY':
@@ -443,17 +458,19 @@ def _build_eq_display(c: dict, market_verdict: str = '') -> dict:
     rotation_signal    = c.get(ROTATION_SIGNAL, 'UNKNOWN')
     rotation_available = bool(c.get(ROTATION_AVAILABLE))
 
-    # S4 entry_quality for BUY NOW gate
+    # S4 entry_quality and R:R for BUY NOW gate
     ps_entry_quality = (
         c.get(PS_ENTRY_QUALITY, 'UNAVAILABLE')
         if c.get(PS_AVAILABLE)
         else 'UNAVAILABLE'
     )
+    ps_risk_reward_ratio = c.get(PS_RISK_REWARD_RATIO)  # float | None
 
     combined_reading = _build_combined_reading(
         conf_score, pass_tier, eq_available, fatal, market_verdict,
         rotation_signal, rotation_available,
         ps_entry_quality=ps_entry_quality,
+        ps_risk_reward_ratio=ps_risk_reward_ratio,
     )
     signal_strength = _signal_strength_label(conf_score)
 
