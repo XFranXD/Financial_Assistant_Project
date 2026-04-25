@@ -122,7 +122,22 @@ def compute(candidates: list[dict], lookback: int = LOOKBACK_DAYS) -> dict:
 
     for ticker in tickers:
         try:
-            close = raw['Close'][ticker].dropna() if len(tickers) > 1 else raw['Close'].dropna()
+            cols = raw.columns
+            if isinstance(cols, pd.MultiIndex):
+                # Tuple-based check: handles both (field, ticker) and (ticker, field)
+                # layouts across yfinance versions without relying on level assumptions.
+                if ('Close', ticker) in cols:
+                    close = raw['Close', ticker].dropna()
+                elif (ticker, 'Close') in cols:
+                    close = raw[ticker, 'Close'].dropna()
+                else:
+                    log.info(f'[PL] {ticker}: Close column not found in MultiIndex — marking UNAVAILABLE')
+                    unavailable.append(ticker)
+                    continue
+            else:
+                # Single-ticker download returns flat DataFrame
+                close = raw['Close'].dropna()
+
             if len(close) < 20:
                 log.info(f'[PL] {ticker}: insufficient rows ({len(close)}) — marking UNAVAILABLE')
                 unavailable.append(ticker)
@@ -195,3 +210,4 @@ def compute(candidates: list[dict], lookback: int = LOOKBACK_DAYS) -> dict:
         'unavailable':        all_unavailable,
         'returns_data':       returns_data,
     }
+    
