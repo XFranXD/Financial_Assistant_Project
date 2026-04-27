@@ -1,6 +1,10 @@
 {
   "date": "2026-04-27",
-  "reported_companies": [],
+  "reported_companies": [
+    "AVGO",
+    "NVDA",
+    "WDC"
+  ],
   "alpha_vantage_calls_today": 20,
   "runs": {
     "9:45-11:15": {
@@ -16,8 +20,12 @@
       "status": "complete"
     },
     "16:00-17:20": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "NVDA",
+        "AVGO",
+        "WDC"
+      ],
+      "status": "complete"
     }
   },
   "failed_tickers": [],
@@ -126,5 +134,9 @@
       "label": "Rising"
     }
   },
-  "today_scores": {}
+  "today_scores": {
+    "NVDA": 62.8,
+    "AVGO": 59.9,
+    "WDC": 58.9
+  }
 }
