@@ -1,10 +1,15 @@
 {
   "date": "2026-04-28",
   "reported_companies": [
+    "PEP",
+    "MKC",
+    "KO",
+    "CTRA",
     "WMT",
+    "EQT",
+    "STZ",
     "BTI",
     "MO",
-    "KO",
     "PM",
     "PG"
   ],
@@ -31,8 +36,14 @@
       "status": "complete"
     },
     "16:00-17:20": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "CTRA",
+        "EQT",
+        "STZ",
+        "PEP",
+        "MKC"
+      ],
+      "status": "complete"
     }
   },
   "failed_tickers": [],
@@ -140,8 +151,10 @@
     }
   },
   "today_scores": {
-    "MO": 50.4,
-    "WMT": 49.6,
-    "PM": 48.6
+    "CTRA": 67.7,
+    "EQT": 63.9,
+    "STZ": 48.5,
+    "PEP": 48.5,
+    "MKC": 47.1
   }
 }
