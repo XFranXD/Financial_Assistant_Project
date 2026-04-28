@@ -124,48 +124,27 @@ def check_good_entry_with_high_extension(c: dict) -> dict | None:
 
 def check_rr_override_not_applied(c: dict) -> dict | None:
     """
-    rr_override True + entry_quality not WEAK is INCONSISTENT.
-    Override exists to force WEAK when R/R < 2.0. If True but entry_quality
-    is not WEAK, the override did not apply.
+    RETIRED — v1.2
+
+    Previously enforced: rr_override=True must mean entry_quality=WEAK.
+
+    As of the EntryQ decoupling fix (execution_layer.py), rr_override is now
+    an alias for rr_below_threshold — it signals that R:R < MIN_RR_THRESHOLD
+    was detected, but it NO LONGER mutates entry_quality. entry_quality now
+    reflects pure price structure from entry_classifier.py independently.
+
+    The combination rr_override=True + entry_quality != WEAK is now correct
+    and expected behavior. This check would fire as a false CRITICAL on every
+    ticker where structure is good but geometry is unfavorable.
+
+    Enforcement of R:R < threshold is now handled exclusively by:
+      - check_rr_gate_not_enforced() — catches GOOD entry + low R:R + no override
+      - BUY NOW gate in report_builder._build_combined_reading() — requires both
+        entry_quality=GOOD AND risk_reward_ratio >= MIN_RR_THRESHOLD
+
+    Always returns None (no flag produced).
     """
-    try:
-        if not c.get('ps_available'):
-            return None
-        override = c.get('rr_override')
-        eq       = c.get('entry_quality')
-        if override is None or eq is None:
-            return None
-        if override is True and eq != 'WEAK':
-            log.error(
-                f'[FSV][B] INCONSISTENT: rr_override True but entry_quality '
-                f'is {eq} (expected WEAK)'
-            )
-            return _make_flag(
-                check_id       = 'B_CONTRADICTION_RR_OVERRIDE_NOT_APPLIED',
-                subsystem      = 'sub4',
-                field          = 'rr_override',
-                observed       = override,
-                context        = {'entry_quality': eq},
-                expected_range = 'entry_quality == WEAK when rr_override is True',
-                verdict        = INCONSISTENT,
-                note           = (
-                    f'rr_override is True but entry_quality is {eq} (expected WEAK). '
-                    f'Override forces WEAK when R/R < 2.0 — override did not apply.'
-                ),
-            )
-        return _make_flag(
-            check_id       = 'B_CONTRADICTION_RR_OVERRIDE_NOT_APPLIED',
-            subsystem      = 'sub4',
-            field          = 'rr_override',
-            observed       = override,
-            context        = {'entry_quality': eq},
-            expected_range = 'entry_quality == WEAK when rr_override is True',
-            verdict        = CONSISTENT,
-            note           = f'rr_override {override} and entry_quality {eq} are consistent',
-        )
-    except Exception as e:
-        log.warning(f'[FSV][B] rr_override_not_applied: {e}')
-        return None
+    return None
 
 
 # ── Sub2 internal contradictions ──────────────────────────────────────────────
