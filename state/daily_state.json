@@ -1,8 +1,11 @@
 {
   "date": "2026-04-28",
   "reported_companies": [
-    "KO",
+    "WMT",
     "BTI",
+    "MO",
+    "KO",
+    "PM",
     "PG"
   ],
   "alpha_vantage_calls_today": 20,
@@ -20,8 +23,12 @@
       "status": "complete"
     },
     "13:45-15:15": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "MO",
+        "WMT",
+        "PM"
+      ],
+      "status": "complete"
     },
     "16:00-17:20": {
       "companies": [],
@@ -133,8 +140,8 @@
     }
   },
   "today_scores": {
-    "KO": 56.5,
-    "PG": 55.3,
-    "BTI": 51.4
+    "MO": 50.4,
+    "WMT": 49.6,
+    "PM": 48.6
   }
 }
