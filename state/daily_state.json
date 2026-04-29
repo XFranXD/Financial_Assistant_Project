@@ -1,18 +1,6 @@
 {
-  "date": "2026-04-28",
-  "reported_companies": [
-    "PEP",
-    "MKC",
-    "KO",
-    "CTRA",
-    "WMT",
-    "EQT",
-    "STZ",
-    "BTI",
-    "MO",
-    "PM",
-    "PG"
-  ],
+  "date": "2026-04-29",
+  "reported_companies": [],
   "alpha_vantage_calls_today": 20,
   "runs": {
     "9:45-11:15": {
@@ -20,50 +8,36 @@
       "status": "pending"
     },
     "11:45-13:15": {
-      "companies": [
-        "KO",
-        "PG",
-        "BTI"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     },
     "13:45-15:15": {
-      "companies": [
-        "MO",
-        "WMT",
-        "PM"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     },
     "16:00-17:20": {
-      "companies": [
-        "CTRA",
-        "EQT",
-        "STZ",
-        "PEP",
-        "MKC"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     }
   },
   "failed_tickers": [],
   "api_failures": {},
   "sector_scores_today": {
-    "technology": 3.221,
-    "healthcare": -2.253,
-    "financials": -0.735,
-    "consumer_discretionary": -1.214,
-    "consumer_staples": 1.466,
-    "industrials": -0.81,
-    "materials": -1.045,
-    "energy": 3.055,
-    "utilities": 1.659,
-    "real_estate": 0.35,
-    "communication_services": -1.28,
-    "semiconductors": 5.586,
-    "defense": -4.824
+    "technology": 1.622,
+    "healthcare": -2.518,
+    "financials": -0.625,
+    "consumer_discretionary": -1.879,
+    "consumer_staples": 1.637,
+    "industrials": -0.872,
+    "materials": -1.175,
+    "energy": 4.688,
+    "utilities": 2.014,
+    "real_estate": 0.688,
+    "communication_services": -1.963,
+    "semiconductors": 5.476,
+    "defense": -4.859
   },
-  "breadth_score_today": 0.546,
+  "breadth_score_today": 0.362,
   "sector_breadth_ma_today": {
     "technology": {
       "breadth_ma_score": 0.8,
@@ -81,9 +55,9 @@
       "label": "sector is structurally weak"
     },
     "financials": {
-      "breadth_ma_score": 0.8,
-      "pct": 80.0,
-      "label": "sector is genuinely strong"
+      "breadth_ma_score": 0.7,
+      "pct": 70.0,
+      "label": "healthy participation"
     },
     "consumer_discretionary": {
       "breadth_ma_score": 0.3,
@@ -91,24 +65,24 @@
       "label": "mixed signals"
     },
     "consumer_staples": {
-      "breadth_ma_score": 0.5,
-      "pct": 50.0,
+      "breadth_ma_score": 0.4,
+      "pct": 40.0,
       "label": "mixed signals"
     },
     "industrials": {
-      "breadth_ma_score": 0.5,
-      "pct": 50.0,
-      "label": "mixed signals"
+      "breadth_ma_score": 0.6,
+      "pct": 60.0,
+      "label": "healthy participation"
     },
     "defense": {
-      "breadth_ma_score": 0.1,
-      "pct": 10.0,
+      "breadth_ma_score": 0.2,
+      "pct": 20.0,
       "label": "sector is structurally weak"
     },
     "energy": {
-      "breadth_ma_score": 0.7,
-      "pct": 70.0,
-      "label": "healthy participation"
+      "breadth_ma_score": 0.8,
+      "pct": 80.0,
+      "label": "sector is genuinely strong"
     },
     "materials": {
       "breadth_ma_score": 0.5,
@@ -126,35 +100,29 @@
       "label": "sector is genuinely strong"
     },
     "communication_services": {
-      "breadth_ma_score": 0.3,
-      "pct": 30.0,
-      "label": "mixed signals"
+      "breadth_ma_score": 0.2,
+      "pct": 20.0,
+      "label": "sector is structurally weak"
     }
   },
   "unusual_volume_flags": [],
   "event_scores_today": {},
   "indices_today": {
     "dow": {
-      "value": 49141.93,
-      "change_pct": -0.05,
-      "label": "Flat"
+      "value": 48829.54,
+      "change_pct": -0.64,
+      "label": "Falling"
     },
     "sp500": {
-      "value": 7138.8,
-      "change_pct": -0.49,
+      "value": 7121.88,
+      "change_pct": -0.24,
       "label": "Falling"
     },
     "nasdaq": {
-      "value": 24663.8,
-      "change_pct": -0.9,
+      "value": 24590.99,
+      "change_pct": -0.3,
       "label": "Falling"
     }
   },
-  "today_scores": {
-    "CTRA": 67.7,
-    "EQT": 63.9,
-    "STZ": 48.5,
-    "PEP": 48.5,
-    "MKC": 47.1
-  }
+  "today_scores": {}
 }
