@@ -1,14 +1,25 @@
 {
   "date": "2026-04-30",
   "reported_companies": [
-    "EQT",
-    "MO",
-    "PPL",
-    "CTRA",
     "PG",
+    "KO",
+    "MDLZ",
+    "MRVL",
     "NEE",
+    "AME",
+    "MO",
+    "CSX",
+    "NVDA",
+    "WMT",
+    "RRC",
+    "UNP",
+    "SM",
+    "CTRA",
+    "KMI",
+    "PPL",
     "NI",
-    "KO"
+    "BTI",
+    "EQT"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -30,8 +41,20 @@
       "status": "complete"
     },
     "13:45-15:15": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "MRVL",
+        "NVDA",
+        "RRC",
+        "KMI",
+        "SM",
+        "CSX",
+        "BTI",
+        "UNP",
+        "WMT",
+        "MDLZ",
+        "AME"
+      ],
+      "status": "complete"
     },
     "16:00-17:20": {
       "companies": [],
@@ -145,13 +168,16 @@
     }
   },
   "today_scores": {
-    "EQT": 69.3,
-    "CTRA": 69.0,
-    "KO": 58.7,
-    "NEE": 58.6,
-    "MO": 58.2,
-    "PPL": 55.0,
-    "NI": 54.7,
-    "PG": 54.6
+    "MRVL": 68.2,
+    "NVDA": 67.4,
+    "RRC": 65.3,
+    "KMI": 64.8,
+    "SM": 63.1,
+    "CSX": 57.7,
+    "BTI": 53.9,
+    "UNP": 53.6,
+    "WMT": 52.7,
+    "MDLZ": 52.7,
+    "AME": 51.7
   }
 }
