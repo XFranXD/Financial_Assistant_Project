@@ -1,6 +1,15 @@
 {
   "date": "2026-04-30",
-  "reported_companies": [],
+  "reported_companies": [
+    "EQT",
+    "MO",
+    "PPL",
+    "CTRA",
+    "PG",
+    "NEE",
+    "NI",
+    "KO"
+  ],
   "alpha_vantage_calls_today": 20,
   "runs": {
     "9:45-11:15": {
@@ -8,8 +17,17 @@
       "status": "pending"
     },
     "11:45-13:15": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "EQT",
+        "CTRA",
+        "KO",
+        "NEE",
+        "MO",
+        "PPL",
+        "NI",
+        "PG"
+      ],
+      "status": "complete"
     },
     "13:45-15:15": {
       "companies": [],
@@ -124,5 +142,14 @@
       "label": "Rising"
     }
   },
-  "today_scores": {}
+  "today_scores": {
+    "EQT": 69.3,
+    "CTRA": 69.0,
+    "KO": 58.7,
+    "NEE": 58.6,
+    "MO": 58.2,
+    "PPL": 55.0,
+    "NI": 54.7,
+    "PG": 54.6
+  }
 }
