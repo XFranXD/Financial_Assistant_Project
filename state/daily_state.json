@@ -1,25 +1,36 @@
 {
   "date": "2026-04-30",
   "reported_companies": [
-    "PG",
     "KO",
-    "MDLZ",
-    "MRVL",
-    "NEE",
-    "AME",
-    "MO",
-    "CSX",
-    "NVDA",
-    "WMT",
+    "AVGO",
+    "EQT",
+    "APA",
+    "EXC",
     "RRC",
+    "PG",
+    "STZ",
+    "NVDA",
+    "WDC",
+    "NI",
+    "TXN",
+    "CTRA",
+    "OGE",
+    "DVN",
+    "MRVL",
+    "CSX",
     "UNP",
     "SM",
-    "CTRA",
-    "KMI",
     "PPL",
-    "NI",
+    "SLB",
+    "NEE",
+    "MDLZ",
+    "PM",
+    "AME",
     "BTI",
-    "EQT"
+    "PEP",
+    "KMI",
+    "MO",
+    "WMT"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -57,8 +68,20 @@
       "status": "complete"
     },
     "16:00-17:20": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "WDC",
+        "TXN",
+        "DVN",
+        "APA",
+        "AVGO",
+        "SLB",
+        "EXC",
+        "OGE",
+        "STZ",
+        "PM",
+        "PEP"
+      ],
+      "status": "complete"
     }
   },
   "failed_tickers": [],
@@ -171,16 +194,16 @@
     }
   },
   "today_scores": {
-    "MRVL": 68.2,
-    "NVDA": 67.4,
-    "RRC": 65.3,
-    "KMI": 64.8,
-    "SM": 63.1,
-    "CSX": 57.7,
-    "BTI": 53.9,
-    "UNP": 53.6,
-    "WMT": 52.7,
-    "MDLZ": 52.7,
-    "AME": 51.7
+    "WDC": 66.8,
+    "TXN": 65.1,
+    "DVN": 63.9,
+    "APA": 63.8,
+    "AVGO": 63.7,
+    "SLB": 63.3,
+    "EXC": 56.8,
+    "OGE": 56.5,
+    "STZ": 52.5,
+    "PM": 51.8,
+    "PEP": 50.8
   }
 }
