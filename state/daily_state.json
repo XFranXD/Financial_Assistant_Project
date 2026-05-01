@@ -53,26 +53,26 @@
   "failed_tickers": [],
   "api_failures": {},
   "sector_scores_today": {
-    "technology": 1.849,
-    "healthcare": -0.177,
-    "financials": 0.427,
-    "consumer_discretionary": -0.505,
-    "consumer_staples": 0.935,
-    "industrials": 0.057,
-    "materials": -0.922,
-    "energy": 4.393,
-    "utilities": 0.544,
-    "real_estate": 0.276,
-    "communication_services": -0.096,
-    "semiconductors": 3.543,
-    "defense": -1.805
+    "technology": 1.995,
+    "healthcare": -0.446,
+    "financials": 0.201,
+    "consumer_discretionary": -0.667,
+    "consumer_staples": 1.225,
+    "industrials": -0.084,
+    "materials": -1.263,
+    "energy": 4.337,
+    "utilities": 0.626,
+    "real_estate": 0.487,
+    "communication_services": -0.073,
+    "semiconductors": 4.053,
+    "defense": -2.062
   },
-  "breadth_score_today": 0.308,
+  "breadth_score_today": 0.315,
   "sector_breadth_ma_today": {
     "technology": {
-      "breadth_ma_score": 0.7,
-      "pct": 70.0,
-      "label": "healthy participation"
+      "breadth_ma_score": 0.8,
+      "pct": 80.0,
+      "label": "sector is genuinely strong"
     },
     "semiconductors": {
       "breadth_ma_score": 1.0,
@@ -85,8 +85,8 @@
       "label": "sector is structurally weak"
     },
     "financials": {
-      "breadth_ma_score": 0.7,
-      "pct": 70.0,
+      "breadth_ma_score": 0.6,
+      "pct": 60.0,
       "label": "healthy participation"
     },
     "consumer_discretionary": {
@@ -136,23 +136,24 @@
     }
   },
   "unusual_volume_flags": [
+    "TWLO",
     "TWLO"
   ],
   "event_scores_today": {},
   "indices_today": {
     "dow": {
-      "value": 49556.06,
-      "change_pct": -0.19,
+      "value": 49499.27,
+      "change_pct": -0.31,
       "label": "Falling"
     },
     "sp500": {
-      "value": 7233.5,
-      "change_pct": 0.34,
+      "value": 7230.12,
+      "change_pct": 0.29,
       "label": "Rising"
     },
     "nasdaq": {
-      "value": 25105.73,
-      "change_pct": 0.86,
+      "value": 25114.44,
+      "change_pct": 0.89,
       "label": "Rising"
     }
   },
