@@ -1,16 +1,19 @@
 {
   "date": "2026-05-01",
   "reported_companies": [
-    "WDC",
-    "XEL",
-    "NVDA",
-    "AVGO",
     "AAPL",
-    "TXN",
-    "PPL",
-    "LNT",
+    "NVDA",
+    "MSFT",
+    "WDC",
+    "AMAT",
+    "XEL",
     "NEE",
-    "MSFT"
+    "LNT",
+    "AVGO",
+    "AMD",
+    "TXN",
+    "KLAC",
+    "PPL"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -35,8 +38,12 @@
       "status": "complete"
     },
     "13:45-15:15": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "AMAT",
+        "AMD",
+        "KLAC"
+      ],
+      "status": "complete"
     },
     "16:00-17:20": {
       "companies": [],
@@ -150,10 +157,8 @@
     }
   },
   "today_scores": {
-    "AAPL": 58.7,
-    "TXN": 56.5,
-    "MSFT": 56.3,
-    "PPL": 53.1,
-    "XEL": 52.5
+    "AMAT": 51.8,
+    "AMD": 51.3,
+    "KLAC": 49.0
   }
 }
