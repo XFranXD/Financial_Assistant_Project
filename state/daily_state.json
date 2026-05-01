@@ -1,37 +1,6 @@
 {
-  "date": "2026-04-30",
-  "reported_companies": [
-    "KO",
-    "AVGO",
-    "EQT",
-    "APA",
-    "EXC",
-    "RRC",
-    "PG",
-    "STZ",
-    "NVDA",
-    "WDC",
-    "NI",
-    "TXN",
-    "CTRA",
-    "OGE",
-    "DVN",
-    "MRVL",
-    "CSX",
-    "UNP",
-    "SM",
-    "PPL",
-    "SLB",
-    "NEE",
-    "MDLZ",
-    "PM",
-    "AME",
-    "BTI",
-    "PEP",
-    "KMI",
-    "MO",
-    "WMT"
-  ],
+  "date": "2026-05-01",
+  "reported_companies": [],
   "alpha_vantage_calls_today": 20,
   "runs": {
     "9:45-11:15": {
@@ -39,69 +8,36 @@
       "status": "pending"
     },
     "11:45-13:15": {
-      "companies": [
-        "EQT",
-        "CTRA",
-        "KO",
-        "NEE",
-        "MO",
-        "PPL",
-        "NI",
-        "PG"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     },
     "13:45-15:15": {
-      "companies": [
-        "MRVL",
-        "NVDA",
-        "RRC",
-        "KMI",
-        "SM",
-        "CSX",
-        "BTI",
-        "UNP",
-        "WMT",
-        "MDLZ",
-        "AME"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     },
     "16:00-17:20": {
-      "companies": [
-        "WDC",
-        "TXN",
-        "DVN",
-        "APA",
-        "AVGO",
-        "SLB",
-        "EXC",
-        "OGE",
-        "STZ",
-        "PM",
-        "PEP"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     }
   },
   "failed_tickers": [],
   "api_failures": {},
   "sector_scores_today": {
-    "technology": 2.806,
-    "healthcare": -0.589,
-    "financials": 0.235,
-    "consumer_discretionary": 0.224,
-    "consumer_staples": 1.436,
-    "industrials": 0.665,
-    "materials": -0.929,
-    "energy": 4.567,
-    "utilities": 1.168,
-    "real_estate": 0.862,
-    "communication_services": -1.416,
-    "semiconductors": 7.057,
-    "defense": -1.759
+    "technology": 1.427,
+    "healthcare": 0.267,
+    "financials": 1.307,
+    "consumer_discretionary": -0.112,
+    "consumer_staples": 1.997,
+    "industrials": 0.453,
+    "materials": -0.594,
+    "energy": 4.408,
+    "utilities": 1.926,
+    "real_estate": 0.853,
+    "communication_services": -0.109,
+    "semiconductors": 2.999,
+    "defense": -1.372
   },
-  "breadth_score_today": 0.792,
+  "breadth_score_today": 0.515,
   "sector_breadth_ma_today": {
     "technology": {
       "breadth_ma_score": 0.7,
@@ -114,24 +50,24 @@
       "label": "sector is genuinely strong"
     },
     "healthcare": {
-      "breadth_ma_score": 0.1,
-      "pct": 10.0,
+      "breadth_ma_score": 0.2,
+      "pct": 20.0,
       "label": "sector is structurally weak"
     },
     "financials": {
-      "breadth_ma_score": 0.7,
-      "pct": 70.0,
-      "label": "healthy participation"
+      "breadth_ma_score": 0.8,
+      "pct": 80.0,
+      "label": "sector is genuinely strong"
     },
     "consumer_discretionary": {
-      "breadth_ma_score": 0.3,
-      "pct": 30.0,
+      "breadth_ma_score": 0.4,
+      "pct": 40.0,
       "label": "mixed signals"
     },
     "consumer_staples": {
-      "breadth_ma_score": 0.6,
-      "pct": 60.0,
-      "label": "healthy participation"
+      "breadth_ma_score": 0.8,
+      "pct": 80.0,
+      "label": "sector is genuinely strong"
     },
     "industrials": {
       "breadth_ma_score": 0.7,
@@ -139,13 +75,13 @@
       "label": "healthy participation"
     },
     "defense": {
-      "breadth_ma_score": 0.1,
-      "pct": 10.0,
+      "breadth_ma_score": 0.2,
+      "pct": 20.0,
       "label": "sector is structurally weak"
     },
     "energy": {
-      "breadth_ma_score": 0.9,
-      "pct": 90.0,
+      "breadth_ma_score": 0.8,
+      "pct": 80.0,
       "label": "sector is genuinely strong"
     },
     "materials": {
@@ -154,9 +90,9 @@
       "label": "mixed signals"
     },
     "utilities": {
-      "breadth_ma_score": 0.7,
-      "pct": 70.0,
-      "label": "healthy participation"
+      "breadth_ma_score": 0.8,
+      "pct": 80.0,
+      "label": "sector is genuinely strong"
     },
     "real_estate": {
       "breadth_ma_score": 1.0,
@@ -169,41 +105,24 @@
       "label": "sector is structurally weak"
     }
   },
-  "unusual_volume_flags": [
-    "QCOM",
-    "QCOM",
-    "EXC",
-    "FE"
-  ],
+  "unusual_volume_flags": [],
   "event_scores_today": {},
   "indices_today": {
     "dow": {
-      "value": 49651.89,
-      "change_pct": 1.62,
+      "value": 49807.3,
+      "change_pct": 0.31,
       "label": "Rising"
     },
     "sp500": {
-      "value": 7209.02,
-      "change_pct": 1.02,
+      "value": 7250.14,
+      "change_pct": 0.57,
       "label": "Rising"
     },
     "nasdaq": {
-      "value": 24892.31,
-      "change_pct": 0.89,
+      "value": 25085.48,
+      "change_pct": 0.78,
       "label": "Rising"
     }
   },
-  "today_scores": {
-    "WDC": 66.8,
-    "TXN": 65.1,
-    "DVN": 63.9,
-    "APA": 63.8,
-    "AVGO": 63.7,
-    "SLB": 63.3,
-    "EXC": 56.8,
-    "OGE": 56.5,
-    "STZ": 52.5,
-    "PM": 51.8,
-    "PEP": 50.8
-  }
+  "today_scores": {}
 }
