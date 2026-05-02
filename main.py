@@ -932,7 +932,6 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict,
             indices               = indices,
             breadth               = breadth,
             regime                = regime,
-            prompt_text           = '',
             full_url              = '',
             is_debug              = True,
             active_subs           = active_subs,
@@ -1452,7 +1451,6 @@ def run():
     # ── Step 27f: Price Structure enrichment ─────────────────────────────
     # Run System 4 (Price Structure Analyzer) against all final candidates.
     # analyze() is called per-ticker. Non-fatal — PS_AVAILABLE=False on any error.
-    # entry_quality == GOOD is a hard gate for BUY NOW in _build_ai_prompt().
     try:
         if final_companies:
             log.info(f'[PS] Running price structure analysis on {len(final_companies)} tickers')
@@ -1768,7 +1766,6 @@ def run():
             indices            = state.get('indices_today', {}),
             breadth            = breadth,
             regime             = regime,
-            prompt_text        = html_files.get('prompt', ''),
             full_url           = html_files.get('full_url', ''),
             is_debug           = False,
             index_history      = index_history,

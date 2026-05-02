@@ -234,20 +234,11 @@ _INDEX_FETCH_JS = (
     "      var regimeCls = regimeRaw.indexOf('calm') !== -1 ? 'regime-calm' : regimeRaw.indexOf('normal') !== -1 ? 'regime-normal' : regimeRaw.indexOf('elevated') !== -1 ? 'regime-elevated' : regimeRaw.indexOf('stress') !== -1 ? 'regime-crisis' : 'regime-normal';\n"
     "      var regimeBadge = '<span class=\"regime-badge ' + regimeCls + '\">' + regimeLabel + '</span>';\n"
     "      var uid      = 'prompt_' + (idx + 1);\n"
-    "      var promptText  = r.prompt || '';\n"
-    "      var scriptBlock = '';\n"
-    "      var copyBtn     = '';\n"
-    "      if (promptText) {\n"
-    "        var safePrompt = JSON.stringify(promptText).replace(/<\\/script>/gi, '<\\\\/script>');\n"
-    "        scriptBlock = '<script type=\"application/json\" id=\"' + uid + '\">' + safePrompt + '<\\/script>';\n"
-    "        copyBtn = '<button class=\"btn mg copy-prompt-btn\" data-ref=\"' + uid + '\">\\u29c9 Copy AI Prompt</button>';\n"
-    "      }\n"
     "      var reportUrl = r.report_url || '';\n"
     "      var fullBtn = reportUrl\n"
     "        ? '<a href=\"' + reportUrl + '\" class=\"btn\" target=\"_blank\" onclick=\"event.stopPropagation()\">\\u2197 Full Report</a>'\n"
     "        : '';\n"
-    "      html += scriptBlock\n"
-    "           + '<div class=\"rcard\" onclick=\"rcT(this)\">'\n"
+    "      html += '<div class=\"rcard\" onclick=\"rcT(this)\">'\n"
     "           + '<div class=\"rcard-head\"><div>'\n"
     "           + '<div class=\"rcard-date\">' + (r.date || '') + ' \\u00b7 ' + (r.slot || '') + ' \\u00b7 ' + count + ' stock' + (count !== 1 ? 's' : '') + '</div>'\n"
     "           + '<div class=\"rcard-slot\" style=\"font-size:11px;color:var(--mist);\">' + (r.time || '') + ' ET \\u00b7 ' + regimeBadge + '</div>'\n"
@@ -264,7 +255,7 @@ _INDEX_FETCH_JS = (
     "           + '<span style=\"color:var(--dn)\">S:' + sC + '</span></div></div>'\n"
     "           + '<div><div class=\"rcc-k\">Breadth</div><div class=\"rcc-v\" style=\"color:var(--' + bCls + ')\">' + bTitle + '</div></div>'\n"
     "           + '</div>'\n"
-    "           + '<div class=\"rcard-btns\">' + fullBtn + copyBtn + '</div>'\n"
+    "           + '<div class=\"rcard-btns\">' + fullBtn + '</div>'\n"
     "           + '</div></div></div>';\n"
     "    });\n"
     "    if (!html) html = '<div style=\"color:var(--mist);font-family:var(--ff-mono);font-size:11px;\">No reports yet.</div>';\n"
@@ -459,16 +450,6 @@ _ARCHIVE_FETCH_JS = (
     "        var rnC = typeof vc['RESEARCH NOW'] === 'number' ? vc['RESEARCH NOW'] : 0;\n"
     "        var wC  = typeof vc['WATCH']        === 'number' ? vc['WATCH']        : 0;\n"
     "        var sC  = typeof vc['SKIP']         === 'number' ? vc['SKIP']         : 0;\n"
-    "        var promptText  = run.prompt || '';\n"
-    "        var scriptBlock = '';\n"
-    "        var copyBtn     = '';\n"
-    "        if (promptText) {\n"
-    "          var uid = 'arc_' + wk + '_' + runIdx;\n"
-    "          scriptBlock = '<script type=\"application/json\" id=\"' + uid + '\">'\n"
-    "                      + JSON.stringify(promptText).replace(/<\\/script>/gi,'<\\\\/script>')\n"
-    "                      + '<\\/script>';\n"
-    "          copyBtn = '<button class=\"btn mg copy-prompt-btn\" data-ref=\"' + uid + '\">\\u29c9 Copy AI Prompt</button>';\n"
-    "        }\n"
     "        var reportUrl = run.report_url || '';\n"
     "        var fullBtn = reportUrl\n"
     "          ? '<a href=\"' + reportUrl + '\" class=\"btn\" target=\"_blank\" onclick=\"event.stopPropagation()\">\\u2197 Full Report</a>'\n"
@@ -476,8 +457,7 @@ _ARCHIVE_FETCH_JS = (
     "        var rtypeBadge = runType === 'MANUAL'\n"
     "          ? '<span style=\"font-size:8px;color:var(--sun);margin-left:8px\">MANUAL</span>'\n"
     "          : '';\n"
-    "        cardsHtml += scriptBlock\n"
-    "          + '<div class=\"rcard\" onclick=\"rcT(this)\">'\n"
+    "        cardsHtml += '<div class=\"rcard\" onclick=\"rcT(this)\">'\n"
     "          + '<div class=\"rcard-head\"><div>'\n"
     "          + '<div class=\"rcard-date\">' + ts + ' \\u00b7 ' + slot + ' \\u00b7 ' + count + ' stock' + (count !== 1 ? 's' : '') + rtypeBadge + '</div>'\n"
     "          + '<div class=\"rcard-slot\">' + regimeBadge + '</div>'\n"
@@ -493,7 +473,7 @@ _ARCHIVE_FETCH_JS = (
     "          + '</div></div>'\n"
     "          + '<div><div class=\"rcc-k\">Breadth</div><div class=\"rcc-v\" style=\"color:var(--' + bCls + ')\">' + bTitle + '</div></div>'\n"
     "          + '</div>'\n"
-    "          + '<div class=\"rcard-btns\">' + fullBtn + copyBtn + '</div>'\n"
+    "          + '<div class=\"rcard-btns\">' + fullBtn + '</div>'\n"
     "          + '</div></div></div>';\n"
     "      });\n"
     "      html += '<div class=\"week-block\">'\n"
@@ -1087,56 +1067,6 @@ function expT(btn){
 
 _RCT_JS = "function rcT(el){el.classList.toggle('open');}"
 
-_COPY_PROMPT_JS = """
-document.addEventListener('click', function(e) {
-  var btn = e.target.closest('.copy-prompt-btn');
-  if (!btn) return;
-  e.stopPropagation();
-  var el = document.getElementById(btn.dataset.ref);
-  if (!el) return;
-  var text;
-  try { text = JSON.parse(el.textContent); } catch(err) {
-    btn.textContent = 'Error';
-    btn.style.color = 'var(--dn)';
-    setTimeout(function() {
-      btn.textContent = '\u2389 Copy AI Prompt';
-      btn.style.color = '';
-    }, 1800);
-    return;
-  }
-  function onCopied() {
-    var orig = btn.textContent;
-    btn.textContent = 'Copied \u2713';
-    btn.style.color = 'var(--up)';
-    btn.style.borderColor = 'rgba(57,232,160,.5)';
-    setTimeout(function() {
-      btn.textContent = orig;
-      btn.style.color = '';
-      btn.style.borderColor = '';
-    }, 1800);
-  }
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(text).then(onCopied).catch(function() {
-      var ta = document.createElement('textarea');
-      ta.value = text;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-      onCopied();
-    });
-  } else {
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    onCopied();
-  }
-});
-"""
-
 
 # ── Nav ──────────────────────────────────────────────────────────────────────
 
@@ -1229,7 +1159,7 @@ def _write_news_json(confirmed_sectors: dict) -> None:
         log.error(f'News JSON write failed: {e}')
 
 
-def _update_reports_index(companies, slot, indices, breadth, regime, full_url='', prompt_text='', market_regime_dict=None, portfolio_summary=None):
+def _update_reports_index(companies, slot, indices, breadth, regime, full_url='', market_regime_dict=None, portfolio_summary=None):
     index_path = os.path.join(DATA_DIR, 'reports.json')
     try:
         with open(index_path, encoding='utf-8') as f:
@@ -1264,7 +1194,6 @@ def _update_reports_index(companies, slot, indices, breadth, regime, full_url=''
         'top_score':  max((c.get('composite_confidence', 0) for c in companies), default=0),
         'verdicts':   vc,
         'report_url': full_url,
-        'prompt':     prompt_text[:12000] if prompt_text else '',
         'pl_recommended_subset':    (portfolio_summary or {}).get('pl_recommended_subset', []),
         'pl_sector_exposure':       (portfolio_summary or {}).get('pl_sector_exposure', {}),
         'pl_diversification_score': (portfolio_summary or {}).get('pl_diversification_score'),
@@ -1377,7 +1306,7 @@ def _archive_week_is_recent(week_key: str, cutoff) -> bool:
         return True  # keep on parse failure
 
 
-def _update_weekly_archive(companies, slot, breadth, regime, prompt_text='', is_debug=False, full_url='', market_regime_dict=None):
+def _update_weekly_archive(companies, slot, breadth, regime, is_debug=False, full_url='', market_regime_dict=None):
     # Test runs (is_debug=True) are stored in tests.json, not the archive.
     if is_debug:
         return
@@ -1416,7 +1345,6 @@ def _update_weekly_archive(companies, slot, breadth, regime, prompt_text='', is_
             }
             for c in companies
         ],
-        'prompt':     prompt_text[:12000] if prompt_text else '',
         'report_url': full_url,
     }
     if week_key not in archive['weeks']:
@@ -1674,7 +1602,6 @@ def _render_index_html(reports, rank_data, indices, breadth, regime, now_et, ind
             f'{_TOGGLE_IDX_JS}{_BUILD_IDX_CHART_JS}'
             f'{_RAF_COLLAPSE_JS}{_RCT_JS}</script>'
             f'{idx_script}'
-            f'<script>{_COPY_PROMPT_JS}</script>'
         )
 
         return (
@@ -1784,7 +1711,7 @@ def _render_rank_html(rank_data: dict) -> str:
             '</div>'
             '</div></div>'
             '<footer><span>MRE</span> &middot; Free-tier data only &middot; Not investment advice</footer>'
-            f'<script>{_DAYS_JS}{_EASING_JS}{_RAF_COLLAPSE_JS}{_EXP_T_JS}{_COPY_PROMPT_JS}</script>'
+            f'<script>{_DAYS_JS}{_EASING_JS}{_RAF_COLLAPSE_JS}{_EXP_T_JS}</script>'
             '<script>' + _RANK_FETCH_JS + '</script>'
             '</body></html>'
         )
@@ -1816,7 +1743,7 @@ def _render_archive_html(archive_data: dict) -> str:
             '<div id="archive-mount"></div>'
             '</div></div>'
             '<footer><span>MRE</span> &middot; Free-tier data only &middot; Not investment advice</footer>'
-            f'<script>{_RCT_JS}{_COPY_PROMPT_JS}</script>'
+            f'<script>{_RCT_JS}</script>'
             '<script>' + _ARCHIVE_FETCH_JS + '</script>'
             '</body></html>'
         )
@@ -2740,7 +2667,6 @@ def build_dashboard(
     rotation=None,
     *,
     full_url='',
-    prompt_text='',
     is_debug=False,
     active_subs=None,
     index_history=None,
@@ -2760,7 +2686,6 @@ def build_dashboard(
     breadth      : dict — {label: str}
     regime       : dict — {label: str}
     full_url     : str — GitHub Pages report URL
-    prompt_text  : str — AI research prompt for copy button
     is_debug     : bool — if True, routes to tests.json/tests.html only (no rank/archive writes)
     active_subs  : set[str] — subsystems active in this run (test runs only)
     index_history: dict — keys 'dow', 'sp500', 'nasdaq'; values: list[float] (30+ closes)
@@ -2834,7 +2759,7 @@ def build_dashboard(
     # ── Update data stores ──────────────────────────────────────────────────
     try:
         _update_reports_index(companies, slot, indices, breadth, regime,
-                              full_url, prompt_text,
+                              full_url,
                               market_regime_dict=market_regime_dict,
                               portfolio_summary=portfolio_summary)
     except Exception as e:
@@ -2847,7 +2772,7 @@ def build_dashboard(
 
     try:
         _update_weekly_archive(companies, slot, breadth, regime,
-                               prompt_text, is_debug, full_url,
+                               is_debug, full_url,
                                market_regime_dict=market_regime_dict)
     except Exception as e:
         log.error(f'_update_weekly_archive error: {e}')

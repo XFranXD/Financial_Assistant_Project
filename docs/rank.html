@@ -243,44 +243,7 @@ function expT(btn){
   }
 }
 
-document.addEventListener('click', function(e) {
-  var btn = e.target.closest('.copy-prompt-btn');
-  if (!btn) return;
-  e.stopPropagation();
-  var el = document.getElementById(btn.dataset.ref);
-  if (!el) return;
-  var text;
-  try { text = JSON.parse(el.textContent); } catch(err) {
-    btn.textContent = 'Error';
-    btn.style.color = 'var(--dn)';
-    setTimeout(function() {
-      btn.textContent = '⎉ Copy AI Prompt';
-      btn.style.color = '';
-    }, 1800);
-    return;
-  }
-  function onCopied() {
-    var orig = btn.textContent;
-    btn.textContent = 'Copied ✓';
-    btn.style.color = 'var(--up)';
-    btn.style.borderColor = 'rgba(57,232,160,.5)';
-    setTimeout(function() {
-      btn.textContent = orig;
-      btn.style.color = '';
-      btn.style.borderColor = '';
-    }, 1800);
-  }
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(text).then(onCopied).catch(function() {
-      var ta = document.createElement('textarea');
-      ta.value = text;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-      onCopied();
-    });
-  } else {
+} else {
     var ta = document.createElement('textarea');
     ta.value = text;
     document.body.appendChild(ta);

@@ -348,8 +348,7 @@
     <div id="p-guide" class="page on">
       <div class="pg-eyebrow">Documentation &middot; How to use this system</div>
       <div class="pg-title">Research <span class="hi">Guide</span></div>
-      <div class="pg-sub">How this system works, what every signal means, and how to use the AI prompt to make
-        decisions.</div>
+      <div class="pg-sub">How this system works and what every signal means.</div>
 
       <!-- 01. How the system works -->
       <div class="guide-section">
@@ -368,9 +367,9 @@
           earnings are cash-backed across 7 modules. System 3 measures sector-level momentum to determine whether
           capital flow supports or opposes entering now.</div>
         <div class="guide-text">After all three score a candidate, a Combined Reading synthesises the signals into an
-          alignment verdict and a conclusion. The final output is a full report with an AI Research Prompt &mdash; a
-          pre-built block you paste into any AI assistant for entry and exit analysis. The system never tells you to buy
-          or sell. It identifies candidates and organises data so you can make an informed decision.</div>
+          alignment verdict and a conclusion. The final output is a full report summarising all signals for each
+          candidate. The system never tells you to buy or sell. It identifies candidates and organises data so you
+          can make an informed decision.</div>
       </div>
 
       <!-- 02. System 1 -->
@@ -586,7 +585,7 @@
             class="signal-desc">Systems disagree. The conflict must be understood before any action.</span></div>
 
         <div class="guide-text" style="color:var(--snow);margin-bottom:6px;">Decision Priority Order</div>
-        <div class="guide-text">When signals conflict, the system and the AI prompt follow this hierarchy:</div>
+        <div class="guide-text">When signals conflict, the system follows this hierarchy:</div>
         <table class="priority-table">
           <thead>
             <tr>
@@ -620,63 +619,12 @@
         </table>
       </div>
 
-      <!-- 06. The AI Prompt -->
-      <div class="guide-section">
-        <div class="guide-head"><span>06</span> The AI Research Prompt</div>
-        <div class="guide-text">Every run generates an AI Research Prompt &mdash; a structured block of text containing
-          all automated research data for every candidate in that run. Copy it and paste it into any AI assistant
-          (Claude, ChatGPT, Gemini) to get entry analysis, exit logic, risk assessment, and a final verdict. No
-          additional instructions are needed &mdash; the prompt is self-contained.</div>
-        <div class="guide-text">This is the last 5% of the process. The system handles data collection, scoring, and
-          structuring. The AI assistant handles interpretation and plain-English reasoning. You make the final call.
-        </div>
-
-        <div class="guide-text" style="color:var(--snow);margin-bottom:6px;">How to Access It</div>
-        <div class="guide-text">Open any run entry on the Archive page. Click the <span style="color:var(--mg)">&#x2389;
-            Copy Prompt</span> button to copy the full prompt to clipboard. Or click the report link to open the full
-          report page &mdash; it includes the same copy button at the bottom.</div>
-
-        <div class="guide-text" style="color:var(--snow);margin-bottom:6px;">What the Prompt Contains</div>
-        <div class="guide-grid">
-          <div class="guide-card">
-            <div class="guide-term">Rules block</div>
-            <div class="guide-desc">Timing rules, decision hierarchy, BUY NOW gate, conflict definitions &mdash;
-              pre-loaded so the AI reasons consistently.</div>
-          </div>
-          <div class="guide-card">
-            <div class="guide-term">System vocabulary</div>
-            <div class="guide-desc">All signal labels and exact meanings so the AI interprets RESEARCH NOW, SUPPORT,
-              ALIGNED, LATE TREND correctly.</div>
-          </div>
-          <div class="guide-card">
-            <div class="guide-term">Global context</div>
-            <div class="guide-desc">Date, slot, market regime, breadth, index values, and 5-day commodity moves.</div>
-          </div>
-          <div class="guide-card">
-            <div class="guide-term">Per-candidate data</div>
-            <div class="guide-desc">Price, confidence, trend (1M/3M/6M), volume, EQ score, rotation signal, combined
-              reading, strengths, and warnings.</div>
-          </div>
-        </div>
-
-        <div class="guide-text" style="color:var(--snow);margin-bottom:6px;">Hard Rules Enforced in the Prompt</div>
-        <div class="warn-box">
-          <strong>BUY NOW gate</strong>
-          BUY NOW is only allowed if ALL of the following are true: Timing = EARLY TREND or MID TREND &middot; Market
-          verdict = RESEARCH NOW &middot; Rotation = SUPPORT &middot; No major signal conflicts.<br><br>
-          LATE TREND override: even with RESEARCH NOW + SUPPORT + no conflicts, the maximum allowed entry is WAIT
-          &mdash; never BUY NOW.<br><br>
-          UNAVAILABLE earnings blocks BUY NOW unless all other signals are strong and timing is EARLY or MID TREND.
-        </div>
-      </div>
-
       <!-- 07. The Archive -->
       <div class="guide-section">
         <div class="guide-head"><span>07</span> The Archive</div>
         <div class="guide-text">The Archive page stores every run the system has produced, organised by week. Each week
           is a collapsible section. Each run shows the timestamp, slot, candidate count, verdict counts (RESEARCH NOW /
-          WATCH / SKIP), and market regime. Expanding a run shows the candidate table with the AI prompt copy button and
-          a link to the full report.</div>
+          WATCH / SKIP), and market regime. Expanding a run shows the candidate table and a link to the full report.</div>
 
         <div class="signal-row"><span class="signal-key pu">SCHEDULED</span><span class="signal-desc">Automatic run at
             one of the four daily slots.</span></div>

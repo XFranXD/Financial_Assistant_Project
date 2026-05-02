@@ -300,53 +300,6 @@ function closeExpRowInstant(row){
   if(inner){inner.style.opacity='';inner.style.transform='';inner.style.transformOrigin='';}
 }
 function rcT(el){el.classList.toggle('open');}</script><script>const IDX_DATA={"dow": {"name": "Dow Jones", "color": "#ff4d6d", "bg_color": "rgba(255,77,109,0.12)", "data": [45577.47, 46208.47, 46124.06, 46429.49, 45960.11, 45166.64, 45216.14, 46341.51, 46565.74, 46504.67, 46669.88, 46584.46, 47909.92, 48185.8, 47916.57, 48218.25, 48535.99, 48463.72, 48578.72, 49447.43, 49442.56, 49149.38, 49490.03, 49310.32, 49230.71, 49167.79, 49141.93, 48861.81, 49652.14, 49499.27], "stat1m": "\u25b26.3%", "stat3m": "\u2014", "stat6m": "\u2014"}, "sp": {"name": "S&P 500", "color": "#39e8a0", "bg_color": "rgba(57,232,160,0.12)", "data": [6506.48, 6581.0, 6556.37, 6591.9, 6477.16, 6368.85, 6343.72, 6528.52, 6575.32, 6582.69, 6611.83, 6616.85, 6782.81, 6824.66, 6816.89, 6886.24, 6967.38, 7022.95, 7041.28, 7126.06, 7109.14, 7064.01, 7137.9, 7108.4, 7165.08, 7173.91, 7138.8, 7135.95, 7209.01, 7230.12], "stat1m": "\u25b210.0%", "stat3m": "\u2014", "stat6m": "\u2014"}, "nq": {"name": "Nasdaq", "color": "#39e8a0", "bg_color": "rgba(57,232,160,0.12)", "data": [21647.61, 21946.76, 21761.89, 21929.82, 21408.08, 20948.36, 20794.64, 21590.63, 21840.95, 21879.18, 21996.34, 22017.85, 22634.99, 22822.42, 22902.89, 23183.74, 23639.08, 24016.02, 24102.7, 24468.48, 24404.39, 24259.96, 24657.57, 24438.5, 24836.6, 24887.1, 24663.8, 24673.24, 24892.31, 25114.44], "stat1m": "\u25b215.0%", "stat3m": "\u2014", "stat6m": "\u2014"}};</script><script>
-document.addEventListener('click', function(e) {
-  var btn = e.target.closest('.copy-prompt-btn');
-  if (!btn) return;
-  e.stopPropagation();
-  var el = document.getElementById(btn.dataset.ref);
-  if (!el) return;
-  var text;
-  try { text = JSON.parse(el.textContent); } catch(err) {
-    btn.textContent = 'Error';
-    btn.style.color = 'var(--dn)';
-    setTimeout(function() {
-      btn.textContent = '⎉ Copy AI Prompt';
-      btn.style.color = '';
-    }, 1800);
-    return;
-  }
-  function onCopied() {
-    var orig = btn.textContent;
-    btn.textContent = 'Copied ✓';
-    btn.style.color = 'var(--up)';
-    btn.style.borderColor = 'rgba(57,232,160,.5)';
-    setTimeout(function() {
-      btn.textContent = orig;
-      btn.style.color = '';
-      btn.style.borderColor = '';
-    }, 1800);
-  }
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(text).then(onCopied).catch(function() {
-      var ta = document.createElement('textarea');
-      ta.value = text;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-      onCopied();
-    });
-  } else {
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    onCopied();
-  }
-});
 </script><script>// ── Rank preview fetch ───────────────────────────────────────────────────
 fetch('assets/data/rank.json?v='+Date.now())
   .then(function(r){ return r.ok ? r.json() : Promise.reject(r.status); })
