@@ -12,13 +12,14 @@ log = logging.getLogger(__name__)
 # Tier definitions (lower = higher priority):
 #   Tier 0 — GOOD entry + R:R >= threshold  → fully tradeable
 #   Tier 1 — GOOD entry + R:R <  threshold  → structurally valid, not executable
-#   Tier 2 — non-GOOD entry + R:R >= threshold → high payoff, Sub6 will reject anyway
+#   Tier 2 — non-GOOD entry + R:R >= threshold → high payoff, structurally weaker
 #   Tier 3 — non-GOOD entry + R:R <  threshold → weakest
 
 def _tier(entry_quality: str, rr) -> int:
-    good   = entry_quality == 'GOOD'
-    rr_val = float(rr) if rr is not None else 0.0
-    high_rr = rr_val >= MIN_RR_THRESHOLD
+    if rr is None:
+        return 3
+    good    = entry_quality == 'GOOD'
+    high_rr = float(rr) >= MIN_RR_THRESHOLD
     if good and high_rr:
         return 0
     if good and not high_rr:
@@ -62,7 +63,7 @@ def select(
     }
 
     def sort_key(t: str) -> tuple:
-        return (tier_map.get(t, 3), -conf_map.get(t, 0))
+        return (tier_map.get(t, 3), -conf_map.get(t, 0), t)
 
     exclusion_reasons: dict[str, str] = {}
     selected: list[str] = []
