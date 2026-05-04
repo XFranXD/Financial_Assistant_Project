@@ -1,3 +1,51 @@
 {
-  "weeks": {}
+  "weeks": {
+    "week-of-2026-05-03": {
+      "runs": [
+        {
+          "id": "13:45-15:15_2026-05-04T14:07",
+          "run_type": "SCHEDULED",
+          "timestamp": "2026-05-04T14:07",
+          "slot": "13:45-15:15",
+          "breadth": "weak breadth \u2014 most stocks declining",
+          "regime": "Normal market",
+          "market_regime": "BULL",
+          "breadth_pct": 67.2,
+          "count": 3,
+          "verdict_counts": {
+            "RESEARCH NOW": 0,
+            "WATCH": 3,
+            "SKIP": 0
+          },
+          "candidates": [
+            {
+              "ticker": "WDC",
+              "confidence": 59.9,
+              "eq_verdict": "NEUTRAL",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "EXTENDED",
+              "conclusion": ""
+            },
+            {
+              "ticker": "QCOM",
+              "confidence": 56.5,
+              "eq_verdict": "UNAVAILABLE",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "NVDA",
+              "confidence": 56.1,
+              "eq_verdict": "WEAK",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            }
+          ],
+          "report_url": "reports/intraday_full_1345_1515_20260504T180741Z.html"
+        }
+      ]
+    }
+  }
 }
