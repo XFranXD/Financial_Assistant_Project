@@ -3,6 +3,49 @@
     "week-of-2026-05-03": {
       "runs": [
         {
+          "id": "16:00-17:20_2026-05-04T16:08",
+          "run_type": "SCHEDULED",
+          "timestamp": "2026-05-04T16:08",
+          "slot": "16:00-17:20",
+          "breadth": "weak breadth \u2014 most stocks declining",
+          "regime": "Normal market",
+          "market_regime": "BULL",
+          "breadth_pct": 66.4,
+          "count": 3,
+          "verdict_counts": {
+            "RESEARCH NOW": 0,
+            "WATCH": 2,
+            "SKIP": 1
+          },
+          "candidates": [
+            {
+              "ticker": "AVGO",
+              "confidence": 56.0,
+              "eq_verdict": "UNAVAILABLE",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "GOOD",
+              "conclusion": ""
+            },
+            {
+              "ticker": "TXN",
+              "confidence": 55.8,
+              "eq_verdict": "SUPPORTIVE",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "EXTENDED",
+              "conclusion": ""
+            },
+            {
+              "ticker": "MSFT",
+              "confidence": 54.8,
+              "eq_verdict": "SUPPORTIVE",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "GOOD",
+              "conclusion": ""
+            }
+          ],
+          "report_url": "reports/intraday_full_1600_1720_20260504T200830Z.html"
+        },
+        {
           "id": "13:45-15:15_2026-05-04T14:07",
           "run_type": "SCHEDULED",
           "timestamp": "2026-05-04T14:07",

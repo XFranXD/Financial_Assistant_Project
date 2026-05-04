@@ -31,25 +31,25 @@
   "failed_tickers": [],
   "api_failures": {},
   "sector_scores_today": {
-    "technology": 2.196,
-    "healthcare": -0.046,
-    "financials": -0.821,
-    "consumer_discretionary": -0.541,
-    "consumer_staples": 1.213,
-    "industrials": -0.882,
-    "materials": -2.578,
-    "energy": 5.32,
-    "utilities": 0.358,
-    "real_estate": 0.366,
-    "communication_services": -0.299,
-    "semiconductors": 4.339,
-    "defense": -2.445
+    "technology": 2.0,
+    "healthcare": 0.013,
+    "financials": -0.98,
+    "consumer_discretionary": -0.647,
+    "consumer_staples": 1.335,
+    "industrials": -1.196,
+    "materials": -2.534,
+    "energy": 5.54,
+    "utilities": 0.643,
+    "real_estate": 0.47,
+    "communication_services": -0.566,
+    "semiconductors": 4.14,
+    "defense": -2.872
   },
-  "breadth_score_today": 0.346,
+  "breadth_score_today": 0.3,
   "sector_breadth_ma_today": {
     "technology": {
-      "breadth_ma_score": 0.9,
-      "pct": 90.0,
+      "breadth_ma_score": 0.8,
+      "pct": 80.0,
       "label": "sector is genuinely strong"
     },
     "semiconductors": {
@@ -113,23 +113,25 @@
       "label": "sector is structurally weak"
     }
   },
-  "unusual_volume_flags": [],
+  "unusual_volume_flags": [
+    "TWLO"
+  ],
   "event_scores_today": {},
   "indices_today": {
     "dow": {
-      "value": 49082.75,
-      "change_pct": -0.84,
+      "value": 48941.9,
+      "change_pct": -1.13,
       "label": "Falling"
     },
     "sp500": {
-      "value": 7211.91,
-      "change_pct": -0.25,
+      "value": 7200.75,
+      "change_pct": -0.41,
       "label": "Falling"
     },
     "nasdaq": {
-      "value": 25108.19,
-      "change_pct": -0.02,
-      "label": "Flat"
+      "value": 25067.8,
+      "change_pct": -0.19,
+      "label": "Falling"
     }
   },
   "today_scores": {
