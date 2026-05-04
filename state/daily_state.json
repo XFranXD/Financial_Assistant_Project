@@ -1,6 +1,10 @@
 {
   "date": "2026-05-04",
-  "reported_companies": [],
+  "reported_companies": [
+    "QCOM",
+    "WDC",
+    "NVDA"
+  ],
   "alpha_vantage_calls_today": 20,
   "runs": {
     "9:45-11:15": {
@@ -12,8 +16,12 @@
       "status": "complete"
     },
     "13:45-15:15": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "WDC",
+        "QCOM",
+        "NVDA"
+      ],
+      "status": "complete"
     },
     "16:00-17:20": {
       "companies": [],
@@ -124,5 +132,9 @@
       "label": "Flat"
     }
   },
-  "today_scores": {}
+  "today_scores": {
+    "WDC": 59.9,
+    "QCOM": 56.5,
+    "NVDA": 56.1
+  }
 }
