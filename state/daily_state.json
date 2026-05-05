@@ -1,14 +1,22 @@
 {
   "date": "2026-05-05",
   "reported_companies": [
-    "KO",
-    "NVDA",
+    "D",
     "LNT",
-    "NEE",
-    "WDC",
+    "BTI",
     "PG",
+    "PM",
+    "KO",
+    "QCOM",
+    "AVGO",
     "MO",
-    "QCOM"
+    "WDC",
+    "MDLZ",
+    "NVDA",
+    "AMAT",
+    "TXN",
+    "AEP",
+    "NEE"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -30,8 +38,17 @@
       "status": "complete"
     },
     "13:45-15:15": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "AVGO",
+        "TXN",
+        "AMAT",
+        "AEP",
+        "D",
+        "BTI",
+        "MDLZ",
+        "PM"
+      ],
+      "status": "complete"
     },
     "16:00-17:20": {
       "companies": [],
@@ -143,13 +160,13 @@
     }
   },
   "today_scores": {
-    "WDC": 70.3,
-    "QCOM": 69.1,
-    "NVDA": 66.1,
-    "NEE": 58.8,
-    "KO": 57.5,
-    "MO": 57.2,
-    "LNT": 54.8,
-    "PG": 53.5
+    "AVGO": 65.5,
+    "TXN": 65.0,
+    "AMAT": 64.6,
+    "AEP": 55.6,
+    "D": 54.7,
+    "BTI": 53.8,
+    "MDLZ": 52.3,
+    "PM": 51.4
   }
 }
