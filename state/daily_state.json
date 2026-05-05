@@ -1,22 +1,30 @@
 {
   "date": "2026-05-05",
   "reported_companies": [
-    "D",
-    "LNT",
-    "BTI",
-    "PG",
-    "PM",
-    "KO",
-    "QCOM",
-    "AVGO",
-    "MO",
     "WDC",
-    "MDLZ",
-    "NVDA",
-    "AMAT",
-    "TXN",
+    "STZ",
     "AEP",
-    "NEE"
+    "SO",
+    "LNT",
+    "NEE",
+    "PG",
+    "AAPL",
+    "AMAT",
+    "MDLZ",
+    "KO",
+    "AVGO",
+    "BTI",
+    "MO",
+    "XEL",
+    "PLTR",
+    "D",
+    "QCOM",
+    "NVDA",
+    "PM",
+    "TXN",
+    "MSFT",
+    "WMT",
+    "MKC"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -51,8 +59,17 @@
       "status": "complete"
     },
     "16:00-17:20": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "PLTR",
+        "AAPL",
+        "MSFT",
+        "XEL",
+        "SO",
+        "WMT",
+        "STZ",
+        "MKC"
+      ],
+      "status": "complete"
     }
   },
   "failed_tickers": [],
@@ -160,13 +177,13 @@
     }
   },
   "today_scores": {
-    "AVGO": 65.5,
-    "TXN": 65.0,
-    "AMAT": 64.6,
-    "AEP": 55.6,
-    "D": 54.7,
-    "BTI": 53.8,
-    "MDLZ": 52.3,
-    "PM": 51.4
+    "PLTR": 64.2,
+    "AAPL": 63.9,
+    "MSFT": 63.1,
+    "XEL": 54.6,
+    "SO": 54.6,
+    "WMT": 51.7,
+    "STZ": 49.6,
+    "MKC": 49.1
   }
 }
