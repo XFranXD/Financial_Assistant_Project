@@ -3,6 +3,89 @@
     "week-of-2026-05-03": {
       "runs": [
         {
+          "id": "16:00-17:20_2026-05-05T16:05",
+          "run_type": "SCHEDULED",
+          "timestamp": "2026-05-05T16:05",
+          "slot": "16:00-17:20",
+          "breadth": "strong breadth \u2014 most stocks rising",
+          "regime": "Normal market",
+          "market_regime": "BULL",
+          "breadth_pct": 65.6,
+          "count": 8,
+          "verdict_counts": {
+            "RESEARCH NOW": 0,
+            "WATCH": 3,
+            "SKIP": 5
+          },
+          "candidates": [
+            {
+              "ticker": "PLTR",
+              "confidence": 64.2,
+              "eq_verdict": "NEUTRAL",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "AAPL",
+              "confidence": 63.9,
+              "eq_verdict": "SUPPORTIVE",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "MSFT",
+              "confidence": 63.1,
+              "eq_verdict": "SUPPORTIVE",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "XEL",
+              "confidence": 54.6,
+              "eq_verdict": "WEAK",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "SO",
+              "confidence": 54.6,
+              "eq_verdict": "WEAK",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "WMT",
+              "confidence": 51.7,
+              "eq_verdict": "WEAK",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "STZ",
+              "confidence": 49.6,
+              "eq_verdict": "UNAVAILABLE",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "MKC",
+              "confidence": 49.1,
+              "eq_verdict": "WEAK",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            }
+          ],
+          "report_url": "reports/intraday_full_1600_1720_20260505T200509Z.html"
+        },
+        {
           "id": "13:45-15:15_2026-05-05T14:06",
           "run_type": "SCHEDULED",
           "timestamp": "2026-05-05T14:06",

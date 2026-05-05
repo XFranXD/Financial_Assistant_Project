@@ -3,6 +3,42 @@
   "reports": [
     {
       "date": "2026-05-05",
+      "time": "16:05",
+      "slot": "16:00-17:20",
+      "breadth": "strong breadth \u2014 most stocks rising",
+      "regime": "Normal market",
+      "market_regime": "BULL",
+      "breadth_pct": 65.6,
+      "count": 8,
+      "tickers": [
+        "PLTR",
+        "AAPL",
+        "MSFT",
+        "XEL",
+        "SO"
+      ],
+      "top_score": 64.2,
+      "verdicts": {
+        "RESEARCH NOW": 0,
+        "WATCH": 3,
+        "SKIP": 5
+      },
+      "report_url": "reports/intraday_full_1600_1720_20260505T200509Z.html",
+      "pl_recommended_subset": [
+        "SO",
+        "MKC",
+        "PLTR"
+      ],
+      "pl_sector_exposure": {
+        "technology": 22.74,
+        "consumer_staples": 37.26,
+        "utilities": 40.0
+      },
+      "pl_diversification_score": 1.0511,
+      "pl_avg_correlation": -0.0511
+    },
+    {
+      "date": "2026-05-05",
       "time": "14:06",
       "slot": "13:45-15:15",
       "breadth": "strong breadth \u2014 most stocks rising",
