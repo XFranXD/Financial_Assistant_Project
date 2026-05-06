@@ -1,18 +1,27 @@
 {
   "date": "2026-05-06",
   "reported_companies": [
-    "UNP",
-    "CSX",
-    "AVB",
-    "REG",
+    "PSA",
     "KIM",
-    "EQR",
-    "AME",
+    "CSX",
     "GE",
+    "DAL",
     "VICI",
-    "ETN",
+    "GLPI",
+    "WDC",
     "GD",
-    "WELL"
+    "WELL",
+    "UNP",
+    "REG",
+    "EMR",
+    "RTX",
+    "EQR",
+    "NVDA",
+    "AVB",
+    "FRT",
+    "QCOM",
+    "ETN",
+    "AME"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -43,8 +52,18 @@
       "status": "complete"
     },
     "16:00-17:20": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "QCOM",
+        "WDC",
+        "NVDA",
+        "FRT",
+        "GLPI",
+        "PSA",
+        "DAL",
+        "EMR",
+        "RTX"
+      ],
+      "status": "complete"
     }
   },
   "failed_tickers": [],
@@ -154,11 +173,14 @@
     }
   },
   "today_scores": {
-    "AVB": 56.9,
-    "EQR": 56.6,
-    "REG": 56.6,
-    "ETN": 56.3,
-    "GE": 54.0,
-    "GD": 52.1
+    "QCOM": 73.5,
+    "WDC": 71.7,
+    "NVDA": 70.4,
+    "FRT": 56.7,
+    "GLPI": 56.6,
+    "PSA": 56.4,
+    "DAL": 53.5,
+    "EMR": 52.7,
+    "RTX": 52.4
   }
 }
