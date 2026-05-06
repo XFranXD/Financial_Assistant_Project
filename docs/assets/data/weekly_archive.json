@@ -3,6 +3,73 @@
     "week-of-2026-05-03": {
       "runs": [
         {
+          "id": "11:45-13:15_2026-05-06T11:57",
+          "run_type": "SCHEDULED",
+          "timestamp": "2026-05-06T11:57",
+          "slot": "11:45-13:15",
+          "breadth": "strong breadth \u2014 most stocks rising",
+          "regime": "Normal market",
+          "market_regime": "BULL",
+          "breadth_pct": 68.0,
+          "count": 6,
+          "verdict_counts": {
+            "RESEARCH NOW": 0,
+            "WATCH": 6,
+            "SKIP": 0
+          },
+          "candidates": [
+            {
+              "ticker": "CSX",
+              "confidence": 60.0,
+              "eq_verdict": "SUPPORTIVE",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "EXTENDED",
+              "conclusion": ""
+            },
+            {
+              "ticker": "VICI",
+              "confidence": 59.3,
+              "eq_verdict": "NEUTRAL",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "KIM",
+              "confidence": 59.1,
+              "eq_verdict": "UNAVAILABLE",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "WELL",
+              "confidence": 57.7,
+              "eq_verdict": "NEUTRAL",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "AME",
+              "confidence": 55.8,
+              "eq_verdict": "SUPPORTIVE",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "UNP",
+              "confidence": 55.2,
+              "eq_verdict": "UNAVAILABLE",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "GOOD",
+              "conclusion": ""
+            }
+          ],
+          "report_url": "reports/intraday_full_1145_1315_20260506T155714Z.html"
+        },
+        {
           "id": "16:00-17:20_2026-05-05T16:05",
           "run_type": "SCHEDULED",
           "timestamp": "2026-05-05T16:05",
