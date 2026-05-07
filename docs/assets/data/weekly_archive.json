@@ -3,6 +3,49 @@
     "week-of-2026-05-03": {
       "runs": [
         {
+          "id": "16:00-17:20_2026-05-07T16:07",
+          "run_type": "SCHEDULED",
+          "timestamp": "2026-05-07T16:07",
+          "slot": "16:00-17:20",
+          "breadth": "weak breadth \u2014 most stocks declining",
+          "regime": "Normal market",
+          "market_regime": "BULL",
+          "breadth_pct": 67.2,
+          "count": 3,
+          "verdict_counts": {
+            "RESEARCH NOW": 0,
+            "WATCH": 3,
+            "SKIP": 0
+          },
+          "candidates": [
+            {
+              "ticker": "FTNT",
+              "confidence": 67.9,
+              "eq_verdict": "NEUTRAL",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "TXN",
+              "confidence": 60.2,
+              "eq_verdict": "SUPPORTIVE",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "EXTENDED",
+              "conclusion": ""
+            },
+            {
+              "ticker": "AMD",
+              "confidence": 59.8,
+              "eq_verdict": "NEUTRAL",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "EXTENDED",
+              "conclusion": ""
+            }
+          ],
+          "report_url": "reports/intraday_full_1600_1720_20260507T200749Z.html"
+        },
+        {
           "id": "11:45-13:15_2026-05-07T11:58",
           "run_type": "SCHEDULED",
           "timestamp": "2026-05-07T11:58",
