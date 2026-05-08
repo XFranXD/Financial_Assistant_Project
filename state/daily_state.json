@@ -1,27 +1,33 @@
 {
   "date": "2026-05-08",
   "reported_companies": [
-    "TSLA",
-    "WELL",
     "HLT",
-    "TJX",
-    "KIM",
-    "ROST",
-    "MAR",
-    "ABNB",
-    "AMAT",
-    "ORLY",
-    "NVDA",
-    "TXN",
-    "AVGO",
-    "WDC",
-    "MSFT",
-    "QCOM",
     "AMD",
+    "KIM",
+    "PANW",
+    "ORLY",
     "VICI",
+    "AAPL",
+    "WDC",
+    "QCOM",
+    "TJX",
     "EBAY",
+    "AMAT",
+    "RCL",
+    "ABNB",
+    "FTNT",
+    "TSLA",
+    "SBUX",
+    "PLTR",
+    "ROST",
+    "NVDA",
+    "WELL",
+    "TXN",
+    "NKE",
+    "AVGO",
+    "MSFT",
     "MCD",
-    "FTNT"
+    "MAR"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -62,8 +68,15 @@
       "status": "complete"
     },
     "16:00-17:20": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "PANW",
+        "AAPL",
+        "PLTR",
+        "SBUX",
+        "NKE",
+        "RCL"
+      ],
+      "status": "complete"
     }
   },
   "failed_tickers": [],
@@ -178,11 +191,11 @@
     }
   },
   "today_scores": {
-    "AVGO": 62.5,
-    "AMAT": 61.1,
-    "MSFT": 60.9,
-    "MCD": 45.9,
-    "MAR": 45.2,
-    "TSLA": 44.3
+    "PANW": 64.8,
+    "AAPL": 61.9,
+    "PLTR": 59.8,
+    "SBUX": 42.9,
+    "NKE": 41.9,
+    "RCL": 40.9
   }
 }
