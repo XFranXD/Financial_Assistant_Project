@@ -1,16 +1,6 @@
 {
-  "date": "2026-05-07",
-  "reported_companies": [
-    "QCOM",
-    "WDC",
-    "ORLY",
-    "TXN",
-    "NVDA",
-    "FTNT",
-    "ROST",
-    "AMD",
-    "EBAY"
-  ],
+  "date": "2026-05-08",
+  "reported_companies": [],
   "alpha_vantage_calls_today": 20,
   "runs": {
     "9:45-11:15": {
@@ -18,52 +8,41 @@
       "status": "pending"
     },
     "11:45-13:15": {
-      "companies": [
-        "QCOM",
-        "NVDA",
-        "WDC",
-        "EBAY",
-        "ROST",
-        "ORLY"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     },
     "13:45-15:15": {
       "companies": [],
-      "status": "complete"
+      "status": "pending"
     },
     "16:00-17:20": {
-      "companies": [
-        "FTNT",
-        "TXN",
-        "AMD"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     }
   },
   "failed_tickers": [],
   "api_failures": {},
   "sector_scores_today": {
-    "technology": 6.774,
-    "healthcare": -1.26,
-    "financials": -1.302,
-    "consumer_discretionary": 1.082,
-    "consumer_staples": -0.43,
-    "industrials": -0.587,
-    "materials": -0.673,
-    "energy": -5.21,
-    "utilities": -3.597,
-    "real_estate": -0.059,
-    "communication_services": 0.169,
-    "semiconductors": 7.825,
-    "defense": 1.419
+    "technology": 7.281,
+    "healthcare": -1.242,
+    "financials": -1.284,
+    "consumer_discretionary": 1.292,
+    "consumer_staples": 0.179,
+    "industrials": 0.132,
+    "materials": 0.089,
+    "energy": -4.38,
+    "utilities": -3.952,
+    "real_estate": 0.23,
+    "communication_services": -0.049,
+    "semiconductors": 9.659,
+    "defense": 3.078
   },
-  "breadth_score_today": 0.246,
+  "breadth_score_today": 0.446,
   "sector_breadth_ma_today": {
     "technology": {
-      "breadth_ma_score": 0.8,
-      "pct": 80.0,
-      "label": "sector is genuinely strong"
+      "breadth_ma_score": 0.7,
+      "pct": 70.0,
+      "label": "healthy participation"
     },
     "semiconductors": {
       "breadth_ma_score": 1.0,
@@ -86,9 +65,9 @@
       "label": "mixed signals"
     },
     "consumer_staples": {
-      "breadth_ma_score": 0.8,
-      "pct": 80.0,
-      "label": "sector is genuinely strong"
+      "breadth_ma_score": 0.7,
+      "pct": 70.0,
+      "label": "healthy participation"
     },
     "industrials": {
       "breadth_ma_score": 0.6,
@@ -101,8 +80,8 @@
       "label": "mixed signals"
     },
     "energy": {
-      "breadth_ma_score": 0.4,
-      "pct": 40.0,
+      "breadth_ma_score": 0.5,
+      "pct": 50.0,
       "label": "mixed signals"
     },
     "materials": {
@@ -111,13 +90,13 @@
       "label": "mixed signals"
     },
     "utilities": {
-      "breadth_ma_score": 0.2,
-      "pct": 20.0,
+      "breadth_ma_score": 0.0,
+      "pct": 0.0,
       "label": "sector is structurally weak"
     },
     "real_estate": {
-      "breadth_ma_score": 1.0,
-      "pct": 100.0,
+      "breadth_ma_score": 0.9,
+      "pct": 90.0,
       "label": "sector is genuinely strong"
     },
     "communication_services": {
@@ -127,32 +106,25 @@
     }
   },
   "unusual_volume_flags": [
-    "DDOG",
-    "FTNT",
-    "DDOG",
-    "MDB"
+    "NET"
   ],
   "event_scores_today": {},
   "indices_today": {
     "dow": {
-      "value": 49596.97,
-      "change_pct": -0.63,
-      "label": "Falling"
+      "value": 49616.69,
+      "change_pct": 0.04,
+      "label": "Flat"
     },
     "sp500": {
-      "value": 7337.11,
-      "change_pct": -0.38,
-      "label": "Falling"
+      "value": 7391.27,
+      "change_pct": 0.74,
+      "label": "Rising"
     },
     "nasdaq": {
-      "value": 25806.2,
-      "change_pct": -0.13,
-      "label": "Falling"
+      "value": 26148.5,
+      "change_pct": 1.33,
+      "label": "Rising"
     }
   },
-  "today_scores": {
-    "FTNT": 67.9,
-    "TXN": 60.2,
-    "AMD": 59.8
-  }
+  "today_scores": {}
 }

@@ -3,6 +3,97 @@
     "week-of-2026-05-03": {
       "runs": [
         {
+          "id": "9:45-11:15_2026-05-08T11:14",
+          "run_type": "SCHEDULED",
+          "timestamp": "2026-05-08T11:14",
+          "slot": "9:45-11:15",
+          "breadth": "neutral breadth \u2014 mixed market movement",
+          "regime": "Normal market",
+          "market_regime": "BULL",
+          "breadth_pct": 67.2,
+          "count": 9,
+          "verdict_counts": {
+            "RESEARCH NOW": 0,
+            "WATCH": 3,
+            "SKIP": 6
+          },
+          "candidates": [
+            {
+              "ticker": "QCOM",
+              "confidence": 65.8,
+              "eq_verdict": "UNAVAILABLE",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "EXTENDED",
+              "conclusion": ""
+            },
+            {
+              "ticker": "WDC",
+              "confidence": 64.7,
+              "eq_verdict": "NEUTRAL",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "EXTENDED",
+              "conclusion": ""
+            },
+            {
+              "ticker": "NVDA",
+              "confidence": 63.7,
+              "eq_verdict": "WEAK",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "EXTENDED",
+              "conclusion": ""
+            },
+            {
+              "ticker": "VICI",
+              "confidence": 53.9,
+              "eq_verdict": "NEUTRAL",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "ABNB",
+              "confidence": 53.9,
+              "eq_verdict": "UNAVAILABLE",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "KIM",
+              "confidence": 53.0,
+              "eq_verdict": "UNAVAILABLE",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "WELL",
+              "confidence": 51.5,
+              "eq_verdict": "NEUTRAL",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "EBAY",
+              "confidence": 50.1,
+              "eq_verdict": "UNAVAILABLE",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "ROST",
+              "confidence": 49.2,
+              "eq_verdict": "SUPPORTIVE",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            }
+          ],
+          "report_url": "reports/intraday_full_945_1115_20260508T151416Z.html"
+        },
+        {
           "id": "16:00-17:20_2026-05-07T16:07",
           "run_type": "SCHEDULED",
           "timestamp": "2026-05-07T16:07",
@@ -628,49 +719,6 @@
             }
           ],
           "report_url": "reports/intraday_full_1600_1720_20260504T200830Z.html"
-        },
-        {
-          "id": "13:45-15:15_2026-05-04T14:07",
-          "run_type": "SCHEDULED",
-          "timestamp": "2026-05-04T14:07",
-          "slot": "13:45-15:15",
-          "breadth": "weak breadth \u2014 most stocks declining",
-          "regime": "Normal market",
-          "market_regime": "BULL",
-          "breadth_pct": 67.2,
-          "count": 3,
-          "verdict_counts": {
-            "RESEARCH NOW": 0,
-            "WATCH": 3,
-            "SKIP": 0
-          },
-          "candidates": [
-            {
-              "ticker": "WDC",
-              "confidence": 59.9,
-              "eq_verdict": "NEUTRAL",
-              "rotation_signal": "SUPPORT",
-              "ps_entry_quality": "EXTENDED",
-              "conclusion": ""
-            },
-            {
-              "ticker": "QCOM",
-              "confidence": 56.5,
-              "eq_verdict": "UNAVAILABLE",
-              "rotation_signal": "SUPPORT",
-              "ps_entry_quality": "WEAK",
-              "conclusion": ""
-            },
-            {
-              "ticker": "NVDA",
-              "confidence": 56.1,
-              "eq_verdict": "WEAK",
-              "rotation_signal": "SUPPORT",
-              "ps_entry_quality": "WEAK",
-              "conclusion": ""
-            }
-          ],
-          "report_url": "reports/intraday_full_1345_1515_20260504T180741Z.html"
         }
       ]
     }
