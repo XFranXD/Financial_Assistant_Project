@@ -3,6 +3,73 @@
     "week-of-2026-05-03": {
       "runs": [
         {
+          "id": "11:45-13:15_2026-05-08T12:05",
+          "run_type": "SCHEDULED",
+          "timestamp": "2026-05-08T12:05",
+          "slot": "11:45-13:15",
+          "breadth": "neutral breadth \u2014 mixed market movement",
+          "regime": "Normal market",
+          "market_regime": "BULL",
+          "breadth_pct": 68.0,
+          "count": 6,
+          "verdict_counts": {
+            "RESEARCH NOW": 0,
+            "WATCH": 3,
+            "SKIP": 3
+          },
+          "candidates": [
+            {
+              "ticker": "FTNT",
+              "confidence": 62.7,
+              "eq_verdict": "NEUTRAL",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "EXTENDED",
+              "conclusion": ""
+            },
+            {
+              "ticker": "AMD",
+              "confidence": 61.7,
+              "eq_verdict": "NEUTRAL",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "EXTENDED",
+              "conclusion": ""
+            },
+            {
+              "ticker": "TXN",
+              "confidence": 61.4,
+              "eq_verdict": "SUPPORTIVE",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "EXTENDED",
+              "conclusion": ""
+            },
+            {
+              "ticker": "ORLY",
+              "confidence": 47.8,
+              "eq_verdict": "SUPPORTIVE",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "TJX",
+              "confidence": 46.7,
+              "eq_verdict": "NEUTRAL",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "HLT",
+              "confidence": 45.9,
+              "eq_verdict": "UNAVAILABLE",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            }
+          ],
+          "report_url": "reports/intraday_full_1145_1315_20260508T160545Z.html"
+        },
+        {
           "id": "9:45-11:15_2026-05-08T11:14",
           "run_type": "SCHEDULED",
           "timestamp": "2026-05-08T11:14",
@@ -676,49 +743,6 @@
             }
           ],
           "report_url": "reports/intraday_full_1145_1315_20260505T161948Z.html"
-        },
-        {
-          "id": "16:00-17:20_2026-05-04T16:08",
-          "run_type": "SCHEDULED",
-          "timestamp": "2026-05-04T16:08",
-          "slot": "16:00-17:20",
-          "breadth": "weak breadth \u2014 most stocks declining",
-          "regime": "Normal market",
-          "market_regime": "BULL",
-          "breadth_pct": 66.4,
-          "count": 3,
-          "verdict_counts": {
-            "RESEARCH NOW": 0,
-            "WATCH": 2,
-            "SKIP": 1
-          },
-          "candidates": [
-            {
-              "ticker": "AVGO",
-              "confidence": 56.0,
-              "eq_verdict": "UNAVAILABLE",
-              "rotation_signal": "SUPPORT",
-              "ps_entry_quality": "GOOD",
-              "conclusion": ""
-            },
-            {
-              "ticker": "TXN",
-              "confidence": 55.8,
-              "eq_verdict": "SUPPORTIVE",
-              "rotation_signal": "SUPPORT",
-              "ps_entry_quality": "EXTENDED",
-              "conclusion": ""
-            },
-            {
-              "ticker": "MSFT",
-              "confidence": 54.8,
-              "eq_verdict": "SUPPORTIVE",
-              "rotation_signal": "SUPPORT",
-              "ps_entry_quality": "GOOD",
-              "conclusion": ""
-            }
-          ],
-          "report_url": "reports/intraday_full_1600_1720_20260504T200830Z.html"
         }
       ]
     }
