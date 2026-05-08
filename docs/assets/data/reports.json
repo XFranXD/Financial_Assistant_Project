@@ -3,6 +3,41 @@
   "reports": [
     {
       "date": "2026-05-08",
+      "time": "14:01",
+      "slot": "13:45-15:15",
+      "breadth": "neutral breadth \u2014 mixed market movement",
+      "regime": "Normal market",
+      "market_regime": "BULL",
+      "breadth_pct": 67.2,
+      "count": 6,
+      "tickers": [
+        "AVGO",
+        "AMAT",
+        "MSFT",
+        "MCD",
+        "MAR"
+      ],
+      "top_score": 62.5,
+      "verdicts": {
+        "RESEARCH NOW": 0,
+        "WATCH": 3,
+        "SKIP": 3
+      },
+      "report_url": "reports/intraday_full_1345_1515_20260508T180119Z.html",
+      "pl_recommended_subset": [
+        "MCD",
+        "AVGO",
+        "AMAT"
+      ],
+      "pl_sector_exposure": {
+        "consumer_discretionary": 40.0,
+        "technology": 80.0
+      },
+      "pl_diversification_score": 0.913,
+      "pl_avg_correlation": 0.087
+    },
+    {
+      "date": "2026-05-08",
       "time": "12:05",
       "slot": "11:45-13:15",
       "breadth": "neutral breadth \u2014 mixed market movement",
