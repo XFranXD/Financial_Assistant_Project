@@ -69,21 +69,21 @@
   "failed_tickers": [],
   "api_failures": {},
   "sector_scores_today": {
-    "technology": 7.793,
-    "healthcare": -1.192,
-    "financials": -1.463,
-    "consumer_discretionary": 1.008,
-    "consumer_staples": 0.57,
-    "industrials": 0.122,
-    "materials": 0.035,
-    "energy": -4.447,
-    "utilities": -3.601,
-    "real_estate": 0.69,
-    "communication_services": -0.116,
-    "semiconductors": 10.8,
-    "defense": 3.248
+    "technology": 8.297,
+    "healthcare": -1.42,
+    "financials": -1.493,
+    "consumer_discretionary": 0.837,
+    "consumer_staples": -0.12,
+    "industrials": -0.247,
+    "materials": -0.334,
+    "energy": -4.835,
+    "utilities": -4.171,
+    "real_estate": 0.068,
+    "communication_services": 0.024,
+    "semiconductors": 11.543,
+    "defense": 2.935
   },
-  "breadth_score_today": 0.531,
+  "breadth_score_today": 0.438,
   "sector_breadth_ma_today": {
     "technology": {
       "breadth_ma_score": 0.8,
@@ -111,9 +111,9 @@
       "label": "mixed signals"
     },
     "consumer_staples": {
-      "breadth_ma_score": 0.9,
-      "pct": 90.0,
-      "label": "sector is genuinely strong"
+      "breadth_ma_score": 0.7,
+      "pct": 70.0,
+      "label": "healthy participation"
     },
     "industrials": {
       "breadth_ma_score": 0.6,
@@ -154,23 +154,26 @@
   "unusual_volume_flags": [
     "NET",
     "NET",
+    "NET",
+    "WYNN",
+    "DDOG",
     "NET"
   ],
   "event_scores_today": {},
   "indices_today": {
     "dow": {
-      "value": 49612.7,
-      "change_pct": 0.03,
+      "value": 49609.16,
+      "change_pct": 0.02,
       "label": "Flat"
     },
     "sp500": {
-      "value": 7395.57,
-      "change_pct": 0.8,
+      "value": 7398.93,
+      "change_pct": 0.84,
       "label": "Rising"
     },
     "nasdaq": {
-      "value": 26185.87,
-      "change_pct": 1.47,
+      "value": 26247.08,
+      "change_pct": 1.71,
       "label": "Rising"
     }
   },
