@@ -272,6 +272,7 @@ def _enrich_for_dashboard(candidates: list) -> None:
             else:
                 _mvd = 'SKIP'
             _c['market_verdict_display'] = _mvd
+            _c['market_verdict'] = _mvd
 
             # ── Alignment (4-dimensional: S1 + S2 + S3 + S4) ─────────────
             # S4 adds +1 if entry_quality == GOOD, -1 if WEAK or EXTENDED.
