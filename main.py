@@ -1748,11 +1748,6 @@ def run():
     if not email_sent:
         log.warning('Email delivery failed — report still committed to repo')
 
-    # ── Step 30: Closing report ───────────────────────────────────────────
-    if slot == CLOSING_SLOT:
-        from reports.summary_builder import build_closing_report
-        build_closing_report(state, indices, sector_scores, rotation)
-
     # ── Step 31: Commit outputs ───────────────────────────────────────────
     _commit_outputs()
 
