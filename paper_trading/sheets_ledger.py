@@ -46,29 +46,42 @@ def ensure_headers() -> bool:
     sheet = _get_sheet()
     if sheet is None:
         return False
-        
+
     try:
         rows = sheet.get_all_values()
-        # Treat sheet as empty if there are no rows, or if the first row is
-        # entirely blank (e.g. a stray empty row left from manual editing).
         first_row = rows[0] if rows else []
         is_empty = not rows or all(v == '' for v in first_row)
 
         if is_empty:
-            # Clear any stray blank rows before writing headers so headers
-            # land on row 1 cleanly.
             if rows:
                 sheet.clear()
-            sheet.append_row(SHEET_COLUMNS, value_input_option="RAW")
+            sheet.append_row(SHEET_COLUMNS, value_input_option='RAW')
             return True
-            
-        if first_row != SHEET_COLUMNS:
-            log.error(f"Header mismatch detected. Expected: {SHEET_COLUMNS}, Found: {first_row}")
-            return False
-            
-        return True
+
+        if first_row == SHEET_COLUMNS:
+            return True
+
+        # Check if existing headers are a valid prefix of the current schema.
+        # This handles schema upgrades (new columns appended to the end).
+        if SHEET_COLUMNS[:len(first_row)] == first_row:
+            missing = SHEET_COLUMNS[len(first_row):]
+            # Append missing headers to row 1 in-place
+            start_col = len(first_row) + 1
+            header_cells = []
+            for i, col_name in enumerate(missing):
+                header_cells.append(
+                    gspread.models.Cell(row=1, col=start_col + i, value=col_name)
+                )
+            sheet.update_cells(header_cells, value_input_option='RAW')
+            log.info(f'ensure_headers: appended {len(missing)} new column(s): {missing}')
+            return True
+
+        # Headers don't match and aren't a valid prefix — genuine mismatch.
+        log.error(f'Header mismatch detected. Expected: {SHEET_COLUMNS}, Found: {first_row}')
+        return False
+
     except Exception as e:
-        log.error(f"Failed to ensure headers: {e}")
+        log.error(f'Failed to ensure headers: {e}')
         return False
 
 def read_all_trades() -> list[dict]:
