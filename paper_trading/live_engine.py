@@ -15,6 +15,12 @@ from contracts.paper_trading_schema import (
 from paper_trading.state_manager import load_open_trades, commit_updates
 from paper_trading.trade_builder import build_trade
 from paper_trading.execution_rules import infer_exit
+from calibration.financial_standards import (
+    ALLOWED_ENTRY_QUALITIES,
+    CONFIDENCE_FLOOR,
+    MIN_RR_FOR_ENTRY,
+    MAX_MOVE_EXTENSION_PCT,
+)
 from utils.logger import get_logger
 
 log = get_logger(__name__)
@@ -193,11 +199,44 @@ def detect_new_entries(candidates: list[dict], updated_trades: list[dict], all_t
                 log.info(f'[PT][DEBUG] {ticker}: skip — entry/stop/target levels missing (Sub4 unavailable)')
                 continue
         else:
-            if not (candidate.get('market_verdict') in ('RESEARCH NOW', 'WATCH')
-                    and candidate.get('entry_quality') == 'GOOD'
-                    and candidate.get('entry_price') is not None
-                    and candidate.get('stop_loss') is not None
-                    and candidate.get('price_target') is not None):
+            # ── Trade opening gate — reads from calibration/financial_standards.py ──
+            _eq      = candidate.get('entry_quality', '')
+            _conf    = candidate.get('composite_confidence') or 0
+            _rr_raw  = candidate.get('risk_reward_ratio')
+            _verdict = candidate.get('market_verdict', '')
+            _move_ext = candidate.get('move_extension_pct')
+            _has_lvls = (
+                candidate.get('entry_price') is not None
+                and candidate.get('stop_loss') is not None
+                and candidate.get('price_target') is not None
+            )
+
+            try:
+                _rr_val = float(_rr_raw) if _rr_raw is not None else None
+            except (TypeError, ValueError):
+                _rr_val = None
+            _rr_ok = (_rr_val is not None and _rr_val >= MIN_RR_FOR_ENTRY)
+
+            _move_ok = True
+            if MAX_MOVE_EXTENSION_PCT is not None:
+                try:
+                    _move_ok = (_move_ext is not None and float(_move_ext) <= MAX_MOVE_EXTENSION_PCT)
+                except (TypeError, ValueError):
+                    _move_ok = False
+
+            if not (
+                _verdict in ('RESEARCH NOW', 'WATCH')
+                and _eq in ALLOWED_ENTRY_QUALITIES
+                and _conf >= CONFIDENCE_FLOOR
+                and _rr_ok
+                and _move_ok
+                and _has_lvls
+            ):
+                log.info(
+                    f'[PT] {candidate.get("ticker","?")}: gate fail -- '
+                    f'verdict={_verdict} eq={_eq} conf={_conf} rr={_rr_raw} '
+                    f'move_ext={_move_ext} levels={_has_lvls}'
+                )
                 continue
 
         # ── Shared checks (both normal and debug mode) ────────────────────

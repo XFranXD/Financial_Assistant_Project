@@ -103,6 +103,19 @@ def write_rows(rows: list[dict]) -> bool:
         return False
         
     try:
+        # Duplicate guard: read only trade_id column (col 1) for performance.
+        # trade_id is SHEET_COLUMNS[0] — if schema changes move it, update col index here.
+        # Guards against GitHub Actions retry double-fire.
+        existing_ids = set(sheet.col_values(1)[1:])  # skip header row
+        rows = [r for r in rows if str(r.get('trade_id', '')) not in existing_ids]
+        if not rows:
+            log.info('write_rows: all rows already exist (duplicate guard) — skipping write')
+            return True
+    except Exception as e:
+        log.warning(f'write_rows: duplicate guard failed, proceeding without it: {e}')
+
+    try:
+
         list_of_lists = []
         for row_dict in rows:
             row_list = []

@@ -6,6 +6,7 @@ from contracts.paper_trading_schema import (
     PT_ROTATION_SIGNAL, PT_ALIGNMENT, PT_COMPOSITE_SCORE,
     PT_MARKET_REGIME, PT_INSIDER_SIGNAL, PT_EVENT_RISK,
     PT_EXPECTATIONS_SIGNAL, PT_STATUS_OPEN, PT_IS_TEST,
+    PT_SECTOR, PT_MOVE_EXTENSION_PCT, PT_STANDARDS_VERSION,
 )
 from paper_trading.state_manager import build_empty_trade
 from utils.logger import get_logger
@@ -14,7 +15,17 @@ from datetime import datetime
 
 log = get_logger(__name__)
 
+
+def _get_standards_version() -> str:
+    try:
+        from calibration.financial_standards import STANDARDS_VERSION
+        return STANDARDS_VERSION
+    except Exception:
+        return "UNKNOWN"
+
+
 def build_trade(candidate: dict, slot: str, market_regime: str, is_test: bool = False) -> dict:
+
     ticker = candidate.get('ticker')
     if not ticker:
         log.error("Cannot build trade without ticker")
@@ -53,6 +64,9 @@ def build_trade(candidate: dict, slot: str, market_regime: str, is_test: bool = 
         base[PT_EVENT_RISK] = candidate.get('event_risk', '')
         base[PT_EXPECTATIONS_SIGNAL] = candidate.get('expectations_signal', '')
         base[PT_IS_TEST] = is_test
+        base[PT_SECTOR]             = candidate.get('sector', '')
+        base[PT_MOVE_EXTENSION_PCT] = candidate.get('move_extension_pct')
+        base[PT_STANDARDS_VERSION]  = _get_standards_version()
         
         return base
     except Exception as e:
