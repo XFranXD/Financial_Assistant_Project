@@ -717,6 +717,49 @@
     "week-of-2026-05-10": {
       "runs": [
         {
+          "id": "16:00-17:20_2026-05-11T16:25",
+          "run_type": "SCHEDULED",
+          "timestamp": "2026-05-11T16:25",
+          "slot": "16:00-17:20",
+          "breadth": "neutral breadth \u2014 mixed market movement",
+          "regime": "Normal market",
+          "market_regime": "BULL",
+          "breadth_pct": 66.4,
+          "count": 3,
+          "verdict_counts": {
+            "RESEARCH NOW": 0,
+            "WATCH": 3,
+            "SKIP": 0
+          },
+          "candidates": [
+            {
+              "ticker": "AAPL",
+              "confidence": 62.8,
+              "eq_verdict": "SUPPORTIVE",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "EXTENDED",
+              "conclusion": ""
+            },
+            {
+              "ticker": "AVGO",
+              "confidence": 62.5,
+              "eq_verdict": "UNAVAILABLE",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "MSFT",
+              "confidence": 62.0,
+              "eq_verdict": "SUPPORTIVE",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "GOOD",
+              "conclusion": ""
+            }
+          ],
+          "report_url": "reports/intraday_full_1600_1720_20260511T202547Z.html"
+        },
+        {
           "id": "13:45-15:15_2026-05-11T14:28",
           "run_type": "SCHEDULED",
           "timestamp": "2026-05-11T14:28",
