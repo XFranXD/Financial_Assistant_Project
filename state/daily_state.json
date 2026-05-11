@@ -1,9 +1,15 @@
 {
   "date": "2026-05-11",
   "reported_companies": [
-    "QCOM",
+    "NVDA",
     "WDC",
-    "NVDA"
+    "QCOM",
+    "AMD",
+    "TXN",
+    "LIN",
+    "NEM",
+    "CF",
+    "FTNT"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -20,8 +26,15 @@
       "status": "complete"
     },
     "13:45-15:15": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "FTNT",
+        "TXN",
+        "AMD",
+        "NEM",
+        "CF",
+        "LIN"
+      ],
+      "status": "complete"
     },
     "16:00-17:20": {
       "companies": [],
@@ -133,8 +146,11 @@
     }
   },
   "today_scores": {
-    "QCOM": 67.1,
-    "WDC": 66.0,
-    "NVDA": 65.2
+    "FTNT": 62.8,
+    "TXN": 61.7,
+    "AMD": 61.6,
+    "NEM": 60.0,
+    "CF": 59.4,
+    "LIN": 53.5
   }
 }
