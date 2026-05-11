@@ -1,0 +1,44 @@
+name: Calibration Analyzer
+
+on:
+  workflow_dispatch:
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run calibration analyzer
+        env:
+          GOOGLE_SHEETS_ID:            ${{ secrets.GOOGLE_SHEETS_ID }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+        run: python -m calibration.calibration_analyzer
+
+      - name: Commit report log
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git diff --staged --quiet || \
+            git commit -m "Auto: calibration run $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git stash || true
+          git pull --rebase origin main
+          git stash pop || true
+          git push
