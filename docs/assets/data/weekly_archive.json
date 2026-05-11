@@ -717,6 +717,73 @@
     "week-of-2026-05-10": {
       "runs": [
         {
+          "id": "13:45-15:15_2026-05-11T14:28",
+          "run_type": "SCHEDULED",
+          "timestamp": "2026-05-11T14:28",
+          "slot": "13:45-15:15",
+          "breadth": "neutral breadth \u2014 mixed market movement",
+          "regime": "Normal market",
+          "market_regime": "BULL",
+          "breadth_pct": 66.4,
+          "count": 6,
+          "verdict_counts": {
+            "RESEARCH NOW": 0,
+            "WATCH": 5,
+            "SKIP": 1
+          },
+          "candidates": [
+            {
+              "ticker": "FTNT",
+              "confidence": 62.8,
+              "eq_verdict": "NEUTRAL",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "EXTENDED",
+              "conclusion": ""
+            },
+            {
+              "ticker": "TXN",
+              "confidence": 61.7,
+              "eq_verdict": "SUPPORTIVE",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "EXTENDED",
+              "conclusion": ""
+            },
+            {
+              "ticker": "AMD",
+              "confidence": 61.6,
+              "eq_verdict": "NEUTRAL",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "EXTENDED",
+              "conclusion": ""
+            },
+            {
+              "ticker": "NEM",
+              "confidence": 60.0,
+              "eq_verdict": "NEUTRAL",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "CF",
+              "confidence": 59.4,
+              "eq_verdict": "NEUTRAL",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "EXTENDED",
+              "conclusion": ""
+            },
+            {
+              "ticker": "LIN",
+              "confidence": 53.5,
+              "eq_verdict": "SUPPORTIVE",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            }
+          ],
+          "report_url": "reports/intraday_full_1345_1515_20260511T182853Z.html"
+        },
+        {
           "id": "11:45-13:15_2026-05-11T12:22",
           "run_type": "SCHEDULED",
           "timestamp": "2026-05-11T12:22",
