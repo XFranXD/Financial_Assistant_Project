@@ -14,8 +14,8 @@ STANDARDS_VERSION must be incremented every time any threshold value changes.
 STANDARDS_VERSION = "v1.0"
 
 # Which entry_quality labels are accepted for trade opening.
-# Phase 4A: GOOD and MODERATE. WEAK and EXTENDED always rejected.
-ALLOWED_ENTRY_QUALITIES = {"GOOD", "MODERATE"}
+# Phase 4A: GOOD and MODERATE. WEAK and EXTENDED forced to be included in orderto get data.
+ALLOWED_ENTRY_QUALITIES = {"GOOD", "MODERATE", "WEAK", "EXTENDED"}
 
 # Minimum composite_confidence for trade opening.
 # Must always be >= COMPOSITE_CONFIDENCE_MIN in config.py (= 35).
