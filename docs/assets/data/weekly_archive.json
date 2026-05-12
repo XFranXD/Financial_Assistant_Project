@@ -717,6 +717,49 @@
     "week-of-2026-05-10": {
       "runs": [
         {
+          "id": "13:45-15:15_2026-05-12T13:50",
+          "run_type": "SCHEDULED",
+          "timestamp": "2026-05-12T13:50",
+          "slot": "13:45-15:15",
+          "breadth": "neutral breadth \u2014 mixed market movement",
+          "regime": "Normal market",
+          "market_regime": "BULL",
+          "breadth_pct": 66.4,
+          "count": 3,
+          "verdict_counts": {
+            "RESEARCH NOW": 0,
+            "WATCH": 0,
+            "SKIP": 3
+          },
+          "candidates": [
+            {
+              "ticker": "PM",
+              "confidence": 52.1,
+              "eq_verdict": "WEAK",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "PG",
+              "confidence": 51.0,
+              "eq_verdict": "SUPPORTIVE",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "MDLZ",
+              "confidence": 50.4,
+              "eq_verdict": "NEUTRAL",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "GOOD",
+              "conclusion": ""
+            }
+          ],
+          "report_url": "reports/intraday_full_1345_1515_20260512T175054Z.html"
+        },
+        {
           "id": "11:45-13:15_2026-05-12T12:09",
           "run_type": "SCHEDULED",
           "timestamp": "2026-05-12T12:09",
