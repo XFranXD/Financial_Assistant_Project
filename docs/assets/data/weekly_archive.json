@@ -717,6 +717,49 @@
     "week-of-2026-05-10": {
       "runs": [
         {
+          "id": "13:45-15:15_2026-05-13T13:52",
+          "run_type": "SCHEDULED",
+          "timestamp": "2026-05-13T13:52",
+          "slot": "13:45-15:15",
+          "breadth": "weak breadth \u2014 most stocks declining",
+          "regime": "Normal market",
+          "market_regime": "BULL",
+          "breadth_pct": 64.8,
+          "count": 3,
+          "verdict_counts": {
+            "RESEARCH NOW": 0,
+            "WATCH": 3,
+            "SKIP": 0
+          },
+          "candidates": [
+            {
+              "ticker": "AAPL",
+              "confidence": 60.1,
+              "eq_verdict": "SUPPORTIVE",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "EXTENDED",
+              "conclusion": ""
+            },
+            {
+              "ticker": "FTNT",
+              "confidence": 58.5,
+              "eq_verdict": "NEUTRAL",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "EXTENDED",
+              "conclusion": ""
+            },
+            {
+              "ticker": "TXN",
+              "confidence": 57.6,
+              "eq_verdict": "SUPPORTIVE",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "EXTENDED",
+              "conclusion": ""
+            }
+          ],
+          "report_url": "reports/intraday_full_1345_1515_20260513T175222Z.html"
+        },
+        {
           "id": "11:45-13:15_2026-05-13T12:12",
           "run_type": "SCHEDULED",
           "timestamp": "2026-05-13T12:12",
