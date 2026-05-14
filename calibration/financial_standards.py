@@ -11,22 +11,27 @@ in calibration/standards_history.log BEFORE this file is modified.
 STANDARDS_VERSION must be incremented every time any threshold value changes.
 """
 
-STANDARDS_VERSION = "v1.0"
+STANDARDS_VERSION = "v1.1"
 
 # Which entry_quality labels are accepted for trade opening.
-# Phase 4A: GOOD and MODERATE. WEAK and EXTENDED forced to be included in orderto get data.
+# v1.1: All four labels accepted — no entry quality is rejected.
+# Evidence for tightening this must come from Phase 4B analyzer output.
 ALLOWED_ENTRY_QUALITIES = {"GOOD", "MODERATE", "WEAK", "EXTENDED"}
 
 # Minimum composite_confidence for trade opening.
-# Must always be >= COMPOSITE_CONFIDENCE_MIN in config.py (= 35).
-# Phase 4A: 45
-CONFIDENCE_FLOOR = 45
+# v1.1: REMOVED — no evidence base exists for this threshold yet.
+# Phase 4 is the evidence collector. Restricting before data is guessing.
+# Retained as a variable so live_engine.py import does not break,
+# but set to 0 so it never filters anything.
+CONFIDENCE_FLOOR = 0
 
 # Minimum risk_reward_ratio for trade opening.
-# Phase 4A: 1.5
-MIN_RR_FOR_ENTRY = 1.5
+# v1.1: REMOVED — no evidence base exists for this threshold yet.
+# Retained as a variable so live_engine.py import does not break,
+# but set to 0.0 so it never filters anything.
+MIN_RR_FOR_ENTRY = 0.0
 
 # Maximum move_extension_pct accepted for trade opening.
-# Phase 4A: None (no cap — derive from evidence).
+# v1.1: None (no cap — derive from evidence).
 # Set to a float to activate. Gate checks this in live_engine.py.
 MAX_MOVE_EXTENSION_PCT = None

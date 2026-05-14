@@ -8,3 +8,16 @@ MAX_MOVE_EXTENSION_PCT: None (no cap)
 alignment: removed from gate (set after live_engine runs in pipeline)
 Phase 4A data collection begins.
 ----------------------------------------
+
+[v1.1 -- gate loosening, evidence-collection phase]
+Reason: No trade has accumulated yet. All thresholds were guesses with
+no data behind them. Phase 4 exists to collect that data — restricting
+entry before any trades close defeats the purpose of the calibration engine.
+ALLOWED_ENTRY_QUALITIES: GOOD, MODERATE, WEAK, EXTENDED (all accepted)
+CONFIDENCE_FLOOR: REMOVED (set to 0, never filters)
+MIN_RR_FOR_ENTRY: REMOVED (set to 0.0, never filters)
+MAX_MOVE_EXTENSION_PCT: None (no cap, unchanged)
+CONFIDENCE_FLOOR and MIN_RR_FOR_ENTRY retained as variables in
+financial_standards.py so live_engine.py import does not break.
+Tighten only after Phase 4B produces evidence.
+----------------------------------------

@@ -169,7 +169,7 @@ def process_open_trades(current_slot: str, open_trades: list[dict]) -> list[dict
 
     return open_trades
 
-def detect_new_entries(candidates: list[dict], updated_trades: list[dict], all_trades_raw: list[dict], current_slot: str, market_regime: str, debug_mode: bool = False) -> list[dict]:
+def detect_new_entries(candidates: list[dict], updated_trades: list[dict], all_trades_raw: list[dict], current_slot: str, market_regime: str, debug_mode: bool = False, market_regime_dict: dict | None = None, indices: dict | None = None) -> list[dict]:
     today_et_str = datetime.now(pytz.timezone('America/New_York')).strftime('%Y-%m-%d')
     new_entries = []
 
@@ -200,6 +200,9 @@ def detect_new_entries(candidates: list[dict], updated_trades: list[dict], all_t
                 continue
         else:
             # ── Trade opening gate — reads from calibration/financial_standards.py ──
+            # v1.1: CONFIDENCE_FLOOR=0 and MIN_RR_FOR_ENTRY=0.0 — both effectively
+            # disabled until Phase 4B produces evidence to justify real thresholds.
+            # All four entry_quality labels are currently accepted.
             _eq      = candidate.get('entry_quality', '')
             _conf    = candidate.get('composite_confidence') or 0
             _rr_raw  = candidate.get('risk_reward_ratio')
@@ -262,7 +265,8 @@ def detect_new_entries(candidates: list[dict], updated_trades: list[dict], all_t
                     log.info(f"[PT] {ticker}: skip — cooldown active ({days_since_close} days since close)")
                     continue
 
-        new_trade = build_trade(candidate, current_slot, market_regime, is_test=debug_mode)
+        new_trade = build_trade(candidate, current_slot, market_regime, is_test=debug_mode,
+                                market_regime_dict=market_regime_dict, indices=indices)
         new_entries.append(new_trade)
 
     return new_entries
@@ -367,7 +371,7 @@ def compute_performance_summary(all_trades_raw: list[dict]) -> dict:
         return {'performance_available': False}
 
 
-def run_paper_trading(candidates: list[dict], current_slot: str, market_regime: str, debug_mode: bool = False) -> dict:
+def run_paper_trading(candidates: list[dict], current_slot: str, market_regime: str, debug_mode: bool = False, market_regime_dict: dict | None = None, indices: dict | None = None) -> dict:
     try:
         from paper_trading.sheets_ledger import read_all_trades
         all_trades_raw = read_all_trades()
@@ -379,6 +383,8 @@ def run_paper_trading(candidates: list[dict], current_slot: str, market_regime: 
             candidates, updated_trades, all_trades_raw,
             current_slot, market_regime,
             debug_mode=debug_mode,
+            market_regime_dict=market_regime_dict,
+            indices=indices,
         )
 
         commit_updates(updated_trades, new_trades, current_slot)

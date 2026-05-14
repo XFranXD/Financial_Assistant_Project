@@ -7,6 +7,7 @@ from contracts.paper_trading_schema import (
     PT_MARKET_REGIME, PT_INSIDER_SIGNAL, PT_EVENT_RISK,
     PT_EXPECTATIONS_SIGNAL, PT_STATUS_OPEN, PT_IS_TEST,
     PT_SECTOR, PT_MOVE_EXTENSION_PCT, PT_STANDARDS_VERSION,
+    PT_ENTRY_VIX, PT_ENTRY_SPY_RETURN, PT_ENTRY_SECTOR_MOMENTUM,
 )
 from paper_trading.state_manager import build_empty_trade
 from utils.logger import get_logger
@@ -24,7 +25,8 @@ def _get_standards_version() -> str:
         return "UNKNOWN"
 
 
-def build_trade(candidate: dict, slot: str, market_regime: str, is_test: bool = False) -> dict:
+def build_trade(candidate: dict, slot: str, market_regime: str, is_test: bool = False,
+                market_regime_dict: dict | None = None, indices: dict | None = None) -> dict:
 
     ticker = candidate.get('ticker')
     if not ticker:
@@ -67,7 +69,19 @@ def build_trade(candidate: dict, slot: str, market_regime: str, is_test: bool = 
         base[PT_SECTOR]             = candidate.get('sector', '')
         base[PT_MOVE_EXTENSION_PCT] = candidate.get('move_extension_pct')
         base[PT_STANDARDS_VERSION]  = _get_standards_version()
-        
+
+        # ── Market conditions at entry ────────────────────────────────────
+        # Sourced from pipeline-level dicts, not from the candidate.
+        # These values are identical across all tickers in a given run.
+        # Essential for Phase 4B: isolating setup quality from market noise.
+        _mrd = market_regime_dict or {}
+        _idx = indices or {}
+        base[PT_ENTRY_VIX]             = _mrd.get('regime_vix')
+        base[PT_ENTRY_SPY_RETURN]      = _idx.get('sp500', {}).get('change_pct')
+        # sector_data is the full sector_scores[sector] dict written onto the
+        # candidate in main.py. 'score' is the momentum score (0-100).
+        base[PT_ENTRY_SECTOR_MOMENTUM] = candidate.get('sector_data', {}).get('score')
+
         return base
     except Exception as e:
         log.error(f"Failed to build trade for {ticker}: {e}")

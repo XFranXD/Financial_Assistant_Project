@@ -47,6 +47,12 @@ PT_SECTOR              = "sector"
 PT_MOVE_EXTENSION_PCT  = "move_extension_pct"
 PT_STANDARDS_VERSION   = "standards_version"
 
+# Market conditions at entry — written once when the trade opens.
+# Required for Phase 4B: distinguishing bad setup from bad market.
+PT_ENTRY_VIX              = "entry_vix"               # float — VIX level at entry run
+PT_ENTRY_SPY_RETURN       = "entry_spy_return"         # float — SPY daily change pct at entry run
+PT_ENTRY_SECTOR_MOMENTUM  = "entry_sector_momentum"    # float — sector momentum score at entry run
+
 
 PT_STATUS_OPEN    = "OPEN"
 PT_STATUS_CLOSED  = "CLOSED"
@@ -71,11 +77,12 @@ SHEET_COLUMNS = [
     PT_BENCHMARK_RETURN, PT_ALPHA,
     PT_LAST_UPDATED_RUN, PT_DATA_VALID, PT_VERSION, PT_IS_TEST,
     PT_SECTOR, PT_MOVE_EXTENSION_PCT, PT_STANDARDS_VERSION,
+    PT_ENTRY_VIX, PT_ENTRY_SPY_RETURN, PT_ENTRY_SECTOR_MOMENTUM,
 ]
 
 
 SHEET_NAME            = "trades"
-PT_SCHEMA_VERSION     = 3         # int — increment when schema changes
+PT_SCHEMA_VERSION     = 4         # int — increment when schema changes
 COOLDOWN_TRADING_DAYS = 1         # int — min trading days after close before
                                   #        same ticker can re-enter.
                                   #        Uses days_since_close <= COOLDOWN check,
@@ -142,6 +149,9 @@ PT_SAFE_DEFAULTS = {
     PT_SECTOR:             "",
     PT_MOVE_EXTENSION_PCT: None,
     PT_STANDARDS_VERSION:  "",
+    PT_ENTRY_VIX:             None,
+    PT_ENTRY_SPY_RETURN:      None,
+    PT_ENTRY_SECTOR_MOMENTUM: None,
 }
 
 
@@ -153,6 +163,7 @@ PT_FLOAT_FIELDS = [
     PT_BENCHMARK_RETURN, PT_ALPHA,
     PT_EXIT_PRICE,
     PT_MOVE_EXTENSION_PCT,
+    PT_ENTRY_VIX, PT_ENTRY_SPY_RETURN, PT_ENTRY_SECTOR_MOMENTUM,
 ]
 
 

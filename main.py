@@ -852,10 +852,12 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict,
             )
             _pt_regime = market_regime_dict.get('market_regime', 'NEUTRAL')
             paper_trading_summary = run_paper_trading(
-                candidates    = all_candidates,
-                current_slot  = slot,
-                market_regime = _pt_regime,
-                debug_mode    = True,
+                candidates         = all_candidates,
+                current_slot       = slot,
+                market_regime      = _pt_regime,
+                debug_mode         = True,
+                market_regime_dict = market_regime_dict,
+                indices            = indices,
             )
             # TEST_ tagging already applied inside run_paper_trading (debug_mode=True)
             # before commit_updates writes to Sheets. This loop is a safety net to
@@ -1607,6 +1609,14 @@ def run():
         log.warning(f'[PL] Portfolio analysis failed (non-fatal): {pl_err}')
     # ── End Step 27j ──────────────────────────────────────────────────────────
 
+    # ── Pre-Sub6 candidate enrichment ────────────────────────────────────────
+    # market_verdict (and display fields) must be set BEFORE run_paper_trading()
+    # is called, because live_engine.py reads candidate.get('market_verdict')
+    # as the first condition of the trade gate. Without this call here, every
+    # candidate arrives with market_verdict='' and no trade ever opens.
+    _enrich_for_dashboard(final_companies)
+    # ── End Pre-Sub6 enrichment ───────────────────────────────────────────────
+
     # ── Step 27k: Paper Trading Engine (Sub6) ──────────────────────────────
     # Runs after Sub5. Non-fatal — paper_trading_summary={} on any failure.
     # Reads/writes Google Sheets ledger. All Sheets I/O is non-fatal.
@@ -1623,9 +1633,11 @@ def run():
         )
         _pt_regime = market_regime_dict.get('market_regime', 'NEUTRAL')
         paper_trading_summary = run_paper_trading(
-            candidates    = final_companies,
-            current_slot  = slot,
-            market_regime = _pt_regime,
+            candidates         = final_companies,
+            current_slot       = slot,
+            market_regime      = _pt_regime,
+            market_regime_dict = market_regime_dict,
+            indices            = indices,
         )
         _replay_enriched = []
         for _pt_trade in paper_trading_summary.get('trades', []):
