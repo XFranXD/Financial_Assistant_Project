@@ -717,6 +717,73 @@
     "week-of-2026-05-10": {
       "runs": [
         {
+          "id": "13:45-15:15_2026-05-14T14:27",
+          "run_type": "SCHEDULED",
+          "timestamp": "2026-05-14T14:27",
+          "slot": "13:45-15:15",
+          "breadth": "strong breadth \u2014 most stocks rising",
+          "regime": "Normal market",
+          "market_regime": "BULL",
+          "breadth_pct": 64.8,
+          "count": 6,
+          "verdict_counts": {
+            "RESEARCH NOW": 0,
+            "WATCH": 3,
+            "SKIP": 3
+          },
+          "candidates": [
+            {
+              "ticker": "QCOM",
+              "confidence": 67.2,
+              "eq_verdict": "UNAVAILABLE",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "EXTENDED",
+              "conclusion": ""
+            },
+            {
+              "ticker": "FTNT",
+              "confidence": 65.4,
+              "eq_verdict": "NEUTRAL",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "EXTENDED",
+              "conclusion": ""
+            },
+            {
+              "ticker": "AVGO",
+              "confidence": 64.8,
+              "eq_verdict": "UNAVAILABLE",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "EXTENDED",
+              "conclusion": ""
+            },
+            {
+              "ticker": "PM",
+              "confidence": 54.3,
+              "eq_verdict": "WEAK",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "PG",
+              "confidence": 53.0,
+              "eq_verdict": "SUPPORTIVE",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "MDLZ",
+              "confidence": 51.4,
+              "eq_verdict": "NEUTRAL",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "GOOD",
+              "conclusion": ""
+            }
+          ],
+          "report_url": "reports/intraday_full_1345_1515_20260514T182723Z.html"
+        },
+        {
           "id": "11:45-13:15_2026-05-14T12:01",
           "run_type": "SCHEDULED",
           "timestamp": "2026-05-14T12:01",
