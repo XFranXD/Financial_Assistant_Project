@@ -1,11 +1,17 @@
 {
   "date": "2026-05-14",
   "reported_companies": [
+    "PG",
+    "MDLZ",
     "NVDA",
-    "AAPL",
-    "MO",
+    "QCOM",
     "KO",
+    "MO",
     "BTI",
+    "FTNT",
+    "AAPL",
+    "PM",
+    "AVGO",
     "WDC"
   ],
   "alpha_vantage_calls_today": 20,
@@ -26,8 +32,15 @@
       "status": "complete"
     },
     "13:45-15:15": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "QCOM",
+        "FTNT",
+        "AVGO",
+        "PM",
+        "PG",
+        "MDLZ"
+      ],
+      "status": "complete"
     },
     "16:00-17:20": {
       "companies": [],
@@ -139,11 +152,11 @@
     }
   },
   "today_scores": {
-    "NVDA": 70.1,
-    "WDC": 68.2,
-    "AAPL": 65.1,
-    "KO": 58.9,
-    "BTI": 58.7,
-    "MO": 56.0
+    "QCOM": 67.2,
+    "FTNT": 65.4,
+    "AVGO": 64.8,
+    "PM": 54.3,
+    "PG": 53.0,
+    "MDLZ": 51.4
   }
 }
