@@ -1583,3 +1583,61 @@
 2026-05-14T19:22:50 UTC | INFO     | main | DISCLAIMER: This system does NOT perform trading, does NOT give investment advice, and does NOT make price predictions. It is a research data aggregation and scoring tool only.
 2026-05-14T19:22:50 UTC | INFO     | main | ============================================================
 2026-05-14T19:22:50 UTC | INFO     | main | [SCHEDULER] Current ET time 15:22 is outside all scheduled windows — exiting.
+2026-05-14T20:18:38 UTC | INFO     | main | ============================================================
+2026-05-14T20:18:38 UTC | INFO     | main | AUTOMATED STOCK RESEARCH SYSTEM — starting run
+2026-05-14T20:18:38 UTC | INFO     | main | DISCLAIMER: This system does NOT perform trading, does NOT give investment advice, and does NOT make price predictions. It is a research data aggregation and scoring tool only.
+2026-05-14T20:18:38 UTC | INFO     | main | ============================================================
+2026-05-14T20:18:38 UTC | INFO     | main | [SCHEDULER] Time gate passed — matched slot 16:00-17:20
+2026-05-14T20:18:38 UTC | WARNING  | main | Validated tickers file is 65 days old (limit 30). Consider re-running validate_tickers.py.
+2026-05-14T20:18:38 UTC | INFO     | main | Run slot: 16:00-17:20
+2026-05-14T20:18:39 UTC | INFO     | market_collector | Index dow: 50063.46 Rising (+0.75%)
+2026-05-14T20:18:39 UTC | INFO     | market_collector | Index sp500: 7501.24 Rising (+0.77%)
+2026-05-14T20:18:39 UTC | INFO     | market_collector | Index nasdaq: 26635.22 Rising (+0.88%)
+2026-05-14T20:18:39 UTC | INFO     | market_regime | VIX fetched: 17.30
+2026-05-14T20:18:39 UTC | INFO     | market_regime | Regime: normal vix=17.3 risk_mult=1.0 opp_mult=1.0
+2026-05-14T20:18:39 UTC | INFO     | main | Regime: normal vix=17.3
+2026-05-14T20:19:23 UTC | INFO     | market_breadth | Market breadth: 76/130 advancing (0.58) — neutral breadth — mixed market movement
+2026-05-14T20:19:23 UTC | INFO     | spy_sma | [SPY] price=748.17 sma200=672.78 above=True
+2026-05-14T20:19:31 UTC | INFO     | market_breadth | [B200] 81/125 above 200d SMA = 64.8%
+2026-05-14T20:19:31 UTC | INFO     | market_regime_classifier | [MRC] regime=BULL score=3 spy_above=True vix=17.3 breadth_pct=64.8
+2026-05-14T20:19:31 UTC | INFO     | main | [MR] market_regime=BULL score=3 breadth_pct=64.8
+2026-05-14T20:19:32 UTC | INFO     | sector_breadth_ma | Sector breadth MA technology: 7/10 = 0.70 (healthy participation)
+2026-05-14T20:19:34 UTC | INFO     | sector_breadth_ma | Sector breadth MA semiconductors: 10/10 = 1.00 (sector is genuinely strong)
+2026-05-14T20:19:36 UTC | INFO     | sector_breadth_ma | Sector breadth MA healthcare: 3/10 = 0.30 (mixed signals)
+2026-05-14T20:19:37 UTC | INFO     | sector_breadth_ma | Sector breadth MA financials: 5/10 = 0.50 (mixed signals)
+2026-05-14T20:19:39 UTC | INFO     | sector_breadth_ma | Sector breadth MA consumer_discretionary: 4/10 = 0.40 (mixed signals)
+2026-05-14T20:19:41 UTC | INFO     | sector_breadth_ma | Sector breadth MA consumer_staples: 7/10 = 0.70 (healthy participation)
+2026-05-14T20:19:43 UTC | INFO     | sector_breadth_ma | Sector breadth MA industrials: 6/10 = 0.60 (healthy participation)
+2026-05-14T20:19:45 UTC | INFO     | sector_breadth_ma | Sector breadth MA defense: 1/10 = 0.10 (sector is structurally weak)
+2026-05-14T20:19:46 UTC | INFO     | sector_breadth_ma | Sector breadth MA energy: 5/10 = 0.50 (mixed signals)
+2026-05-14T20:19:48 UTC | INFO     | sector_breadth_ma | Sector breadth MA materials: 6/10 = 0.60 (healthy participation)
+2026-05-14T20:19:50 UTC | INFO     | sector_breadth_ma | Sector breadth MA utilities: 2/10 = 0.20 (sector is structurally weak)
+2026-05-14T20:19:52 UTC | INFO     | sector_breadth_ma | Sector breadth MA real_estate: 8/10 = 0.80 (sector is genuinely strong)
+2026-05-14T20:19:53 UTC | INFO     | sector_breadth_ma | Sector breadth MA communication_services: 2/10 = 0.20 (sector is structurally weak)
+2026-05-14T20:19:57 UTC | INFO     | sector_momentum | Top 5 sectors: ['semiconductors', 'technology', 'energy', 'defense', 'consumer_staples']
+2026-05-14T20:19:57 UTC | INFO     | sector_momentum | Sector momentum history updated (6 entries)
+2026-05-14T20:19:57 UTC | INFO     | sector_rotation_speed | Rotation technology: rank 4 -> 2 speed=2 (gaining momentum)
+2026-05-14T20:19:57 UTC | INFO     | sector_rotation_speed | Rotation healthcare: rank 7 -> 6 speed=1 (stable)
+2026-05-14T20:19:57 UTC | INFO     | sector_rotation_speed | Rotation financials: rank 3 -> 11 speed=-8 (rapidly losing strength)
+2026-05-14T20:19:57 UTC | INFO     | sector_rotation_speed | Rotation consumer_discretionary: rank 8 -> 10 speed=-2 (losing momentum)
+2026-05-14T20:19:57 UTC | INFO     | sector_rotation_speed | Rotation consumer_staples: rank 10 -> 5 speed=5 (rapidly gaining strength)
+2026-05-14T20:19:57 UTC | INFO     | sector_rotation_speed | Rotation industrials: rank 6 -> 8 speed=-2 (losing momentum)
+2026-05-14T20:19:57 UTC | INFO     | sector_rotation_speed | Rotation materials: rank 13 -> 7 speed=6 (rapidly gaining strength)
+2026-05-14T20:19:57 UTC | INFO     | sector_rotation_speed | Rotation energy: rank 1 -> 3 speed=-2 (losing momentum)
+2026-05-14T20:19:57 UTC | INFO     | sector_rotation_speed | Rotation utilities: rank 12 -> 13 speed=-1 (stable)
+2026-05-14T20:19:57 UTC | INFO     | sector_rotation_speed | Rotation real_estate: rank 9 -> 12 speed=-3 (losing momentum)
+2026-05-14T20:19:57 UTC | INFO     | sector_rotation_speed | Rotation communication_services: rank 5 -> 9 speed=-4 (rapidly losing strength)
+2026-05-14T20:19:57 UTC | INFO     | sector_rotation_speed | Rotation semiconductors: rank 2 -> 1 speed=1 (stable)
+2026-05-14T20:19:57 UTC | INFO     | sector_rotation_speed | Rotation defense: rank 11 -> 4 speed=7 (rapidly gaining strength)
+2026-05-14T20:19:57 UTC | INFO     | news_collector | reuters RSS: fetched 0 articles
+2026-05-14T20:19:58 UTC | INFO     | news_collector | ft RSS: fetched 12 articles
+2026-05-14T20:19:58 UTC | INFO     | news_collector | Finnhub: fetched 100 articles
+2026-05-14T20:19:58 UTC | INFO     | news_collector | Filter: 112 raw → 12 passed
+2026-05-14T20:19:58 UTC | INFO     | news_collector | Dedup: 12 → 12 articles
+2026-05-14T20:19:58 UTC | INFO     | news_collector | Confirmed sectors: []
+2026-05-14T20:19:58 UTC | INFO     | market_collector | get_index_history dow: 30 points
+2026-05-14T20:19:58 UTC | INFO     | market_collector | get_index_history sp500: 30 points
+2026-05-14T20:19:58 UTC | INFO     | market_collector | get_index_history nasdaq: 30 points
+2026-05-14T20:19:58 UTC | INFO     | main | News: 12 articles, 0 candidate sectors
+2026-05-14T20:19:58 UTC | INFO     | main | No candidate sectors — writing empty report
+2026-05-14T20:19:58 UTC | INFO     | main | Empty report written: reports/output/empty_1600-1720_2026-05-14T201958Z.html
