@@ -3,6 +3,36 @@
   "reports": [
     {
       "date": "2026-05-15",
+      "time": "16:08",
+      "slot": "16:00-17:20",
+      "breadth": "weak breadth \u2014 most stocks declining",
+      "regime": "Normal market",
+      "market_regime": "BULL",
+      "breadth_pct": 61.6,
+      "count": 3,
+      "tickers": [
+        "CNX",
+        "OKE",
+        "KMI"
+      ],
+      "top_score": 0,
+      "verdicts": {
+        "RESEARCH NOW": 1,
+        "WATCH": 2,
+        "SKIP": 0
+      },
+      "report_url": "reports/intraday_full_1600_1720_20260515T200853Z.html",
+      "pl_recommended_subset": [
+        "OKE"
+      ],
+      "pl_sector_exposure": {
+        "energy": 40.0
+      },
+      "pl_diversification_score": 0.583,
+      "pl_avg_correlation": 0.417
+    },
+    {
+      "date": "2026-05-15",
       "time": "14:14",
       "slot": "13:45-15:15",
       "breadth": "weak breadth \u2014 most stocks declining",
