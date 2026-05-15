@@ -18,7 +18,7 @@ def apply_sector_cap(
     """
     Input:
         weights:        dict[str, float] — from position_sizer, sum == 100.0
-        candidates:     list[dict] with 'ticker', 'sector', 'composite_confidence'
+        candidates:     list[dict] with 'ticker', 'sector', 'opp_price_trend'
         max_sector_pct: float — cap threshold
 
     Output:
@@ -26,7 +26,7 @@ def apply_sector_cap(
         sector_cap_excluded — list[str] tickers removed by this layer
     """
     conf_map: dict[str, float] = {
-        c.get('ticker', ''): float(c.get('composite_confidence', 0))
+        c.get('ticker', ''): float(c.get('opp_price_trend', 0))
         for c in candidates if c.get('ticker')
     }
     sector_map: dict[str, str] = {

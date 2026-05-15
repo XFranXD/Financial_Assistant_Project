@@ -90,7 +90,7 @@ def compute(candidates: list[dict], lookback: int = LOOKBACK_DAYS) -> dict:
     """
     tickers = [c.get('ticker', '') for c in candidates if c.get('ticker')]
     conf_map: dict[str, float] = {
-        c.get('ticker', ''): float(c.get('composite_confidence', 0))
+        c.get('ticker', ''): float(c.get('opp_price_trend', 0))
         for c in candidates if c.get('ticker')
     }
 

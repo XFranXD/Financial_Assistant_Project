@@ -1,71 +1,82 @@
 """
-analyzers/zscore_ranker.py — Z-score normalisation across full candidate pool.
-Max 3 companies per sector. Max 25 total. Unusual volume flag adds +0.3 boost.
-Companies above regime risk_cap are excluded before ranking.
+analyzers/zscore_ranker.py — Lexicographic ranking on atomic component scores.
+No aggregate scores. Ranking is fully traceable to individual inputs.
+
+Priority order (descending):
+  1. opp_financial_health    — business quality, slowest-moving
+  2. opp_price_trend         — trade timing signal
+  3. opp_market_confirmation — volume/breadth confirmation
+  4. -risk_component_volatility — lower volatility preferred
+  5. -risk_component_drawdown   — lower drawdown preferred
+
+Max 3 companies per sector. Max 25 total. Unusual volume flag adds priority boost
+by temporarily inflating opp_price_trend for tie-breaking purposes only.
 """
 
-import statistics
 from utils.logger import get_logger
 from config import MAX_COMPANIES_PER_SECTOR, MAX_TOTAL_COMPANIES, UNUSUAL_VOLUME_RANKING_BOOST
 
 log = get_logger('zscore_ranker')
 
 
-def _zscore(value: float, mean: float, std: float) -> float:
-    """Safe z-score. Returns 0.0 if std is zero."""
-    if std == 0:
-        return 0.0
-    return (value - mean) / std
-
-
 def rank_candidates(candidates: list[dict], risk_cap: float) -> list[dict]:
     """
-    Ranks candidates using z-score normalisation.
+    Ranks candidates using lexicographic tuple on atomic component scores.
 
     Input: list of candidate dicts, each must have:
-        'ticker', 'sector', 'opportunity_score', 'risk_score',
-        'composite_confidence', 'unusual_volume' (dict with 'unusual_flag')
+        'ticker', 'sector',
+        'opp_financial_health', 'opp_price_trend', 'opp_market_confirmation',
+        'risk_component_volatility', 'risk_component_drawdown',
+        'unusual_volume' (dict with 'unusual_flag')
 
     Steps:
-        1. Exclude candidates above risk_cap
-        2. Compute ranking_index = z(opportunity) - z(risk) + unusual_boost
-        3. Sort descending by ranking_index
-        4. Apply max 3 per sector cap
-        5. Return top MAX_TOTAL_COMPANIES
+        1. Exclude candidates where risk_component_volatility > risk_cap
+           OR risk_component_drawdown > risk_cap (either elevated = excluded)
+        2. Sort by lexicographic tuple descending
+        3. Apply max 3 per sector cap
+        4. Return top MAX_TOTAL_COMPANIES
 
     Returns: sorted list of candidate dicts with 'ranking_index' and 'final_rank' added.
     """
-    # Step 1: filter by risk cap
-    eligible = [c for c in candidates if c.get('risk_score', 100) <= risk_cap]
+    # Step 1: filter by risk cap — exclude if either primary risk component exceeds cap
+    eligible = [
+        c for c in candidates
+        if (
+            c.get('risk_component_volatility', 100) <= risk_cap and
+            c.get('risk_component_drawdown',   100) <= risk_cap
+        )
+    ]
     excluded = len(candidates) - len(eligible)
     if excluded:
-        log.info(f'Z-score ranker: excluded {excluded} candidates above risk_cap={risk_cap}')
+        log.info(f'Ranker: excluded {excluded} candidates above risk_cap={risk_cap}')
 
     if not eligible:
-        log.info('Z-score ranker: no eligible candidates after risk cap filter')
+        log.info('Ranker: no eligible candidates after risk cap filter')
         return []
 
-    # Step 2: compute z-scores across eligible pool
-    opp_vals  = [c.get('opportunity_score', 50) for c in eligible]
-    risk_vals = [c.get('risk_score', 50) for c in eligible]
-
-    opp_mean  = statistics.mean(opp_vals)
-    opp_std   = statistics.pstdev(opp_vals) or 1.0
-    risk_mean = statistics.mean(risk_vals)
-    risk_std  = statistics.pstdev(risk_vals) or 1.0
-
+    # Step 2: build sort key and assign ranking_index for traceability
     for c in eligible:
-        z_opp   = _zscore(c.get('opportunity_score', 50), opp_mean, opp_std)
-        z_risk  = _zscore(c.get('risk_score', 50), risk_mean, risk_std)
-        unusual_boost = (
-            UNUSUAL_VOLUME_RANKING_BOOST
-            if c.get('unusual_volume', {}).get('unusual_flag', False)
-            else 0.0
-        )
-        c['ranking_index'] = round(z_opp - z_risk + unusual_boost, 4)
+        pt = c.get('opp_price_trend', 0)
+        # Unusual volume boost: temporarily adds to price_trend for tie-breaking only
+        if c.get('unusual_volume', {}).get('unusual_flag', False):
+            pt = min(100, pt + UNUSUAL_VOLUME_RANKING_BOOST * 100)
 
-    # Step 3: sort descending
-    ranked = sorted(eligible, key=lambda c: c['ranking_index'], reverse=True)
+        c['_rank_tuple'] = (
+            c.get('opp_financial_health',    0),
+            pt,
+            c.get('opp_market_confirmation', 0),
+            -c.get('risk_component_volatility', 50),
+            -c.get('risk_component_drawdown',   50),
+        )
+        # Store a human-readable summary for log traceability
+        c['ranking_index'] = round(
+            c.get('opp_financial_health', 0) * 0.001 +
+            pt * 0.001,
+            6
+        )
+
+    # Step 3: sort descending by tuple
+    ranked = sorted(eligible, key=lambda c: c['_rank_tuple'], reverse=True)
 
     # Step 4: apply max-per-sector cap
     sector_counts: dict[str, int] = {}
@@ -82,12 +93,13 @@ def rank_candidates(candidates: list[dict], risk_cap: float) -> list[dict]:
     # Step 5: top N total
     final = sector_capped[:MAX_TOTAL_COMPANIES]
 
-    # Add final rank
+    # Clean up temp key and add final rank
     for i, c in enumerate(final):
+        c.pop('_rank_tuple', None)
         c['final_rank'] = i + 1
 
     log.info(
-        f'Z-score ranking complete: {len(candidates)} → {len(eligible)} eligible → '
+        f'Ranking complete: {len(candidates)} → {len(eligible)} eligible → '
         f'{len(final)} final (max {MAX_TOTAL_COMPANIES}, cap {MAX_COMPANIES_PER_SECTOR}/sector)'
     )
     return final

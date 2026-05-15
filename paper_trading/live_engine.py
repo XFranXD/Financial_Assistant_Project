@@ -17,7 +17,6 @@ from paper_trading.trade_builder import build_trade
 from paper_trading.execution_rules import infer_exit
 from calibration.financial_standards import (
     ALLOWED_ENTRY_QUALITIES,
-    CONFIDENCE_FLOOR,
     MIN_RR_FOR_ENTRY,
     MAX_MOVE_EXTENSION_PCT,
 )
@@ -200,11 +199,10 @@ def detect_new_entries(candidates: list[dict], updated_trades: list[dict], all_t
                 continue
         else:
             # ── Trade opening gate — reads from calibration/financial_standards.py ──
-            # v1.1: CONFIDENCE_FLOOR=0 and MIN_RR_FOR_ENTRY=0.0 — both effectively
-            # disabled until Phase 4B produces evidence to justify real thresholds.
-            # All four entry_quality labels are currently accepted.
+            # All four entry_quality labels accepted (ALLOWED_ENTRY_QUALITIES).
+            # market_verdict must be RESEARCH NOW or WATCH.
+            # Phase 4B will introduce evidence-based thresholds once 50 trades close.
             _eq      = candidate.get('entry_quality', '')
-            _conf    = candidate.get('composite_confidence') or 0
             _rr_raw  = candidate.get('risk_reward_ratio')
             _verdict = candidate.get('market_verdict', '')
             _move_ext = candidate.get('move_extension_pct')
@@ -230,14 +228,13 @@ def detect_new_entries(candidates: list[dict], updated_trades: list[dict], all_t
             if not (
                 _verdict in ('RESEARCH NOW', 'WATCH')
                 and _eq in ALLOWED_ENTRY_QUALITIES
-                and _conf >= CONFIDENCE_FLOOR
                 and _rr_ok
                 and _move_ok
                 and _has_lvls
             ):
                 log.info(
                     f'[PT] {candidate.get("ticker","?")}: gate fail -- '
-                    f'verdict={_verdict} eq={_eq} conf={_conf} rr={_rr_raw} '
+                    f'verdict={_verdict} eq={_eq} rr={_rr_raw} '
                     f'move_ext={_move_ext} levels={_has_lvls}'
                 )
                 continue

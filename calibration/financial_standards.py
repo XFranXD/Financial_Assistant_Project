@@ -11,19 +11,12 @@ in calibration/standards_history.log BEFORE this file is modified.
 STANDARDS_VERSION must be incremented every time any threshold value changes.
 """
 
-STANDARDS_VERSION = "v1.1"
+STANDARDS_VERSION = "v1.2"
 
 # Which entry_quality labels are accepted for trade opening.
 # v1.1: All four labels accepted — no entry quality is rejected.
 # Evidence for tightening this must come from Phase 4B analyzer output.
 ALLOWED_ENTRY_QUALITIES = {"GOOD", "MODERATE", "WEAK", "EXTENDED"}
-
-# Minimum composite_confidence for trade opening.
-# v1.1: REMOVED — no evidence base exists for this threshold yet.
-# Phase 4 is the evidence collector. Restricting before data is guessing.
-# Retained as a variable so live_engine.py import does not break,
-# but set to 0 so it never filters anything.
-CONFIDENCE_FLOOR = 0
 
 # Minimum risk_reward_ratio for trade opening.
 # v1.1: REMOVED — no evidence base exists for this threshold yet.

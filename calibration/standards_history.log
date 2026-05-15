@@ -21,3 +21,13 @@ CONFIDENCE_FLOOR and MIN_RR_FOR_ENTRY retained as variables in
 financial_standards.py so live_engine.py import does not break.
 Tighten only after Phase 4B produces evidence.
 ----------------------------------------
+
+[v1.2 -- logic refactor, atomic component transition]
+Reason: Moving away from Composite Confidence aggregate scoring to 
+direct Atomic Component evaluation. This simplifies the decision gate 
+by using raw component scores (price trend, financial health, etc.) 
+and binary risk checks instead of weighted confidence percentages.
+COMPOSITE_CONFIDENCE: REMOVED (Logic moved to atomic components)
+WEIGHTS (Risk/Opp/Conf): REMOVED from config.py
+Logic: Transitioned to (_pt >= 60 AND _risk_ok AND _secondary >= 2) gate.
+----------------------------------------

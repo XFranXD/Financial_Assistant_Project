@@ -49,8 +49,6 @@ TOP_SECTORS_LIMIT            = 5     # only top 5 momentum sectors proceed
 MAX_COMPANIES_PER_SECTOR     = 3
 MAX_TOTAL_COMPANIES          = 25
 UNUSUAL_VOLUME_RANKING_BOOST = 0.3
-COMPOSITE_CONFIDENCE_MIN     = 35    # below this → excluded from report
-
 # ── Email Report Limits ────────────────────────────────────────────────────
 EMAIL_MAX_COMPANIES     = 7          # overflow goes to browser link
 
@@ -77,32 +75,6 @@ SECTOR_EQUIVALENCE = {
 
 # Sectors that have a $5 price floor and cap tier tracking
 ALL_SECTORS = list(SECTOR_EQUIVALENCE.values())
-
-# ── Risk Model Weights (must sum to 1.0) ─────────────────────────────────
-RISK_WEIGHTS = {
-    'debt':         0.22,
-    'volatility':   0.18,
-    'liquidity':    0.18,
-    'eps':          0.14,
-    'margin':       0.09,
-    'mcap':         0.09,
-    'drawdown':     0.10,
-}
-
-# ── Opportunity Model Bucket Weights ─────────────────────────────────────
-OPP_BUCKET_WEIGHTS = {
-    'fundamentals': 0.40,
-    'momentum':     0.40,
-    'confirmation': 0.20,
-}
-
-# ── Composite Confidence Weights ─────────────────────────────────────────
-CONFIDENCE_WEIGHTS = {
-    'risk':         0.35,
-    'opportunity':  0.35,
-    'agreement':    0.20,
-    'sector':       0.10,
-}
 
 # ── VIX Regime Definitions ────────────────────────────────────────────────
 VIX_REGIMES = {

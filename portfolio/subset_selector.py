@@ -38,7 +38,7 @@ def select(
 ) -> tuple[list[str], dict[str, str]]:
     """
     Input:
-        candidates:        list[dict] with 'ticker', 'composite_confidence',
+        candidates:        list[dict] with 'ticker', 'opp_price_trend',
                            'entry_quality', and 'risk_reward_ratio' keys
         clusters:          list[list[str]] from correlation_engine (sorted)
         ticker_to_cluster: dict[str, int]
@@ -46,11 +46,11 @@ def select(
         max_positions:     int — hard cap
 
     Output:
-        selected_tickers  — list[str] ordered by tier then composite_confidence
+        selected_tickers  — list[str] ordered by tier then opp_price_trend
         exclusion_reasons — dict[str, str] for all excluded tickers
     """
     conf_map: dict[str, float] = {
-        c.get('ticker', ''): float(c.get('composite_confidence', 0))
+        c.get('ticker', ''): float(c.get('opp_price_trend', 0))
         for c in candidates if c.get('ticker')
     }
 

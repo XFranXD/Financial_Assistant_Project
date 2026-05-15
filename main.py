@@ -21,7 +21,6 @@ from config import (
     CLOSING_SLOT,
     TIMEZONE,
     RUN_SLOTS,
-    COMPOSITE_CONFIDENCE_MIN,
     VALIDATED_TICKER_MAX_AGE_DAYS,
     AV_DAILY_BUDGET,
     ALPHA_VANTAGE_API_KEY,
@@ -259,15 +258,33 @@ def _enrich_for_dashboard(candidates: list) -> None:
             _c[PS_VERDICT_DISPLAY] = _ps_vd
 
             # ── Market verdict ────────────────────────────────────────────
-            # Thresholds match summary_verdict() exactly:
-            # conf >= 70 AND risk <= 35 → RESEARCH NOW
-            # conf >= 55                → WATCH
-            # else                      → SKIP
-            _conf_v = _c.get('composite_confidence') or 0
-            _risk_v = _c.get('risk_score') or 100
-            if _conf_v >= 70 and _risk_v <= 35:
+            # Atomic component logic — no aggregate scores.
+            # risk_ok: all four primary risk components must be <= 50 (not elevated)
+            # RESEARCH NOW: opp_price_trend >= 60 AND risk_ok AND 2-of-3 secondary pass
+            # WATCH:        opp_price_trend >= 50 OR opp_financial_health >= 60
+            # SKIP:         everything else
+            _pt  = _c.get('opp_price_trend',         0)
+            _fh  = _c.get('opp_financial_health',    0)
+            _mc  = _c.get('opp_market_confirmation', 0)
+            _vlt = _c.get('risk_component_volatility', 100)
+            _dd  = _c.get('risk_component_drawdown',   100)
+            _dbt = _c.get('risk_component_debt',       100)
+            _liq = _c.get('risk_component_liquidity',  100)
+
+            _risk_ok = (
+                _dbt <= 50 and
+                _liq <= 50 and
+                _vlt <= 50 and
+                _dd  <= 50
+            )
+            _secondary = sum([
+                _fh  >= 65,
+                _vlt <= 50,
+                _dd  <= 50,
+            ])
+            if _pt >= 60 and _risk_ok and _secondary >= 2:
                 _mvd = 'RESEARCH NOW'
-            elif _conf_v >= 55:
+            elif _pt >= 50 or _fh >= 60:
                 _mvd = 'WATCH'
             else:
                 _mvd = 'SKIP'
@@ -416,7 +433,7 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict,
     from analyzers.trend_stability import compute_trend_stability
     from analyzers.drawdown_risk import compute_drawdown_risk
     from analyzers.risk_model import compute_risk_score
-    from analyzers.opportunity_model import compute_opportunity_score, compute_composite_confidence
+    from analyzers.opportunity_model import compute_opportunity_score
     from analyzers.signal_agreement import compute_signal_agreement, sector_rank_to_score
 
     all_candidates: list[dict] = []
@@ -482,16 +499,11 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict,
                 volume_score    = vol_result.get('volume_score', 0.5),
             )
 
-            conf_result = compute_composite_confidence(
-                risk_score            = risk_result['risk_score'],
-                opportunity_score     = opp_result['opportunity_score'],
-                agreement_score       = agreement['agreement_score'],
-                sector_momentum_score = sector_momentum_val,
-            )
-
             log.info(
-                f'[DEBUG] {ticker}: conf={conf_result["composite_confidence"]} '
-                f'risk={risk_result["risk_score"]} opp={opp_result["opportunity_score"]}'
+                f'[DEBUG] {ticker}: '
+                f'opp_financial_health={opp_result["opp_financial_health"]} '
+                f'opp_price_trend={opp_result["opp_price_trend"]} '
+                f'opp_market_confirmation={opp_result["opp_market_confirmation"]}'
             )
         else:
             # Sub1 excluded — build a minimal stub so downstream subs have a dict to work with.
@@ -508,10 +520,9 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict,
             mtf_result       = {'mtf_score': 0.5, 'r1m': None, 'r3m': None, 'r6m': None}
             stability_result = {}
             dd_result        = {'drawdown_score': 0.5}
-            risk_result      = {'risk_score': 50, 'risk_label': 'UNAVAILABLE', 'components': {}, 'earnings_warning': False, 'divergence_warning': False}
-            opp_result       = {'opportunity_score': 50, 'bucket_scores': {}}
+            risk_result      = {'risk_component_debt': 50, 'risk_component_volatility': 50, 'risk_component_liquidity': 50, 'risk_component_eps': 50, 'risk_component_margin': 50, 'risk_component_mcap': 50, 'risk_component_drawdown': 50, 'earnings_warning': False, 'divergence_warning': False}
+            opp_result       = {'opp_financial_health': 50, 'opp_price_trend': 50, 'opp_market_confirmation': 50}
             agreement        = {'agreement_score': 0.5, 'label': 'UNAVAILABLE'}
-            conf_result      = {'composite_confidence': 50, 'confidence_label': 'UNAVAILABLE'}
 
         candidate = {
             'ticker':               ticker,
@@ -519,15 +530,18 @@ def _run_force_ticker_pipeline(force_tickers: list, slot: str, state: dict,
             'company_name':         fin.get('company_name', ticker),
             'current_price':        fin.get('current_price'),
             'financials':           fin,
-            'risk_score':           risk_result['risk_score'],
-            'risk_label':           risk_result['risk_label'],
-            'risk_components':      risk_result['components'],
-            'opportunity_score':    opp_result['opportunity_score'],
-            'bucket_scores':        opp_result['bucket_scores'],
-            'agreement_score':      agreement['agreement_score'],
-            'agreement_label':      agreement['label'],
-            'composite_confidence': conf_result['composite_confidence'],
-            'confidence_label':     conf_result['confidence_label'],
+            'risk_component_debt':       risk_result['risk_component_debt'],
+            'risk_component_volatility': risk_result['risk_component_volatility'],
+            'risk_component_liquidity':  risk_result['risk_component_liquidity'],
+            'risk_component_eps':        risk_result['risk_component_eps'],
+            'risk_component_margin':     risk_result['risk_component_margin'],
+            'risk_component_mcap':       risk_result['risk_component_mcap'],
+            'risk_component_drawdown':   risk_result['risk_component_drawdown'],
+            'opp_financial_health':      opp_result['opp_financial_health'],
+            'opp_price_trend':           opp_result['opp_price_trend'],
+            'opp_market_confirmation':   opp_result['opp_market_confirmation'],
+            'agreement_score':           agreement['agreement_score'],
+            'agreement_label':           agreement['label'],
             'volume_confirmation':  vol_result,
             'unusual_volume':       uv_result,
             'ram':                  ram_result,
@@ -1159,7 +1173,7 @@ def run():
     from analyzers.trend_stability import compute_trend_stability
     from analyzers.drawdown_risk import compute_drawdown_risk
     from analyzers.risk_model import compute_risk_score
-    from analyzers.opportunity_model import compute_opportunity_score, compute_composite_confidence
+    from analyzers.opportunity_model import compute_opportunity_score
     from analyzers.signal_agreement import compute_signal_agreement, sector_rank_to_score
 
     all_candidates: list[dict] = []
@@ -1225,20 +1239,12 @@ def run():
                 volume_score    = vol_result.get('volume_score', 0.5),
             )
 
-            conf_result = compute_composite_confidence(
-                risk_score            = risk_result['risk_score'],
-                opportunity_score     = opp_result['opportunity_score'],
-                agreement_score       = agreement['agreement_score'],
-                sector_momentum_score = sector_momentum_val,
+            log.info(
+                f'DEBUG scores {ticker}: '
+                f'opp_financial_health={opp_result["opp_financial_health"]} '
+                f'opp_price_trend={opp_result["opp_price_trend"]} '
+                f'opp_market_confirmation={opp_result["opp_market_confirmation"]}'
             )
-
-            log.info(f'DEBUG confidence {ticker}: conf={conf_result["composite_confidence"]} min={COMPOSITE_CONFIDENCE_MIN} risk={risk_result["risk_score"]} opp={opp_result["opportunity_score"]}')
-            if conf_result['composite_confidence'] < COMPOSITE_CONFIDENCE_MIN:
-                log.info(
-                    f'{ticker}: confidence {conf_result["composite_confidence"]} '
-                    f'< {COMPOSITE_CONFIDENCE_MIN} — excluded'
-                )
-                continue
 
             candidate = {
                 'ticker':              ticker,
@@ -1246,15 +1252,18 @@ def run():
                 'company_name':        ticker,
                 'current_price':       fin.get('current_price'),
                 'financials':          fin,
-                'risk_score':          risk_result['risk_score'],
-                'risk_label':          risk_result['risk_label'],
-                'risk_components':     risk_result['components'],
-                'opportunity_score':   opp_result['opportunity_score'],
-                'bucket_scores':       opp_result['bucket_scores'],
-                'agreement_score':     agreement['agreement_score'],
-                'agreement_label':     agreement['label'],
-                'composite_confidence': conf_result['composite_confidence'],
-                'confidence_label':    conf_result['confidence_label'],
+                'risk_component_debt':       risk_result['risk_component_debt'],
+                'risk_component_volatility': risk_result['risk_component_volatility'],
+                'risk_component_liquidity':  risk_result['risk_component_liquidity'],
+                'risk_component_eps':        risk_result['risk_component_eps'],
+                'risk_component_margin':     risk_result['risk_component_margin'],
+                'risk_component_mcap':       risk_result['risk_component_mcap'],
+                'risk_component_drawdown':   risk_result['risk_component_drawdown'],
+                'opp_financial_health':      opp_result['opp_financial_health'],
+                'opp_price_trend':           opp_result['opp_price_trend'],
+                'opp_market_confirmation':   opp_result['opp_market_confirmation'],
+                'agreement_score':           agreement['agreement_score'],
+                'agreement_label':           agreement['label'],
                 'volume_confirmation': vol_result,
                 'unusual_volume':      uv_result,
                 'ram':                 ram_result,
@@ -1274,7 +1283,14 @@ def run():
     from analyzers.zscore_ranker import rank_candidates
     from collections import defaultdict
     for _c in all_candidates:
-        log.info(f"DEBUG candidate: {_c.get('ticker')} risk={_c.get('risk_score')} opp={_c.get('opportunity_score')} cap={regime['risk_cap']}")
+        log.info(
+            f"DEBUG candidate: {_c.get('ticker')} "
+            f"opp_pt={_c.get('opp_price_trend')} "
+            f"opp_fh={_c.get('opp_financial_health')} "
+            f"risk_vol={_c.get('risk_component_volatility')} "
+            f"risk_dd={_c.get('risk_component_drawdown')} "
+            f"cap={regime['risk_cap']}"
+        )
     ranked_companies = rank_candidates(all_candidates, regime['risk_cap'])
     log.info(f'Post-ranking count: {len(ranked_companies)}')
 
@@ -1289,7 +1305,8 @@ def run():
         _sorted = sorted(
             _group,
             key=lambda c: (
-                c.get('composite_confidence', 0),
+                c.get('opp_price_trend', 0),
+                c.get('opp_financial_health', 0),
                 c.get('mtf', {}).get('r3m', 0) or 0,
             ),
             reverse=True,
@@ -1300,25 +1317,49 @@ def run():
         if _dropped:
             log.info(f'Industry dedup [{_industry}]: kept={_kept} dropped={_dropped}')
 
-    deduplicated.sort(key=lambda c: c.get('composite_confidence', 0), reverse=True)
+    deduplicated.sort(
+        key=lambda c: (
+            c.get('opp_financial_health', 0),
+            c.get('opp_price_trend', 0),
+            c.get('opp_market_confirmation', 0),
+        ),
+        reverse=True,
+    )
 
     final_companies = deduplicated
     log.info(f'Final company count after industry dedup: {len(final_companies)}')
 
     # ── Step 27c: Score stability filter ─────────────────────────────────
+    # Stability scalar: local comparison only — not stored on candidate, not displayed.
+    # opp_price_trend * 0.6 + opp_market_confirmation * 0.3 + opp_financial_health * 0.1
+    # State stores three raw fields; scalar is recomputed on comparison.
     today_prior_scores = state.get('today_scores', {})
     stable_companies: list = []
     for _c in final_companies:
-        _ticker       = _c.get('ticker', '')
-        _current_conf = _c.get('composite_confidence', 0)
-        _prior_conf   = today_prior_scores.get(_ticker)
+        _ticker = _c.get('ticker', '')
+        _prior  = today_prior_scores.get(_ticker)
 
-        if _prior_conf is None:
-            stable_companies.append(_c)
-        elif _current_conf >= _prior_conf:
+        _cur_pt  = _c.get('opp_price_trend',         0)
+        _cur_mc  = _c.get('opp_market_confirmation', 0)
+        _cur_fh  = _c.get('opp_financial_health',    0)
+        _cur_stab = _cur_pt * 0.6 + _cur_mc * 0.3 + _cur_fh * 0.1
+
+        if _prior is None:
             stable_companies.append(_c)
         else:
-            log.info(f'score_stability: {_ticker} suppressed - score declined ({_prior_conf} -> {_current_conf})')
+            _pri_stab = (
+                _prior.get('opp_price_trend',         0) * 0.6 +
+                _prior.get('opp_market_confirmation', 0) * 0.3 +
+                _prior.get('opp_financial_health',    0) * 0.1
+            )
+            if _cur_stab >= _pri_stab:
+                stable_companies.append(_c)
+            else:
+                log.info(
+                    f'score_stability: {_ticker} suppressed — '
+                    f'stability {_pri_stab:.1f} -> {_cur_stab:.1f} '
+                    f'(pt={_cur_pt} mc={_cur_mc} fh={_cur_fh})'
+                )
 
     final_companies = stable_companies
     log.info(f'Final company count after score stability filter: {len(final_companies)}')
@@ -1769,7 +1810,11 @@ def run():
     state['runs'][slot]['companies'] = tickers_reported
 
     state['today_scores'] = {
-        c.get('ticker', ''): c.get('composite_confidence', 0)
+        c.get('ticker', ''): {
+            'opp_price_trend':         c.get('opp_price_trend',         0),
+            'opp_market_confirmation': c.get('opp_market_confirmation', 0),
+            'opp_financial_health':    c.get('opp_financial_health',    0),
+        }
         for c in final_companies
         if c.get('ticker')
     }
