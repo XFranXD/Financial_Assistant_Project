@@ -1433,3 +1433,11 @@
 2026-05-15T20:08:57 UTC | INFO     | state_manager | Added to reported: ['CNX', 'OKE', 'KMI']
 2026-05-15T20:08:57 UTC | INFO     | state_manager | Slot 16:00-17:20 marked complete
 2026-05-15T20:08:57 UTC | INFO     | main | Run complete. Reported: ['CNX', 'OKE', 'KMI']
+2026-05-15T21:17:07 UTC | INFO     | main | ============================================================
+2026-05-15T21:17:07 UTC | INFO     | main | AUTOMATED STOCK RESEARCH SYSTEM — starting run
+2026-05-15T21:17:07 UTC | INFO     | main | DISCLAIMER: This system does NOT perform trading, does NOT give investment advice, and does NOT make price predictions. It is a research data aggregation and scoring tool only.
+2026-05-15T21:17:07 UTC | INFO     | main | ============================================================
+2026-05-15T21:17:07 UTC | INFO     | main | [SCHEDULER] Time gate passed — matched slot 16:00-17:20
+2026-05-15T21:17:07 UTC | WARNING  | main | Validated tickers file is 66 days old (limit 30). Consider re-running validate_tickers.py.
+2026-05-15T21:17:07 UTC | INFO     | main | Run slot: 16:00-17:20
+2026-05-15T21:17:07 UTC | INFO     | main | Slot 16:00-17:20 already complete today — exiting
