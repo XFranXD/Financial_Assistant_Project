@@ -1106,10 +1106,11 @@ def run():
     log.info(f'News: {len(articles)} articles, {len(candidate_sectors)} candidate sectors')
 
     if not candidate_sectors:
-        log.info('No candidate sectors — writing empty report')
+        log.info('No candidate sectors — empty run')
         _write_empty_report(slot, state, indices, breadth)
         state = mark_slot_complete(state, slot)
         save_state(state)
+        _commit_outputs()
         sys.exit(0)
 
     # ── Step 12: Apply event recency decay ───────────────────────────────
@@ -1152,10 +1153,11 @@ def run():
             log.info(f'Sector {sector}: ETF confirmation failed')
 
     if not confirmed_sectors:
-        log.info('No sectors confirmed — writing empty report')
+        log.info('No sectors confirmed — empty run')
         _write_empty_report(slot, state, indices, breadth)
         state = mark_slot_complete(state, slot)
         save_state(state)
+        _commit_outputs()
         sys.exit(0)
 
     log.info(f'Confirmed sectors: {list(confirmed_sectors.keys())}')
@@ -1826,20 +1828,8 @@ def run():
 
 
 def _write_empty_report(slot: str, state: dict, indices: dict, breadth: dict) -> None:
-    """Write and commit an empty run report (no opportunities found)."""
-    import os
-    from config import REPORTS_OUTPUT_DIR
-    os.makedirs(REPORTS_OUTPUT_DIR, exist_ok=True)
-    now_str  = datetime.now(pytz.utc).strftime('%Y-%m-%dT%H%M%SZ')
-    filename = os.path.join(REPORTS_OUTPUT_DIR, f'empty_{slot.replace(":", "")}_{now_str}.html')
-    with open(filename, 'w', encoding='utf-8') as f:
-        f.write(
-            f'<html><body><h1>Stock Research — {slot}</h1>'
-            f'<p>No qualifying opportunities found this run.</p>'
-            f'<p>{DISCLAIMER}</p></body></html>'
-        )
-    log.info(f'Empty report written: {filename}')
-    _commit_outputs()
+    """No-op placeholder — empty runs log only, no file written."""
+    log.info(f'[Empty run] slot={slot} — no qualifying opportunities. No file written.')
 
 
 def _commit_outputs() -> None:
