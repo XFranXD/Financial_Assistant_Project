@@ -1,10 +1,13 @@
 {
   "date": "2026-05-15",
   "reported_companies": [
+    "CNX",
     "RRC",
-    "AR",
     "EQT",
-    "CTRA"
+    "KMI",
+    "CTRA",
+    "OKE",
+    "AR"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -27,8 +30,12 @@
       "status": "complete"
     },
     "16:00-17:20": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "CNX",
+        "OKE",
+        "KMI"
+      ],
+      "status": "complete"
     }
   },
   "failed_tickers": [],
@@ -136,15 +143,20 @@
     }
   },
   "today_scores": {
-    "AR": {
-      "opp_price_trend": 61.7,
-      "opp_market_confirmation": 49.0,
-      "opp_financial_health": 81.9
+    "CNX": {
+      "opp_price_trend": 38.3,
+      "opp_market_confirmation": 55.6,
+      "opp_financial_health": 100
     },
-    "CTRA": {
-      "opp_price_trend": 61.9,
-      "opp_market_confirmation": 63.8,
-      "opp_financial_health": 79.8
+    "OKE": {
+      "opp_price_trend": 67.8,
+      "opp_market_confirmation": 55.0,
+      "opp_financial_health": 67.9
+    },
+    "KMI": {
+      "opp_price_trend": 63.8,
+      "opp_market_confirmation": 57.4,
+      "opp_financial_health": 56.8
     }
   }
 }
