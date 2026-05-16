@@ -1,5 +1,7 @@
 import os
+import time
 import gspread
+from gspread import Cell
 from google.oauth2.service_account import Credentials
 from utils.logger import get_logger
 from contracts.paper_trading_schema import SHEET_COLUMNS, SHEET_NAME
@@ -12,7 +14,7 @@ _sheet = None
 
 def _get_sheet() -> gspread.Worksheet | None:
     global _client, _spreadsheet, _sheet
-    
+
     if _sheet is not None:
         return _sheet
 
@@ -23,24 +25,30 @@ def _get_sheet() -> gspread.Worksheet | None:
         log.error("Missing Google Sheets credentials in environment variables.")
         return None
 
-    try:
-        import json
-        creds_dict = json.loads(creds_json)
-        scopes = [
-            "https://spreadsheets.google.com/feeds",
-            "https://www.googleapis.com/auth/drive"
-        ]
-        credentials = Credentials.from_service_account_info(creds_dict, scopes=scopes)
-        _client = gspread.authorize(credentials)
-        _spreadsheet = _client.open_by_key(sheet_id)
-        _sheet = _spreadsheet.worksheet(SHEET_NAME)
-        return _sheet
-    except Exception as e:
-        log.error(f"Failed to authenticate or open sheet: {e}")
-        _client = None
-        _spreadsheet = None
-        _sheet = None
-        return None
+    max_attempts = 3
+    for attempt in range(1, max_attempts + 1):
+        try:
+            import json
+            creds_dict = json.loads(creds_json)
+            scopes = [
+                "https://spreadsheets.google.com/feeds",
+                "https://www.googleapis.com/auth/drive"
+            ]
+            credentials = Credentials.from_service_account_info(creds_dict, scopes=scopes)
+            _client = gspread.authorize(credentials)
+            _spreadsheet = _client.open_by_key(sheet_id)
+            _sheet = _spreadsheet.worksheet(SHEET_NAME)
+            return _sheet
+        except Exception as e:
+            log.warning(f"Sheets auth attempt {attempt}/{max_attempts} failed: {e}")
+            if attempt < max_attempts:
+                time.sleep(2)
+            else:
+                log.error(f"Failed to authenticate or open sheet after {max_attempts} attempts: {e}")
+                _client = None
+                _spreadsheet = None
+                _sheet = None
+                return None
 
 def ensure_headers() -> bool:
     sheet = _get_sheet()
@@ -70,7 +78,7 @@ def ensure_headers() -> bool:
             header_cells = []
             for i, col_name in enumerate(missing):
                 header_cells.append(
-                    gspread.models.Cell(row=1, col=start_col + i, value=col_name)
+                    Cell(row=1, col=start_col + i, value=col_name)
                 )
             sheet.update_cells(header_cells, value_input_option='RAW')
             log.info(f'ensure_headers: appended {len(missing)} new column(s): {missing}')
@@ -169,7 +177,7 @@ def update_rows(rows: list[dict]) -> bool:
                 else:
                     str_val = str(val)
                     
-                cells_to_update.append(gspread.models.Cell(row=row_idx, col=col_idx, value=str_val))
+                cells_to_update.append(Cell(row=row_idx, col=col_idx, value=str_val))
                 
         if cells_to_update:
             sheet.update_cells(cells_to_update, value_input_option="RAW")
@@ -178,4 +186,3 @@ def update_rows(rows: list[dict]) -> bool:
     except Exception as e:
         log.error(f"Failed to update rows: {e}")
         return False
-        
