@@ -3,6 +3,73 @@
     "week-of-2026-05-17": {
       "runs": [
         {
+          "id": "13:45-15:15_2026-05-18T13:52",
+          "run_type": "SCHEDULED",
+          "timestamp": "2026-05-18T13:52",
+          "slot": "13:45-15:15",
+          "breadth": "strong breadth \u2014 most stocks rising",
+          "regime": "Normal market",
+          "market_regime": "BULL",
+          "breadth_pct": 61.6,
+          "count": 6,
+          "verdict_counts": {
+            "RESEARCH NOW": 1,
+            "WATCH": 4,
+            "SKIP": 1
+          },
+          "candidates": [
+            {
+              "ticker": "TFC",
+              "confidence": 0,
+              "eq_verdict": "NEUTRAL",
+              "rotation_signal": "WEAKEN",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "FHN",
+              "confidence": 0,
+              "eq_verdict": "WEAK",
+              "rotation_signal": "WEAKEN",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "MFC",
+              "confidence": 0,
+              "eq_verdict": "UNAVAILABLE",
+              "rotation_signal": "WEAKEN",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "KO",
+              "confidence": 0,
+              "eq_verdict": "UNAVAILABLE",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "DEO",
+              "confidence": 0,
+              "eq_verdict": "UNAVAILABLE",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "MO",
+              "confidence": 0,
+              "eq_verdict": "WEAK",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            }
+          ],
+          "report_url": "reports/intraday_full_1345_1515_20260518T175212Z.html"
+        },
+        {
           "id": "11:45-13:15_2026-05-18T12:43",
           "run_type": "SCHEDULED",
           "timestamp": "2026-05-18T12:43",
