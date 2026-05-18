@@ -1,9 +1,15 @@
 {
   "date": "2026-05-18",
   "reported_companies": [
+    "TFC",
+    "FHN",
+    "DEO",
+    "MFC",
     "STZ",
+    "KO",
     "PM",
-    "BTI"
+    "BTI",
+    "MO"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -20,8 +26,15 @@
       "status": "complete"
     },
     "13:45-15:15": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "TFC",
+        "FHN",
+        "MFC",
+        "KO",
+        "DEO",
+        "MO"
+      ],
+      "status": "complete"
     },
     "16:00-17:20": {
       "companies": [],
@@ -133,20 +146,35 @@
     }
   },
   "today_scores": {
-    "STZ": {
-      "opp_price_trend": 46.3,
+    "TFC": {
+      "opp_price_trend": 40.3,
+      "opp_market_confirmation": 42.1,
+      "opp_financial_health": 80.1
+    },
+    "FHN": {
+      "opp_price_trend": 47.9,
+      "opp_market_confirmation": 41.5,
+      "opp_financial_health": 72.5
+    },
+    "MFC": {
+      "opp_price_trend": 56.7,
       "opp_market_confirmation": 44.3,
-      "opp_financial_health": 65.8
+      "opp_financial_health": 72.0
     },
-    "BTI": {
-      "opp_price_trend": 71.5,
-      "opp_market_confirmation": 44.2,
-      "opp_financial_health": 56.2
+    "KO": {
+      "opp_price_trend": 58.5,
+      "opp_market_confirmation": 43.9,
+      "opp_financial_health": 48.6
     },
-    "PM": {
-      "opp_price_trend": 62.2,
-      "opp_market_confirmation": 41.3,
-      "opp_financial_health": 50.4
+    "DEO": {
+      "opp_price_trend": 38.6,
+      "opp_market_confirmation": 42.7,
+      "opp_financial_health": 47.5
+    },
+    "MO": {
+      "opp_price_trend": 71.4,
+      "opp_market_confirmation": 42.1,
+      "opp_financial_health": 45.0
     }
   }
 }
