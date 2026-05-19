@@ -1,6 +1,12 @@
 {
   "date": "2026-05-19",
-  "reported_companies": [],
+  "reported_companies": [
+    "BTI",
+    "RRC",
+    "EQT",
+    "STZ",
+    "PM"
+  ],
   "alpha_vantage_calls_today": 20,
   "runs": {
     "9:45-11:15": {
@@ -8,8 +14,14 @@
       "status": "pending"
     },
     "11:45-13:15": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "EQT",
+        "RRC",
+        "STZ",
+        "BTI",
+        "PM"
+      ],
+      "status": "complete"
     },
     "13:45-15:15": {
       "companies": [],
@@ -124,5 +136,31 @@
       "label": "Falling"
     }
   },
-  "today_scores": {}
+  "today_scores": {
+    "EQT": {
+      "opp_price_trend": 50.6,
+      "opp_market_confirmation": 56.5,
+      "opp_financial_health": 100
+    },
+    "RRC": {
+      "opp_price_trend": 65.2,
+      "opp_market_confirmation": 52.6,
+      "opp_financial_health": 84.3
+    },
+    "STZ": {
+      "opp_price_trend": 47.5,
+      "opp_market_confirmation": 40.9,
+      "opp_financial_health": 65.8
+    },
+    "BTI": {
+      "opp_price_trend": 69.0,
+      "opp_market_confirmation": 42.5,
+      "opp_financial_health": 56.2
+    },
+    "PM": {
+      "opp_price_trend": 63.8,
+      "opp_market_confirmation": 41.0,
+      "opp_financial_health": 50.7
+    }
+  }
 }
