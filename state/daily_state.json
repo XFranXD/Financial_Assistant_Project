@@ -1,16 +1,6 @@
 {
-  "date": "2026-05-18",
-  "reported_companies": [
-    "TFC",
-    "FHN",
-    "DEO",
-    "MFC",
-    "STZ",
-    "KO",
-    "PM",
-    "BTI",
-    "MO"
-  ],
+  "date": "2026-05-19",
+  "reported_companies": [],
   "alpha_vantage_calls_today": 20,
   "runs": {
     "9:45-11:15": {
@@ -18,47 +8,36 @@
       "status": "pending"
     },
     "11:45-13:15": {
-      "companies": [
-        "STZ",
-        "BTI",
-        "PM"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     },
     "13:45-15:15": {
-      "companies": [
-        "TFC",
-        "FHN",
-        "MFC",
-        "KO",
-        "DEO",
-        "MO"
-      ],
-      "status": "complete"
+      "companies": [],
+      "status": "pending"
     },
     "16:00-17:20": {
       "companies": [],
-      "status": "complete"
+      "status": "pending"
     }
   },
   "failed_tickers": [],
   "api_failures": {},
   "sector_scores_today": {
-    "technology": 0.911,
-    "healthcare": 1.534,
-    "financials": 0.877,
-    "consumer_discretionary": -2.128,
-    "consumer_staples": 2.989,
-    "industrials": -1.738,
-    "materials": -3.008,
-    "energy": 4.742,
-    "utilities": -3.415,
-    "real_estate": -1.495,
-    "communication_services": 1.093,
-    "semiconductors": -2.634,
-    "defense": -0.941
+    "technology": 1.06,
+    "healthcare": 1.329,
+    "financials": 0.002,
+    "consumer_discretionary": -3.011,
+    "consumer_staples": 2.524,
+    "industrials": -2.346,
+    "materials": -4.939,
+    "energy": 5.192,
+    "utilities": -2.562,
+    "real_estate": -0.973,
+    "communication_services": 0.17,
+    "semiconductors": -1.021,
+    "defense": -1.761
   },
-  "breadth_score_today": 0.677,
+  "breadth_score_today": 0.592,
   "sector_breadth_ma_today": {
     "technology": {
       "breadth_ma_score": 0.8,
@@ -76,9 +55,9 @@
       "label": "mixed signals"
     },
     "financials": {
-      "breadth_ma_score": 0.8,
-      "pct": 80.0,
-      "label": "sector is genuinely strong"
+      "breadth_ma_score": 0.7,
+      "pct": 70.0,
+      "label": "healthy participation"
     },
     "consumer_discretionary": {
       "breadth_ma_score": 0.4,
@@ -91,13 +70,13 @@
       "label": "healthy participation"
     },
     "industrials": {
-      "breadth_ma_score": 0.4,
-      "pct": 40.0,
+      "breadth_ma_score": 0.5,
+      "pct": 50.0,
       "label": "mixed signals"
     },
     "defense": {
-      "breadth_ma_score": 0.2,
-      "pct": 20.0,
+      "breadth_ma_score": 0.1,
+      "pct": 10.0,
       "label": "sector is structurally weak"
     },
     "energy": {
@@ -106,13 +85,13 @@
       "label": "sector is genuinely strong"
     },
     "materials": {
-      "breadth_ma_score": 0.5,
-      "pct": 50.0,
+      "breadth_ma_score": 0.4,
+      "pct": 40.0,
       "label": "mixed signals"
     },
     "utilities": {
-      "breadth_ma_score": 0.1,
-      "pct": 10.0,
+      "breadth_ma_score": 0.2,
+      "pct": 20.0,
       "label": "sector is structurally weak"
     },
     "real_estate": {
@@ -130,51 +109,20 @@
   "event_scores_today": {},
   "indices_today": {
     "dow": {
-      "value": 49686.12,
-      "change_pct": 0.32,
-      "label": "Rising"
+      "value": 49524.32,
+      "change_pct": -0.33,
+      "label": "Falling"
     },
     "sp500": {
-      "value": 7403.05,
-      "change_pct": -0.07,
-      "label": "Flat"
+      "value": 7370.52,
+      "change_pct": -0.44,
+      "label": "Falling"
     },
     "nasdaq": {
-      "value": 26090.73,
-      "change_pct": -0.51,
+      "value": 25898.45,
+      "change_pct": -0.74,
       "label": "Falling"
     }
   },
-  "today_scores": {
-    "TFC": {
-      "opp_price_trend": 40.3,
-      "opp_market_confirmation": 42.1,
-      "opp_financial_health": 80.1
-    },
-    "FHN": {
-      "opp_price_trend": 47.9,
-      "opp_market_confirmation": 41.5,
-      "opp_financial_health": 72.5
-    },
-    "MFC": {
-      "opp_price_trend": 56.7,
-      "opp_market_confirmation": 44.3,
-      "opp_financial_health": 72.0
-    },
-    "KO": {
-      "opp_price_trend": 58.5,
-      "opp_market_confirmation": 43.9,
-      "opp_financial_health": 48.6
-    },
-    "DEO": {
-      "opp_price_trend": 38.6,
-      "opp_market_confirmation": 42.7,
-      "opp_financial_health": 47.5
-    },
-    "MO": {
-      "opp_price_trend": 71.4,
-      "opp_market_confirmation": 42.1,
-      "opp_financial_health": 45.0
-    }
-  }
+  "today_scores": {}
 }
