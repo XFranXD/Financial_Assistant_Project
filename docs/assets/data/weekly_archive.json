@@ -3,6 +3,65 @@
     "week-of-2026-05-17": {
       "runs": [
         {
+          "id": "13:45-15:15_2026-05-19T13:55",
+          "run_type": "SCHEDULED",
+          "timestamp": "2026-05-19T13:55",
+          "slot": "13:45-15:15",
+          "breadth": "neutral breadth \u2014 mixed market movement",
+          "regime": "Normal market",
+          "market_regime": "BULL",
+          "breadth_pct": 64.8,
+          "count": 5,
+          "verdict_counts": {
+            "RESEARCH NOW": 3,
+            "WATCH": 1,
+            "SKIP": 1
+          },
+          "candidates": [
+            {
+              "ticker": "AR",
+              "confidence": 0,
+              "eq_verdict": "UNAVAILABLE",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "CTRA",
+              "confidence": 0,
+              "eq_verdict": "UNAVAILABLE",
+              "rotation_signal": "SUPPORT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "KO",
+              "confidence": 0,
+              "eq_verdict": "UNAVAILABLE",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "WEAK",
+              "conclusion": ""
+            },
+            {
+              "ticker": "DEO",
+              "confidence": 0,
+              "eq_verdict": "UNAVAILABLE",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "GOOD",
+              "conclusion": ""
+            },
+            {
+              "ticker": "MO",
+              "confidence": 0,
+              "eq_verdict": "WEAK",
+              "rotation_signal": "WAIT",
+              "ps_entry_quality": "EXTENDED",
+              "conclusion": ""
+            }
+          ],
+          "report_url": "reports/intraday_full_1345_1515_20260519T175549Z.html"
+        },
+        {
           "id": "11:45-13:15_2026-05-19T12:44",
           "run_type": "SCHEDULED",
           "timestamp": "2026-05-19T12:44",
