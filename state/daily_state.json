@@ -1,11 +1,16 @@
 {
   "date": "2026-05-19",
   "reported_companies": [
-    "BTI",
-    "RRC",
+    "KO",
+    "DEO",
+    "MO",
+    "AR",
+    "PM",
     "EQT",
+    "CTRA",
+    "BTI",
     "STZ",
-    "PM"
+    "RRC"
   ],
   "alpha_vantage_calls_today": 20,
   "runs": {
@@ -24,8 +29,14 @@
       "status": "complete"
     },
     "13:45-15:15": {
-      "companies": [],
-      "status": "pending"
+      "companies": [
+        "AR",
+        "CTRA",
+        "KO",
+        "DEO",
+        "MO"
+      ],
+      "status": "complete"
     },
     "16:00-17:20": {
       "companies": [],
@@ -137,30 +148,30 @@
     }
   },
   "today_scores": {
-    "EQT": {
-      "opp_price_trend": 50.6,
-      "opp_market_confirmation": 56.5,
-      "opp_financial_health": 100
+    "AR": {
+      "opp_price_trend": 64.0,
+      "opp_market_confirmation": 57.3,
+      "opp_financial_health": 81.9
     },
-    "RRC": {
-      "opp_price_trend": 65.2,
-      "opp_market_confirmation": 52.6,
-      "opp_financial_health": 84.3
+    "CTRA": {
+      "opp_price_trend": 61.9,
+      "opp_market_confirmation": 69.0,
+      "opp_financial_health": 79.8
     },
-    "STZ": {
-      "opp_price_trend": 47.5,
-      "opp_market_confirmation": 40.9,
-      "opp_financial_health": 65.8
+    "KO": {
+      "opp_price_trend": 61.6,
+      "opp_market_confirmation": 45.4,
+      "opp_financial_health": 48.6
     },
-    "BTI": {
-      "opp_price_trend": 69.0,
+    "DEO": {
+      "opp_price_trend": 39.5,
       "opp_market_confirmation": 42.5,
-      "opp_financial_health": 56.2
+      "opp_financial_health": 47.5
     },
-    "PM": {
-      "opp_price_trend": 63.8,
-      "opp_market_confirmation": 41.0,
-      "opp_financial_health": 50.7
+    "MO": {
+      "opp_price_trend": 71.1,
+      "opp_market_confirmation": 40.9,
+      "opp_financial_health": 45.0
     }
   }
 }
